@@ -244,19 +244,19 @@ const EventCard = ({
         <div className="space-y-4 pt-2 text-sm text-gray-500">
           <div className="flex items-center">
             <Calendar className="mr-2 h-4 w-4 text-blue-500" />
-            <span className="text-gray-400">{formatDateRange()}</span>
+            <span className="text-gray-500">{formatDateRange()}</span>
           </div>
           <div className="flex items-center">
             <Clock className="mr-2 h-4 w-4 text-amber-500" />
-            <span className="text-gray-400">{formatTimeRange()}</span>
+            <span className="text-gray-500">{formatTimeRange()}</span>
           </div>
           <div className="flex items-center">
             <MapPin className="mr-2 h-4 w-4 text-red-500" />
-            <span className="line-clamp-1 text-gray-400">{event.location}</span>
+            <span className="line-clamp-1 text-gray-500">{event.location}</span>
           </div>
           <div className="flex items-center">
             <Users className="mr-2 h-4 w-4 text-green-500" />
-            <span className="text-gray-400">
+            <span className="text-gray-500">
               {event.attendees.length} / {event.capacity} registered
             </span>
           </div>
