@@ -75,27 +75,6 @@ const useResourceAdmin = ({ token }: UseResourceAdminProps) => {
     [token]
   );
 
-  const uploadAndCreateResource = useCallback(
-    async (file: File, resourceData: Omit<CreateResourcePayload, 'fileUrls'>) => {
-      setIsLoading(true);
-      try {
-        const fileUrl = await uploadFile(file);
-
-        const resource = await createResource({
-          ...resourceData,
-          fileUrls: [fileUrl],
-        });
-
-        return resource;
-      } catch (error) {
-        throw error;
-      } finally {
-        setIsLoading(false);
-      }
-    },
-    [uploadFile, createResource]
-  );
-
   const updateResource = useCallback(
     async (resourceId: string, payload: UpdateResourcePayload) => {
       setIsLoading(true);
@@ -238,7 +217,6 @@ const useResourceAdmin = ({ token }: UseResourceAdminProps) => {
     updateResource,
     toggleResourceTrash,
     getResourceAnalytics,
-    uploadAndCreateResource,
     deleteResourcePermanently,
   };
 };
