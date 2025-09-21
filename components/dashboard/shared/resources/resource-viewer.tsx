@@ -245,7 +245,7 @@ const ResourceViewerComponent = ({ role, userData }: ResourceViewerComponentProp
 
       {/*==================== Content Area ====================*/}
       {isLoading ? (
-        <ResourceViewerSkeleton />
+        <ResourceViewerSkeleton role={role} />
       ) : error || !resource ? (
         <NetworkError
           onRetry={handleRetry}

@@ -137,7 +137,7 @@ const ResourcesComponent = ({ role, userData }: ResourcesComponentProps) => {
 
       {isLoading ? (
         <>
-          <ResourceFilterSkeleton />
+          <ResourceFilterSkeleton role={role} />
           <ResourceTableSkeleton />
         </>
       ) : (

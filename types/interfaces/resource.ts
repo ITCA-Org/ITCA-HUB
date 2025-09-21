@@ -15,7 +15,11 @@ export interface Resource {
   updatedAt: string;
   fileUrls: string[];
   isDeleted: boolean;
-  updatedBy?: string;
+  updatedBy?: {
+    _id: string;
+    firstName: string;
+    lastName: string;
+  };
   description: string;
   deletedAt?: string | null;
   deletedBy?: string | null;
@@ -228,4 +232,8 @@ export interface FileItem {
   url: string;
   name: string;
   type: string;
+}
+
+export interface ResourceFilterSkeletonProps {
+  role: 'admin' | 'student';
 }
