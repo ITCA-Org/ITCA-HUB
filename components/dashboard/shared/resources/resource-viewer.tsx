@@ -26,12 +26,12 @@ const ResourceViewerComponent = ({ role, userData }: ResourceViewerComponentProp
   const router = useRouter();
   const { id } = router.query;
 
+  const [isDeletingFile, setIsDeletingFile] = useState<string | null>(null);
+  const [isDownloading, setIsDownloading] = useState<string | null>(null);
   const [resource, setResource] = useState<Resource | null>(null);
+  const [error, setError] = useState<string | null>(null);
   const [files, setFiles] = useState<FileItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [isDownloading, setIsDownloading] = useState<string | null>(null);
-  const [isDeletingFile, setIsDeletingFile] = useState<string | null>(null);
 
   const { fetchSingleResource, trackView, downloadFile, trackDownload } = useResources({
     token: userData.token,
@@ -81,7 +81,6 @@ const ResourceViewerComponent = ({ role, userData }: ResourceViewerComponentProp
     loadResource();
   }, [id, userData.token, fetchSingleResource, trackView]);
 
-  /*==================== Download File Handler ====================*/
   const handleDownload = async (file: FileItem) => {
     if (!resource) return;
 
@@ -95,7 +94,6 @@ const ResourceViewerComponent = ({ role, userData }: ResourceViewerComponentProp
     }
   };
 
-  /*==================== Delete File Handler (Admin Only) ====================*/
   const handleDeleteFile = async (fileUrl: string) => {
     if (!resource || role !== 'admin') return;
 
@@ -117,7 +115,6 @@ const ResourceViewerComponent = ({ role, userData }: ResourceViewerComponentProp
     }
   };
 
-  /*==================== Get File Type ====================*/
   const getFileType = (fileName: string): string => {
     const extension = fileName.split('.').pop()?.toLowerCase() || '';
 
@@ -143,7 +140,6 @@ const ResourceViewerComponent = ({ role, userData }: ResourceViewerComponentProp
     return typeMap[extension] || 'File';
   };
 
-  /*==================== Format Functions ====================*/
   const formatCategory = (category: string): string => {
     return category
       .split('_')
