@@ -121,7 +121,6 @@ const ResourceViewerComponent = ({ role, userData }: ResourceViewerComponentProp
       setIsDeletingFile(fileUrl);
       const updatedResource = await adminHook.deleteFileFromResource(resource._id, fileUrl);
 
-      // Update local state
       setFiles((prev) => prev.filter((file) => file.url !== fileUrl));
       if (updatedResource) {
         setResource(updatedResource);

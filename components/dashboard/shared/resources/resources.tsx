@@ -70,17 +70,16 @@ const ResourcesComponent = ({ role, userData }: ResourcesComponentProps) => {
   const loadResources = useCallback(() => {
     const controller = new AbortController();
     fetchResources({
-      page: 0, // Always start from first page when manually refreshing
+      page: 0,
       limit,
       ...filterParams,
       signal: controller.signal,
     });
     return controller;
-  }, [fetchResources, limit, filterParams]); // Removed currentPage dependency
+  }, [fetchResources, limit, filterParams]);
 
   const handlePageChange = useCallback(
     (newPage: number) => {
-      // This is now the only function that handles page changes
       const controller = new AbortController();
       fetchResources({
         page: newPage,
@@ -106,11 +105,10 @@ const ResourcesComponent = ({ role, userData }: ResourcesComponentProps) => {
     const abortController = new AbortController();
     let isActive = true;
 
-    // Only fetch when filters change, not when page changes
     const loadData = async () => {
       try {
         await fetchResources({
-          page: 0, // Reset to first page when filters change
+          page: 0,
           limit,
           ...filterParams,
           signal: abortController.signal,
@@ -128,7 +126,7 @@ const ResourcesComponent = ({ role, userData }: ResourcesComponentProps) => {
       isActive = false;
       abortController.abort();
     };
-  }, [filterParams, limit, fetchResources]); // Removed currentPage dependency
+  }, [filterParams, limit, fetchResources]);
 
   const pageConfig = {
     admin: {
@@ -164,9 +162,9 @@ const ResourcesComponent = ({ role, userData }: ResourcesComponentProps) => {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
         <DashboardPageHeader
           title={config.title}
+          actions={config.actions}
           subtitle={config.subtitle}
           description={config.description}
-          actions={config.actions}
         />
       </div>
 
