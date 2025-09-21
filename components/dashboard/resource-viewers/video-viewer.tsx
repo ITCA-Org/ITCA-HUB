@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
-import { FileVideo, Download } from 'lucide-react';
-import useDownload from '@/hooks/use-download';
+import { FileVideo } from 'lucide-react';
 
 interface VideoViewerProps {
   fileUrl: string;
@@ -11,17 +10,11 @@ interface VideoViewerProps {
 const VideoViewer: React.FC<VideoViewerProps> = ({ fileUrl, title }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [playbackError, setPlaybackError] = useState(false);
-  const { downloadResource, isDownloading } = useDownload();
 
   const isMkvFile = fileUrl.toLowerCase().endsWith('.mkv');
   const videoType = isMkvFile
     ? 'video/x-matroska'
     : `video/${fileUrl.split('.').pop()?.toLowerCase()}`;
-
-  const handleDownload = async () => {
-    const fileName = fileUrl.split('/').pop() || title;
-    await downloadResource(fileUrl, fileName, title);
-  };
 
   return (
     <div className="h-full w-full flex flex-col">
@@ -41,14 +34,6 @@ const VideoViewer: React.FC<VideoViewerProps> = ({ fileUrl, title }) => {
                 ? 'MKV format is not supported for browser playback.'
                 : 'This video format cannot be played in your browser.'}
             </p>
-            <button
-              onClick={handleDownload}
-              disabled={isDownloading}
-              className="inline-flex items-center rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-50"
-            >
-              <Download className="mr-2 h-4 w-4" />
-              {isDownloading ? 'Downloading...' : 'Download Video'}
-            </button>
           </div>
         ) : (
           <div className="w-full max-w-4xl mx-auto">

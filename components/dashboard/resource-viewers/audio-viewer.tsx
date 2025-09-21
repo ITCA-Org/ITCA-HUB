@@ -1,6 +1,4 @@
 import React, { useState } from 'react';
-import { Download } from 'lucide-react';
-import useDownload from '@/hooks/use-download';
 
 interface AudioViewerProps {
   fileUrl: string;
@@ -8,10 +6,9 @@ interface AudioViewerProps {
   resourceId?: string;
 }
 
-const AudioViewer: React.FC<AudioViewerProps> = ({ fileUrl, title }) => {
+const AudioViewer: React.FC<AudioViewerProps> = ({ fileUrl }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const { downloadResource, isDownloading } = useDownload();
 
   const getAudioMimeType = (url: string) => {
     const extension = url.split('.').pop()?.toLowerCase();
@@ -31,11 +28,6 @@ const AudioViewer: React.FC<AudioViewerProps> = ({ fileUrl, title }) => {
       default:
         return `audio/${extension}`;
     }
-  };
-
-  const handleDownload = async () => {
-    const fileName = fileUrl.split('/').pop() || title;
-    await downloadResource(fileUrl, fileName, title);
   };
 
   return (
@@ -68,17 +60,6 @@ const AudioViewer: React.FC<AudioViewerProps> = ({ fileUrl, title }) => {
             <p>{error}</p>
           </div>
         )}
-
-        <div className="text-center mt-4">
-          <button
-            onClick={handleDownload}
-            disabled={isDownloading}
-            className="inline-flex items-center rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-50"
-          >
-            <Download className="mr-2 h-4 w-4" />
-            {isDownloading ? 'Downloading...' : 'Download Audio File'}
-          </button>
-        </div>
       </div>
     </div>
   );
