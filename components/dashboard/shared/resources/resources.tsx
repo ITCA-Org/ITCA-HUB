@@ -1,13 +1,13 @@
 import Link from 'next/link';
-import { useState, useEffect, useCallback, useMemo } from 'react';
-import useResources from '@/hooks/resources/use-resource';
-import useResourceAdmin from '@/hooks/resources/use-resource-admin';
 import useDebounce from '@/utils/debounce';
-import { ResourcesComponentProps, Resource } from '@/types/interfaces/resource';
+import useResources from '@/hooks/resources/use-resource';
+import { useState, useEffect, useCallback, useMemo } from 'react';
+import useResourceAdmin from '@/hooks/resources/use-resource-admin';
 import ResourceTable from '@/components/dashboard/table/resource-table';
 import DashboardLayout from '@/components/dashboard/layout/dashboard-layout';
-import { Upload, Filter, Building2, Tag, Eye, Search, GraduationCap } from 'lucide-react';
+import { ResourcesComponentProps, Resource } from '@/types/interfaces/resource';
 import DashboardPageHeader from '@/components/dashboard/layout/dashboard-page-header';
+import { Upload, Filter, Building2, Tag, Eye, Search, GraduationCap } from 'lucide-react';
 
 const ResourcesComponent = ({ role, userData }: ResourcesComponentProps) => {
   const { isError, resources, isLoading, pagination, fetchResources } = useResources({

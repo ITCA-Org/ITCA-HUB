@@ -96,7 +96,7 @@ const useResources = ({ token }: UseResourcesProps): UseResourcesReturn => {
         }
       } catch (err: unknown) {
         if (axios.isCancel(err)) {
-          return; // Silent exit on cancelled requests
+          return;
         }
         setIsError(true);
         setIsLoading(false);

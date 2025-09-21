@@ -5,9 +5,9 @@ import { ArrowLeft } from 'lucide-react';
 import { isLoggedIn } from '@/utils/auth';
 import useResources from '@/hooks/resources/use-resource';
 import { useState, useEffect, useCallback, useMemo } from 'react';
-import { RecycleBinPageProps, Resource } from '@/types/interfaces/resource';
 import useResourceAdmin from '@/hooks/resources/use-resource-admin';
 import ResourceTable from '@/components/dashboard/table/resource-table';
+import { RecycleBinPageProps, Resource } from '@/types/interfaces/resource';
 import DashboardLayout from '@/components/dashboard/layout/dashboard-layout';
 import DashboardPageHeader from '@/components/dashboard/layout/dashboard-page-header';
 
@@ -92,6 +92,8 @@ const RecycleBinPage = ({ userData }: RecycleBinPageProps) => {
         searchTerm=""
         limit={limit}
         isError={false}
+        userRole="admin"
+        mode="recycleBin"
         page={currentPage}
         isLoading={isLoading}
         token={userData.token}
@@ -102,8 +104,6 @@ const RecycleBinPage = ({ userData }: RecycleBinPageProps) => {
         total={deletedResources.length}
         allResources={deletedResources}
         totalPages={Math.ceil(deletedResources.length / limit)}
-        userRole="admin"
-        mode="recycleBin"
         onRestoreResource={async (resourceId: string) => {
           try {
             await toggleResourceTrash(resourceId);
