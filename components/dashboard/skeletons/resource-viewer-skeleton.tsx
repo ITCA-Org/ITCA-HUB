@@ -10,9 +10,12 @@ const ResourceViewerSkeleton = ({ role }: ResourceFilterSkeletonProps) => {
             <div className="h-4 w-full bg-gray-200 rounded animate-pulse mb-2" />
             <div className="h-4 w-2/3 bg-gray-200 rounded animate-pulse" />
           </div>
-          <div className="flex flex-col sm:flex-row gap-2">
-            <div className="h-10 w-32 bg-gray-200 rounded-lg animate-pulse" />
-          </div>
+          {/* Action Button (Admin Only) */}
+          {role === 'admin' && (
+            <div className="flex flex-col sm:flex-row gap-2">
+              <div className="h-10 w-32 bg-gray-200 rounded-lg animate-pulse" />
+            </div>
+          )}
         </div>
 
         {/*==================== Stats Grid Skeleton (Admin Only) ====================*/}
