@@ -1,19 +1,18 @@
 import Head from 'next/head';
+import Link from 'next/link';
 import { useEffect } from 'react';
+import { UserAuth } from '@/types';
+import { NextApiRequest } from 'next';
+import { isLoggedIn } from '@/utils/auth';
+import Footer from '../components/landing-page/footer';
 import Header from '../components/landing-page/header';
+import VirtualTour from '../components/landing-page/virtual-tour';
 import HeroSection from '../components/landing-page/hero-section';
 import EventsSection from '../components/landing-page/events-section';
 import DegreesSection from '../components/landing-page/degrees-section';
-import VirtualTour from '../components/landing-page/virtual-tour';
 import ResourcesSection from '../components/landing-page/resources-section';
-import Footer from '../components/landing-page/footer';
-import Link from 'next/link';
-import { NextApiRequest } from 'next';
-import { isLoggedIn } from '@/utils/auth';
-import { UserAuth } from '@/types';
 
 const HomePage = () => {
-  // Smooth scroll implementation for navigation
   useEffect(() => {
     const handleAnchorClick = (e: MouseEvent) => {
       const target = e.target as HTMLElement;
@@ -81,7 +80,6 @@ export default HomePage;
 export const getServerSideProps = async ({ req }: { req: NextApiRequest }) => {
   const userData = isLoggedIn(req);
 
-  // If there is user data and the user data type is not boolean, which means it is of type UserAuth object, then
   if (userData && typeof userData !== 'boolean') {
     const { role } = userData as UserAuth;
 
