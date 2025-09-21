@@ -15,18 +15,20 @@ const ResourceViewerSkeleton = ({ role }: ResourceFilterSkeletonProps) => {
           </div>
         </div>
 
-        {/*==================== Stats Grid Skeleton ====================*/}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-          {[...Array(4)].map((_, index) => (
-            <div key={index} className="bg-gray-50 rounded-lg p-4">
-              <div className="flex items-center mb-2">
-                <div className="h-4 w-4 bg-gray-200 rounded animate-pulse mr-2" />
-                <div className="h-4 w-16 bg-gray-200 rounded animate-pulse" />
+        {/*==================== Stats Grid Skeleton (Admin Only) ====================*/}
+        {role === 'admin' && (
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+            {[...Array(4)].map((_, index) => (
+              <div key={index} className="bg-gray-50 rounded-lg p-4">
+                <div className="flex items-center mb-2">
+                  <div className="h-4 w-4 bg-gray-200 rounded animate-pulse mr-2" />
+                  <div className="h-4 w-16 bg-gray-200 rounded animate-pulse" />
+                </div>
+                <div className="h-8 w-12 bg-gray-200 rounded animate-pulse" />
               </div>
-              <div className="h-8 w-12 bg-gray-200 rounded animate-pulse" />
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
 
         {/*==================== Role-Specific Details Grid Skeleton ====================*/}
         <div
@@ -64,7 +66,6 @@ const ResourceViewerSkeleton = ({ role }: ResourceFilterSkeletonProps) => {
           {/* Admin-Only Fields */}
           {role === 'admin' && (
             <>
-              {/* Visibility */}
               <div>
                 <div className="flex items-center mb-2">
                   <div className="h-8 w-8 bg-gray-200 rounded-full animate-pulse mr-3" />
@@ -73,7 +74,6 @@ const ResourceViewerSkeleton = ({ role }: ResourceFilterSkeletonProps) => {
                 <div className="h-6 w-20 bg-gray-200 rounded-full animate-pulse" />
               </div>
 
-              {/* Created By */}
               <div>
                 <div className="flex items-center mb-2">
                   <div className="h-8 w-8 bg-gray-200 rounded-full animate-pulse mr-3" />
@@ -82,7 +82,6 @@ const ResourceViewerSkeleton = ({ role }: ResourceFilterSkeletonProps) => {
                 <div className="h-5 w-32 bg-gray-200 rounded animate-pulse" />
               </div>
 
-              {/* Created At */}
               <div>
                 <div className="flex items-center mb-2">
                   <div className="h-8 w-8 bg-gray-200 rounded-full animate-pulse mr-3" />
