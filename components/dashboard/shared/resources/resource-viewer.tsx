@@ -39,7 +39,7 @@ const ResourceViewerComponent = ({ role, userData }: ResourceViewerComponentProp
   const [files, setFiles] = useState<FileItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  const { fetchSingleResource, trackView, downloadFile, trackDownload } = useResources({
+  const { fetchSingleResource, trackView, downloadFile } = useResources({
     token: userData.token,
   });
 
@@ -47,6 +47,9 @@ const ResourceViewerComponent = ({ role, userData }: ResourceViewerComponentProp
 
   /*==================== Fetch Resource Data ====================*/
   useEffect(() => {
+    const abortController = new AbortController();
+    let isMounted = true;
+
     const loadResource = async () => {
       if (!id || !userData.token) return;
 
@@ -54,9 +57,9 @@ const ResourceViewerComponent = ({ role, userData }: ResourceViewerComponentProp
         setIsLoading(true);
         setError(null);
 
-        const resourceData = await fetchSingleResource(id as string);
+        const resourceData = await fetchSingleResource(id as string, abortController.signal);
 
-        if (resourceData) {
+        if (isMounted && resourceData && !abortController.signal.aborted) {
           setResource(resourceData);
 
           const processedFiles = resourceData.fileUrls.map((url: string) => {
@@ -74,27 +77,33 @@ const ResourceViewerComponent = ({ role, userData }: ResourceViewerComponentProp
 
           const resourceId = resourceData._id || resourceData.resourceId;
           if (resourceId) {
-            await trackView(resourceId);
+            await trackView(resourceId, role, abortController.signal);
           }
-        } else {
-          setError('Resource not found');
         }
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'Failed to load resource');
+        if (isMounted && !abortController.signal.aborted) {
+          setError(err instanceof Error ? err.message : 'Failed to load resource');
+        }
       } finally {
-        setIsLoading(false);
+        if (isMounted) {
+          setIsLoading(false);
+        }
       }
     };
 
     loadResource();
-  }, [id, userData.token, fetchSingleResource, trackView]);
+
+    return () => {
+      isMounted = false;
+      abortController.abort();
+    };
+  }, [id, userData.token, fetchSingleResource, trackView, role]);
 
   const handleDownload = async (file: FileItem) => {
     if (!resource) return;
 
     try {
       setIsDownloading(file.url);
-      await trackDownload(resource._id);
       await downloadFile(file.url, resource._id);
     } catch {
     } finally {

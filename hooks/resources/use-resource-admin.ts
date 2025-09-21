@@ -233,13 +233,14 @@ const useResourceAdmin = ({ token }: UseResourceAdminProps) => {
   );
 
   const getResourceAnalytics = useCallback(
-    async (resourceId: string): Promise<ResourceAnalyticsData | null> => {
+    async (resourceId: string, signal?: AbortSignal): Promise<ResourceAnalyticsData | null> => {
       try {
         const response = await axios.get(`${BASE_URL}/resources/analytics/${resourceId}`, {
           headers: {
             Authorization: `Bearer ${token}`,
             'Content-Type': 'application/json',
           },
+          signal,
         });
 
         if (response.data.status === 'success') {

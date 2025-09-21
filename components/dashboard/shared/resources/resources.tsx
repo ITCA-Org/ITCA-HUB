@@ -2,46 +2,53 @@ import Link from 'next/link';
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import useResources from '@/hooks/resources/use-resource';
 import useResourceAdmin from '@/hooks/resources/use-resource-admin';
-import { ResourcesComponentProps } from '@/types/interfaces/resource';
+import useDebounce from '@/utils/debounce';
+import { ResourcesComponentProps, Resource } from '@/types/interfaces/resource';
 import ResourceTable from '@/components/dashboard/table/resource-table';
 import DashboardLayout from '@/components/dashboard/layout/dashboard-layout';
 import { Upload, Filter, Building2, Tag, Eye, Search, GraduationCap } from 'lucide-react';
 import DashboardPageHeader from '@/components/dashboard/layout/dashboard-page-header';
-import ResourceTableSkeleton from '@/components/dashboard/skeletons/resource-table-skeleton';
-import ResourceFilterSkeleton from '@/components/dashboard/skeletons/resource-filter-skeleton';
 
 const ResourcesComponent = ({ role, userData }: ResourcesComponentProps) => {
-  const { isError, resources, isLoading, pagination, searchTerm, setSearchTerm, fetchResources } =
-    useResources({
-      token: userData.token,
-    });
+  const { isError, resources, isLoading, pagination, fetchResources } = useResources({
+    token: userData.token,
+  });
 
   const adminHook = useResourceAdmin({ token: userData.token });
 
-  const [department, setDepartment] = useState<
-    'all' | 'computer_science' | 'information_systems' | 'telecommunications'
-  >('all');
-  const [category, setCategory] = useState('all');
-  const [visibility, setVisibility] = useState<'all' | 'admin'>('all');
-  const [academicLevel, setAcademicLevel] = useState<'all' | 'undergraduate' | 'postgraduate'>(
-    'all'
-  );
+  const [filters, setFilters] = useState({
+    searchTerm: '',
+    department: 'all' as 'all' | 'computer_science' | 'information_systems' | 'telecommunications',
+    category: 'all',
+    visibility: 'all' as 'all' | 'admin',
+    academicLevel: 'all' as 'all' | 'undergraduate' | 'postgraduate',
+  });
 
-  const { currentPage, limit } = pagination;
+  const { limit } = pagination;
+
+  const debouncedSearchTerm = useDebounce(filters.searchTerm, 500);
 
   const filterParams = useMemo(
     () => ({
-      ...(department !== 'all' && { department }),
-      ...(category !== 'all' && { category }),
-      ...(academicLevel !== 'all' && { academicLevel }),
-      visibility: role === 'student' ? 'all' : visibility,
+      ...(debouncedSearchTerm && { search: debouncedSearchTerm }),
+      ...(filters.department !== 'all' && { department: filters.department }),
+      ...(filters.category !== 'all' && { category: filters.category }),
+      ...(filters.academicLevel !== 'all' && { academicLevel: filters.academicLevel }),
+      visibility: role === 'student' ? 'all' : filters.visibility,
     }),
-    [department, category, academicLevel, visibility, role]
+    [
+      debouncedSearchTerm,
+      filters.department,
+      filters.category,
+      filters.academicLevel,
+      filters.visibility,
+      role,
+    ]
   );
 
   const filteredResources = useMemo(() => {
     if (role === 'student') {
-      return resources.filter((resource) => resource.visibility === 'all');
+      return resources.filter((resource: Resource) => resource.visibility === 'all');
     }
     return resources;
   }, [resources, role]);
@@ -61,39 +68,67 @@ const ResourcesComponent = ({ role, userData }: ResourcesComponentProps) => {
   );
 
   const loadResources = useCallback(() => {
+    const controller = new AbortController();
     fetchResources({
-      page: currentPage,
+      page: 0, // Always start from first page when manually refreshing
       limit,
       ...filterParams,
+      signal: controller.signal,
     });
-  }, [fetchResources, currentPage, limit, filterParams]);
+    return controller;
+  }, [fetchResources, limit, filterParams]); // Removed currentPage dependency
 
   const handlePageChange = useCallback(
     (newPage: number) => {
+      // This is now the only function that handles page changes
+      const controller = new AbortController();
       fetchResources({
         page: newPage,
         limit,
         ...filterParams,
+        signal: controller.signal,
       });
     },
     [fetchResources, limit, filterParams]
   );
 
   const clearFilters = useCallback(() => {
-    setSearchTerm('');
-    setDepartment('all');
-    setCategory('all');
-    setVisibility('all');
-    setAcademicLevel('all');
-  }, [setSearchTerm]);
+    setFilters({
+      searchTerm: '',
+      department: 'all',
+      category: 'all',
+      visibility: 'all',
+      academicLevel: 'all',
+    });
+  }, []);
 
   useEffect(() => {
-    fetchResources({
-      page: 0,
-      limit,
-      ...filterParams,
-    });
-  }, [filterParams, fetchResources, limit]);
+    const abortController = new AbortController();
+    let isActive = true;
+
+    // Only fetch when filters change, not when page changes
+    const loadData = async () => {
+      try {
+        await fetchResources({
+          page: 0, // Reset to first page when filters change
+          limit,
+          ...filterParams,
+          signal: abortController.signal,
+        });
+      } catch (error) {
+        if (isActive && !(error instanceof Error && error.name === 'AbortError')) {
+          console.error('Failed to fetch resources:', error);
+        }
+      }
+    };
+
+    loadData();
+
+    return () => {
+      isActive = false;
+      abortController.abort();
+    };
+  }, [filterParams, limit, fetchResources]); // Removed currentPage dependency
 
   const pageConfig = {
     admin: {
@@ -135,147 +170,156 @@ const ResourcesComponent = ({ role, userData }: ResourcesComponentProps) => {
         />
       </div>
 
-      {isLoading ? (
-        <>
-          <ResourceFilterSkeleton role={role} />
-          <ResourceTableSkeleton />
-        </>
-      ) : (
-        <>
-          <div className="mb-6 bg-white rounded-xl p-4">
-            <div className="flex items-center justify-between mb-4">
-              <div className="flex items-center">
-                <div className="mr-2 bg-green-100/70 p-2 rounded-full">
-                  <Filter className="h-5 w-5 text-green-600" />
-                </div>
-                <h3 className="text-lg font-medium text-gray-900">Filter Resources</h3>
+      <>
+        <div className="mb-6 bg-white rounded-xl p-4">
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center">
+              <div className="mr-2 bg-green-100/70 p-2 rounded-full">
+                <Filter className="h-5 w-5 text-green-600" />
               </div>
-              <button
-                onClick={clearFilters}
-                className="text-sm text-gray-500 hover:text-blue-600 cursor-pointer transition-colors"
-              >
-                Clear Filters
-              </button>
+              <h3 className="text-lg font-medium text-gray-900">Filter Resources</h3>
             </div>
-
-            <div className="mb-4 pt-2">
-              <label className="block text-sm font-medium text-gray-500 mb-1">Search</label>
-              <div className="relative">
-                <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-                  <Search className="h-5 w-5 text-gray-400" />
-                </div>
-                <input
-                  type="search"
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  placeholder="Search resources by title or description..."
-                  className="w-full rounded-lg bg-gray-100/70 pl-10 pr-4 py-2.5 text-sm text-gray-500 focus:bg-slate-200/50 focus:outline-none transition-colors"
-                />
-              </div>
-            </div>
-
-            <div
-              className={`grid grid-cols-1 ${role === 'admin' ? 'md:grid-cols-4' : 'md:grid-cols-3'} gap-4 pt-2`}
+            <button
+              onClick={clearFilters}
+              disabled={isLoading}
+              className="text-sm text-gray-500 hover:text-blue-600 cursor-pointer transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              <div>
-                <label className="flex items-center text-sm text-gray-700 mb-2">
-                  <div className="bg-blue-100/70 p-2 rounded-full mr-2">
-                    <Building2 className="h-5 w-5 text-blue-600" />
-                  </div>
-                  Department
-                </label>
-                <select
-                  value={department}
-                  onChange={(e) => setDepartment(e.target.value as typeof department)}
-                  className="w-full rounded-lg bg-gray-100/70 py-2.5 pl-3 pr-8 text-sm text-gray-500 focus:bg-slate-100 focus:outline-none transition-colors"
-                >
-                  <option value="all">All Departments</option>
-                  <option value="computer_science">Computer Science</option>
-                  <option value="information_systems">Information Systems</option>
-                  <option value="telecommunications">Telecommunications</option>
-                </select>
-              </div>
+              Clear Filters
+            </button>
+          </div>
 
-              <div>
-                <label className="flex items-center text-sm text-gray-700 mb-2">
-                  <div className="bg-purple-100/70 p-2 rounded-full mr-2">
-                    <Tag className="h-5 w-5 text-purple-600" />
-                  </div>
-                  Category
-                </label>
-                <select
-                  value={category}
-                  onChange={(e) => setCategory(e.target.value)}
-                  className="w-full rounded-lg bg-gray-100/70 py-2.5 pl-3 pr-8 text-sm text-gray-500 focus:bg-slate-100 focus:outline-none transition-colors"
-                >
-                  <option value="all">All Categories</option>
-                  <option value="lecture_note">Lecture Notes</option>
-                  <option value="assignment">Assignments</option>
-                  <option value="past_papers">Past Papers</option>
-                  <option value="tutorial">Tutorials</option>
-                  <option value="textbook">Textbooks</option>
-                  <option value="research_papers">Research Papers</option>
-                </select>
+          <div className="mb-4 pt-2">
+            <label className="block text-sm font-medium text-gray-500 mb-1">Search</label>
+            <div className="relative">
+              <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+                <Search className="h-5 w-5 text-gray-400" />
               </div>
-
-              <div>
-                <label className="flex items-center text-sm text-gray-700 mb-2">
-                  <div className="bg-green-100/70 p-2 rounded-full mr-2">
-                    <GraduationCap className="h-5 w-5 text-green-600" />
-                  </div>
-                  Academic Level
-                </label>
-                <select
-                  value={academicLevel}
-                  onChange={(e) => setAcademicLevel(e.target.value as typeof academicLevel)}
-                  className="w-full rounded-lg bg-gray-100/70 py-2.5 pl-3 pr-8 text-sm text-gray-500 focus:bg-slate-100 focus:outline-none transition-colors"
-                >
-                  <option value="all">All Levels</option>
-                  <option value="undergraduate">Undergraduate</option>
-                  <option value="postgraduate">Postgraduate</option>
-                </select>
-              </div>
-
-              {role === 'admin' && (
-                <div>
-                  <label className="flex items-center text-sm text-gray-700 mb-2">
-                    <div className="bg-orange-100/70 p-2 rounded-full mr-2">
-                      <Eye className="h-5 w-5 text-orange-600" />
-                    </div>
-                    Visibility
-                  </label>
-                  <select
-                    value={visibility}
-                    onChange={(e) => setVisibility(e.target.value as 'all' | 'admin')}
-                    className="w-full rounded-lg bg-gray-100/70 py-2.5 pl-3 pr-8 text-sm text-gray-500 focus:bg-slate-100 focus:outline-none transition-colors"
-                  >
-                    <option value="all">All Resources</option>
-                    <option value="admin">Admin Only</option>
-                  </select>
-                </div>
-              )}
+              <input
+                type="search"
+                value={filters.searchTerm}
+                onChange={(e) => setFilters((prev) => ({ ...prev, searchTerm: e.target.value }))}
+                placeholder="Search resources by title or description..."
+                className="w-full rounded-lg bg-gray-100/70 pl-10 pr-4 py-2.5 text-sm text-gray-500 focus:bg-slate-200/50 focus:outline-none transition-colors"
+              />
             </div>
           </div>
 
-          <ResourceTable
-            isError={isError}
-            isLoading={false}
-            token={userData.token}
-            searchTerm={searchTerm}
-            total={pagination.total}
-            limit={pagination.limit}
-            allResources={resources}
-            onRefresh={loadResources}
-            setPage={handlePageChange}
-            resources={filteredResources}
-            page={pagination.currentPage}
-            onClearFilters={clearFilters}
-            totalPages={pagination.totalPages}
-            userRole={role === 'admin' ? 'admin' : 'user'}
-            onDeleteResource={role === 'admin' ? handleDeleteResource : undefined}
-          />
-        </>
-      )}
+          <div
+            className={`grid grid-cols-1 ${role === 'admin' ? 'md:grid-cols-4' : 'md:grid-cols-3'} gap-4 pt-2`}
+          >
+            <div>
+              <label className="flex items-center text-sm text-gray-700 mb-2">
+                <div className="bg-blue-100/70 p-2 rounded-full mr-2">
+                  <Building2 className="h-5 w-5 text-blue-600" />
+                </div>
+                Department
+              </label>
+              <select
+                value={filters.department}
+                onChange={(e) =>
+                  setFilters((prev) => ({
+                    ...prev,
+                    department: e.target.value as typeof prev.department,
+                  }))
+                }
+                className="w-full rounded-lg bg-gray-100/70 py-2.5 pl-3 pr-8 text-sm text-gray-500 focus:bg-slate-100 focus:outline-none transition-colors"
+              >
+                <option value="all">All Departments</option>
+                <option value="computer_science">Computer Science</option>
+                <option value="information_systems">Information Systems</option>
+                <option value="telecommunications">Telecommunications</option>
+              </select>
+            </div>
+
+            <div>
+              <label className="flex items-center text-sm text-gray-700 mb-2">
+                <div className="bg-purple-100/70 p-2 rounded-full mr-2">
+                  <Tag className="h-5 w-5 text-purple-600" />
+                </div>
+                Category
+              </label>
+              <select
+                value={filters.category}
+                onChange={(e) => setFilters((prev) => ({ ...prev, category: e.target.value }))}
+                className="w-full rounded-lg bg-gray-100/70 py-2.5 pl-3 pr-8 text-sm text-gray-500 focus:bg-slate-100 focus:outline-none transition-colors"
+              >
+                <option value="all">All Categories</option>
+                <option value="lecture_note">Lecture Notes</option>
+                <option value="assignment">Assignments</option>
+                <option value="past_papers">Past Papers</option>
+                <option value="tutorial">Tutorials</option>
+                <option value="textbook">Textbooks</option>
+                <option value="research_papers">Research Papers</option>
+              </select>
+            </div>
+
+            <div>
+              <label className="flex items-center text-sm text-gray-700 mb-2">
+                <div className="bg-green-100/70 p-2 rounded-full mr-2">
+                  <GraduationCap className="h-5 w-5 text-green-600" />
+                </div>
+                Academic Level
+              </label>
+              <select
+                value={filters.academicLevel}
+                onChange={(e) =>
+                  setFilters((prev) => ({
+                    ...prev,
+                    academicLevel: e.target.value as typeof prev.academicLevel,
+                  }))
+                }
+                className="w-full rounded-lg bg-gray-100/70 py-2.5 pl-3 pr-8 text-sm text-gray-500 focus:bg-slate-100 focus:outline-none transition-colors"
+              >
+                <option value="all">All Levels</option>
+                <option value="undergraduate">Undergraduate</option>
+                <option value="postgraduate">Postgraduate</option>
+              </select>
+            </div>
+
+            {role === 'admin' && (
+              <div>
+                <label className="flex items-center text-sm text-gray-700 mb-2">
+                  <div className="bg-orange-100/70 p-2 rounded-full mr-2">
+                    <Eye className="h-5 w-5 text-orange-600" />
+                  </div>
+                  Visibility
+                </label>
+                <select
+                  value={filters.visibility}
+                  onChange={(e) =>
+                    setFilters((prev) => ({
+                      ...prev,
+                      visibility: e.target.value as 'all' | 'admin',
+                    }))
+                  }
+                  className="w-full rounded-lg bg-gray-100/70 py-2.5 pl-3 pr-8 text-sm text-gray-500 focus:bg-slate-100 focus:outline-none transition-colors"
+                >
+                  <option value="all">All Resources</option>
+                  <option value="admin">Admin Only</option>
+                </select>
+              </div>
+            )}
+          </div>
+        </div>
+
+        <ResourceTable
+          isError={isError}
+          isLoading={isLoading}
+          token={userData.token}
+          total={pagination.total}
+          limit={pagination.limit}
+          allResources={resources}
+          onRefresh={loadResources}
+          setPage={handlePageChange}
+          resources={filteredResources}
+          page={pagination.currentPage}
+          onClearFilters={clearFilters}
+          searchTerm={filters.searchTerm}
+          totalPages={pagination.totalPages}
+          userRole={role === 'admin' ? 'admin' : 'user'}
+          onDeleteResource={role === 'admin' ? handleDeleteResource : undefined}
+        />
+      </>
     </DashboardLayout>
   );
 };

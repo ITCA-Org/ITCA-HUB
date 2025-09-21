@@ -5,7 +5,7 @@ import { ArrowLeft } from 'lucide-react';
 import { isLoggedIn } from '@/utils/auth';
 import useResources from '@/hooks/resources/use-resource';
 import { useState, useEffect, useCallback, useMemo } from 'react';
-import { RecycleBinPageProps } from '@/types/interfaces/resource';
+import { RecycleBinPageProps, Resource } from '@/types/interfaces/resource';
 import useResourceAdmin from '@/hooks/resources/use-resource-admin';
 import ResourceTable from '@/components/dashboard/table/resource-table';
 import DashboardLayout from '@/components/dashboard/layout/dashboard-layout';
@@ -34,19 +34,26 @@ const RecycleBinPage = ({ userData }: RecycleBinPageProps) => {
   );
 
   useEffect(() => {
-    fetchResources(fetchParams);
+    const controller = new AbortController();
+    fetchResources({
+      ...fetchParams,
+      signal: controller.signal,
+    });
+    return () => controller.abort();
   }, [fetchResources, fetchParams]);
 
   useEffect(() => {
-    setDeletedResources(resources.filter((r) => r.isDeleted));
+    setDeletedResources(resources.filter((r: Resource) => r.isDeleted));
   }, [resources]);
 
   const handlePageChange = useCallback(
     (newPage: number) => {
+      const controller = new AbortController();
       fetchResources({
         includeDeleted: true,
         page: newPage,
         limit,
+        signal: controller.signal,
       });
     },
     [fetchResources, limit]

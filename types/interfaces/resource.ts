@@ -67,8 +67,10 @@ export interface FetchResourcesParams {
   search?: string;
   sortBy?: string;
   category?: string;
+  signal?: AbortSignal;
   includeDeleted?: boolean;
   sortOrder?: 'asc' | 'desc';
+  isIncrementalUpdate?: boolean;
   visibility?: 'all' | 'admin';
   academicLevel?: 'undergraduate' | 'postgraduate' | 'all';
   department?: 'computer_science' | 'information_systems' | 'telecommunications' | 'all';
@@ -238,4 +240,18 @@ export interface FileItem {
 
 export interface ResourceFilterSkeletonProps {
   role: 'admin' | 'student';
+}
+
+export interface UseResourcesReturn {
+  isError: boolean;
+  resources: Resource[];
+  isLoading: boolean;
+  pagination: Pagination;
+  trackDownload: (resourceId: string) => Promise<void>;
+  downloadResource: (resource: Resource) => Promise<void>;
+  refreshResources: (params?: FetchResourcesParams) => void;
+  fetchResources: (params?: FetchResourcesParams) => Promise<void>;
+  downloadFile: (fileUrl: string, fileName: string) => Promise<void>;
+  fetchSingleResource: (resourceId: string, signal?: AbortSignal) => Promise<Resource | null>;
+  trackView: (resourceId: string, role: 'admin' | 'student', signal?: AbortSignal) => Promise<void>;
 }

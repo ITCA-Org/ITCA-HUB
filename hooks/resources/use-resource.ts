@@ -5,21 +5,20 @@ import {
   Pagination,
   UseResourcesProps,
   ResourcesResponse,
-  SingleResourceResponse,
+  UseResourcesReturn,
   FetchResourcesParams,
+  SingleResourceResponse,
 } from '@/types/interfaces/resource';
 import { BASE_URL } from '@/utils/url';
 import axios, { AxiosError } from 'axios';
-import useDebounce from '@/utils/debounce';
-import { useState, useCallback } from 'react';
 import { getErrorMessage } from '@/utils/error';
+import { useState, useCallback, useRef } from 'react';
 import { CustomError, ErrorResponseData } from '@/types';
 
-const useResources = ({ token }: UseResourcesProps) => {
+const useResources = ({ token }: UseResourcesProps): UseResourcesReturn => {
   const [resources, setResources] = useState<Resource[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isError, setIsError] = useState(false);
-  const [searchTerm, setSearchTerm] = useState('');
   const [pagination, setPagination] = useState<Pagination>({
     total: 0,
     limit: 10,
@@ -29,11 +28,19 @@ const useResources = ({ token }: UseResourcesProps) => {
     hasPrevPage: false,
   });
 
-  const debouncedSearchQuery = useDebounce(searchTerm, 500);
+  const lastRequestRef = useRef<number>(0);
+  const MIN_REQUEST_INTERVAL = 500;
 
   const fetchResources = useCallback(
     async (params: FetchResourcesParams = {}) => {
+      const now = Date.now();
+      if (now - lastRequestRef.current < MIN_REQUEST_INTERVAL) {
+        await new Promise((resolve) => setTimeout(resolve, MIN_REQUEST_INTERVAL));
+      }
+      lastRequestRef.current = Date.now();
+
       const {
+        signal,
         category,
         page = 0,
         limit = 10,
@@ -50,10 +57,11 @@ const useResources = ({ token }: UseResourcesProps) => {
 
       try {
         const { data } = await axios.get<ResourcesResponse>(`${BASE_URL}/resources`, {
+          signal,
           params: {
             page: page.toString(),
             limit: limit.toString(),
-            ...(debouncedSearchQuery?.trim() && { search: debouncedSearchQuery.trim() }),
+            ...(params.search?.trim() && { search: params.search.trim() }),
             ...(category && category !== 'all' && { category }),
             ...(visibility && { visibility }),
             ...(academicLevel && academicLevel !== 'all' && { academicLevel }),
@@ -82,28 +90,31 @@ const useResources = ({ token }: UseResourcesProps) => {
             ...data.data.pagination,
           }));
           setIsError(false);
+          setIsLoading(false);
         } else {
           throw new Error('Failed to fetch resources');
         }
-      } catch (error) {
+      } catch (err: unknown) {
+        if (axios.isCancel(err)) {
+          return; // Silent exit on cancelled requests
+        }
         setIsError(true);
+        setIsLoading(false);
         const { message } = getErrorMessage(
-          error as AxiosError<ErrorResponseData> | CustomError | Error
+          err as AxiosError<ErrorResponseData> | CustomError | Error
         );
 
         toast.error('Failed to load resources', {
           description: message,
           duration: 5000,
         });
-      } finally {
-        setIsLoading(false);
       }
     },
-    [token, debouncedSearchQuery]
+    [token]
   );
 
   const fetchSingleResource = useCallback(
-    async (resourceId: string): Promise<Resource | null> => {
+    async (resourceId: string, signal?: AbortSignal): Promise<Resource | null> => {
       try {
         const response = await axios.get<SingleResourceResponse>(
           `${BASE_URL}/resources/${resourceId}`,
@@ -112,10 +123,11 @@ const useResources = ({ token }: UseResourcesProps) => {
               Authorization: `Bearer ${token}`,
               'Content-Type': 'application/json',
             },
+            signal,
           }
         );
 
-        if (response.data.status === 'success') {
+        if (!signal?.aborted && response.data.status === 'success') {
           const resource = response.data.data.resource;
           return {
             ...resource,
@@ -125,6 +137,10 @@ const useResources = ({ token }: UseResourcesProps) => {
           throw new Error('Failed to fetch resource');
         }
       } catch (error) {
+        if (axios.isCancel(error)) {
+          return null;
+        }
+
         const { message } = getErrorMessage(
           error as AxiosError<ErrorResponseData> | CustomError | Error
         );
@@ -139,7 +155,17 @@ const useResources = ({ token }: UseResourcesProps) => {
   );
 
   const trackView = useCallback(
-    async (resourceId: string) => {
+    async (resourceId: string, role: 'admin' | 'student', signal?: AbortSignal) => {
+      if (role !== 'student') return;
+
+      const storageKey = `resource_view_${resourceId}`;
+      const lastTracked = localStorage.getItem(storageKey);
+      const now = Date.now();
+
+      if (lastTracked && now - parseInt(lastTracked) < 30000) {
+        return;
+      }
+
       try {
         await axios.post(
           `${BASE_URL}/resources/analytics/track-view/${resourceId}`,
@@ -149,9 +175,14 @@ const useResources = ({ token }: UseResourcesProps) => {
               Authorization: `Bearer ${token}`,
               'Content-Type': 'application/json',
             },
+            signal,
           }
         );
+
+        localStorage.setItem(storageKey, now.toString());
       } catch (error) {
+        if (axios.isCancel(error)) return;
+
         const { message } = getErrorMessage(
           error as AxiosError<ErrorResponseData> | CustomError | Error
         );
@@ -265,15 +296,12 @@ const useResources = ({ token }: UseResourcesProps) => {
     resources,
     isLoading,
     pagination,
-    searchTerm,
     downloadFile,
-    setSearchTerm,
     trackDownload,
     fetchResources,
     refreshResources,
     downloadResource,
     fetchSingleResource,
-    debouncedSearchQuery,
   };
 };
 

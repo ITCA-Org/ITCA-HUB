@@ -22,33 +22,43 @@ const useProfile = ({ token }: UseProfileProps) => {
   /**=================================
    * Fetches user profile from API
    =================================*/
-  const fetchProfile = useCallback(async () => {
-    setIsLoading(true);
-    setError(null);
-
-    try {
-      const { data } = await axios.get(`${BASE_URL}/users/profile`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      setProfile(data.data);
+  const fetchProfile = useCallback(
+    async (abortSignal?: AbortSignal) => {
+      setIsLoading(true);
       setError(null);
-    } catch (err) {
-      const { message } = getErrorMessage(
-        err as AxiosError<ErrorResponseData> | CustomError | Error
-      );
-      setError(message);
 
-      toast.error('Failed to load profile', {
-        description: message,
-        duration: 5000,
-      });
-    } finally {
-      setIsLoading(false);
-    }
-  }, [token]);
+      try {
+        const { data } = await axios.get(`${BASE_URL}/users/profile`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          signal: abortSignal,
+        });
+
+        if (!abortSignal?.aborted) {
+          setProfile(data.data);
+          setError(null);
+        }
+      } catch (err) {
+        if (axios.isCancel(err)) return;
+
+        const { message } = getErrorMessage(
+          err as AxiosError<ErrorResponseData> | CustomError | Error
+        );
+        setError(message);
+
+        toast.error('Failed to load profile', {
+          description: message,
+          duration: 5000,
+        });
+      } finally {
+        if (!abortSignal?.aborted) {
+          setIsLoading(false);
+        }
+      }
+    },
+    [token]
+  );
 
   /**================================
    * Updates user profile
@@ -203,9 +213,15 @@ const useProfile = ({ token }: UseProfileProps) => {
 
   /**===============================================
    * Fetch profile when component mounts
+   * Includes cleanup for unmounting and request cancellation
    ===============================================*/
   useEffect(() => {
-    fetchProfile();
+    const abortController = new AbortController();
+    fetchProfile(abortController.signal);
+
+    return () => {
+      abortController.abort(); // Cancel any in-flight request when unmounting
+    };
   }, [fetchProfile]);
 
   return {
