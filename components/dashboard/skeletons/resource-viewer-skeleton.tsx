@@ -1,18 +1,6 @@
 const ResourceViewerSkeleton = () => {
   return (
     <>
-      {/*==================== Header Skeleton ====================*/}
-      <div className="mb-8">
-        <div className="flex items-center">
-          <div className="mr-3 h-8 w-8 bg-gray-200 rounded-lg animate-pulse" />
-          <div>
-            <div className="h-8 w-64 bg-gray-200 rounded animate-pulse mb-2" />
-            <div className="h-4 w-48 bg-gray-200 rounded animate-pulse" />
-          </div>
-        </div>
-      </div>
-      {/*==================== End of Header Skeleton ====================*/}
-
       {/*==================== Resource Information Card Skeleton ====================*/}
       <div className="bg-white rounded-2xl p-6 mb-6">
         <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between mb-6">
