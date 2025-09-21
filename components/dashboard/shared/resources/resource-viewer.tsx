@@ -13,6 +13,9 @@ import {
   ArrowLeft,
   Building2,
   GraduationCap,
+  Laptop,
+  Database,
+  Radio,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { useRouter } from 'next/router';
@@ -121,6 +124,35 @@ const ResourceViewerComponent = ({ role, userData }: ResourceViewerComponentProp
     window.location.reload();
   };
 
+  const getDepartmentIcon = (department: string) => {
+    switch (department) {
+      case 'computer_science':
+        return (
+          <div className="flex items-center justify-center h-8 w-8 rounded-full bg-blue-100/70 mr-3">
+            <Laptop className="h-4 w-4 text-blue-500" />
+          </div>
+        );
+      case 'information_systems':
+        return (
+          <div className="flex items-center justify-center h-8 w-8 rounded-full bg-green-100/70 mr-3">
+            <Database className="h-4 w-4 text-green-500" />
+          </div>
+        );
+      case 'telecommunications':
+        return (
+          <div className="flex items-center justify-center h-8 w-8 rounded-full bg-purple-100/70 mr-3">
+            <Radio className="h-4 w-4 text-purple-500" />
+          </div>
+        );
+      default:
+        return (
+          <div className="flex items-center justify-center h-8 w-8 rounded-full bg-gray-100/70 mr-3">
+            <Database className="h-4 w-4 text-gray-500" />
+          </div>
+        );
+    }
+  };
+
   const getFileType = (fileName: string): string => {
     const extension = fileName.split('.').pop()?.toLowerCase() || '';
 
@@ -183,7 +215,7 @@ const ResourceViewerComponent = ({ role, userData }: ResourceViewerComponentProp
   };
 
   const formatCreator = (creator: { _id: string; firstName: string; lastName: string }): string => {
-    if (creator.firstName && creator.lastName) {
+    if (creator?.firstName && creator?.lastName) {
       return `${creator.firstName} ${creator.lastName}`;
     }
     return 'Unknown';
@@ -227,7 +259,10 @@ const ResourceViewerComponent = ({ role, userData }: ResourceViewerComponentProp
           <div className="bg-white rounded-2xl p-6 mb-6">
             <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between mb-6">
               <div className="flex-1 mb-4 lg:mb-0">
-                <h2 className="text-2xl font-bold text-gray-900 mb-3">{resource.title}</h2>
+                <div className="flex items-center mb-3">
+                  {getDepartmentIcon(resource.department)}
+                  <h2 className="text-2xl font-bold text-gray-900">{resource.title}</h2>
+                </div>
                 <p className="text-gray-600 mb-4 leading-relaxed">{resource.description}</p>
               </div>
               {role === 'admin' && (
@@ -246,100 +281,143 @@ const ResourceViewerComponent = ({ role, userData }: ResourceViewerComponentProp
               )}
             </div>
 
-            {/*==================== Resource Stats Grid ====================*/}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-              <div className="bg-blue-50 rounded-lg p-4">
-                <div className="flex items-center text-blue-600 mb-2">
-                  <Eye className="mr-2 h-4 w-4" />
-                  <span className="text-sm font-medium">Views</span>
+            {/*==================== Resource Stats Grid (Admin Only) ====================*/}
+            {role === 'admin' && (
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+                <div className="bg-gradient-to-r from-amber-100/70 to-blue-100/70 rounded-lg p-4">
+                  <div className="flex items-center mb-2">
+                    <div className="bg-blue-100/70 p-2 rounded-full mr-2">
+                      <Eye className="h-4 w-4 text-blue-600" />
+                    </div>
+                    <span className="text-sm font-medium text-gray-700">Views</span>
+                  </div>
+                  <p className="text-2xl font-bold text-blue-700">{resource.viewCount}</p>
                 </div>
-                <p className="text-2xl font-bold text-blue-700">{resource.viewCount}</p>
-              </div>
-              <div className="bg-green-50 rounded-lg p-4">
-                <div className="flex items-center text-green-600 mb-2">
-                  <Download className="mr-2 h-4 w-4" />
-                  <span className="text-sm font-medium">Downloads</span>
+                <div className="bg-gradient-to-r from-amber-100/70 to-blue-100/70 rounded-lg p-4">
+                  <div className="flex items-center mb-2">
+                    <div className="bg-green-100/70 p-2 rounded-full mr-2">
+                      <Download className="h-4 w-4 text-green-600" />
+                    </div>
+                    <span className="text-sm font-medium text-gray-700">Downloads</span>
+                  </div>
+                  <p className="text-2xl font-bold text-green-700">{resource.downloads}</p>
                 </div>
-                <p className="text-2xl font-bold text-green-700">{resource.downloads}</p>
-              </div>
-              <div className="bg-purple-50 rounded-lg p-4">
-                <div className="flex items-center text-purple-600 mb-2">
-                  <FileText className="mr-2 h-4 w-4" />
-                  <span className="text-sm font-medium">Files</span>
+                <div className="bg-gradient-to-r from-amber-100/70 to-blue-100/70 rounded-lg p-4">
+                  <div className="flex items-center mb-2">
+                    <div className="bg-purple-100/70 p-2 rounded-full mr-2">
+                      <FileText className="h-4 w-4 text-purple-600" />
+                    </div>
+                    <span className="text-sm font-medium text-gray-700">Files</span>
+                  </div>
+                  <p className="text-2xl font-bold text-purple-700">{files.length}</p>
                 </div>
-                <p className="text-2xl font-bold text-purple-700">{files.length}</p>
-              </div>
-              <div className="bg-amber-50 rounded-lg p-4">
-                <div className="flex items-center text-amber-600 mb-2">
-                  <Tag className="mr-2 h-4 w-4" />
-                  <span className="text-sm font-medium">Category</span>
+                <div className="bg-gradient-to-r from-amber-100/70 to-blue-100/70 rounded-lg p-4">
+                  <div className="flex items-center mb-2">
+                    <div className="bg-amber-100/70 p-2 rounded-full mr-2">
+                      <Tag className="h-4 w-4 text-amber-600" />
+                    </div>
+                    <span className="text-sm font-medium text-gray-700">Category</span>
+                  </div>
+                  <p className="text-sm font-semibold text-amber-700">
+                    {formatCategory(resource.category)}
+                  </p>
                 </div>
-                <p className="text-sm font-semibold text-amber-700">
-                  {formatCategory(resource.category)}
-                </p>
               </div>
-            </div>
+            )}
+            {/*==================== End of Resource Stats Grid ====================*/}
 
             {/*==================== Resource Details Grid ====================*/}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {/*==================== Department (Both Roles) ====================*/}
               <div>
-                <div className="flex items-center text-gray-500 mb-2">
-                  <Building2 className="mr-2 h-4 w-4" />
-                  <span className="text-sm font-medium">Department</span>
+                <div className="flex items-center mb-2">
+                  <div className="bg-blue-100/70 p-2 rounded-full mr-2">
+                    <Building2 className="h-4 w-4 text-blue-600" />
+                  </div>
+                  <span className="text-sm font-medium text-gray-700">Department</span>
                 </div>
                 <p className="text-gray-900 font-medium">{formatDepartment(resource.department)}</p>
               </div>
 
+              {/*==================== Academic Level (Both Roles) ====================*/}
               <div>
-                <div className="flex items-center text-gray-500 mb-2">
-                  <GraduationCap className="mr-2 h-4 w-4" />
-                  <span className="text-sm font-medium">Academic Level</span>
+                <div className="flex items-center mb-2">
+                  <div className="bg-green-100/70 p-2 rounded-full mr-2">
+                    <GraduationCap className="h-4 w-4 text-green-600" />
+                  </div>
+                  <span className="text-sm font-medium text-gray-700">Academic Level</span>
                 </div>
                 <p className="text-gray-900 font-medium">
                   {formatAcademicLevel(resource.academicLevel)}
                 </p>
               </div>
 
-              <div>
-                <div className="flex items-center text-gray-500 mb-2">
-                  <Shield className="mr-2 h-4 w-4" />
-                  <span className="text-sm font-medium">Visibility</span>
-                </div>
-                <span
-                  className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                    resource.visibility === 'all'
-                      ? 'bg-green-100 text-green-800'
-                      : 'bg-orange-100 text-orange-800'
-                  }`}
-                >
-                  {resource.visibility === 'all' ? 'Public' : 'Admin Only'}
-                </span>
-              </div>
-
-              <div>
-                <div className="flex items-center text-gray-500 mb-2">
-                  <User className="mr-2 h-4 w-4" />
-                  <span className="text-sm font-medium">Created By</span>
-                </div>
-                <p className="text-gray-900 font-medium">{formatCreator(resource.createdBy)}</p>
-              </div>
-
-              <div>
-                <div className="flex items-center text-gray-500 mb-2">
-                  <Calendar className="mr-2 h-4 w-4" />
-                  <span className="text-sm font-medium">Created At</span>
-                </div>
-                <p className="text-gray-900 font-medium">{formatDate(resource.createdAt)}</p>
-              </div>
-
-              {resource.updatedAt !== resource.createdAt && (
+              {/*==================== Category (Student Only) ====================*/}
+              {role === 'student' && (
                 <div>
-                  <div className="flex items-center text-gray-500 mb-2">
-                    <Clock className="mr-2 h-4 w-4" />
-                    <span className="text-sm font-medium">Last Updated</span>
+                  <div className="flex items-center mb-2">
+                    <div className="bg-amber-100/70 p-2 rounded-full mr-2">
+                      <Tag className="h-4 w-4 text-amber-600" />
+                    </div>
+                    <span className="text-sm font-medium text-gray-700">Category</span>
                   </div>
-                  <p className="text-gray-900 font-medium">{formatDate(resource.updatedAt)}</p>
+                  <p className="text-gray-900 font-medium">{formatCategory(resource.category)}</p>
                 </div>
+              )}
+
+              {/*==================== Admin-Only Fields ====================*/}
+              {role === 'admin' && (
+                <>
+                  <div>
+                    <div className="flex items-center mb-2">
+                      <div className="bg-orange-100/70 p-2 rounded-full mr-2">
+                        <Shield className="h-4 w-4 text-orange-600" />
+                      </div>
+                      <span className="text-sm font-medium text-gray-700">Visibility</span>
+                    </div>
+                    <span
+                      className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                        resource.visibility === 'all'
+                          ? 'bg-green-100 text-green-800'
+                          : 'bg-orange-100 text-orange-800'
+                      }`}
+                    >
+                      {resource.visibility === 'all' ? 'Public' : 'Admin Only'}
+                    </span>
+                  </div>
+
+                  <div>
+                    <div className="flex items-center mb-2">
+                      <div className="bg-purple-100/70 p-2 rounded-full mr-2">
+                        <User className="h-4 w-4 text-purple-600" />
+                      </div>
+                      <span className="text-sm font-medium text-gray-700">Created By</span>
+                    </div>
+                    <p className="text-gray-900 font-medium">{formatCreator(resource.createdBy)}</p>
+                  </div>
+
+                  <div>
+                    <div className="flex items-center mb-2">
+                      <div className="bg-amber-100/70 p-2 rounded-full mr-2">
+                        <Calendar className="h-4 w-4 text-amber-600" />
+                      </div>
+                      <span className="text-sm font-medium text-gray-700">Created At</span>
+                    </div>
+                    <p className="text-gray-900 font-medium">{formatDate(resource.createdAt)}</p>
+                  </div>
+
+                  {resource.updatedAt !== resource.createdAt && (
+                    <div>
+                      <div className="flex items-center mb-2">
+                        <div className="bg-red-100/70 p-2 rounded-full mr-2">
+                          <Clock className="h-4 w-4 text-red-600" />
+                        </div>
+                        <span className="text-sm font-medium text-gray-700">Last Updated</span>
+                      </div>
+                      <p className="text-gray-900 font-medium">{formatDate(resource.updatedAt)}</p>
+                    </div>
+                  )}
+                </>
               )}
             </div>
           </div>
