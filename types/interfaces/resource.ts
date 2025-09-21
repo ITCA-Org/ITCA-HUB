@@ -218,3 +218,14 @@ export interface AdminResourceViewPageProps {
 export interface StudentResourceViewPageProps {
   userData: UserAuth;
 }
+
+export interface ResourceViewerComponentProps {
+  role: 'admin' | 'student';
+  userData: UserAuth;
+}
+
+export interface FileItem {
+  url: string;
+  name: string;
+  type: string;
+}

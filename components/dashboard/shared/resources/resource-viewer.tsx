@@ -1,11 +1,3 @@
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/router';
-import { toast } from 'sonner';
-import { UserAuth } from '@/types';
-import { Resource } from '@/types/interfaces/resource';
-import useResources from '@/hooks/resources/use-resource';
-import useResourceAdmin from '@/hooks/resources/use-resource-admin';
-import DashboardLayout from '@/components/dashboard/layout/dashboard-layout';
 import {
   Tag,
   Eye,
@@ -22,17 +14,13 @@ import {
   Building2,
   GraduationCap,
 } from 'lucide-react';
-
-interface ResourceViewerComponentProps {
-  role: 'admin' | 'student';
-  userData: UserAuth;
-}
-
-interface FileItem {
-  url: string;
-  name: string;
-  type: string;
-}
+import { toast } from 'sonner';
+import { useRouter } from 'next/router';
+import { useState, useEffect } from 'react';
+import useResources from '@/hooks/resources/use-resource';
+import useResourceAdmin from '@/hooks/resources/use-resource-admin';
+import DashboardLayout from '@/components/dashboard/layout/dashboard-layout';
+import { FileItem, Resource, ResourceViewerComponentProps } from '@/types/interfaces/resource';
 
 const ResourceViewerComponent = ({ role, userData }: ResourceViewerComponentProps) => {
   const router = useRouter();
