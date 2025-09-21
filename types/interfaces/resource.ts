@@ -2,6 +2,7 @@ import { UserAuth } from '..';
 
 export interface Resource {
   _id: string;
+  resourceId?: string;
   title: string;
   category: string;
   downloads: number;
@@ -50,6 +51,7 @@ export interface ResourcesResponse {
 export interface SingleResourceResponse {
   status: string;
   data: {
+    resourceId: string;
     message: string;
     resource: Resource;
   };

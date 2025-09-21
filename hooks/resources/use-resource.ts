@@ -116,7 +116,11 @@ const useResources = ({ token }: UseResourcesProps) => {
         );
 
         if (response.data.status === 'success') {
-          return response.data.data.resource;
+          const resource = response.data.data.resource;
+          return {
+            ...resource,
+            _id: resource.resourceId || resource._id,
+          };
         } else {
           throw new Error('Failed to fetch resource');
         }

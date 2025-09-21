@@ -72,7 +72,10 @@ const ResourceViewerComponent = ({ role, userData }: ResourceViewerComponentProp
 
           setFiles(processedFiles);
 
-          await trackView(resourceData._id);
+          const resourceId = resourceData._id || resourceData.resourceId;
+          if (resourceId) {
+            await trackView(resourceId);
+          }
         } else {
           setError('Resource not found');
         }
@@ -283,7 +286,7 @@ const ResourceViewerComponent = ({ role, userData }: ResourceViewerComponentProp
 
             {/*==================== Resource Stats Grid  ====================*/}
             {role === 'admin' && (
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
                 <div className="bg-gray-100 rounded-lg p-4">
                   <div className="flex items-center mb-2">
                     <div className="bg-blue-100/70 p-2 rounded-full mr-2">
