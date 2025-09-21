@@ -199,3 +199,22 @@ export interface UseResourceUploaderProps {
   onUploadComplete?: ResourceUploaderProps['onUploadComplete'];
   onError?: ResourceUploaderProps['onError'];
 }
+
+export interface UseResourceTableProps {
+  token: string;
+  onRefresh: () => void;
+  resources: Resource[];
+  userRole: 'admin' | 'user';
+  onDeleteResource?: (resourceId: string) => Promise<boolean>;
+  onRestoreResource?: (resourceId: string) => Promise<boolean>;
+  onDeleteMultiple?: (resourceIds: string[]) => Promise<boolean>;
+  onRestoreMultiple?: (resourceIds: string[]) => Promise<boolean>;
+}
+
+export interface AdminResourceViewPageProps {
+  userData: UserAuth;
+}
+
+export interface StudentResourceViewPageProps {
+  userData: UserAuth;
+}

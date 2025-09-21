@@ -68,7 +68,7 @@
 }
 
 ::selection {
-  background-color: var(--white-alpha-8);
+  background-color: #ffef79;
 }
 
 @theme inline {

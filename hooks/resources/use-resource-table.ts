@@ -3,20 +3,9 @@ import { BASE_URL } from '@/utils/url';
 import { useRouter } from 'next/router';
 import axios, { AxiosError } from 'axios';
 import { getErrorMessage } from '@/utils/error';
-import { Resource } from '@/types/interfaces/resource';
 import { CustomError, ErrorResponseData } from '@/types';
 import { useState, useMemo, useEffect, useCallback } from 'react';
-
-interface UseResourceTableProps {
-  token: string;
-  onRefresh: () => void;
-  resources: Resource[];
-  userRole: 'admin' | 'user';
-  onDeleteResource?: (resourceId: string) => Promise<boolean>;
-  onRestoreResource?: (resourceId: string) => Promise<boolean>;
-  onDeleteMultiple?: (resourceIds: string[]) => Promise<boolean>;
-  onRestoreMultiple?: (resourceIds: string[]) => Promise<boolean>;
-}
+import { Resource, UseResourceTableProps } from '@/types/interfaces/resource';
 
 const useResourceTable = ({
   resources,

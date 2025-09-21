@@ -1,15 +1,15 @@
 import { toast } from 'sonner';
-import { BASE_URL } from '@/utils/url';
-import axios, { AxiosError } from 'axios';
-import { useState, useCallback } from 'react';
-import { getErrorMessage } from '@/utils/error';
-import { CustomError, ErrorResponseData } from '@/types';
 import {
   CreateResourcePayload,
   ResourceAnalyticsData,
   UpdateResourcePayload,
   UseResourceAdminProps,
 } from '@/types/interfaces/resource';
+import { BASE_URL } from '@/utils/url';
+import axios, { AxiosError } from 'axios';
+import { useState, useCallback } from 'react';
+import { getErrorMessage } from '@/utils/error';
+import { CustomError, ErrorResponseData } from '@/types';
 
 const useResourceAdmin = ({ token }: UseResourceAdminProps) => {
   const [isLoading, setIsLoading] = useState(false);
@@ -181,6 +181,57 @@ const useResourceAdmin = ({ token }: UseResourceAdminProps) => {
     [token]
   );
 
+  const deleteFileFromResource = useCallback(
+    async (resourceId: string, fileUrlToDelete: string) => {
+      setIsLoading(true);
+      try {
+        const currentResourceResponse = await axios.get(`${BASE_URL}/resources/${resourceId}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+        });
+
+        if (currentResourceResponse.data.status !== 'success') {
+          throw new Error('Failed to fetch current resource');
+        }
+
+        const currentFileUrls = currentResourceResponse.data.data.resource.fileUrls;
+        const updatedFileUrls = currentFileUrls.filter((url: string) => url !== fileUrlToDelete);
+
+        const response = await axios.patch(
+          `${BASE_URL}/resources/${resourceId}`,
+          { fileUrls: updatedFileUrls },
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              'Content-Type': 'application/json',
+            },
+          }
+        );
+
+        if (response.data.status === 'success') {
+          toast.success('File deleted successfully');
+          return response.data.data.resource;
+        } else {
+          throw new Error('Failed to delete file');
+        }
+      } catch (error) {
+        const { message } = getErrorMessage(
+          error as AxiosError<ErrorResponseData> | CustomError | Error
+        );
+        toast.error('Failed to delete file', {
+          description: message,
+          duration: 5000,
+        });
+        throw error;
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [token]
+  );
+
   const getResourceAnalytics = useCallback(
     async (resourceId: string): Promise<ResourceAnalyticsData | null> => {
       try {
@@ -217,6 +268,7 @@ const useResourceAdmin = ({ token }: UseResourceAdminProps) => {
     updateResource,
     toggleResourceTrash,
     getResourceAnalytics,
+    deleteFileFromResource,
     deleteResourcePermanently,
   };
 };
