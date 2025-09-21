@@ -79,7 +79,6 @@ const ResourceViewerComponent = ({ role, userData }: ResourceViewerComponentProp
 
           setFiles(processedFiles);
 
-          // Track resource view
           await trackView(resourceData._id);
         } else {
           setError('Resource not found');

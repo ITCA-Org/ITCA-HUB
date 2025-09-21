@@ -38,23 +38,3 @@ export type ActionType = 'delete' | 'changeRole' | 'toggleActivation';
 export interface AdminUsersPageProps {
   userData: UserAuth;
 }
-
-export interface CreateResourcePayload {
-  title: string;
-  category: string;
-  fileUrls: string[];
-  department: string;
-  description: string;
-  visibility: 'all' | 'admin';
-  academicLevel: 'undergraduate' | 'postgraduate' | 'all';
-}
-
-export interface UpdateResourcePayload {
-  title?: string;
-  category?: string;
-  department?: string;
-  fileUrls?: string[];
-  description?: string;
-  visibility?: 'all' | 'admin';
-  academicLevel?: 'undergraduate' | 'postgraduate' | 'all';
-}

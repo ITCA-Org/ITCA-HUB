@@ -10,10 +10,11 @@ import axios, { AxiosError } from 'axios';
 import { CheckCircle } from 'lucide-react';
 import { getErrorMessage } from '@/utils/error';
 import useTimedError from '@/hooks/timed-error';
+import { RegistrationFormData } from '@/types/interfaces/auth';
+import { CustomError, ErrorResponseData, UserAuth } from '@/types';
 import AuthLayout from '@/components/dashboard/authentication/auth-layout';
 import { validatePersonalInfo, validateSecurity } from '@/utils/sign-up/validation';
 import SecurityStep from '@/components/dashboard/authentication/sign-up/security-step';
-import { CustomError, ErrorResponseData, RegistrationFormData, UserAuth } from '@/types';
 import StepIndicator from '@/components/dashboard/authentication/sign-up/step-indicator';
 import PersonalInfoStep from '@/components/dashboard/authentication/sign-up/personal-info-steps';
 

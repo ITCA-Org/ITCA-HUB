@@ -1,4 +1,4 @@
-import { RegistrationFormData } from '@/types';
+import { RegistrationFormData } from '@/types/interfaces/auth';
 
 export const validatePersonalInfo = (
   formData: RegistrationFormData
