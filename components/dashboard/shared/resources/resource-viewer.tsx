@@ -249,15 +249,15 @@ const ResourceViewerComponent = ({ role, userData }: ResourceViewerComponentProp
       ) : error || !resource ? (
         <NetworkError
           onRetry={handleRetry}
-          title="Resource Not Found"
           retryButtonText="Reload Page"
-          description={error || 'The requested resource could not be found.'}
+          title="Unable to fetch the resource"
+          description="Please check your internet connection and try again."
         />
       ) : (
         <>
           {/*==================== Resource Information ====================*/}
           <div className="bg-white rounded-2xl p-6 mb-6">
-            <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between mb-6">
+            <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between mb-4">
               <div className="flex-1 mb-4 lg:mb-0">
                 <div className="flex items-center mb-3">
                   {getDepartmentIcon(resource.department)}
@@ -281,17 +281,17 @@ const ResourceViewerComponent = ({ role, userData }: ResourceViewerComponentProp
               )}
             </div>
 
-            {/*==================== Resource Stats Grid (Admin Only) ====================*/}
+            {/*==================== Resource Stats Grid  ====================*/}
             {role === 'admin' && (
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-                <div className="bg-gradient-to-r from-amber-100/70 to-blue-100/70 rounded-lg p-4">
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+                <div className="bg-gray-100 rounded-lg p-4">
                   <div className="flex items-center mb-2">
                     <div className="bg-blue-100/70 p-2 rounded-full mr-2">
                       <Eye className="h-4 w-4 text-blue-600" />
                     </div>
                     <span className="text-sm font-medium text-gray-700">Views</span>
                   </div>
-                  <p className="text-2xl font-bold text-blue-700">{resource.viewCount}</p>
+                  <p className="text-2xl font-normal text-blue-700">{resource.viewCount}</p>
                 </div>
                 <div className="bg-gradient-to-r from-amber-100/70 to-blue-100/70 rounded-lg p-4">
                   <div className="flex items-center mb-2">
@@ -328,29 +328,31 @@ const ResourceViewerComponent = ({ role, userData }: ResourceViewerComponentProp
 
             {/*==================== Resource Details Grid ====================*/}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {/*==================== Department (Both Roles) ====================*/}
+              {/*==================== Department ====================*/}
               <div>
                 <div className="flex items-center mb-2">
                   <div className="bg-blue-100/70 p-2 rounded-full mr-2">
                     <Building2 className="h-4 w-4 text-blue-600" />
                   </div>
-                  <span className="text-sm font-medium text-gray-700">Department</span>
+                  <span className="text-sm font-normal text-gray-500">DEPARTMENT</span>
                 </div>
-                <p className="text-gray-900 font-medium">{formatDepartment(resource.department)}</p>
+                <p className="text-gray-500 font-normal">{formatDepartment(resource.department)}</p>
               </div>
+              {/*==================== End of Department ====================*/}
 
-              {/*==================== Academic Level (Both Roles) ====================*/}
+              {/*==================== Academic Level ====================*/}
               <div>
                 <div className="flex items-center mb-2">
                   <div className="bg-green-100/70 p-2 rounded-full mr-2">
                     <GraduationCap className="h-4 w-4 text-green-600" />
                   </div>
-                  <span className="text-sm font-medium text-gray-700">Academic Level</span>
+                  <span className="text-sm font-normal text-gray-500">ACADEMIC LEVEL</span>
                 </div>
-                <p className="text-gray-900 font-medium">
+                <p className="text-gray-500 font-normal">
                   {formatAcademicLevel(resource.academicLevel)}
                 </p>
               </div>
+              {/*==================== End of Academic Level ====================*/}
 
               {/*==================== Category (Student Only) ====================*/}
               {role === 'student' && (
@@ -359,11 +361,12 @@ const ResourceViewerComponent = ({ role, userData }: ResourceViewerComponentProp
                     <div className="bg-amber-100/70 p-2 rounded-full mr-2">
                       <Tag className="h-4 w-4 text-amber-600" />
                     </div>
-                    <span className="text-sm font-medium text-gray-700">Category</span>
+                    <span className="text-sm font-normal text-gray-500">CATEGORY</span>
                   </div>
-                  <p className="text-gray-900 font-medium">{formatCategory(resource.category)}</p>
+                  <p className="text-gray-500 font-normal">{formatCategory(resource.category)}</p>
                 </div>
               )}
+              {/*==================== End of Category ====================*/}
 
               {/*==================== Admin-Only Fields ====================*/}
               {role === 'admin' && (
@@ -371,9 +374,9 @@ const ResourceViewerComponent = ({ role, userData }: ResourceViewerComponentProp
                   <div>
                     <div className="flex items-center mb-2">
                       <div className="bg-orange-100/70 p-2 rounded-full mr-2">
-                        <Shield className="h-4 w-4 text-orange-600" />
+                        <Shield className="-d4 w-4 normalrange-600" />
                       </div>
-                      <span className="text-sm font-medium text-gray-700">Visibility</span>
+                      <span className="text5sm font-normal text-gray-500">VISIBILITY</span>
                     </div>
                     <span
                       className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
@@ -391,9 +394,9 @@ const ResourceViewerComponent = ({ role, userData }: ResourceViewerComponentProp
                       <div className="bg-purple-100/70 p-2 rounded-full mr-2">
                         <User className="h-4 w-4 text-purple-600" />
                       </div>
-                      <span className="text-sm font-medium text-gray-700">Created By</span>
+                      <span className="text-sm font-normal text-gray-500">CREATED BY</span>
                     </div>
-                    <p className="text-gray-900 font-medium">{formatCreator(resource.createdBy)}</p>
+                    <p className="text-gray-500 font-normal">{formatCreator(resource.createdBy)}</p>
                   </div>
 
                   <div>
@@ -401,9 +404,9 @@ const ResourceViewerComponent = ({ role, userData }: ResourceViewerComponentProp
                       <div className="bg-amber-100/70 p-2 rounded-full mr-2">
                         <Calendar className="h-4 w-4 text-amber-600" />
                       </div>
-                      <span className="text-sm font-medium text-gray-700">Created At</span>
+                      <span className="text-sm font-normal text-gray-500">CREATED AT</span>
                     </div>
-                    <p className="text-gray-900 font-medium">{formatDate(resource.createdAt)}</p>
+                    <p className="text-gray-500 font-normal">{formatDate(resource.createdAt)}</p>
                   </div>
 
                   {resource.updatedAt !== resource.createdAt && (
@@ -412,13 +415,14 @@ const ResourceViewerComponent = ({ role, userData }: ResourceViewerComponentProp
                         <div className="bg-red-100/70 p-2 rounded-full mr-2">
                           <Clock className="h-4 w-4 text-red-600" />
                         </div>
-                        <span className="text-sm font-medium text-gray-700">Last Updated</span>
+                        <span className="text-sm font-normal text-gray-500">LAST UPDATED</span>
                       </div>
-                      <p className="text-gray-900 font-medium">{formatDate(resource.updatedAt)}</p>
+                      <p className="text-gray-500 font-normal">{formatDate(resource.updatedAt)}</p>
                     </div>
                   )}
                 </>
               )}
+              {/*==================== End of Admin-Only Fields ====================*/}
             </div>
           </div>
           {/*==================== End of Resource Information ====================*/}
@@ -436,9 +440,9 @@ const ResourceViewerComponent = ({ role, userData }: ResourceViewerComponentProp
               <EmptyState
                 itemName="file"
                 title="No files found"
-                description="No files are available for this resource."
                 showUploadButton={false}
                 showRefreshButton={false}
+                description="No files are available for this resource."
               />
             ) : (
               <div className="overflow-x-auto">
