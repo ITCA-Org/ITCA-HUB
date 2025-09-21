@@ -295,7 +295,7 @@ const ResourceViewerComponent = ({ role, userData }: ResourceViewerComponentProp
             {/*==================== Resource Stats Grid  ====================*/}
             {role === 'admin' && (
               <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-                <div className="bg-gray-100 rounded-lg p-4">
+                <div className="bg-gradient-to-r from-amber-100/70 to-blue-100/70 rounded-lg p-4">
                   <div className="flex items-center mb-2">
                     <div className="bg-blue-100/70 p-2 rounded-full mr-2">
                       <Eye className="h-4 w-4 text-blue-600" />
