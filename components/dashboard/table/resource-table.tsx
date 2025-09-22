@@ -73,8 +73,8 @@ const ResourceTable = ({
     selectedResourceIds,
     hasMultipleSelected,
     setSelectedResource,
-    handleDeleteResource: handleDeleteClick,
     handleDeleteSelected,
+    handleDeleteResource: handleDeleteClick,
   } = useResourceTable({
     resources,
     token,

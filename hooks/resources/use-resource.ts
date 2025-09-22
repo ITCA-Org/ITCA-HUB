@@ -193,7 +193,9 @@ const useResources = ({ token }: UseResourcesProps): UseResourcesReturn => {
   );
 
   const trackDownload = useCallback(
-    async (resourceId: string) => {
+    async (resourceId: string, role?: 'admin' | 'student') => {
+      if (role !== 'student') return;
+
       try {
         await axios.post(
           `${BASE_URL}/resources/analytics/track-download/${resourceId}`,
@@ -216,9 +218,9 @@ const useResources = ({ token }: UseResourcesProps): UseResourcesReturn => {
   );
 
   const downloadResource = useCallback(
-    async (resource: Resource) => {
+    async (resource: Resource, role?: 'admin' | 'student') => {
       try {
-        await trackDownload(resource._id);
+        await trackDownload(resource._id, role);
 
         if (resource.fileUrls.length === 1) {
           window.open(resource.fileUrls[0], '_blank');
@@ -260,10 +262,10 @@ const useResources = ({ token }: UseResourcesProps): UseResourcesReturn => {
   );
 
   const downloadFile = useCallback(
-    async (fileUrl: string, resourceId?: string) => {
+    async (fileUrl: string, resourceId?: string, role?: 'admin' | 'student') => {
       try {
-        if (resourceId) {
-          await trackDownload(resourceId);
+        if (resourceId && role) {
+          await trackDownload(resourceId, role);
         }
         window.open(fileUrl, '_blank');
       } catch (error) {
