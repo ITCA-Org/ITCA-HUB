@@ -51,7 +51,7 @@ const useResourceTable = ({
   }, [clearSelection]);
 
   /**=======================================
-   * Handle single row selection (toggle)
+   * Handle single row selection
    =======================================*/
   const toggleSelection = useCallback((resource: Resource, event: React.MouseEvent) => {
     const isMultiSelectKey = event.ctrlKey || event.metaKey;
@@ -89,16 +89,13 @@ const useResourceTable = ({
     setSelectedResources(newSelection);
   }, [resources, selectedResources]);
 
-  /**====================================================
-   * Handle double-click to navigate to resource viewer
-   ====================================================*/
   const handleDoubleClick = useCallback(
     (resource: Resource) => {
       clearSelection();
       const viewPath =
         userRole === 'admin'
-          ? `/admin/resources/view/${resource._id}`
-          : `/student/resources/view/${resource._id}`;
+          ? `/admin/resources/${resource._id}`
+          : `/student/resources/${resource._id}`;
       router.push(viewPath);
     },
     [router, clearSelection, userRole]
