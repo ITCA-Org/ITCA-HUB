@@ -145,7 +145,7 @@ const DashboardHeader = ({ sidebarOpen, token, setSidebarOpen }: DashboardHeader
         {userData && (
           <div className="relative max-[990px]:px-0 pr-3">
             <button
-              className="profile-trigger flex items-center space-x-2 rounded-full focus:outline-none"
+              className="profile-trigger flex items-center space-x-2 rounded-full focus:outline-none cursor-pointer"
               onClick={() => setIsProfileOpen(!isProfileOpen)}
             >
               <div className="flex h-9 w-9 items-center justify-center overflow-hidden rounded-full bg-blue-100 text-blue-700">
