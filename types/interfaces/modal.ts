@@ -1,4 +1,5 @@
 import { ActionType } from '..';
+import { ReactNode } from 'react';
 import { Resource } from './resource';
 import { CreateEventData, EventProps } from './event';
 
@@ -122,4 +123,18 @@ export interface ResourceModalActions {
   onDelete: (resource: Resource) => void;
   onAnalytics: (resource: Resource) => void;
   onRestore?: (resource: Resource) => void;
+}
+
+export interface GenericConfirmationModalProps {
+  title: string;
+  isOpen: boolean;
+  message: string;
+  icon?: ReactNode;
+  confirmText: string;
+  cancelText?: string;
+  isLoading?: boolean;
+  onClose: () => void;
+  loadingText?: string;
+  onConfirm: () => void;
+  variant?: 'primary' | 'danger' | 'success' | 'warning';
 }
