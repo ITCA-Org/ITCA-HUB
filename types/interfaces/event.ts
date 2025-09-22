@@ -1,9 +1,9 @@
 import { UserAuth } from '..';
 
 export interface CreateEventData {
-  title: string;
   date: string;
   time: string;
+  title: string;
   toDate?: string;
   toTime?: string;
   location: string;
@@ -18,6 +18,7 @@ export interface GetEventsParams {
   limit?: number;
   status?: string;
   search?: string;
+  signal?: AbortSignal;
 }
 
 export interface UseEventsProps {
@@ -31,17 +32,17 @@ export interface EventsComponentProps {
 
 export interface EventProps {
   _id: string;
-  title: string;
-  description: string;
   date: string;
   time: string;
+  title: string;
   toDate?: string;
   toTime?: string;
   location: string;
-  status: 'upcoming' | 'ongoing' | 'completed';
   capacity: number;
   imageUrl?: string;
+  description: string;
   registrationRequired: boolean;
+  status: 'upcoming' | 'ongoing' | 'completed';
   attendees: Array<{
     _id: string;
   }>;

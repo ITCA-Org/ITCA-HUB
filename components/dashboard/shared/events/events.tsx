@@ -4,12 +4,12 @@ import { useState, useEffect, useCallback } from 'react';
 import DashboardLayout from '@/components/dashboard/layout/dashboard-layout';
 import { NetworkError, EmptyState } from '@/components/dashboard/error-messages';
 import EditEventModal from '@/components/dashboard/modals/events/edit-event-modal';
+import EventCardSkeleton from '@/components/dashboard/skeletons/event-card-skeleton';
 import DashboardPageHeader from '@/components/dashboard/layout/dashboard-page-header';
 import CreateEventModal from '@/components/dashboard/modals/events/create-event-modal';
 import DeleteEventModal from '@/components/dashboard/modals/events/delete-event-modal';
 import { Calendar, Search, RefreshCw, Plus, ChevronLeft, ChevronRight } from 'lucide-react';
 import { CreateEventData, EventProps, EventsComponentProps } from '@/types/interfaces/event';
-import EventCardSkeleton from '@/components/dashboard/skeletons/event-card-skeleton';
 
 const EventsComponent = ({ role, userData }: EventsComponentProps) => {
   const [eventToDelete, setEventToDelete] = useState<string | null>(null);
@@ -135,8 +135,39 @@ const EventsComponent = ({ role, userData }: EventsComponentProps) => {
    * Load events when dependencies change
    =====================================*/
   useEffect(() => {
-    loadEvents();
-  }, [loadEvents]);
+    const abortController = new AbortController();
+    let isActive = true;
+
+    const loadData = async () => {
+      try {
+        if (isActive) {
+          const response = await getAllEvents({
+            page,
+            limit,
+            status: status !== 'all' ? status : undefined,
+            signal: abortController.signal,
+          });
+
+          if (isActive) {
+            setEvents(response.events);
+            setTotalEvents(response.total);
+            setTotalPages(response.pagination.totalPages || Math.ceil(response.total / limit));
+          }
+        }
+      } catch (error) {
+        if (isActive && !(error instanceof Error && error.name === 'AbortError')) {
+          console.error('Failed to load events:', error);
+        }
+      }
+    };
+
+    loadData();
+
+    return () => {
+      isActive = false;
+      abortController.abort();
+    };
+  }, [page, limit, status, getAllEvents]);
 
   /**===============================
    * Reset page when filters change

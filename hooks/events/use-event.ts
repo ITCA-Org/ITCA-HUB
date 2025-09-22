@@ -33,6 +33,7 @@ const useEvents = ({ token }: UseEventsProps) => {
           headers: {
             Authorization: `Bearer ${token}`,
           },
+          signal: params.signal,
         });
 
         return {
@@ -41,6 +42,14 @@ const useEvents = ({ token }: UseEventsProps) => {
           total: data.total || 0,
         };
       } catch (error) {
+        if (axios.isCancel(error)) {
+          return {
+            events: [],
+            pagination: {},
+            total: 0,
+          };
+        }
+
         setIsError(true);
         const { message } = getErrorMessage(
           error as AxiosError<ErrorResponseData> | CustomError | Error
