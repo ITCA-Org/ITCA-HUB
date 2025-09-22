@@ -6,6 +6,7 @@ const DashboardPageHeader = ({
   description,
   showPulse = true,
   actions,
+  leftActions,
   titleColors = {
     primary: 'text-blue-700',
     secondary: 'text-amber-500',
@@ -46,7 +47,15 @@ const DashboardPageHeader = ({
 
   return (
     <div className="mb-8 w-full">
-      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between w-full gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between w-full gap-4">
+        {/*==================== Left Actions ====================*/}
+        {leftActions && (
+          <div className="flex-shrink-0 flex items-start bg-white rounded-full p-3">
+            {leftActions}
+          </div>
+        )}
+        {/*==================== End of Left Actions ====================*/}
+
         {/*==================== Title and Description ====================*/}
         <div className="flex-1">
           {renderTitle()}
@@ -54,9 +63,9 @@ const DashboardPageHeader = ({
         </div>
         {/*==================== End of Title and Description ====================*/}
 
-        {/*==================== Action Buttons ====================*/}
+        {/*==================== Right Actions ====================*/}
         {actions && <div className="flex-shrink-0 mt-4 sm:mt-0 flex space-x-3">{actions}</div>}
-        {/*==================== End of Action Buttons ====================*/}
+        {/*==================== End of Right Actions ====================*/}
       </div>
     </div>
   );

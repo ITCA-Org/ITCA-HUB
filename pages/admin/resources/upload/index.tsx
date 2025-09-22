@@ -5,7 +5,7 @@ import { ArrowLeft } from 'lucide-react';
 import { isLoggedIn } from '@/utils/auth';
 import { AdminResourceUploadPageProps } from '@/types/interfaces/resource';
 import DashboardLayout from '@/components/dashboard/layout/dashboard-layout';
-import ResourceUploader from '@/components/dashboard/resources/resource-uploader';
+import ResourceUploader from '@/components/dashboard/shared/resources/resource-uploader';
 
 const AdminResourceUploadPage = ({ userData }: AdminResourceUploadPageProps) => {
   const handleUploadComplete = (_fileData: {

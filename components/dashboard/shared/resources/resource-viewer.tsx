@@ -324,12 +324,9 @@ const ResourceViewerComponent = ({ role, userData }: ResourceViewerComponentProp
             ? 'Manage and view resource content'
             : 'View and download resource content'
         }
-        actions={
-          <button
-            onClick={() => router.back()}
-            className="inline-flex items-center rounded-lg bg-white p-2 text-sm text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-gray-500 focus:ring-offset-2 transition-colors"
-          >
-            <ArrowLeft className="h-4 w-4" />
+        leftActions={
+          <button onClick={() => router.back()}>
+            <ArrowLeft className="h-4 w-4 cursor-pointer" />
           </button>
         }
       />

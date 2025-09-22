@@ -206,7 +206,7 @@ const ResourcesComponent = ({ role, userData }: ResourcesComponentProps) => {
             className={`grid grid-cols-1 ${role === 'admin' ? 'md:grid-cols-4' : 'md:grid-cols-3'} gap-4 pt-2`}
           >
             <div>
-              <label className="flex items-center text-sm text-gray-700 mb-2">
+              <label className="flex items-center text-md text-gray-500 mb-2">
                 <div className="bg-blue-100/70 p-2 rounded-full mr-2">
                   <Building2 className="h-5 w-5 text-blue-600" />
                 </div>
@@ -230,7 +230,7 @@ const ResourcesComponent = ({ role, userData }: ResourcesComponentProps) => {
             </div>
 
             <div>
-              <label className="flex items-center text-sm text-gray-700 mb-2">
+              <label className="flex items-center text-md text-gray-500 mb-2">
                 <div className="bg-purple-100/70 p-2 rounded-full mr-2">
                   <Tag className="h-5 w-5 text-purple-600" />
                 </div>
@@ -252,7 +252,7 @@ const ResourcesComponent = ({ role, userData }: ResourcesComponentProps) => {
             </div>
 
             <div>
-              <label className="flex items-center text-sm text-gray-700 mb-2">
+              <label className="flex items-center text-md text-gray-500 mb-2">
                 <div className="bg-green-100/70 p-2 rounded-full mr-2">
                   <GraduationCap className="h-5 w-5 text-green-600" />
                 </div>
@@ -276,7 +276,7 @@ const ResourcesComponent = ({ role, userData }: ResourcesComponentProps) => {
 
             {role === 'admin' && (
               <div>
-                <label className="flex items-center text-sm text-gray-700 mb-2">
+                <label className="flex items-center text-md text-gray-500 mb-2">
                   <div className="bg-orange-100/70 p-2 rounded-full mr-2">
                     <Eye className="h-5 w-5 text-orange-600" />
                   </div>

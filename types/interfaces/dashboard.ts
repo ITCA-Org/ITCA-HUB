@@ -20,13 +20,14 @@ export interface DashboardHeaderProps {
 export interface DashboardPageHeaderProps {
   title: string;
   subtitle?: string;
-  description?: string;
   showPulse?: boolean;
   actions?: ReactNode;
+  description?: string;
   titleColors?: {
     primary: string;
     secondary: string;
   };
+  leftActions?: React.ReactNode;
 }
 
 export interface DashboardStats {
