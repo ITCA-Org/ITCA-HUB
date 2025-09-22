@@ -18,3 +18,11 @@ export interface EmptyStateProps {
   showUploadButton?: boolean;
   showRefreshButton?: boolean;
 }
+
+export interface NoResultsProps {
+  title?: string;
+  filterTerm?: string;
+  description?: string;
+  clearButtonText?: string;
+  onClearFilters: () => void;
+}

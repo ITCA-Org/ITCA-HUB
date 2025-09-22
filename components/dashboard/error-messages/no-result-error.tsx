@@ -1,22 +1,14 @@
-import React from "react";
-import { AlertCircle } from "lucide-react";
-
-interface NoResultsProps {
-  title?: string;
-  description?: string;
-  onClearFilters: () => void;
-  filterTerm?: string;
-  clearButtonText?: string;
-}
+import React from 'react';
+import { AlertCircle } from 'lucide-react';
+import { NoResultsProps } from '@/types/interfaces/error';
 
 const NoResults: React.FC<NoResultsProps> = ({
-  title = "No matching resources",
-  description = "Try adjusting your search or filter criteria.",
-  onClearFilters,
   filterTerm,
-  clearButtonText = "Clear Filters",
+  title = 'No matching resources',
+  onClearFilters,
+  clearButtonText = 'Clear Filters',
+  description = 'Try adjusting your search or filter criteria.',
 }) => {
-  // Use dynamic description if filterTerm is provided
   const finalDescription = filterTerm
     ? `No results found for "${filterTerm}". ${description}`
     : description;
