@@ -211,16 +211,16 @@ const useProfile = ({ token }: UseProfileProps) => {
     }
   };
 
-  /**===============================================
+  /**===========================================================
    * Fetch profile when component mounts
    * Includes cleanup for unmounting and request cancellation
-   ===============================================*/
+   ===========================================================*/
   useEffect(() => {
     const abortController = new AbortController();
     fetchProfile(abortController.signal);
 
     return () => {
-      abortController.abort(); // Cancel any in-flight request when unmounting
+      abortController.abort(); 
     };
   }, [fetchProfile]);
 

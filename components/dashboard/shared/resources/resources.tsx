@@ -7,7 +7,7 @@ import ResourceTable from '@/components/dashboard/table/resource-table';
 import DashboardLayout from '@/components/dashboard/layout/dashboard-layout';
 import { ResourcesComponentProps, Resource } from '@/types/interfaces/resource';
 import DashboardPageHeader from '@/components/dashboard/layout/dashboard-page-header';
-import { Upload, Filter, Building2, Tag, Eye, Search, GraduationCap } from 'lucide-react';
+import { Upload, Filter, Building2, Tag, Eye, Search, GraduationCap, Trash2 } from 'lucide-react';
 
 const ResourcesComponent = ({ role, userData }: ResourcesComponentProps) => {
   const { isError, resources, isLoading, pagination, fetchResources } = useResources({
@@ -137,6 +137,13 @@ const ResourcesComponent = ({ role, userData }: ResourcesComponentProps) => {
       actions: (
         <div className="flex flex-col gap-4 w-full md:flex-row sm:mt-0 space-x-3">
           <Link
+            href="/admin/resources/recycle-bin"
+            className="inline-flex items-center rounded-lg bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+          >
+            <Trash2 className="mr-2 h-4 w-4" />
+            Recycle Bin
+          </Link>
+          <Link
             href="/admin/resources/upload"
             className="group inline-flex items-center rounded-lg bg-gradient-to-r from-blue-700 to-blue-600 px-4 py-2 text-sm font-medium text-white hover:from-blue-800 hover:to-blue-700 focus:outline-none focus:ring-blue-500 focus:ring-offset-2 transition-all duration-300 shadow-md hover:shadow-lg"
           >
@@ -206,7 +213,7 @@ const ResourcesComponent = ({ role, userData }: ResourcesComponentProps) => {
             className={`grid grid-cols-1 ${role === 'admin' ? 'md:grid-cols-4' : 'md:grid-cols-3'} gap-4 pt-2`}
           >
             <div>
-              <label className="flex items-center text-md text-gray-500 mb-2">
+              <label className="flex items-center text-m text-gray-500 mb-2">
                 <div className="bg-blue-100/70 p-2 rounded-full mr-2">
                   <Building2 className="h-5 w-5 text-blue-600" />
                 </div>
@@ -230,7 +237,7 @@ const ResourcesComponent = ({ role, userData }: ResourcesComponentProps) => {
             </div>
 
             <div>
-              <label className="flex items-center text-md text-gray-500 mb-2">
+              <label className="flex items-center text-m text-gray-500 mb-2">
                 <div className="bg-purple-100/70 p-2 rounded-full mr-2">
                   <Tag className="h-5 w-5 text-purple-600" />
                 </div>
@@ -252,7 +259,7 @@ const ResourcesComponent = ({ role, userData }: ResourcesComponentProps) => {
             </div>
 
             <div>
-              <label className="flex items-center text-md text-gray-500 mb-2">
+              <label className="flex items-center text-m text-gray-500 mb-2">
                 <div className="bg-green-100/70 p-2 rounded-full mr-2">
                   <GraduationCap className="h-5 w-5 text-green-600" />
                 </div>
@@ -276,7 +283,7 @@ const ResourcesComponent = ({ role, userData }: ResourcesComponentProps) => {
 
             {role === 'admin' && (
               <div>
-                <label className="flex items-center text-md text-gray-500 mb-2">
+                <label className="flex items-center text-m text-gray-500 mb-2">
                   <div className="bg-orange-100/70 p-2 rounded-full mr-2">
                     <Eye className="h-5 w-5 text-orange-600" />
                   </div>

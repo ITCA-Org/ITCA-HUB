@@ -177,7 +177,7 @@ const ProfileComponent = ({ role, userData }: ProfileComponentProps) => {
           <div className="lg:col-span-2">
             <div className="bg-white rounded-2xl p-6 mb-6">
               <div className="flex items-center justify-between mb-6">
-                <h2 className="text-lg font-semibold text-gray-900 flex items-center">
+                <h2 className="text-lg font-bold text-gray-500 flex items-center">
                   {role === 'admin' ? (
                     <>
                       <Crown className="h-5 w-5 text-blue-600 mr-2" />
@@ -226,23 +226,10 @@ const ProfileComponent = ({ role, userData }: ProfileComponentProps) => {
                     </div>
 
                     <div>
-                      <h3 className="text-xl font-semibold text-gray-900">
+                      <h3 className="text-xl font-bold text-gray-500">
                         {profile?.firstName} {profile?.lastName}
                       </h3>
                       <p className="text-gray-500">{profile?.schoolEmail}</p>
-                      <div className="flex items-center mt-1">
-                        {profile?.isEmailVerified ? (
-                          <span className="inline-flex items-center rounded-full bg-green-100 px-2 py-1 text-xs font-medium text-green-800">
-                            <Shield className="w-3 h-3 mr-1" />
-                            Verified
-                          </span>
-                        ) : (
-                          <span className="inline-flex items-center rounded-full bg-red-100 px-2 py-1 text-xs font-medium text-red-800">
-                            <Shield className="w-3 h-3 mr-1" />
-                            Unverified
-                          </span>
-                        )}
-                      </div>
                     </div>
                   </div>
 
@@ -251,17 +238,17 @@ const ProfileComponent = ({ role, userData }: ProfileComponentProps) => {
                       <label className="block text-sm font-bold text-gray-500 mb-1">
                         FIRST NAME
                       </label>
-                      <p className="text-gray-900 font-normal">{profile?.firstName}</p>
+                      <p className="text-gray-500 font-normal">{profile?.firstName}</p>
                     </div>
                     <div>
                       <label className="block text-sm font-bold text-gray-500 mb-1">
                         LAST NAME
                       </label>
-                      <p className="text-gray-900 font-normal">{profile?.lastName}</p>
+                      <p className="text-gray-500 font-normal">{profile?.lastName}</p>
                     </div>
                     <div>
                       <label className="block text-sm font-bold text-gray-500 mb-1">EMAIL</label>
-                      <p className="text-gray-900 font-normal">{profile?.schoolEmail}</p>
+                      <p className="text-gray-500 font-normal">{profile?.schoolEmail}</p>
                     </div>
                     <div>
                       <label className="block text-sm font-bold text-gray-500 mb-1">ROLE</label>
@@ -316,8 +303,8 @@ const ProfileComponent = ({ role, userData }: ProfileComponentProps) => {
                       </button>
                     </div>
                     <div className="flex-1">
-                      <h3 className="text-xl font-semibold text-gray-900 mb-1">Profile Picture</h3>
-                      <p className="text-sm text-gray-600">
+                      <h3 className="text-xl font-bold text-gray-500 mb-1">Profile Picture</h3>
+                      <p className="text-md text-gray-600">
                         Click the camera icon to upload a new photo
                       </p>
                     </div>
@@ -327,7 +314,7 @@ const ProfileComponent = ({ role, userData }: ProfileComponentProps) => {
                     <div>
                       <label
                         htmlFor="firstName"
-                        className="block text-sm font-medium text-gray-700 mb-1"
+                        className="block text-sm font-medium text-gray-500 mb-1"
                       >
                         First Name <span className="text-red-500">*</span>
                       </label>
@@ -338,13 +325,13 @@ const ProfileComponent = ({ role, userData }: ProfileComponentProps) => {
                         onChange={(e) =>
                           setProfileForm({ ...profileForm, firstName: e.target.value })
                         }
-                        className="w-full rounded-lg border border-gray-200 p-2.5 text-sm text-gray-700 focus:border-blue-500 focus:outline-none focus:ring-blue-500"
+                        className="w-full rounded-lg border border-gray-200 p-2.5 text-sm text-gray-500 focus:border-blue-500 focus:outline-none focus:ring-blue-500"
                       />
                     </div>
                     <div>
                       <label
                         htmlFor="lastName"
-                        className="block text-sm font-medium text-gray-700 mb-1"
+                        className="block text-sm font-medium text-gray-500 mb-1"
                       >
                         Last Name <span className="text-red-500">*</span>
                       </label>
@@ -355,7 +342,7 @@ const ProfileComponent = ({ role, userData }: ProfileComponentProps) => {
                         onChange={(e) =>
                           setProfileForm({ ...profileForm, lastName: e.target.value })
                         }
-                        className="w-full rounded-lg border border-gray-200 p-2.5 text-sm text-gray-700 focus:border-blue-500 focus:outline-none focus:ring-blue-500"
+                        className="w-full rounded-lg border border-gray-200 p-2.5 text-sm text-gray-500 focus:border-blue-500 focus:outline-none focus:ring-blue-500"
                       />
                     </div>
                   </div>
@@ -363,7 +350,7 @@ const ProfileComponent = ({ role, userData }: ProfileComponentProps) => {
                   <div className="flex justify-end space-x-3">
                     <button
                       onClick={() => setIsEditingProfile(false)}
-                      className="inline-flex items-center rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+                      className="inline-flex items-center rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-500 hover:bg-gray-50"
                     >
                       <X className="h-4 w-4 mr-2" />
                       Cancel
@@ -385,7 +372,7 @@ const ProfileComponent = ({ role, userData }: ProfileComponentProps) => {
             {/*==================== Password Change Card ====================*/}
             <div className="bg-white rounded-2xl p-6">
               <div className="flex items-center justify-between mb-6">
-                <h2 className="text-lg font-semibold text-gray-900 flex items-center">
+                <h2 className="text-lg font-bold text-gray-500 flex items-center">
                   <Lock className="h-5 w-5 text-blue-600 mr-2" />
                   Password & Security
                 </h2>
@@ -417,7 +404,7 @@ const ProfileComponent = ({ role, userData }: ProfileComponentProps) => {
                   <div>
                     <label
                       htmlFor="currentPassword"
-                      className="block text-sm font-medium text-gray-700 mb-1"
+                      className="block text-sm font-medium text-gray-500 mb-1"
                     >
                       Current Password <span className="text-red-500">*</span>
                     </label>
@@ -429,7 +416,7 @@ const ProfileComponent = ({ role, userData }: ProfileComponentProps) => {
                         onChange={(e) =>
                           setPasswordForm({ ...passwordForm, currentPassword: e.target.value })
                         }
-                        className="w-full rounded-lg border border-gray-200 p-2.5 pr-10 text-sm text-gray-700 focus:border-blue-500 focus:outline-none focus:ring-blue-500"
+                        className="w-full rounded-lg border border-gray-200 p-2.5 pr-10 text-sm text-gray-500 focus:border-blue-500 focus:outline-none focus:ring-blue-500"
                       />
                       <button
                         type="button"
@@ -448,7 +435,7 @@ const ProfileComponent = ({ role, userData }: ProfileComponentProps) => {
                   <div>
                     <label
                       htmlFor="newPassword"
-                      className="block text-sm font-medium text-gray-700 mb-1"
+                      className="block text-sm font-medium text-gray-500 mb-1"
                     >
                       New Password <span className="text-red-500">*</span>
                     </label>
@@ -460,7 +447,7 @@ const ProfileComponent = ({ role, userData }: ProfileComponentProps) => {
                         onChange={(e) =>
                           setPasswordForm({ ...passwordForm, newPassword: e.target.value })
                         }
-                        className="w-full rounded-lg border border-gray-200 p-2.5 pr-10 text-sm text-gray-700 focus:border-blue-500 focus:outline-none focus:ring-blue-500"
+                        className="w-full rounded-lg border border-gray-200 p-2.5 pr-10 text-sm text-gray-500 focus:border-blue-500 focus:outline-none focus:ring-blue-500"
                       />
                       <button
                         type="button"
@@ -479,7 +466,7 @@ const ProfileComponent = ({ role, userData }: ProfileComponentProps) => {
                   <div>
                     <label
                       htmlFor="confirmPassword"
-                      className="block text-sm font-medium text-gray-700 mb-1"
+                      className="block text-sm font-medium text-gray-500 mb-1"
                     >
                       Confirm New Password <span className="text-red-500">*</span>
                     </label>
@@ -491,7 +478,7 @@ const ProfileComponent = ({ role, userData }: ProfileComponentProps) => {
                         onChange={(e) =>
                           setPasswordForm({ ...passwordForm, confirmPassword: e.target.value })
                         }
-                        className="w-full rounded-lg border border-gray-200 p-2.5 pr-10 text-sm text-gray-700 focus:border-blue-500 focus:outline-none focus:ring-blue-500"
+                        className="w-full rounded-lg border border-gray-200 p-2.5 pr-10 text-sm text-gray-500 focus:border-blue-500 focus:outline-none focus:ring-blue-500"
                       />
                       <button
                         type="button"
@@ -518,7 +505,7 @@ const ProfileComponent = ({ role, userData }: ProfileComponentProps) => {
                         });
                         setShowPasswords({ current: false, new: false, confirm: false });
                       }}
-                      className="inline-flex items-center rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+                      className="inline-flex items-center rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-500 hover:bg-gray-50"
                     >
                       <X className="h-4 w-4 mr-2" />
                       Cancel
@@ -546,25 +533,29 @@ const ProfileComponent = ({ role, userData }: ProfileComponentProps) => {
           {/*==================== Account Summary Card ====================*/}
           <div className="space-y-6">
             <div className="bg-white rounded-2xl p-6">
-              <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+              <h2 className="text-lg font-bold text-gray-500 mb-4 flex items-center">
                 <Calendar className="h-5 w-5 text-blue-600 mr-2" />
                 Account Summary
               </h2>
               <div className="space-y-4">
                 <div>
-                  <label className="block text-sm font-bold text-gray-500 mb-1">MEMBER SINCE</label>
-                  <p className="text-gray-900 font-normal">
+                  <label className="block text-sm font-bold text-gray-500 mb-1">
+                    MEMBER SINCE
+                  </label>
+                  <p className="text-gray-500 font-normal">
                     {profile?.createdAt ? formatDate(profile.createdAt) : 'N/A'}
                   </p>
                 </div>
                 <div>
                   <label className="block text-sm font-bold text-gray-500 mb-1">LAST LOGIN</label>
-                  <p className="text-gray-900 font-normal">
+                  <p className="text-gray-500 font-normal">
                     {profile?.lastLoggedIn ? formatLastLogin(profile.lastLoggedIn) : 'N/A'}
                   </p>
                 </div>
                 <div>
-                  <label className="block text-sm font-bold text-gray-500 mb-1">EMAIL STATUS</label>
+                  <label className="block text-sm font-bold text-gray-500 mb-1">
+                    EMAIL STATUS
+                  </label>
                   <div className="flex items-center">
                     {profile?.isEmailVerified ? (
                       <span className="inline-flex items-center rounded-full bg-green-100 px-2 py-1 text-xs font-medium text-green-800">

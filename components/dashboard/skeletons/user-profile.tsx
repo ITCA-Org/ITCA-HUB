@@ -19,7 +19,6 @@ const UserProfileSkeleton = () => {
               <div className="space-y-2">
                 <div className="bg-gray-100 h-5 w-32 rounded"></div>
                 <div className="bg-gray-100 h-4 w-24 rounded"></div>
-                <div className="bg-green-100/40 h-4 w-16 rounded"></div>
               </div>
             </div>
             {/*==================== End of Profile Picture & Name ====================*/}
