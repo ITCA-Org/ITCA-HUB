@@ -101,6 +101,16 @@ const ResourcesComponent = ({ role, userData }: ResourcesComponentProps) => {
     });
   }, []);
 
+  const hasActiveFilters = useMemo(() => {
+    return (
+      !!debouncedSearchTerm ||
+      filters.department !== 'all' ||
+      filters.category !== 'all' ||
+      filters.academicLevel !== 'all' ||
+      (role === 'admin' && filters.visibility !== 'all')
+    );
+  }, [debouncedSearchTerm, filters, role]);
+
   useEffect(() => {
     const abortController = new AbortController();
     let isActive = true;
@@ -321,6 +331,7 @@ const ResourcesComponent = ({ role, userData }: ResourcesComponentProps) => {
           onClearFilters={clearFilters}
           searchTerm={filters.searchTerm}
           totalPages={pagination.totalPages}
+          hasActiveFilters={hasActiveFilters}
           userRole={role === 'admin' ? 'admin' : 'user'}
           onDeleteResource={role === 'admin' ? handleDeleteResource : undefined}
         />

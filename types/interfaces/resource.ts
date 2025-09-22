@@ -88,6 +88,7 @@ export interface ResourceTableProps {
   onRefresh: () => void;
   resources: Resource[];
   allResources: Resource[];
+  hasActiveFilters?: boolean;
   userRole: 'admin' | 'user';
   onClearFilters: () => void;
   mode?: 'default' | 'recycleBin';

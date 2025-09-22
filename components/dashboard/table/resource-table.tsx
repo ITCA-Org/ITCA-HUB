@@ -39,10 +39,11 @@ const ResourceTable = ({
   totalPages,
   searchTerm,
   allResources,
-  isError = false,
   onClearFilters,
+  isError = false,
   mode = 'default',
   onDeleteResource,
+  hasActiveFilters,
   onDeleteMultiple,
   onRestoreResource,
   onRestoreMultiple,
@@ -177,7 +178,7 @@ const ResourceTable = ({
         />
       )}
 
-      {!isError && resources.length === 0 && allResources.length > 0 && searchTerm && (
+      {!isError && resources.length === 0 && allResources.length > 0 && hasActiveFilters && (
         <NoResults filterTerm={searchTerm} onClearFilters={onClearFilters} />
       )}
       {/*==================== End of Error States ====================*/}
