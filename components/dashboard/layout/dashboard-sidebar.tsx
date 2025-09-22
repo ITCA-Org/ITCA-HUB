@@ -51,7 +51,7 @@ const Sidebar = ({ open, setOpen }: DashboardSidebarProps) => {
   const studentNavItems: NavItem[] = [
     {
       name: 'Resources',
-      href: '/student',
+      href: '/student/resources',
       icon: <FileText className="h-5 w-5" />,
     },
     {
