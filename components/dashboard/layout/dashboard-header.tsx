@@ -9,9 +9,41 @@ import { useState, useEffect, useCallback } from 'react';
 import { DashboardHeaderProps } from '@/types/interfaces/dashboard';
 import { Menu, User, LogOut, HelpCircle, Crown } from 'lucide-react';
 
+const CACHE_KEY = 'user_profile';
+const CACHE_DURATION = 10 * 60 * 1000; // 10 minutes
+
 const DashboardHeader = ({ sidebarOpen, token, setSidebarOpen }: DashboardHeaderProps) => {
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [userData, setUserData] = useState<UserAuth | null>(null);
+
+  const getCachedProfile = useCallback(() => {
+    try {
+      const cached = localStorage.getItem(CACHE_KEY);
+      if (cached) {
+        const { data, timestamp } = JSON.parse(cached);
+        if (Date.now() - timestamp < CACHE_DURATION) {
+          return data;
+        }
+      }
+    } catch {
+      localStorage.removeItem(CACHE_KEY);
+    }
+    return null;
+  }, []);
+
+  const setCachedProfile = useCallback((profileData: UserAuth) => {
+    try {
+      localStorage.setItem(
+        CACHE_KEY,
+        JSON.stringify({
+          data: profileData,
+          timestamp: Date.now(),
+        })
+      );
+    } catch {
+      console.warn('Failed to cache profile data');
+    }
+  }, []);
 
   const fetchUserProfile = useCallback(async () => {
     try {
@@ -21,9 +53,13 @@ const DashboardHeader = ({ sidebarOpen, token, setSidebarOpen }: DashboardHeader
         },
       });
 
-      setUserData(data.data);
-    } catch {}
-  }, [token]);
+      const profileData = data.data;
+      setUserData(profileData);
+      setCachedProfile(profileData);
+    } catch {
+      console.error('Failed to fetch profile');
+    }
+  }, [token, setCachedProfile]);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -38,10 +74,17 @@ const DashboardHeader = ({ sidebarOpen, token, setSidebarOpen }: DashboardHeader
   }, []);
 
   useEffect(() => {
-    fetchUserProfile();
-  }, [fetchUserProfile]);
+    const cachedProfile = getCachedProfile();
+
+    if (cachedProfile) {
+      setUserData(cachedProfile);
+    } else {
+      fetchUserProfile();
+    }
+  }, [getCachedProfile, fetchUserProfile]);
 
   const handleLogout = () => {
+    localStorage.removeItem(CACHE_KEY);
     router.push('/api/logout');
   };
 
