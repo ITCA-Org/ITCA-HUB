@@ -195,9 +195,9 @@ const useResourceTable = ({
     }
   };
 
-  /**=========================================
+  /**=============================================
    * Save resource changes using direct API call
-   =========================================*/
+   =============================================*/
   const handleSaveResource = async (updatedResource: Partial<Resource>) => {
     setIsEditing(true);
     try {
