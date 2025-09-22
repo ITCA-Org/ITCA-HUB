@@ -5,7 +5,7 @@ import {
   Plus,
   Clock,
   Radio,
-  Trash2,
+  Trash,
   Laptop,
   Loader,
   Shield,
@@ -16,6 +16,13 @@ import {
   ArrowLeft,
   Building2,
   GraduationCap,
+  FileImage,
+  FileSpreadsheet,
+  Presentation,
+  Archive,
+  Music,
+  Video,
+  File,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { useRouter } from 'next/router';
@@ -159,6 +166,80 @@ const ResourceViewerComponent = ({ role, userData }: ResourceViewerComponentProp
         return (
           <div className="flex items-center justify-center h-8 w-8 rounded-full bg-gray-100/70 mr-3">
             <Database className="h-4 w-4 text-gray-500" />
+          </div>
+        );
+    }
+  };
+
+  const getFileIcon = (fileName: string) => {
+    const extension = fileName.split('.').pop()?.toLowerCase() || '';
+
+    switch (extension) {
+      case 'pdf':
+        return (
+          <div className="flex items-center justify-center h-8 w-8 rounded-full bg-red-100/70">
+            <FileText className="h-4 w-4 text-red-500" />
+          </div>
+        );
+      case 'doc':
+      case 'docx':
+        return (
+          <div className="flex items-center justify-center h-8 w-8 rounded-full bg-blue-100/70">
+            <FileText className="h-4 w-4 text-blue-500" />
+          </div>
+        );
+      case 'xls':
+      case 'xlsx':
+        return (
+          <div className="flex items-center justify-center h-8 w-8 rounded-full bg-green-100/70">
+            <FileSpreadsheet className="h-4 w-4 text-green-500" />
+          </div>
+        );
+      case 'ppt':
+      case 'pptx':
+        return (
+          <div className="flex items-center justify-center h-8 w-8 rounded-full bg-orange-100/70">
+            <Presentation className="h-4 w-4 text-orange-500" />
+          </div>
+        );
+      case 'jpg':
+      case 'jpeg':
+      case 'png':
+      case 'gif':
+        return (
+          <div className="flex items-center justify-center h-8 w-8 rounded-full bg-purple-100/70">
+            <FileImage className="h-4 w-4 text-purple-500" />
+          </div>
+        );
+      case 'zip':
+      case 'rar':
+        return (
+          <div className="flex items-center justify-center h-8 w-8 rounded-full bg-yellow-100/70">
+            <Archive className="h-4 w-4 text-yellow-600" />
+          </div>
+        );
+      case 'mp3':
+        return (
+          <div className="flex items-center justify-center h-8 w-8 rounded-full bg-pink-100/70">
+            <Music className="h-4 w-4 text-pink-500" />
+          </div>
+        );
+      case 'mp4':
+        return (
+          <div className="flex items-center justify-center h-8 w-8 rounded-full bg-indigo-100/70">
+            <Video className="h-4 w-4 text-indigo-500" />
+          </div>
+        );
+      case 'txt':
+        return (
+          <div className="flex items-center justify-center h-8 w-8 rounded-full bg-gray-100/70">
+            <FileText className="h-4 w-4 text-gray-500" />
+          </div>
+        );
+      default:
+        return (
+          <div className="flex items-center justify-center h-8 w-8 rounded-full bg-gray-100/70">
+            <File className="h-4 w-4 text-gray-500" />
           </div>
         );
     }
@@ -385,9 +466,9 @@ const ResourceViewerComponent = ({ role, userData }: ResourceViewerComponentProp
                   <div>
                     <div className="flex items-center mb-2">
                       <div className="bg-orange-100/70 p-2 rounded-full mr-2">
-                        <Shield className="-d4 w-4 normalrange-600" />
+                        <Shield className="h-4 w-4 text-orange-600" />
                       </div>
-                      <span className="text5sm font-normal text-gray-500">VISIBILITY</span>
+                      <span className="text-sm font-normal text-gray-500">VISIBILITY</span>
                     </div>
                     <span
                       className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
@@ -440,7 +521,7 @@ const ResourceViewerComponent = ({ role, userData }: ResourceViewerComponentProp
 
           {/*==================== Files Table ====================*/}
           <div className="bg-white rounded-2xl overflow-hidden">
-            <div className="px-6 py-4 border-b border-gray-200">
+            <div className="px-5 py-4 border-b border-gray-200">
               <h3 className="text-lg font-semibold text-gray-900 flex items-center">
                 <FileText className="mr-2 h-5 w-5 text-blue-600" />
                 Files ({files.length})
@@ -456,69 +537,87 @@ const ResourceViewerComponent = ({ role, userData }: ResourceViewerComponentProp
                 description="No files are available for this resource."
               />
             ) : (
-              <div className="overflow-x-auto">
+              <div className="overflow-x-auto hide-scrollbar">
                 <table className="min-w-full divide-y divide-gray-200">
                   <thead className="bg-gray-50">
                     <tr>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      <th
+                        scope="col"
+                        className="px-6 py-3 text-left text-sm font-normal uppercase tracking-wider text-gray-500"
+                      >
                         File Name
                       </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      <th
+                        scope="col"
+                        className="px-6 py-3 text-left text-sm font-normal uppercase tracking-wider text-gray-500"
+                      >
                         Type
                       </th>
-                      <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      <th
+                        scope="col"
+                        className="px-6 py-3 text-left text-sm font-normal uppercase tracking-wider text-gray-500 w-32"
+                      >
                         Actions
                       </th>
                     </tr>
                   </thead>
-                  <tbody className="bg-white divide-y divide-gray-200">
+                  <tbody className="bg-white">
                     {files.map((file, index) => (
-                      <tr key={index} className="hover:bg-gray-50">
-                        <td className="px-6 py-4 whitespace-nowrap">
+                      <tr
+                        key={index}
+                        className={`${
+                          index % 2 === 1 ? 'bg-gray-100/80' : ''
+                        } hover:bg-amber-100 border-none transition-colors cursor-pointer`}
+                      >
+                        <td className="px-5 py-4">
                           <div className="flex items-center">
-                            <FileText className="h-5 w-5 text-gray-400 mr-3 flex-shrink-0" />
-                            <div className="min-w-0 flex-1">
-                              <div className="text-sm font-medium text-gray-900 truncate">
-                                {file.name}
+                            <div className="flex-shrink-0">{getFileIcon(file.name)}</div>
+                            <div className="ml-2 max-w-[250px]">
+                              <div className="flex items-center">
+                                <span className="text-md font-normal text-gray-500 mr-2 truncate">
+                                  {file.name}
+                                </span>
                               </div>
                             </div>
                           </div>
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                        <td className="px-5 py-4 max-w-[250px] text-md font-normal text-gray-500 truncate">
+                          <span className="inline-flex items-center px-1.5 py-0.5 text-md font-normal text-gray-500">
                             {file.type}
                           </span>
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                        <td className="whitespace-nowrap px-5 py-4 text-md">
                           <div className="flex items-center justify-end space-x-2">
                             <button
-                              onClick={() => handleDownload(file)}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleDownload(file);
+                              }}
                               disabled={isDownloading === file.url}
-                              className="inline-flex items-center rounded-lg bg-blue-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-blue-700 disabled:opacity-50 transition-colors"
+                              className="rounded-full p-1.5 text-gray-500 hover:bg-gray-100 hover:text-blue-600 disabled:opacity-50"
+                              title="Download File"
                             >
                               {isDownloading === file.url ? (
-                                <Loader className="h-3 w-3 animate-spin" />
+                                <Loader className="h-4 w-4 animate-spin" />
                               ) : (
-                                <>
-                                  <Download className="mr-1 h-3 w-3" />
-                                  Download
-                                </>
+                                <Download className="h-4 w-4" />
                               )}
                             </button>
 
                             {role === 'admin' && (
                               <button
-                                onClick={() => handleDeleteFile(file.url)}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleDeleteFile(file.url);
+                                }}
                                 disabled={isDeletingFile === file.url}
-                                className="inline-flex items-center rounded-lg bg-red-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-red-700 disabled:opacity-50 transition-colors"
+                                className="rounded-full p-1.5 text-gray-500 hover:bg-red-50 hover:text-red-600 disabled:opacity-50"
+                                title="Delete File"
                               >
                                 {isDeletingFile === file.url ? (
-                                  <Loader className="h-3 w-3 animate-spin" />
+                                  <Loader className="h-4 w-4 animate-spin" />
                                 ) : (
-                                  <>
-                                    <Trash2 className="mr-1 h-3 w-3" />
-                                    Delete
-                                  </>
+                                  <Trash className="h-4 w-4" />
                                 )}
                               </button>
                             )}
