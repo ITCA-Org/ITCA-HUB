@@ -4,8 +4,8 @@ import { NoResultsProps } from '@/types/interfaces/error';
 
 const NoResults: React.FC<NoResultsProps> = ({
   filterTerm,
-  title = 'No matching resources',
   onClearFilters,
+  title = 'No matching resources',
   clearButtonText = 'Clear Filters',
   description = 'Try adjusting your search or filter criteria.',
 }) => {

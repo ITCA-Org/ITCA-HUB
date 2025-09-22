@@ -2,15 +2,15 @@ import { UserAuth } from '..';
 
 export interface CreateEventData {
   title: string;
-  description: string;
   date: string;
   time: string;
   toDate?: string;
   toTime?: string;
   location: string;
   capacity: number;
-  registrationRequired: boolean;
   imageUrl?: string;
+  description: string;
+  registrationRequired: boolean;
 }
 
 export interface GetEventsParams {

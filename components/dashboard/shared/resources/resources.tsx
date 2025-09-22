@@ -3,9 +3,9 @@ import useDebounce from '@/utils/debounce';
 import useResources from '@/hooks/resources/use-resource';
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import useResourceAdmin from '@/hooks/resources/use-resource-admin';
+import { ResourcesComponentProps } from '@/types/interfaces/resource';
 import ResourceTable from '@/components/dashboard/table/resource-table';
 import DashboardLayout from '@/components/dashboard/layout/dashboard-layout';
-import { ResourcesComponentProps, Resource } from '@/types/interfaces/resource';
 import DashboardPageHeader from '@/components/dashboard/layout/dashboard-page-header';
 import { Upload, Filter, Building2, Tag, Eye, Search, GraduationCap, Trash2 } from 'lucide-react';
 
@@ -28,30 +28,33 @@ const ResourcesComponent = ({ role, userData }: ResourcesComponentProps) => {
 
   const debouncedSearchTerm = useDebounce(filters.searchTerm, 500);
 
-  const filterParams = useMemo(
-    () => ({
-      ...(debouncedSearchTerm && { search: debouncedSearchTerm }),
-      ...(filters.department !== 'all' && { department: filters.department }),
-      ...(filters.category !== 'all' && { category: filters.category }),
-      ...(filters.academicLevel !== 'all' && { academicLevel: filters.academicLevel }),
-      visibility: role === 'student' ? 'all' : filters.visibility,
-    }),
-    [
-      debouncedSearchTerm,
-      filters.department,
-      filters.category,
-      filters.academicLevel,
-      filters.visibility,
-      role,
-    ]
-  );
-
-  const filteredResources = useMemo(() => {
-    if (role === 'student') {
-      return resources.filter((resource: Resource) => resource.visibility === 'all');
+const filterParams = useMemo(() => {
+  const getVisibilityParam = () => {
+    if (role === 'student') return 'all';
+    if (role === 'admin') {
+      if (filters.visibility === 'all') return undefined;
+      if (filters.visibility === 'admin') return 'admin';
     }
-    return resources;
-  }, [resources, role]);
+    return filters.visibility;
+  };
+
+  const visibilityParam = getVisibilityParam();
+  
+  return {
+    ...(debouncedSearchTerm && { search: debouncedSearchTerm }),
+    ...(filters.department !== 'all' && { department: filters.department }),
+    ...(filters.category !== 'all' && { category: filters.category }),
+    ...(filters.academicLevel !== 'all' && { academicLevel: filters.academicLevel }),
+    ...(visibilityParam && { visibility: visibilityParam }),
+  };
+}, [
+  debouncedSearchTerm,
+  filters.department,
+  filters.category,
+  filters.academicLevel,
+  filters.visibility,
+  role,
+]);
 
   const handleDeleteResource = useCallback(
     async (resourceId: string): Promise<boolean> => {
@@ -320,13 +323,13 @@ const ResourcesComponent = ({ role, userData }: ResourcesComponentProps) => {
         <ResourceTable
           isError={isError}
           isLoading={isLoading}
+          resources={resources}
           token={userData.token}
           total={pagination.total}
           limit={pagination.limit}
           allResources={resources}
           onRefresh={loadResources}
           setPage={handlePageChange}
-          resources={filteredResources}
           page={pagination.currentPage}
           onClearFilters={clearFilters}
           searchTerm={filters.searchTerm}
