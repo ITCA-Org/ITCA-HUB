@@ -125,7 +125,7 @@ export interface ResourceModalActions {
   onRestore?: (resource: Resource) => void;
 }
 
-export interface GenericConfirmationModalProps {
+export interface ConfirmationModalProps {
   title: string;
   isOpen: boolean;
   message: string;

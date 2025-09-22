@@ -2,27 +2,27 @@ import {
   Tag,
   Eye,
   User,
+  File,
   Plus,
+  Video,
+  Music,
   Clock,
   Radio,
   Trash,
   Laptop,
   Loader,
   Shield,
+  Archive,
   Calendar,
   Database,
   Download,
   FileText,
   ArrowLeft,
   Building2,
-  GraduationCap,
   FileImage,
-  FileSpreadsheet,
   Presentation,
-  Archive,
-  Music,
-  Video,
-  File,
+  GraduationCap,
+  FileSpreadsheet,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { useRouter } from 'next/router';
@@ -31,6 +31,7 @@ import useResources from '@/hooks/resources/use-resource';
 import useResourceAdmin from '@/hooks/resources/use-resource-admin';
 import DashboardLayout from '@/components/dashboard/layout/dashboard-layout';
 import { NetworkError, EmptyState } from '@/components/dashboard/error-messages';
+import ConfirmationModal from '@/components/dashboard/modals/confirmation-modal';
 import DashboardPageHeader from '@/components/dashboard/layout/dashboard-page-header';
 import ResourceViewerSkeleton from '@/components/dashboard/skeletons/resource-viewer-skeleton';
 import { FileItem, Resource, ResourceViewerComponentProps } from '@/types/interfaces/resource';
@@ -39,8 +40,12 @@ const ResourceViewerComponent = ({ role, userData }: ResourceViewerComponentProp
   const router = useRouter();
   const { id } = router.query;
 
+  const [fileToDownload, setFileToDownload] = useState<FileItem | null>(null);
   const [isDeletingFile, setIsDeletingFile] = useState<string | null>(null);
+  const [showDownloadFileModal, setShowDownloadFileModal] = useState(false);
   const [isDownloading, setIsDownloading] = useState<string | null>(null);
+  const [fileToDelete, setFileToDelete] = useState<string | null>(null);
+  const [showDeleteFileModal, setShowDeleteFileModal] = useState(false);
   const [resource, setResource] = useState<Resource | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [files, setFiles] = useState<FileItem[]>([]);
@@ -52,7 +57,6 @@ const ResourceViewerComponent = ({ role, userData }: ResourceViewerComponentProp
 
   const adminHook = useResourceAdmin({ token: userData.token });
 
-  /*==================== Fetch Resource Data ====================*/
   useEffect(() => {
     const abortController = new AbortController();
     let isMounted = true;
@@ -109,33 +113,60 @@ const ResourceViewerComponent = ({ role, userData }: ResourceViewerComponentProp
   const handleDownload = async (file: FileItem) => {
     if (!resource) return;
 
+    setFileToDownload(file);
+    setShowDownloadFileModal(true);
+  };
+
+  const confirmDownloadFile = async () => {
+    if (!fileToDownload || !resource) return;
+
     try {
-      setIsDownloading(file.url);
-      await downloadFile(file.url, resource._id);
+      setIsDownloading(fileToDownload.url);
+      await downloadFile(fileToDownload.url, resource._id);
+
+      setShowDownloadFileModal(false);
+      setFileToDownload(null);
     } catch {
     } finally {
       setIsDownloading(null);
     }
   };
 
+  const handleCloseDownloadModal = () => {
+    setShowDownloadFileModal(false);
+    setFileToDownload(null);
+  };
+
   const handleDeleteFile = async (fileUrl: string) => {
     if (!resource || role !== 'admin') return;
 
-    const confirmDelete = window.confirm('Are you sure you want to delete this file?');
-    if (!confirmDelete) return;
+    setFileToDelete(fileUrl);
+    setShowDeleteFileModal(true);
+  };
+
+  const confirmDeleteFile = async () => {
+    if (!fileToDelete || !resource) return;
 
     try {
-      setIsDeletingFile(fileUrl);
-      const updatedResource = await adminHook.deleteFileFromResource(resource._id, fileUrl);
+      setIsDeletingFile(fileToDelete);
+      const updatedResource = await adminHook.deleteFileFromResource(resource._id, fileToDelete);
 
-      setFiles((prev) => prev.filter((file) => file.url !== fileUrl));
+      setFiles((prev) => prev.filter((file) => file.url !== fileToDelete));
       if (updatedResource) {
         setResource(updatedResource);
       }
+
+      setShowDeleteFileModal(false);
+      setFileToDelete(null);
     } catch {
     } finally {
       setIsDeletingFile(null);
     }
+  };
+
+  const handleCloseDeleteModal = () => {
+    setShowDeleteFileModal(false);
+    setFileToDelete(null);
   };
 
   const handleRetry = () => {
@@ -631,6 +662,36 @@ const ResourceViewerComponent = ({ role, userData }: ResourceViewerComponentProp
         </>
       )}
       {/*==================== End of Content Area ====================*/}
+
+      {/*==================== Download File Confirmation Modal ====================*/}
+      <ConfirmationModal
+        variant="primary"
+        title="Download File"
+        cancelText="Cancel"
+        confirmText="Download"
+        loadingText="Downloading..."
+        isOpen={showDownloadFileModal}
+        onConfirm={confirmDownloadFile}
+        onClose={handleCloseDownloadModal}
+        isLoading={isDownloading === fileToDownload?.url}
+        message={`Are you sure you want to download "${fileToDownload?.name}"? This action will start the file download.`}
+      />
+      {/*==================== End of Download File Confirmation Modal ====================*/}
+
+      {/*==================== Delete File Confirmation Modal ====================*/}
+      <ConfirmationModal
+        variant="danger"
+        title="Delete File"
+        cancelText="Cancel"
+        confirmText="Delete File"
+        isOpen={showDeleteFileModal}
+        onConfirm={confirmDeleteFile}
+        loadingText="Deleting File..."
+        onClose={handleCloseDeleteModal}
+        isLoading={isDeletingFile === fileToDelete}
+        message="Are you sure you want to delete this file? This action cannot be undone and the file will be permanently removed from this resource."
+      />
+      {/*==================== End of Delete File Confirmation Modal ====================*/}
     </DashboardLayout>
   );
 };

@@ -1,8 +1,8 @@
 import { X, AlertTriangle } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { GenericConfirmationModalProps } from '@/types/interfaces/modal';
+import { ConfirmationModalProps } from '@/types/interfaces/modal';
 
-const GenericConfirmationModal = ({
+const ConfirmationModal = ({
   icon,
   title,
   message,
@@ -14,7 +14,7 @@ const GenericConfirmationModal = ({
   isLoading = false,
   variant = 'primary',
   cancelText = 'Cancel',
-}: GenericConfirmationModalProps) => {
+}: ConfirmationModalProps) => {
   const getVariantStyles = () => {
     switch (variant) {
       case 'danger':
@@ -141,4 +141,4 @@ const GenericConfirmationModal = ({
   );
 };
 
-export default GenericConfirmationModal;
+export default ConfirmationModal;
