@@ -20,7 +20,7 @@ const EmptyState: React.FC<EmptyStateProps> = ({
 
   return (
     <div className="rounded-2xl bg-white p-8 text-center">
-      <FileText className="mx-auto h-12 w-12 text-gray-400 mb-3" />
+      <FileText className="mx-auto h-12 w-12 bg-blue-100/70 p-2 rounded-full text-blue-700 mb-3" />
       <h3 className="text-lg font-medium text-gray-900 mb-1">{title || defaultTitle}</h3>
       <p className="text-gray-500 mb-4">{description || defaultDescription}</p>
       <div className="flex justify-center space-x-4">
