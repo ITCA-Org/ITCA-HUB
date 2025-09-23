@@ -3,6 +3,7 @@ import { useState } from 'react';
 import Sidebar from './dashboard-sidebar';
 import DashboardHeader from './dashboard-header';
 import { DashboardLayoutProps } from '@/types/interfaces/dashboard';
+import { motion } from 'framer-motion';
 
 const DashboardLayout = ({ children, title = 'Dashboard', token }: DashboardLayoutProps) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -63,7 +64,13 @@ const DashboardLayout = ({ children, title = 'Dashboard', token }: DashboardLayo
           />
 
           <main className="flex-1 overflow-y-auto w-full overflow-x-hidden px-4 py-12 min-[968px]:px-9 min-[968px]:pr-7 min-[968px]:py-9">
-            {children}
+            <motion.div
+              transition={{ duration: 0.3 }}
+              animate={{ opacity: 1, y: 0 }}
+              initial={{ opacity: 0, y: 10 }}
+            >
+              {children}
+            </motion.div>
           </main>
         </div>
         {/*==================== End of Main Content ====================*/}

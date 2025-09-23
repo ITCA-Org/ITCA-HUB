@@ -2,12 +2,12 @@ import EventCard from './event-card';
 import useEvents from '@/hooks/events/use-event';
 import { useState, useEffect, useCallback } from 'react';
 import DashboardLayout from '@/components/dashboard/layout/dashboard-layout';
-import { NetworkError, EmptyState } from '@/components/dashboard/error-messages';
 import EditEventModal from '@/components/dashboard/modals/events/edit-event-modal';
 import EventCardSkeleton from '@/components/dashboard/skeletons/event-card-skeleton';
 import DashboardPageHeader from '@/components/dashboard/layout/dashboard-page-header';
 import CreateEventModal from '@/components/dashboard/modals/events/create-event-modal';
 import DeleteEventModal from '@/components/dashboard/modals/events/delete-event-modal';
+import { NetworkError, EmptyState, NoResults } from '@/components/dashboard/error-messages';
 import { Calendar, Search, RefreshCw, Plus, ChevronLeft, ChevronRight } from 'lucide-react';
 import { CreateEventData, EventProps, EventsComponentProps } from '@/types/interfaces/event';
 
@@ -23,6 +23,7 @@ const EventsComponent = ({ role, userData }: EventsComponentProps) => {
   const [totalPages, setTotalPages] = useState(0);
   const [status, setStatus] = useState('all');
   const [page, setPage] = useState(1);
+  const [isClearingFilters, setIsClearingFilters] = useState(false);
   const limit = 9;
 
   const {
@@ -38,6 +39,11 @@ const EventsComponent = ({ role, userData }: EventsComponentProps) => {
     registerForEvent,
     unregisterFromEvent,
   } = useEvents({ token: userData.token });
+
+  /**===============================
+   * Check if there are active filters
+   ===============================*/
+  const hasActiveFilters = searchTerm.trim() !== '' || status !== 'all';
 
   const loadEvents = useCallback(
     async (signal?: AbortSignal) => {
@@ -146,10 +152,12 @@ const EventsComponent = ({ role, userData }: EventsComponentProps) => {
   };
 
   const resetFilters = () => {
+    setIsClearingFilters(true);
     setSearchTerm('');
     setStatus('all');
     setPage(1);
     clearCache();
+    // isClearingFilters will be set to false by the useEffect when new data loads
   };
 
   /**===============================
@@ -182,6 +190,7 @@ const EventsComponent = ({ role, userData }: EventsComponentProps) => {
             setEvents(response.events);
             setTotalEvents(response.total);
             setTotalPages(response.pagination.totalPages || Math.ceil(response.total / limit));
+            setIsClearingFilters(false);
           }
         }
       } catch (error) {
@@ -388,7 +397,7 @@ const EventsComponent = ({ role, userData }: EventsComponentProps) => {
       {/*==================== End of Filters ====================*/}
 
       {/*==================== Content Area ====================*/}
-      {isLoading || events === null ? (
+      {isLoading || events === null || isClearingFilters ? (
         <EventCardSkeleton />
       ) : isError ? (
         <NetworkError
@@ -397,21 +406,27 @@ const EventsComponent = ({ role, userData }: EventsComponentProps) => {
           description="Please check your internet connection and try again."
         />
       ) : events.length === 0 ? (
-        <EmptyState
-          itemName="event"
-          uploadIcon={Calendar}
-          title="No events found"
-          showRefreshButton={true}
-          onRefresh={handleRefresh}
-          showUploadButton={role === 'admin'}
-          uploadUrl={role === 'admin' ? '/events' : '/help'}
-          description={
-            status === 'all'
-              ? 'There are no events at the moment. Check back later!'
-              : `No ${status} events found. Try adjusting your filter(s).`
-          }
-          uploadButtonText={role === 'admin' ? 'Create Event' : 'Go To Dashboard'}
-        />
+        hasActiveFilters && !isClearingFilters ? (
+          <NoResults
+            filterTerm={searchTerm}
+            title="No matching events"
+            onClearFilters={resetFilters}
+            clearButtonText="Clear All Filters"
+            description={`No events match your current search${status !== 'all' ? ` and ${status} filter` : ''}. Try adjusting your criteria.`}
+          />
+        ) : (
+          <EmptyState
+            itemName="event"
+            uploadIcon={Calendar}
+            title="No events found"
+            showRefreshButton={true}
+            onRefresh={handleRefresh}
+            showUploadButton={role === 'admin'}
+            uploadUrl={role === 'admin' ? '/events' : '/help'}
+            description="There are no events at the moment. Check back later!"
+            uploadButtonText={role === 'admin' ? 'Create Event' : 'Go To Dashboard'}
+          />
+        )
       ) : (
         <div className="bg-transparent">
           <div className="py-6">
