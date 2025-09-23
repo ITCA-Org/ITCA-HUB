@@ -44,8 +44,8 @@ const EventsComponent = ({ role, userData }: EventsComponentProps) => {
       const response = await getAllEvents({
         page,
         limit,
-        status: status !== 'all' ? status : undefined,
         signal,
+        status: status !== 'all' ? status : undefined,
       });
 
       if (!signal?.aborted) {

@@ -1,16 +1,16 @@
 import { toast } from 'sonner';
-import { BASE_URL } from '@/utils/url';
-import axios, { AxiosError } from 'axios';
-import useDebounce from '@/utils/debounce';
-import { useState, useCallback, useRef } from 'react';
-import { getErrorMessage } from '@/utils/error';
-import { CustomError, ErrorResponseData } from '@/types';
 import {
+  EventProps,
   UseEventsProps,
   GetEventsParams,
   CreateEventData,
-  EventProps,
 } from '@/types/interfaces/event';
+import { BASE_URL } from '@/utils/url';
+import axios, { AxiosError } from 'axios';
+import useDebounce from '@/utils/debounce';
+import { getErrorMessage } from '@/utils/error';
+import { useState, useCallback, useRef } from 'react';
+import { CustomError, ErrorResponseData } from '@/types';
 
 const useEvents = ({ token }: UseEventsProps) => {
   const [isLoading, setIsLoading] = useState(false);
@@ -31,8 +31,7 @@ const useEvents = ({ token }: UseEventsProps) => {
   const debouncedSearchQuery = useDebounce(searchTerm, 500);
 
   /**==============================================
-   * Get all events with pagination and filtering
-   * Enhanced with throttling and caching
+   * Get all events with pagination and filtering.
    ==============================================*/
   const getAllEvents = useCallback(
     async (params: GetEventsParams = {}) => {
@@ -109,7 +108,6 @@ const useEvents = ({ token }: UseEventsProps) => {
           };
         } finally {
           setIsLoading(false);
-          // Clean up cache entry
           requestCacheRef.current.delete(cacheKey);
           const timeout = cacheTimeoutRef.current.get(cacheKey);
           if (timeout) {

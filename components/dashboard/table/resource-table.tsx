@@ -144,7 +144,8 @@ const ResourceTable = ({
 
   const handleDownload = async (resource: Resource, e?: React.MouseEvent) => {
     if (e) e.stopPropagation();
-    await downloadResource(resource);
+    const role = userRole === 'admin' ? 'admin' : 'student';
+    await downloadResource(resource, role);
   };
 
   const formatCategoryName = (category: string) => {

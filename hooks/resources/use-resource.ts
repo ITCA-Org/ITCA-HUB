@@ -31,11 +31,17 @@ const useResources = ({ token }: UseResourcesProps): UseResourcesReturn => {
   const lastRequestRef = useRef<number>(0);
   const MIN_REQUEST_INTERVAL = 500;
 
+  const requestCacheRef = useRef<Map<string, Promise<unknown>>>(new Map());
+  const cacheTimeoutRef = useRef<Map<string, NodeJS.Timeout>>(new Map());
+  const CACHE_DURATION = 30000;
+
   const fetchResources = useCallback(
     async (params: FetchResourcesParams = {}) => {
       const now = Date.now();
       if (now - lastRequestRef.current < MIN_REQUEST_INTERVAL) {
-        await new Promise((resolve) => setTimeout(resolve, MIN_REQUEST_INTERVAL));
+        await new Promise((resolve) =>
+          setTimeout(resolve, MIN_REQUEST_INTERVAL - (now - lastRequestRef.current))
+        );
       }
       lastRequestRef.current = Date.now();
 
@@ -52,30 +58,98 @@ const useResources = ({ token }: UseResourcesProps): UseResourcesReturn => {
         includeDeleted = false,
       } = params;
 
+      const cacheKey = JSON.stringify({
+        page: page.toString(),
+        limit: limit.toString(),
+        search: params.search?.trim() || '',
+        category: category && category !== 'all' ? category : '',
+        visibility: visibility || '',
+        academicLevel: academicLevel && academicLevel !== 'all' ? academicLevel : '',
+        department: department && department !== 'all' ? department : '',
+        sortBy: sortBy || '',
+        sortOrder: sortOrder || '',
+        includeDeleted,
+        signal: signal ? 'present' : 'absent',
+      });
+
+      const existingRequest = requestCacheRef.current.get(cacheKey) as
+        | Promise<ResourcesResponse>
+        | undefined;
+      if (existingRequest) {
+        try {
+          const data = await existingRequest;
+          if (!signal?.aborted) {
+            let filteredResources = data.data.resources;
+
+            if (!includeDeleted) {
+              filteredResources = filteredResources.filter(
+                (resource: Resource) => !resource.isDeleted
+              );
+            }
+
+            setResources(filteredResources);
+            setPagination((prev) => ({
+              ...prev,
+              ...data.data.pagination,
+            }));
+            setIsError(false);
+            setIsLoading(false);
+          }
+          return;
+        } catch {}
+      }
+
       setIsLoading(true);
       setIsError(false);
 
-      try {
-        const { data } = await axios.get<ResourcesResponse>(`${BASE_URL}/resources`, {
-          signal,
-          params: {
-            page: page.toString(),
-            limit: limit.toString(),
-            ...(params.search?.trim() && { search: params.search.trim() }),
-            ...(category && category !== 'all' && { category }),
-            ...(visibility && { visibility }),
-            ...(academicLevel && academicLevel !== 'all' && { academicLevel }),
-            ...(department && department !== 'all' && { department }),
-            ...(sortBy && { sortBy }),
-            ...(sortOrder && { sortOrder }),
-          },
-          headers: {
-            Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/json',
-          },
-        });
+      const requestPromise = (async () => {
+        try {
+          const { data } = await axios.get<ResourcesResponse>(`${BASE_URL}/resources`, {
+            signal,
+            params: {
+              page: page.toString(),
+              limit: limit.toString(),
+              ...(params.search?.trim() && { search: params.search.trim() }),
+              ...(category && category !== 'all' && { category }),
+              ...(visibility && { visibility }),
+              ...(academicLevel && academicLevel !== 'all' && { academicLevel }),
+              ...(department && department !== 'all' && { department }),
+              ...(sortBy && { sortBy }),
+              ...(sortOrder && { sortOrder }),
+            },
+            headers: {
+              Authorization: `Bearer ${token}`,
+              'Content-Type': 'application/json',
+            },
+          });
 
-        if (data.status === 'success') {
+          if (data.status === 'success') {
+            return data;
+          } else {
+            throw new Error('Failed to fetch resources');
+          }
+        } finally {
+          requestCacheRef.current.delete(cacheKey);
+          const timeout = cacheTimeoutRef.current.get(cacheKey);
+          if (timeout) {
+            clearTimeout(timeout);
+            cacheTimeoutRef.current.delete(cacheKey);
+          }
+        }
+      })();
+
+      requestCacheRef.current.set(cacheKey, requestPromise);
+
+      const timeout = setTimeout(() => {
+        requestCacheRef.current.delete(cacheKey);
+        cacheTimeoutRef.current.delete(cacheKey);
+      }, CACHE_DURATION);
+      cacheTimeoutRef.current.set(cacheKey, timeout);
+
+      try {
+        const data = (await requestPromise) as ResourcesResponse;
+
+        if (!signal?.aborted) {
           let filteredResources = data.data.resources;
 
           if (!includeDeleted) {
@@ -91,8 +165,6 @@ const useResources = ({ token }: UseResourcesProps): UseResourcesReturn => {
           }));
           setIsError(false);
           setIsLoading(false);
-        } else {
-          throw new Error('Failed to fetch resources');
         }
       } catch (err: unknown) {
         if (axios.isCancel(err)) {
@@ -115,27 +187,67 @@ const useResources = ({ token }: UseResourcesProps): UseResourcesReturn => {
 
   const fetchSingleResource = useCallback(
     async (resourceId: string, signal?: AbortSignal): Promise<Resource | null> => {
-      try {
-        const response = await axios.get<SingleResourceResponse>(
-          `${BASE_URL}/resources/${resourceId}`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-              'Content-Type': 'application/json',
-            },
-            signal,
-          }
-        );
+      const cacheKey = `single_resource_${resourceId}`;
 
-        if (!signal?.aborted && response.data.status === 'success') {
-          const resource = response.data.data.resource;
-          return {
-            ...resource,
-            _id: resource.resourceId || resource._id,
-          };
-        } else {
-          throw new Error('Failed to fetch resource');
+      const existingRequest = requestCacheRef.current.get(cacheKey) as
+        | Promise<SingleResourceResponse>
+        | undefined;
+      if (existingRequest) {
+        try {
+          const data = await existingRequest;
+          if (!signal?.aborted && data.status === 'success') {
+            const resource = data.data.resource;
+            return {
+              ...resource,
+              _id: resource.resourceId || resource._id,
+            };
+          }
+        } catch {}
+      }
+
+      const requestPromise = (async () => {
+        try {
+          const response = await axios.get<SingleResourceResponse>(
+            `${BASE_URL}/resources/${resourceId}`,
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+                'Content-Type': 'application/json',
+              },
+              signal,
+            }
+          );
+
+          if (!signal?.aborted && response.data.status === 'success') {
+            return response.data;
+          } else {
+            throw new Error('Failed to fetch resource');
+          }
+        } finally {
+          requestCacheRef.current.delete(cacheKey);
+          const timeout = cacheTimeoutRef.current.get(cacheKey);
+          if (timeout) {
+            clearTimeout(timeout);
+            cacheTimeoutRef.current.delete(cacheKey);
+          }
         }
+      })();
+
+      requestCacheRef.current.set(cacheKey, requestPromise);
+
+      const timeout = setTimeout(() => {
+        requestCacheRef.current.delete(cacheKey);
+        cacheTimeoutRef.current.delete(cacheKey);
+      }, CACHE_DURATION);
+      cacheTimeoutRef.current.set(cacheKey, timeout);
+
+      try {
+        const data = (await requestPromise) as SingleResourceResponse;
+        const resource = data.data.resource;
+        return {
+          ...resource,
+          _id: resource.resourceId || resource._id,
+        };
       } catch (error) {
         if (axios.isCancel(error)) {
           return null;
@@ -292,12 +404,19 @@ const useResources = ({ token }: UseResourcesProps): UseResourcesReturn => {
     [fetchResources, pagination.currentPage, pagination.limit]
   );
 
+  const clearCache = useCallback(() => {
+    requestCacheRef.current.clear();
+    cacheTimeoutRef.current.forEach((timeout) => clearTimeout(timeout));
+    cacheTimeoutRef.current.clear();
+  }, []);
+
   return {
     isError,
     trackView,
     resources,
     isLoading,
     pagination,
+    clearCache,
     downloadFile,
     trackDownload,
     fetchResources,

@@ -122,7 +122,7 @@ const ResourceViewerComponent = ({ role, userData }: ResourceViewerComponentProp
 
     try {
       setIsDownloading(fileToDownload.url);
-      await downloadFile(fileToDownload.url, resource._id);
+      await downloadFile(fileToDownload.url, resource._id, role);
 
       setShowDownloadFileModal(false);
       setFileToDownload(null);

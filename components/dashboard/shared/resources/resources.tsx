@@ -10,7 +10,7 @@ import DashboardPageHeader from '@/components/dashboard/layout/dashboard-page-he
 import { Upload, Filter, Building2, Tag, Eye, Search, GraduationCap, Trash2 } from 'lucide-react';
 
 const ResourcesComponent = ({ role, userData }: ResourcesComponentProps) => {
-  const { isError, resources, isLoading, pagination, fetchResources } = useResources({
+  const { isError, resources, isLoading, pagination, fetchResources, clearCache } = useResources({
     token: userData.token,
   });
 
@@ -28,33 +28,33 @@ const ResourcesComponent = ({ role, userData }: ResourcesComponentProps) => {
 
   const debouncedSearchTerm = useDebounce(filters.searchTerm, 500);
 
-const filterParams = useMemo(() => {
-  const getVisibilityParam = () => {
-    if (role === 'student') return 'all';
-    if (role === 'admin') {
-      if (filters.visibility === 'all') return undefined;
-      if (filters.visibility === 'admin') return 'admin';
-    }
-    return filters.visibility;
-  };
+  const filterParams = useMemo(() => {
+    const getVisibilityParam = () => {
+      if (role === 'student') return 'all';
+      if (role === 'admin') {
+        if (filters.visibility === 'all') return undefined;
+        if (filters.visibility === 'admin') return 'admin';
+      }
+      return filters.visibility;
+    };
 
-  const visibilityParam = getVisibilityParam();
-  
-  return {
-    ...(debouncedSearchTerm && { search: debouncedSearchTerm }),
-    ...(filters.department !== 'all' && { department: filters.department }),
-    ...(filters.category !== 'all' && { category: filters.category }),
-    ...(filters.academicLevel !== 'all' && { academicLevel: filters.academicLevel }),
-    ...(visibilityParam && { visibility: visibilityParam }),
-  };
-}, [
-  debouncedSearchTerm,
-  filters.department,
-  filters.category,
-  filters.academicLevel,
-  filters.visibility,
-  role,
-]);
+    const visibilityParam = getVisibilityParam();
+
+    return {
+      ...(debouncedSearchTerm && { search: debouncedSearchTerm }),
+      ...(filters.department !== 'all' && { department: filters.department }),
+      ...(filters.category !== 'all' && { category: filters.category }),
+      ...(filters.academicLevel !== 'all' && { academicLevel: filters.academicLevel }),
+      ...(visibilityParam && { visibility: visibilityParam }),
+    };
+  }, [
+    debouncedSearchTerm,
+    filters.department,
+    filters.category,
+    filters.academicLevel,
+    filters.visibility,
+    role,
+  ]);
 
   const handleDeleteResource = useCallback(
     async (resourceId: string): Promise<boolean> => {
@@ -62,12 +62,13 @@ const filterParams = useMemo(() => {
 
       try {
         await adminHook.deleteResourcePermanently(resourceId);
+        clearCache();
         return true;
       } catch {
         return false;
       }
     },
-    [adminHook, role]
+    [adminHook, role, clearCache]
   );
 
   const loadResources = useCallback(() => {
@@ -102,7 +103,8 @@ const filterParams = useMemo(() => {
       visibility: 'all',
       academicLevel: 'all',
     });
-  }, []);
+    clearCache();
+  }, [clearCache]);
 
   const hasActiveFilters = useMemo(() => {
     return (

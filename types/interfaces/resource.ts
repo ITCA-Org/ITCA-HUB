@@ -245,14 +245,15 @@ export interface ResourceFilterSkeletonProps {
 
 export interface UseResourcesReturn {
   isError: boolean;
-  resources: Resource[];
   isLoading: boolean;
+  resources: Resource[];
   pagination: Pagination;
-  trackDownload: (resourceId: string) => Promise<void>;
-  downloadResource: (resource: Resource) => Promise<void>;
+  clearCache: () => void;
   refreshResources: (params?: FetchResourcesParams) => void;
   fetchResources: (params?: FetchResourcesParams) => Promise<void>;
-  downloadFile: (fileUrl: string, fileName: string) => Promise<void>;
+  trackDownload: (resourceId: string, role?: 'admin' | 'student') => Promise<void>;
+  downloadResource: (resource: Resource, role?: 'admin' | 'student') => Promise<void>;
   fetchSingleResource: (resourceId: string, signal?: AbortSignal) => Promise<Resource | null>;
+  downloadFile: (fileUrl: string, resourceId?: string, role?: 'admin' | 'student') => Promise<void>;
   trackView: (resourceId: string, role: 'admin' | 'student', signal?: AbortSignal) => Promise<void>;
 }
