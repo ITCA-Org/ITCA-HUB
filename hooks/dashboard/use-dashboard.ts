@@ -1,8 +1,8 @@
 import { toast } from 'sonner';
 import {
+  DashboardData,
   UseDashboardProps,
   UseDashboardReturn,
-  DashboardData,
   FetchDashboardParams,
 } from '@/types/interfaces/dashboard';
 import { BASE_URL } from '@/utils/url';
