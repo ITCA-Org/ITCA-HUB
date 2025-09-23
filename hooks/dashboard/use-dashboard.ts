@@ -1,11 +1,11 @@
-import { useState, useRef, useCallback } from 'react';
-import axios, { AxiosError } from 'axios';
 import { toast } from 'sonner';
 import { BASE_URL } from '@/utils/url';
+import axios, { AxiosError } from 'axios';
 import { getErrorMessage } from '@/utils/error';
+import { UserData } from '@/types/interfaces/table';
+import { useState, useRef, useCallback } from 'react';
 import { CustomError, ErrorResponseData } from '@/types';
 import { DashboardStats } from '@/types/interfaces/dashboard';
-import { UserData } from '@/types/interfaces/table';
 
 const MIN_REQUEST_INTERVAL = 500;
 
