@@ -29,6 +29,7 @@ const EventsComponent = ({ role, userData }: EventsComponentProps) => {
     isError,
     isLoading,
     searchTerm,
+    clearCache,
     createEvent,
     updateEvent,
     deleteEvent,
@@ -38,71 +39,99 @@ const EventsComponent = ({ role, userData }: EventsComponentProps) => {
     unregisterFromEvent,
   } = useEvents({ token: userData.token });
 
-  /**===================
-   * Load events data
-   ===================*/
-  const loadEvents = useCallback(async () => {
-    const response = await getAllEvents({
-      page,
-      limit,
-      status: status !== 'all' ? status : undefined,
-    });
+  const loadEvents = useCallback(
+    async (signal?: AbortSignal) => {
+      const response = await getAllEvents({
+        page,
+        limit,
+        status: status !== 'all' ? status : undefined,
+        signal,
+      });
 
-    setEvents(response.events);
-    setTotalEvents(response.total);
-    setTotalPages(response.pagination.totalPages || Math.ceil(response.total / limit));
-  }, [page, limit, status, getAllEvents]);
+      if (!signal?.aborted) {
+        setEvents(response.events);
+        setTotalEvents(response.total);
+        setTotalPages(response.pagination.totalPages || Math.ceil(response.total / limit));
+      }
+    },
+    [page, limit, status, getAllEvents]
+  );
 
-  /**===============================
-   * Event handlers for admin
-   ===============================*/
   const handleCreateEvent = async (eventData: CreateEventData) => {
-    await createEvent(eventData);
-    setShowCreateModal(false);
-    loadEvents();
+    const controller = new AbortController();
+    try {
+      await createEvent(eventData, controller.signal);
+      setShowCreateModal(false);
+      loadEvents(controller.signal);
+    } catch (error) {
+      if (!controller.signal.aborted) {
+        console.error('Failed to create event:', error);
+      }
+    }
   };
 
   const handleEditEvent = async (eventId: string, eventData: CreateEventData) => {
-    await updateEvent(eventId, eventData);
-    setShowEditModal(false);
-    setEventToEdit(null);
-    loadEvents();
+    const controller = new AbortController();
+    try {
+      await updateEvent(eventId, eventData, controller.signal);
+      setShowEditModal(false);
+      setEventToEdit(null);
+      loadEvents(controller.signal);
+    } catch (error) {
+      if (!controller.signal.aborted) {
+        console.error('Failed to update event:', error);
+      }
+    }
   };
 
   const handleDeleteEvent = async () => {
     if (!eventToDelete) return;
-    await deleteEvent(eventToDelete);
-    setShowDeleteModal(false);
-    setEventToDelete(null);
-    loadEvents();
+    const controller = new AbortController();
+    try {
+      await deleteEvent(eventToDelete, controller.signal);
+      setShowDeleteModal(false);
+      setEventToDelete(null);
+      loadEvents(controller.signal);
+    } catch (error) {
+      if (!controller.signal.aborted) {
+        console.error('Failed to delete event:', error);
+      }
+    }
   };
 
-  /**===============================
-   * Event handlers for students
-   ===============================*/
   const handleRegister = async (eventId: string) => {
-    await registerForEvent(eventId);
-    loadEvents();
+    const controller = new AbortController();
+    try {
+      await registerForEvent(eventId, controller.signal);
+      loadEvents(controller.signal);
+    } catch (error) {
+      if (!controller.signal.aborted) {
+        console.error('Failed to register for event:', error);
+      }
+    }
   };
 
   const handleUnregister = async (eventId: string) => {
-    await unregisterFromEvent(eventId);
-    loadEvents();
+    const controller = new AbortController();
+    try {
+      await unregisterFromEvent(eventId, controller.signal);
+      loadEvents(controller.signal);
+    } catch (error) {
+      if (!controller.signal.aborted) {
+        console.error('Failed to unregister from event:', error);
+      }
+    }
   };
 
-  /**===================
-   * Refresh handler
-   ===================*/
   const handleRefresh = () => {
     setSearchTerm('');
     setStatus('all');
     setPage(1);
-    loadEvents();
+    clearCache();
+    const controller = new AbortController();
+    loadEvents(controller.signal);
   };
 
-  /**===================
-   * Modal handlers
-   ===================*/
   const handleEditClick = (eventId: string) => {
     const event = events?.find((e) => e._id === eventId);
     if (event) {
@@ -120,6 +149,7 @@ const EventsComponent = ({ role, userData }: EventsComponentProps) => {
     setSearchTerm('');
     setStatus('all');
     setPage(1);
+    clearCache();
   };
 
   /**===============================
@@ -148,14 +178,14 @@ const EventsComponent = ({ role, userData }: EventsComponentProps) => {
             signal: abortController.signal,
           });
 
-          if (isActive) {
+          if (isActive && !abortController.signal.aborted) {
             setEvents(response.events);
             setTotalEvents(response.total);
             setTotalPages(response.pagination.totalPages || Math.ceil(response.total / limit));
           }
         }
       } catch (error) {
-        if (isActive && !(error instanceof Error && error.name === 'AbortError')) {
+        if (isActive && !abortController.signal.aborted) {
           console.error('Failed to load events:', error);
         }
       }
@@ -168,6 +198,15 @@ const EventsComponent = ({ role, userData }: EventsComponentProps) => {
       abortController.abort();
     };
   }, [page, limit, status, getAllEvents]);
+
+  /**=====================================
+   * Cleanup on component unmount
+   =====================================*/
+  useEffect(() => {
+    return () => {
+      clearCache();
+    };
+  }, [clearCache]);
 
   /**===============================
    * Reset page when filters change
