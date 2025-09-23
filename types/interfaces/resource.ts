@@ -87,7 +87,6 @@ export interface ResourceTableProps {
   totalPages: number;
   onRefresh: () => void;
   resources: Resource[];
-  allResources: Resource[];
   hasActiveFilters?: boolean;
   userRole: 'admin' | 'user';
   onClearFilters: () => void;

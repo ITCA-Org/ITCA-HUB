@@ -23,6 +23,7 @@ const ResourcesComponent = ({ role, userData }: ResourcesComponentProps) => {
     visibility: 'all' as 'all' | 'admin',
     academicLevel: 'all' as 'all' | 'undergraduate' | 'postgraduate',
   });
+  const [isClearingFilters, setIsClearingFilters] = useState(false);
 
   const { limit } = pagination;
 
@@ -96,6 +97,7 @@ const ResourcesComponent = ({ role, userData }: ResourcesComponentProps) => {
   );
 
   const clearFilters = useCallback(() => {
+    setIsClearingFilters(true);
     setFilters({
       searchTerm: '',
       department: 'all',
@@ -105,6 +107,12 @@ const ResourcesComponent = ({ role, userData }: ResourcesComponentProps) => {
     });
     clearCache();
   }, [clearCache]);
+
+  useEffect(() => {
+    if (isClearingFilters && !isLoading) {
+      setIsClearingFilters(false);
+    }
+  }, [isClearingFilters, isLoading]);
 
   const hasActiveFilters = useMemo(() => {
     return (
@@ -324,19 +332,18 @@ const ResourcesComponent = ({ role, userData }: ResourcesComponentProps) => {
 
         <ResourceTable
           isError={isError}
-          isLoading={isLoading}
+          isLoading={isLoading || isClearingFilters}
           resources={resources}
           token={userData.token}
           total={pagination.total}
           limit={pagination.limit}
-          allResources={resources}
           onRefresh={loadResources}
           setPage={handlePageChange}
           page={pagination.currentPage}
           onClearFilters={clearFilters}
           searchTerm={filters.searchTerm}
           totalPages={pagination.totalPages}
-          hasActiveFilters={hasActiveFilters}
+          hasActiveFilters={hasActiveFilters && !isClearingFilters}
           userRole={role === 'admin' ? 'admin' : 'user'}
           onDeleteResource={role === 'admin' ? handleDeleteResource : undefined}
         />

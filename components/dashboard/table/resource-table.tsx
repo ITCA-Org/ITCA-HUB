@@ -38,7 +38,6 @@ const ResourceTable = ({
   isLoading,
   totalPages,
   searchTerm,
-  allResources,
   onClearFilters,
   isError = false,
   mode = 'default',
@@ -161,26 +160,24 @@ const ResourceTable = ({
       {/*==================== Error States ====================*/}
       {isError && <NetworkError onRetry={onRefresh} />}
 
-      {!isError && allResources.length === 0 && (
-        <EmptyState
-          itemName="resource"
-          showUploadButton={mode === 'recycleBin' || userRole === 'admin'}
-          showRefreshButton={mode !== 'recycleBin' && userRole === 'user'}
-          uploadButtonText={mode === 'recycleBin' ? 'Go Back to Resources' : undefined}
-          onRefresh={mode !== 'recycleBin' && userRole === 'user' ? onRefresh : undefined}
-          uploadIcon={mode === 'recycleBin' ? ArrowLeft : undefined}
-          description={
-            mode === 'recycleBin'
-              ? 'No resources in recycle bin. Deleted resources will appear here.'
-              : userRole === 'admin'
-                ? 'Get started by uploading your first educational resource to the library.'
-                : 'Try adjusting your filter(s) or refresh the table.'
-          }
-        />
-      )}
-
-      {!isError && resources.length === 0 && allResources.length > 0 && hasActiveFilters && (
-        <NoResults filterTerm={searchTerm} onClearFilters={onClearFilters} />
+      {!isError && resources.length === 0 && (
+        hasActiveFilters ? (
+          <NoResults filterTerm={searchTerm} onClearFilters={onClearFilters} />
+        ) : (
+          <EmptyState
+            itemName="resource"
+            showUploadButton={mode === 'recycleBin' || userRole === 'admin'}
+            showRefreshButton={mode !== 'recycleBin' && userRole === 'user'}
+            uploadButtonText={mode === 'recycleBin' ? 'Go Back to Resources' : undefined}
+            onRefresh={mode !== 'recycleBin' && userRole === 'user' ? onRefresh : undefined}
+            uploadIcon={mode === 'recycleBin' ? ArrowLeft : undefined}
+            description={
+              mode === 'recycleBin'
+                ? 'No resources in recycle bin. Deleted resources will appear here.'
+                : 'Get started by uploading your first educational resource to the library.'
+            }
+          />
+        )
       )}
       {/*==================== End of Error States ====================*/}
 
