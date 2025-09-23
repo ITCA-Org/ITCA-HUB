@@ -2,11 +2,11 @@ import { UserAuth } from '..';
 
 export interface Resource {
   _id: string;
-  resourceId?: string;
   title: string;
   category: string;
   downloads: number;
   viewCount: number;
+  resourceId?: string;
   createdBy: {
     _id: string;
     firstName: string;
@@ -92,10 +92,10 @@ export interface ResourceTableProps {
   onClearFilters: () => void;
   mode?: 'default' | 'recycleBin';
   setPage: (page: number) => void;
-  onDeleteResource?: (resourceId: string) => Promise<boolean>;
-  onDeleteMultiple?: (resourceIds: string[]) => Promise<boolean>;
   onRestoreResource?: (resourceId: string) => Promise<boolean>;
   onRestoreMultiple?: (resourceIds: string[]) => Promise<boolean>;
+  onDeleteResource?: (resourceId: string, mode?: 'soft' | 'permanent') => Promise<boolean>;
+  onDeleteMultiple?: (resourceIds: string[], mode?: 'soft' | 'permanent') => Promise<boolean>;
 }
 
 export interface AdminResourcesPageProps {
@@ -170,8 +170,8 @@ export interface UseResourceAdminProps {
 }
 
 export interface ResourcesComponentProps {
-  role: 'admin' | 'student';
   userData: UserAuth;
+  role: 'admin' | 'student';
 }
 
 export interface RecycleBinPageProps {
@@ -204,8 +204,8 @@ export interface AdminResourceUploadPageProps {
 
 export interface UseResourceUploaderProps {
   token: string;
-  onUploadComplete?: ResourceUploaderProps['onUploadComplete'];
   onError?: ResourceUploaderProps['onError'];
+  onUploadComplete?: ResourceUploaderProps['onUploadComplete'];
 }
 
 export interface UseResourceTableProps {
@@ -213,10 +213,11 @@ export interface UseResourceTableProps {
   onRefresh: () => void;
   resources: Resource[];
   userRole: 'admin' | 'user';
-  onDeleteResource?: (resourceId: string) => Promise<boolean>;
+  mode?: 'default' | 'recycleBin';
   onRestoreResource?: (resourceId: string) => Promise<boolean>;
-  onDeleteMultiple?: (resourceIds: string[]) => Promise<boolean>;
   onRestoreMultiple?: (resourceIds: string[]) => Promise<boolean>;
+  onDeleteResource?: (resourceId: string, mode?: 'soft' | 'permanent') => Promise<boolean>;
+  onDeleteMultiple?: (resourceIds: string[], mode?: 'soft' | 'permanent') => Promise<boolean>;
 }
 
 export interface AdminResourceViewPageProps {
@@ -228,8 +229,8 @@ export interface StudentResourceViewPageProps {
 }
 
 export interface ResourceViewerComponentProps {
-  role: 'admin' | 'student';
   userData: UserAuth;
+  role: 'admin' | 'student';
 }
 
 export interface FileItem {

@@ -37,7 +37,6 @@ export interface CreateEventModalProps {
   onSave: (newEvent: CreateEventData) => Promise<void>;
 }
 
-
 export interface ResourceEditModalProps {
   isOpen: boolean;
   resource: Resource;
@@ -91,7 +90,7 @@ export interface DeleteResourceModalProps {
   isLoading?: boolean;
   resourceCount: number;
   onConfirm: () => Promise<void>;
-  mode?: 'delete' | 'restore' | 'permanent';
+  mode?: 'soft' | 'restore' | 'permanent';
 }
 
 export interface BaseModalProps {

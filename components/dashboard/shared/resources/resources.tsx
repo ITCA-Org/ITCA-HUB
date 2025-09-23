@@ -58,11 +58,64 @@ const ResourcesComponent = ({ role, userData }: ResourcesComponentProps) => {
   ]);
 
   const handleDeleteResource = useCallback(
-    async (resourceId: string): Promise<boolean> => {
-      if (role !== 'admin' || !adminHook?.toggleResourceTrash) return false;
+    async (resourceId: string, mode: 'soft' | 'permanent' = 'soft'): Promise<boolean> => {
+      if (role !== 'admin' || !adminHook) return false;
 
       try {
-        await adminHook.deleteResourcePermanently(resourceId);
+        if (mode === 'permanent') {
+          await adminHook.deleteResourcePermanently(resourceId);
+        } else {
+          await adminHook.toggleResourceTrash(resourceId);
+        }
+        clearCache();
+        return true;
+      } catch {
+        return false;
+      }
+    },
+    [adminHook, role, clearCache]
+  );
+
+  const handleDeleteMultiple = useCallback(
+    async (resourceIds: string[], mode: 'soft' | 'permanent' = 'soft'): Promise<boolean> => {
+      if (role !== 'admin' || !adminHook) return false;
+
+      try {
+        if (mode === 'permanent') {
+          await adminHook.batchDeleteResourcesPermanently(resourceIds);
+        } else {
+          await adminHook.batchToggleResourceTrash(resourceIds);
+        }
+        clearCache();
+        return true;
+      } catch {
+        return false;
+      }
+    },
+    [adminHook, role, clearCache]
+  );
+
+  const handleRestoreResource = useCallback(
+    async (resourceId: string): Promise<boolean> => {
+      if (role !== 'admin' || !adminHook) return false;
+
+      try {
+        await adminHook.toggleResourceTrash(resourceId);
+        clearCache();
+        return true;
+      } catch {
+        return false;
+      }
+    },
+    [adminHook, role, clearCache]
+  );
+
+  const handleRestoreMultiple = useCallback(
+    async (resourceIds: string[]): Promise<boolean> => {
+      if (role !== 'admin' || !adminHook) return false;
+
+      try {
+        await adminHook.batchRestoreResources(resourceIds);
         clearCache();
         return true;
       } catch {
@@ -332,7 +385,6 @@ const ResourcesComponent = ({ role, userData }: ResourcesComponentProps) => {
 
         <ResourceTable
           isError={isError}
-          isLoading={isLoading || isClearingFilters}
           resources={resources}
           token={userData.token}
           total={pagination.total}
@@ -343,9 +395,13 @@ const ResourcesComponent = ({ role, userData }: ResourcesComponentProps) => {
           onClearFilters={clearFilters}
           searchTerm={filters.searchTerm}
           totalPages={pagination.totalPages}
-          hasActiveFilters={hasActiveFilters && !isClearingFilters}
+          isLoading={isLoading || isClearingFilters}
           userRole={role === 'admin' ? 'admin' : 'user'}
+          hasActiveFilters={hasActiveFilters && !isClearingFilters}
           onDeleteResource={role === 'admin' ? handleDeleteResource : undefined}
+          onDeleteMultiple={role === 'admin' ? handleDeleteMultiple : undefined}
+          onRestoreResource={role === 'admin' ? handleRestoreResource : undefined}
+          onRestoreMultiple={role === 'admin' ? handleRestoreMultiple : undefined}
         />
       </>
     </DashboardLayout>

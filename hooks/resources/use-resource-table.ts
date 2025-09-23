@@ -16,15 +16,18 @@ const useResourceTable = ({
   onDeleteMultiple,
   onRestoreResource,
   onRestoreMultiple,
+  mode = 'default',
 }: UseResourceTableProps) => {
   const router = useRouter();
 
   const [selectedResources, setSelectedResources] = useState<Record<string, boolean>>({});
   const [selectedResource, setSelectedResource] = useState<Resource | null>(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [showRestoreModal, setShowRestoreModal] = useState(false);
   const [showAnalytics, setShowAnalytics] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [isRestoring, setIsRestoring] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
 
   const selectedCount = useMemo(
@@ -133,11 +136,13 @@ const useResourceTable = ({
 
       if (selectedResource && !hasMultipleSelected) {
         if (onDeleteResource) {
-          success = await onDeleteResource(selectedResource._id);
+          const deleteMode = mode === 'recycleBin' ? 'permanent' : 'soft';
+          success = await onDeleteResource(selectedResource._id, deleteMode);
         }
       } else if (hasMultipleSelected) {
         if (onDeleteMultiple) {
-          success = await onDeleteMultiple(selectedResourceIds);
+          const deleteMode = mode === 'recycleBin' ? 'permanent' : 'soft';
+          success = await onDeleteMultiple(selectedResourceIds, deleteMode);
         }
       }
 
@@ -160,8 +165,20 @@ const useResourceTable = ({
     }
   };
 
+  const handleRestoreSelected = () => {
+    if (selectedCount > 0) {
+      setShowRestoreModal(true);
+    }
+  };
+
+  const handleRestoreResource = (resource: Resource, e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
+    setSelectedResource(resource);
+    setShowRestoreModal(true);
+  };
+
   const confirmRestore = async () => {
-    setIsDeleting(true);
+    setIsRestoring(true);
 
     try {
       let success = false;
@@ -178,7 +195,7 @@ const useResourceTable = ({
 
       if (success) {
         clearSelection();
-        setShowDeleteModal(false);
+        setShowRestoreModal(false);
         setSelectedResource(null);
         onRefresh();
       }
@@ -191,7 +208,7 @@ const useResourceTable = ({
         duration: 5000,
       });
     } finally {
-      setIsDeleting(false);
+      setIsRestoring(false);
     }
   };
 
@@ -242,6 +259,7 @@ const useResourceTable = ({
     isEditing,
     selectAll,
     isDeleting,
+    isRestoring,
     showAnalytics,
     showEditModal,
     confirmDelete,
@@ -250,6 +268,7 @@ const useResourceTable = ({
     clearSelection,
     toggleSelection,
     showDeleteModal,
+    showRestoreModal,
     setShowAnalytics,
     selectedResource,
     setShowEditModal,
@@ -262,8 +281,11 @@ const useResourceTable = ({
     setSelectedResource,
     selectedResourceIds,
     handleViewAnalytics,
+    setShowRestoreModal,
     handleDeleteResource,
     handleDeleteSelected,
+    handleRestoreSelected,
+    handleRestoreResource,
   };
 };
 

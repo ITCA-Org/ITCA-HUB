@@ -53,6 +53,7 @@ const ResourceTable = ({
     isEditing,
     selectAll,
     isDeleting,
+    isRestoring,
     selectedCount,
     confirmDelete,
     showEditModal,
@@ -62,6 +63,7 @@ const ResourceTable = ({
     showDeleteModal,
     toggleSelection,
     selectedResource,
+    showRestoreModal,
     setShowEditModal,
     setShowAnalytics,
     selectedResources,
@@ -70,10 +72,12 @@ const ResourceTable = ({
     handleSaveResource,
     handleEditResource,
     handleViewAnalytics,
-    selectedResourceIds,
     hasMultipleSelected,
     setSelectedResource,
     handleDeleteSelected,
+    setShowRestoreModal,
+    handleRestoreSelected,
+    handleRestoreResource,
     handleDeleteResource: handleDeleteClick,
   } = useResourceTable({
     resources,
@@ -84,20 +88,9 @@ const ResourceTable = ({
     onDeleteMultiple,
     onRestoreResource,
     onRestoreMultiple,
+    mode,
   });
 
-  const handleRestoreResource = async (resource: Resource, e?: React.MouseEvent) => {
-    if (e) e.stopPropagation();
-    if (onRestoreResource) {
-      await onRestoreResource(resource._id);
-    }
-  };
-
-  const handleRestoreSelected = () => {
-    if (selectedCount > 0 && onRestoreMultiple) {
-      onRestoreMultiple(selectedResourceIds);
-    }
-  };
 
   const getDepartmentIcon = (department: string) => {
     switch (department) {
@@ -384,7 +377,6 @@ const ResourceTable = ({
                                   title="Restore Resource"
                                   onClick={(e) => {
                                     e.stopPropagation();
-                                    setSelectedResource(resource);
                                     handleRestoreResource(resource, e);
                                   }}
                                   className="rounded-full p-1.5 text-gray-500 hover:bg-gray-100 hover:text-green-600 transition-all duration-200"
@@ -597,10 +589,24 @@ const ResourceTable = ({
           isOpen={showDeleteModal}
           onClose={() => setShowDeleteModal(false)}
           resourceCount={hasMultipleSelected ? selectedCount : 1}
-          onConfirm={mode === 'recycleBin' ? confirmRestore : confirmDelete}
+          mode={mode === 'recycleBin' ? 'permanent' : 'soft'}
+          onConfirm={confirmDelete}
         />
       )}
       {/*==================== End of Delete Modal ====================*/}
+
+      {/*==================== Restore Modal ====================*/}
+      {userRole === 'admin' && mode === 'recycleBin' && showRestoreModal && (
+        <DeleteResourceModal
+          isLoading={isRestoring}
+          isOpen={showRestoreModal}
+          onClose={() => setShowRestoreModal(false)}
+          resourceCount={hasMultipleSelected ? selectedCount : 1}
+          mode="restore"
+          onConfirm={confirmRestore}
+        />
+      )}
+      {/*==================== End of Restore Modal ====================*/}
     </>
   );
 };
