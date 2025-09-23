@@ -8,13 +8,21 @@ import { BASE_URL } from '@/utils/url';
 import { useState, useEffect, useCallback } from 'react';
 import { DashboardHeaderProps } from '@/types/interfaces/dashboard';
 import { Menu, User, LogOut, HelpCircle, Crown } from 'lucide-react';
+import ConfirmationModal from '@/components/dashboard/modals/confirmation-modal';
+
+declare global {
+  interface Window {
+    clearDashboardHeaderCache?: () => void;
+  }
+}
 
 const CACHE_KEY = 'user_profile';
-const CACHE_DURATION = 10 * 60 * 1000; // 10 minutes
+const CACHE_DURATION = 10 * 60 * 1000;
 
 const DashboardHeader = ({ sidebarOpen, token, setSidebarOpen }: DashboardHeaderProps) => {
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [userData, setUserData] = useState<UserAuth | null>(null);
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
 
   const getCachedProfile = useCallback(() => {
     try {
@@ -84,9 +92,26 @@ const DashboardHeader = ({ sidebarOpen, token, setSidebarOpen }: DashboardHeader
   }, [getCachedProfile, fetchUserProfile]);
 
   const handleLogout = () => {
+    setShowLogoutModal(true);
+    setIsProfileOpen(false);
+  };
+
+  const confirmLogout = () => {
     localStorage.removeItem(CACHE_KEY);
     router.push('/api/logout');
   };
+
+  const clearCachedProfile = useCallback(() => {
+    localStorage.removeItem(CACHE_KEY);
+    fetchUserProfile();
+  }, [fetchUserProfile]);
+
+  useEffect(() => {
+    window.clearDashboardHeaderCache = clearCachedProfile;
+    return () => {
+      delete window.clearDashboardHeaderCache;
+    };
+  }, [clearCachedProfile]);
 
   const fullName = userData?.firstName + ' ' + userData?.lastName;
   const email = userData?.schoolEmail;
@@ -263,6 +288,20 @@ const DashboardHeader = ({ sidebarOpen, token, setSidebarOpen }: DashboardHeader
           </div>
         )}
       </div>
+
+      {/*==================== Logout Confirmation Modal ====================*/}
+      <ConfirmationModal
+        isOpen={showLogoutModal}
+        onClose={() => setShowLogoutModal(false)}
+        onConfirm={confirmLogout}
+        title="Sign Out"
+        message="Are you sure you want to sign out? You will need to log in again to access your account."
+        confirmText="Sign Out"
+        cancelText="Cancel"
+        variant="danger"
+        icon={<LogOut className="h-5 w-5" />}
+      />
+      {/*==================== End of Logout Confirmation Modal ====================*/}
     </header>
   );
 };

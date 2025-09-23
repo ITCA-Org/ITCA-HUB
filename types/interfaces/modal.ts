@@ -37,14 +37,6 @@ export interface CreateEventModalProps {
   onSave: (newEvent: CreateEventData) => Promise<void>;
 }
 
-export interface RegistrationConfirmationModalProps {
-  isOpen: boolean;
-  eventTitle: string;
-  isLoading: boolean;
-  onClose: () => void;
-  onConfirm: () => void;
-  isRegistered: boolean;
-}
 
 export interface ResourceEditModalProps {
   isOpen: boolean;

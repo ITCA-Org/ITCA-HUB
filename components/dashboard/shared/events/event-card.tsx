@@ -14,7 +14,7 @@ import {
 import { toast } from 'sonner';
 import Image from 'next/image';
 import { EventCardProps } from '@/types/interfaces/event';
-import RegistrationConfirmationModal from '../../modals/events/register-event-confirmation-modal';
+import ConfirmationModal from '../../modals/confirmation-modal';
 
 const EventCard = ({
   role,
@@ -334,13 +334,18 @@ const EventCard = ({
       {/*==================== End of Event Content ====================*/}
 
       {/*==================== Registration Confirmation Modal ====================*/}
-      <RegistrationConfirmationModal
-        eventTitle={event.title}
-        isLoading={isRegistering}
-        isRegistered={isRegistered}
+      <ConfirmationModal
         isOpen={showConfirmationModal}
+        cancelText="Cancel"
+        isLoading={isRegistering}
         onConfirm={handleConfirmRegistration}
+        variant={isRegistered ? 'danger' : 'primary'}
         onClose={() => setShowConfirmationModal(false)}
+        confirmText={isRegistered ? 'Unregister' : 'Register'}
+        loadingText={isRegistered ? 'Unregistering...' : 'Registering...'}
+        title={isRegistered ? 'Confirm Unregistration' : 'Confirm Registration'}
+        icon={isRegistered ? <UserMinus className="h-5 w-5" /> : <UserPlus className="h-5 w-5" />}
+        message={`Are you sure you want to ${isRegistered ? 'unregister from' : 'register for'} "${event.title}"?`}
       />
       {/*==================== End of Registration Confirmation Modal ====================*/}
     </div>

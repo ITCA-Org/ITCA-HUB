@@ -263,14 +263,14 @@ const ResourceViewerComponent = ({ role, userData }: ResourceViewerComponentProp
         );
       case 'txt':
         return (
-          <div className="flex items-center justify-center h-8 w-8 rounded-full bg-gray-100/70">
-            <FileText className="h-4 w-4 text-gray-500" />
+          <div className="flex items-center justify-center h-8 w-8 rounded-full bg-blue-100/70">
+            <FileText className="h-4 w-4 text-blue-500" />
           </div>
         );
       default:
         return (
-          <div className="flex items-center justify-center h-8 w-8 rounded-full bg-gray-100/70">
-            <File className="h-4 w-4 text-gray-500" />
+          <div className="flex items-center justify-center h-8 w-8 rounded-full bg-blue-100/70">
+            <File className="h-4 w-4 text-blue-500" />
           </div>
         );
     }

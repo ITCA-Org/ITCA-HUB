@@ -1,4 +1,4 @@
-import { X, AlertTriangle } from 'lucide-react';
+import { X, AlertTriangle, Loader } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ConfirmationModalProps } from '@/types/interfaces/modal';
 
@@ -90,8 +90,8 @@ const ConfirmationModal = ({
                 </div>
                 <button
                   type="button"
-                  disabled={isLoading}
                   onClick={onClose}
+                  disabled={isLoading}
                   className="rounded-full p-1.5 text-gray-400 hover:bg-gray-100 hover:text-gray-500 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <X className="h-5 w-5" />
@@ -123,7 +123,7 @@ const ConfirmationModal = ({
                 >
                   {isLoading ? (
                     <>
-                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                      <Loader className="mr-2 h-4 w-4 animate-spin" />
                       {displayLoadingText}
                     </>
                   ) : (

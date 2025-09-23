@@ -69,6 +69,11 @@ const ProfileComponent = ({ role, userData }: ProfileComponentProps) => {
     try {
       await updateProfile(profileForm);
       setIsEditingProfile(false);
+
+      // Clear DashboardHeader cache to show updated profile info immediately
+      if (typeof window !== 'undefined' && window.clearDashboardHeaderCache) {
+        window.clearDashboardHeaderCache();
+      }
     } catch (error) {
       console.error('Error updating profile:', error);
     }
