@@ -7,8 +7,8 @@ import { motion } from 'framer-motion';
 import { BASE_URL } from '@/utils/url';
 import { useState, useEffect, useCallback } from 'react';
 import { DashboardHeaderProps } from '@/types/interfaces/dashboard';
-import { Menu, User, LogOut, HelpCircle, Crown } from 'lucide-react';
 import ConfirmationModal from '@/components/dashboard/modals/confirmation-modal';
+import { Menu, User, LogOut, HelpCircle, Crown, Image as ImageIcon } from 'lucide-react';
 
 declare global {
   interface Window {
@@ -16,10 +16,22 @@ declare global {
   }
 }
 
-const CACHE_KEY = 'user_profile';
+const CACHE_KEY = 'user_profile_display';
 const CACHE_DURATION = 10 * 60 * 1000;
 
-const DashboardHeader = ({ sidebarOpen, token, setSidebarOpen }: DashboardHeaderProps) => {
+interface CachedProfileData {
+  firstName: string | undefined;
+  lastName: string | undefined;
+  schoolEmail: string | undefined;
+  profilePictureUrl: string | undefined;
+}
+
+const DashboardHeader = ({
+  sidebarOpen,
+  token,
+  setSidebarOpen,
+  userRole,
+}: DashboardHeaderProps) => {
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [userData, setUserData] = useState<UserAuth | null>(null);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
@@ -41,10 +53,16 @@ const DashboardHeader = ({ sidebarOpen, token, setSidebarOpen }: DashboardHeader
 
   const setCachedProfile = useCallback((profileData: UserAuth) => {
     try {
+      const displayData: CachedProfileData = {
+        firstName: profileData.firstName,
+        lastName: profileData.lastName,
+        schoolEmail: profileData.schoolEmail,
+        profilePictureUrl: profileData.profilePictureUrl,
+      };
       localStorage.setItem(
         CACHE_KEY,
         JSON.stringify({
-          data: profileData,
+          data: displayData,
           timestamp: Date.now(),
         })
       );
@@ -85,7 +103,12 @@ const DashboardHeader = ({ sidebarOpen, token, setSidebarOpen }: DashboardHeader
     const cachedProfile = getCachedProfile();
 
     if (cachedProfile) {
-      setUserData(cachedProfile);
+      setUserData({
+        ...cachedProfile,
+        role: '',
+        token: '',
+        userId: '',
+      } as UserAuth);
     } else {
       fetchUserProfile();
     }
@@ -216,7 +239,7 @@ const DashboardHeader = ({ sidebarOpen, token, setSidebarOpen }: DashboardHeader
               className="profile-trigger flex items-center space-x-2 rounded-full focus:outline-none cursor-pointer"
               onClick={() => setIsProfileOpen(!isProfileOpen)}
             >
-              <div className="flex h-9 w-9 items-center justify-center overflow-hidden rounded-full bg-blue-100 text-blue-700">
+              <div className="h-9 w-9 overflow-hidden rounded-full">
                 {profilePictureUrl ? (
                   <Image
                     width={36}
@@ -225,10 +248,14 @@ const DashboardHeader = ({ sidebarOpen, token, setSidebarOpen }: DashboardHeader
                     src={profilePictureUrl}
                     className="w-full h-full object-cover"
                   />
-                ) : userData.role === 'admin' ? (
-                  <Crown className="w-5 h-5 text-blue-600" />
                 ) : (
-                  <User className="w-5 h-5 text-blue-600" />
+                  <div className="h-full w-full bg-gradient-to-br from-blue-500 via-amber-300 to-blue-500 flex items-center justify-center">
+                    {userRole === 'admin' ? (
+                      <Crown className="w-5 h-5 text-white/80" />
+                    ) : (
+                      <ImageIcon className="w-5 h-5 text-white/80" />
+                    )}
+                  </div>
                 )}
               </div>
               <span className="hidden text-sm font-medium text-gray-700 min-[968px]:block">
@@ -291,15 +318,15 @@ const DashboardHeader = ({ sidebarOpen, token, setSidebarOpen }: DashboardHeader
 
       {/*==================== Logout Confirmation Modal ====================*/}
       <ConfirmationModal
-        isOpen={showLogoutModal}
-        onClose={() => setShowLogoutModal(false)}
-        onConfirm={confirmLogout}
         title="Sign Out"
-        message="Are you sure you want to sign out? You will need to log in again to access your account."
-        confirmText="Sign Out"
-        cancelText="Cancel"
         variant="danger"
+        cancelText="Cancel"
+        confirmText="Sign Out"
+        isOpen={showLogoutModal}
+        onConfirm={confirmLogout}
         icon={<LogOut className="h-5 w-5" />}
+        onClose={() => setShowLogoutModal(false)}
+        message="Are you sure you want to sign out? You will need to log in again to access your account."
       />
       {/*==================== End of Logout Confirmation Modal ====================*/}
     </header>
