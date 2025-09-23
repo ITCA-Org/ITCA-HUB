@@ -25,10 +25,8 @@ const AdminUsersPage = ({ userData }: AdminUsersPageProps) => {
 
   const hasActiveFilters = !!debouncedSearchQuery || role !== 'all' || status !== 'all';
 
-
-
   const refreshUsers = useCallback(() => {
-    if (isLoading) return; // Prevent multiple refreshes while loading
+    if (isLoading) return;
     clearCache();
     const controller = new AbortController();
     fetchUsers({
@@ -41,10 +39,13 @@ const AdminUsersPage = ({ userData }: AdminUsersPageProps) => {
     });
   }, [clearCache, fetchUsers, page, limit, debouncedSearchQuery, role, status, isLoading]);
 
-  const handlePageChange = useCallback((newPage: number) => {
-    clearCache(); // Clear cache to force loading on page change
-    setPage(newPage);
-  }, [clearCache]);
+  const handlePageChange = useCallback(
+    (newPage: number) => {
+      clearCache();
+      setPage(newPage);
+    },
+    [clearCache]
+  );
 
   const resetFilters = useCallback(() => {
     setIsClearingFilters(true);
@@ -92,7 +93,7 @@ const AdminUsersPage = ({ userData }: AdminUsersPageProps) => {
 
   useEffect(() => {
     setPage(1);
-    clearCache(); // Clear cache when filters change
+    clearCache();
   }, [debouncedSearchQuery, role, status, clearCache]);
 
   useEffect(() => {
@@ -176,17 +177,17 @@ const AdminUsersPage = ({ userData }: AdminUsersPageProps) => {
           <UserTable
             page={page}
             limit={limit}
+            isError={isError}
+            setLimit={setLimit}
+            token={userData.token}
             users={usersData.users}
             setPage={handlePageChange}
-            isError={isError}
-            total={usersData.pagination.total}
-            setLimit={setLimit}
-            isLoading={isLoading || isClearingFilters}
-            token={userData.token}
-            totalPages={usersData.pagination.totalPages}
             onUserUpdated={refreshUsers}
-            hasActiveFilters={hasActiveFilters && !isClearingFilters}
             onClearFilters={resetFilters}
+            total={usersData.pagination.total}
+            isLoading={isLoading || isClearingFilters}
+            totalPages={usersData.pagination.totalPages}
+            hasActiveFilters={hasActiveFilters && !isClearingFilters}
           />
         </div>
       </div>
