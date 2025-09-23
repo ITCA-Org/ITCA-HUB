@@ -15,7 +15,7 @@ import useUserActions from '@/hooks/users/use-user-actions';
 import { UserTableProps } from '@/types/interfaces/table';
 import UserTableSkeleton from '../skeletons/user-table-skeleton';
 import UserActionsModal from '../modals/user/user-actions-modal';
-import { NetworkError, EmptyState } from '@/components/dashboard/error-messages';
+import { NetworkError, EmptyState, NoResults } from '@/components/dashboard/error-messages';
 
 const UserTable = ({
   page,
@@ -28,6 +28,9 @@ const UserTable = ({
   isLoading = false,
   total = users?.length,
   onUserUpdated,
+  showActions = true,
+  hasActiveFilters = false,
+  onClearFilters,
 }: UserTableProps) => {
   const {
     deleteUser,
@@ -51,7 +54,9 @@ const UserTable = ({
   }
 
   if (users?.length === 0) {
-    return (
+    return hasActiveFilters ? (
+      <NoResults onClearFilters={onClearFilters || (() => {})} />
+    ) : (
       <EmptyState
         itemName="user"
         uploadUrl="/admin"
@@ -60,7 +65,7 @@ const UserTable = ({
         showRefreshButton={true}
         onRefresh={onUserUpdated}
         uploadButtonText="Back to Dashboard"
-        description="No users found. Might be due to wrong filtering or no users exist at all."
+        description="No users found in the system. New user registrations will appear here."
       />
     );
   }
@@ -107,9 +112,11 @@ const UserTable = ({
                 <th className="px-8 py-3 text-left text-sm font-normal uppercase tracking-wider text-gray-500">
                   Joined
                 </th>
-                <th className="px-8 py-3 text-right text-sm font-normal uppercase tracking-wider text-gray-500">
-                  Actions
-                </th>
+                {showActions && (
+                  <th className="px-8 py-3 text-right text-sm font-normal uppercase tracking-wider text-gray-500">
+                    Actions
+                  </th>
+                )}
               </tr>
             </thead>
 
@@ -151,49 +158,51 @@ const UserTable = ({
                       {new Date(user.joinedDate || user.createdAt).toLocaleDateString()}
                     </td>
 
-                    <td className="whitespace-nowrap px-8 py-4 text-right text-sm font-medium">
-                      <div className="flex items-center space-x-1 justify-end">
-                        {/*==================== Toggle User Role ====================*/}
-                        <button
-                          onClick={() => updateUserRole(user._id!, userName, user.role)}
-                          className="rounded-full p-2 text-gray-400 hover:bg-white"
-                          title={
-                            user.role.toLowerCase() === 'admin' ? 'Make Student' : 'Make Admin'
-                          }
-                        >
-                          {user.role.toLowerCase() === 'admin' ? (
-                            <GraduationCap className="h-5 w-5 text-blue-600 rounded-full" />
-                          ) : (
-                            <Crown className="h-5 w-5 text-purple-600 rounded-full" />
-                          )}
-                        </button>
-                        {/*==================== End of Toggle User Role ====================*/}
+                    {showActions && (
+                      <td className="whitespace-nowrap px-8 py-4 text-right text-sm font-medium">
+                        <div className="flex items-center space-x-1 justify-end">
+                          {/*==================== Toggle User Role ====================*/}
+                          <button
+                            onClick={() => updateUserRole(user._id!, userName, user.role)}
+                            className="rounded-full p-2 text-gray-400 hover:bg-white"
+                            title={
+                              user.role.toLowerCase() === 'admin' ? 'Make Student' : 'Make Admin'
+                            }
+                          >
+                            {user.role.toLowerCase() === 'admin' ? (
+                              <GraduationCap className="h-5 w-5 text-blue-600 rounded-full" />
+                            ) : (
+                              <Crown className="h-5 w-5 text-purple-600 rounded-full" />
+                            )}
+                          </button>
+                          {/*==================== End of Toggle User Role ====================*/}
 
-                        {/*==================== Toggle User Activation ====================*/}
-                        <button
-                          onClick={() => toggleUserActivation(user._id!, userName)}
-                          title={user.isActive ? 'Deactivate User' : 'Activate User'}
-                          className="rounded-full p-2 text-gray-400 hover:bg-white"
-                        >
-                          {user.isActive ? (
-                            <UserX className="h-5 w-5 text-amber-400 rounded-full" />
-                          ) : (
-                            <UserCheck className="h-5 w-5 text-green-300 rounded-full" />
-                          )}
-                        </button>
-                        {/*==================== End of Toggle User Activation ====================*/}
+                          {/*==================== Toggle User Activation ====================*/}
+                          <button
+                            onClick={() => toggleUserActivation(user._id!, userName)}
+                            title={user.isActive ? 'Deactivate User' : 'Activate User'}
+                            className="rounded-full p-2 text-gray-400 hover:bg-white"
+                          >
+                            {user.isActive ? (
+                              <UserX className="h-5 w-5 text-amber-400 rounded-full" />
+                            ) : (
+                              <UserCheck className="h-5 w-5 text-green-300 rounded-full" />
+                            )}
+                          </button>
+                          {/*==================== End of Toggle User Activation ====================*/}
 
-                        {/*==================== Delete User ====================*/}
-                        <button
-                          title="Delete User"
-                          onClick={() => deleteUser(user._id!, userName)}
-                          className="rounded-full p-2 text-red-400 hover:bg-white hover:text-red-500"
-                        >
-                          <Trash className="h-5 w-5" />
-                        </button>
-                        {/*==================== End of Delete User ====================*/}
-                      </div>
-                    </td>
+                          {/*==================== Delete User ====================*/}
+                          <button
+                            title="Delete User"
+                            onClick={() => deleteUser(user._id!, userName)}
+                            className="rounded-full p-2 text-red-400 hover:bg-white hover:text-red-500"
+                          >
+                            <Trash className="h-5 w-5" />
+                          </button>
+                          {/*==================== End of Delete User ====================*/}
+                        </div>
+                      </td>
+                    )}
                   </tr>
                 );
               })}

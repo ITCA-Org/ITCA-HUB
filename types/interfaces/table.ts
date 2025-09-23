@@ -22,5 +22,8 @@ export interface UserTableProps {
   totalPages: number;
   users?: UserData[];
   isLoading?: boolean;
+  showActions?: boolean;
   onUserUpdated: () => void;
+  hasActiveFilters?: boolean;
+  onClearFilters?: () => void;
 }

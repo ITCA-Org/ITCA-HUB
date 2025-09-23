@@ -1,10 +1,8 @@
-import axios from 'axios';
-import { toast } from 'sonner';
 import { Search } from 'lucide-react';
 import { NextApiRequest } from 'next';
-import { BASE_URL } from '@/utils/url';
 import { isLoggedIn } from '@/utils/auth';
 import useDebounce from '@/utils/debounce';
+import useUsers from '@/hooks/users/use-users';
 import { AdminUsersPageProps, UserAuth } from '@/types';
 import { useCallback, useEffect, useState } from 'react';
 import UserTable from '@/components/dashboard/table/user-table';
@@ -12,76 +10,96 @@ import DashboardLayout from '@/components/dashboard/layout/dashboard-layout';
 import DashboardPageHeader from '@/components/dashboard/layout/dashboard-page-header';
 
 const AdminUsersPage = ({ userData }: AdminUsersPageProps) => {
-  const [isLoading, setIsLoading] = useState(true);
+  const { isError, isLoading, usersData, clearCache, fetchUsers } = useUsers({
+    token: userData.token,
+  });
+
   const [searchTerm, setSearchTerm] = useState('');
-  const [totalUsers, setTotalUsers] = useState(0);
-  const [totalPages, setTotalPages] = useState(0);
-  const [isError, setIsError] = useState(false);
   const [status, setStatus] = useState('all');
   const [role, setRole] = useState('all');
-  const [users, setUsers] = useState([]);
   const [limit, setLimit] = useState(15);
   const [page, setPage] = useState(1);
+  const [isClearingFilters, setIsClearingFilters] = useState(false);
 
   const debouncedSearchQuery = useDebounce(searchTerm, 500);
 
-  const fetchUsers = useCallback(
-    async (page: number, limit: number) => {
-      setIsLoading(true);
-      setIsError(false);
+  const hasActiveFilters = !!debouncedSearchQuery || role !== 'all' || status !== 'all';
 
-      try {
-        const { data } = await axios.get(`${BASE_URL}/users`, {
-          params: {
-            page: Number(page),
-            limit: Number(limit),
-            ...(debouncedSearchQuery.trim() && { search: debouncedSearchQuery.trim() }),
-            ...(role !== 'all' && {
-              role: role === 'student' ? 'user' : role,
-            }),
-            ...(status !== 'all' && {
-              isEmailVerified: status === 'verified' ? true : false,
-            }),
-          },
-          headers: {
-            Authorization: `Bearer ${userData.token}`,
-          },
-        });
 
-        setUsers(data.data);
-        setTotalUsers(data.total);
-        setTotalPages(data.pagination.totalPages);
-      } catch (error) {
-        setIsError(true);
-        const errorMessage = axios.isAxiosError(error)
-          ? error.response?.data?.message || error.message
-          : 'An error occurred';
 
-        toast.error('Failed to load data', {
-          description: errorMessage,
-          duration: 5000,
-        });
-      } finally {
-        setIsLoading(false);
-      }
-    },
-    [userData.token, debouncedSearchQuery, role, status]
-  );
+  const refreshUsers = useCallback(() => {
+    if (isLoading) return; // Prevent multiple refreshes while loading
+    clearCache();
+    const controller = new AbortController();
+    fetchUsers({
+      page,
+      limit,
+      search: debouncedSearchQuery,
+      role,
+      status,
+      signal: controller.signal,
+    });
+  }, [clearCache, fetchUsers, page, limit, debouncedSearchQuery, role, status, isLoading]);
 
-  const resetFilters = () => {
+  const handlePageChange = useCallback((newPage: number) => {
+    clearCache(); // Clear cache to force loading on page change
+    setPage(newPage);
+  }, [clearCache]);
+
+  const resetFilters = useCallback(() => {
+    setIsClearingFilters(true);
     setSearchTerm('');
     setRole('all');
     setStatus('all');
     setPage(1);
-  };
+    clearCache();
+  }, [clearCache]);
 
   useEffect(() => {
-    fetchUsers(page, limit);
-  }, [fetchUsers, page, limit]);
+    if (isClearingFilters && !isLoading) {
+      setIsClearingFilters(false);
+    }
+  }, [isClearingFilters, isLoading]);
+
+  useEffect(() => {
+    const abortController = new AbortController();
+    let isActive = true;
+
+    const loadData = async () => {
+      try {
+        await fetchUsers({
+          page,
+          limit,
+          search: debouncedSearchQuery,
+          role,
+          status,
+          signal: abortController.signal,
+        });
+      } catch (error) {
+        if (isActive && !(error instanceof Error && error.name === 'AbortError')) {
+          console.error('Failed to fetch users:', error);
+        }
+      }
+    };
+
+    loadData();
+
+    return () => {
+      isActive = false;
+      abortController.abort();
+    };
+  }, [fetchUsers, page, limit, debouncedSearchQuery, role, status]);
 
   useEffect(() => {
     setPage(1);
-  }, [debouncedSearchQuery, role, status]);
+    clearCache(); // Clear cache when filters change
+  }, [debouncedSearchQuery, role, status, clearCache]);
+
+  useEffect(() => {
+    return () => {
+      clearCache();
+    };
+  }, [clearCache]);
 
   return (
     <DashboardLayout title="User Management" token={userData.token}>
@@ -158,15 +176,17 @@ const AdminUsersPage = ({ userData }: AdminUsersPageProps) => {
           <UserTable
             page={page}
             limit={limit}
-            users={users}
-            setPage={setPage}
+            users={usersData.users}
+            setPage={handlePageChange}
             isError={isError}
-            total={totalUsers}
+            total={usersData.pagination.total}
             setLimit={setLimit}
-            isLoading={isLoading}
+            isLoading={isLoading || isClearingFilters}
             token={userData.token}
-            totalPages={totalPages}
-            onUserUpdated={() => fetchUsers(page, limit)}
+            totalPages={usersData.pagination.totalPages}
+            onUserUpdated={refreshUsers}
+            hasActiveFilters={hasActiveFilters && !isClearingFilters}
+            onClearFilters={resetFilters}
           />
         </div>
       </div>

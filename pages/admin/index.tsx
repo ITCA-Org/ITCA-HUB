@@ -1,11 +1,8 @@
-import axios from 'axios';
-import { toast } from 'sonner';
 import { NextApiRequest } from 'next';
-import { BASE_URL } from '@/utils/url';
 import { isLoggedIn } from '@/utils/auth';
 import { UserAuth, UserProps } from '@/types';
+import useDashboard from '@/hooks/dashboard/use-dashboard';
 import { useState, useEffect, useCallback, FC } from 'react';
-import { DashboardStats } from '@/types/interfaces/dashboard';
 import UserTable from '@/components/dashboard/table/user-table';
 import { Calendar, Users, FileText, PieChart } from 'lucide-react';
 import DashboardLayout from '@/components/dashboard/layout/dashboard-layout';
@@ -13,70 +10,52 @@ import DashboardStatsCard from '@/components/dashboard/layout/dashboard-stats-ca
 import DashboardPageHeader from '@/components/dashboard/layout/dashboard-page-header';
 
 const AdminDashboard: FC<UserProps> = ({ userData }) => {
-  const [stats, setStats] = useState<DashboardStats>({
-    totalUsers: 0,
-    totalEvents: 0,
-    totalResources: 0,
-    activeUsers: 0,
+  const { isError, isLoading, dashboardData, clearCache, fetchDashboardData } = useDashboard({
+    token: userData.token,
   });
-  const [recentRegistrations, setRecentRegistrations] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [totalPages, setTotalPages] = useState(0);
-  const [isError, setIsError] = useState(false);
-  const [limit, setLimit] = useState(10);
-  const [total, setTotal] = useState(0);
+
+  const [limit, setLimit] = useState(15);
   const [page, setPage] = useState(1);
 
-  const fetchDashboardData = useCallback(
-    async (page: number, limit: number) => {
-      setIsLoading(true);
-      setIsError(false);
-
-      try {
-        const headers = {
-          Authorization: `Bearer ${userData.token}`,
-        };
-
-        const [stats, recentRegistrations] = await Promise.all([
-          axios.get(`${BASE_URL}/admin/stats`, {
-            headers,
-          }),
-          axios.get(`${BASE_URL}/users/recent`, {
-            params: { page, limit },
-            headers,
-          }),
-        ]);
-
-        setStats({
-          totalUsers: stats.data.data.totalUsers,
-          totalEvents: stats.data.data.activeEvents,
-          totalResources: stats.data.data.resources,
-          activeUsers: stats.data.data.activeUsers,
-        });
-        setRecentRegistrations(recentRegistrations.data.data);
-        setTotal(recentRegistrations.data.total);
-        setTotalPages(recentRegistrations.data.pagination.totalPages);
-      } catch (error) {
-        setIsError(true);
-
-        const errorMessage = axios.isAxiosError(error)
-          ? error.response?.data?.message || error.message
-          : 'An error occurred';
-
-        toast.error('Failed to load data', {
-          description: errorMessage,
-          duration: 5000,
-        });
-      } finally {
-        setIsLoading(false);
-      }
+  const loadDashboardData = useCallback(
+    (page: number, limit: number) => {
+      const controller = new AbortController();
+      fetchDashboardData({
+        page,
+        limit,
+        signal: controller.signal,
+      });
+      return controller;
     },
-    [userData.token]
+    [fetchDashboardData]
   );
 
   useEffect(() => {
-    fetchDashboardData(page, limit);
-  }, [fetchDashboardData, page, limit]);
+    const abortController = new AbortController();
+    let isActive = true;
+
+    const loadData = async () => {
+      try {
+        await fetchDashboardData({
+          page,
+          limit,
+          signal: abortController.signal,
+        });
+      } catch (error) {
+        if (isActive && !(error instanceof Error && error.name === 'AbortError')) {
+          console.error('Failed to fetch dashboard data:', error);
+        }
+      }
+    };
+
+    loadData();
+
+    return () => {
+      isActive = false;
+      abortController.abort();
+      clearCache();
+    };
+  }, [fetchDashboardData, page, limit, clearCache]);
 
   return (
     <DashboardLayout title="Admin Dashboard" token={userData.token}>
@@ -95,25 +74,25 @@ const AdminDashboard: FC<UserProps> = ({ userData }) => {
         <DashboardStatsCard
           title="Total Users"
           isLoading={isLoading}
-          value={stats.totalUsers}
+          value={dashboardData.stats.totalUsers}
           icon={<Users className="h-6 w-6 text-blue-600" />}
         />
         <DashboardStatsCard
           title="Events"
           isLoading={isLoading}
-          value={stats.totalEvents}
+          value={dashboardData.stats.totalEvents}
           icon={<Calendar className="h-6 w-6 text-amber-500" />}
         />
         <DashboardStatsCard
           title="Resources"
           isLoading={isLoading}
-          value={stats.totalResources}
+          value={dashboardData.stats.totalResources}
           icon={<FileText className="h-6 w-6 text-green-500" />}
         />
         <DashboardStatsCard
           title="Active Users"
           isLoading={isLoading}
-          value={stats.activeUsers}
+          value={dashboardData.stats.activeUsers}
           icon={<PieChart className="h-6 w-6 text-purple-500" />}
         />
       </div>
@@ -126,15 +105,16 @@ const AdminDashboard: FC<UserProps> = ({ userData }) => {
           <UserTable
             page={page}
             limit={limit}
-            total={total}
             isError={isError}
             setPage={setPage}
             setLimit={setLimit}
+            showActions={false}
             isLoading={isLoading}
             token={userData.token}
-            totalPages={totalPages}
-            users={recentRegistrations}
-            onUserUpdated={() => fetchDashboardData(page, limit)}
+            total={dashboardData.pagination.total}
+            users={dashboardData.recentRegistrations}
+            totalPages={dashboardData.pagination.totalPages}
+            onUserUpdated={() => loadDashboardData(page, limit)}
           />
         </div>
       </div>
