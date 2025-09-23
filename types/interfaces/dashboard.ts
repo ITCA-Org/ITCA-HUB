@@ -1,4 +1,5 @@
 import { ReactNode } from 'react';
+import { UserData } from './table';
 
 export interface DashboardLayoutProps {
   children: ReactNode;
@@ -43,4 +44,31 @@ export interface DashboardStatsCardProps {
   isLoading?: boolean;
   value: string | number;
   valueClassName?: string;
+}
+
+export interface UseDashboardProps {
+  token: string;
+}
+
+export interface FetchDashboardParams {
+  page?: number;
+  limit?: number;
+  signal?: AbortSignal;
+}
+
+export interface DashboardData {
+  stats: DashboardStats;
+  recentRegistrations: UserData[];
+  pagination: {
+    total: number;
+    totalPages: number;
+  };
+}
+
+export interface UseDashboardReturn {
+  isError: boolean;
+  isLoading: boolean;
+  dashboardData: DashboardData;
+  clearCache: () => void;
+  fetchDashboardData: (params?: FetchDashboardParams) => Promise<void>;
 }

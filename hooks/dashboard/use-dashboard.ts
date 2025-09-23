@@ -1,40 +1,17 @@
 import { toast } from 'sonner';
+import {
+  UseDashboardProps,
+  UseDashboardReturn,
+  DashboardData,
+  FetchDashboardParams,
+} from '@/types/interfaces/dashboard';
 import { BASE_URL } from '@/utils/url';
 import axios, { AxiosError } from 'axios';
 import { getErrorMessage } from '@/utils/error';
-import { UserData } from '@/types/interfaces/table';
 import { useState, useRef, useCallback } from 'react';
 import { CustomError, ErrorResponseData } from '@/types';
-import { DashboardStats } from '@/types/interfaces/dashboard';
 
 const MIN_REQUEST_INTERVAL = 500;
-
-interface UseDashboardProps {
-  token: string;
-}
-
-interface FetchDashboardParams {
-  page?: number;
-  limit?: number;
-  signal?: AbortSignal;
-}
-
-interface DashboardData {
-  stats: DashboardStats;
-  recentRegistrations: UserData[];
-  pagination: {
-    total: number;
-    totalPages: number;
-  };
-}
-
-interface UseDashboardReturn {
-  isError: boolean;
-  isLoading: boolean;
-  dashboardData: DashboardData;
-  clearCache: () => void;
-  fetchDashboardData: (params?: FetchDashboardParams) => Promise<void>;
-}
 
 const useDashboard = ({ token }: UseDashboardProps): UseDashboardReturn => {
   const [isLoading, setIsLoading] = useState(true);
