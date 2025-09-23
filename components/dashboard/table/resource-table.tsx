@@ -7,8 +7,8 @@ import {
   Trash2,
   Laptop,
   Database,
-  BarChart2,
   Download,
+  BarChart2,
   RotateCcw,
   RefreshCw,
   ArrowLeft,
@@ -160,8 +160,9 @@ const ResourceTable = ({
       {/*==================== Error States ====================*/}
       {isError && <NetworkError onRetry={onRefresh} />}
 
-      {!isError && resources.length === 0 && (
-        hasActiveFilters ? (
+      {!isError &&
+        resources.length === 0 &&
+        (hasActiveFilters ? (
           <NoResults filterTerm={searchTerm} onClearFilters={onClearFilters} />
         ) : (
           <EmptyState
@@ -177,8 +178,7 @@ const ResourceTable = ({
                 : 'Get started by uploading your first educational resource to the library.'
             }
           />
-        )
-      )}
+        ))}
       {/*==================== End of Error States ====================*/}
 
       {/*==================== Results Table ====================*/}
