@@ -151,6 +151,102 @@ const useResourceAdmin = ({ token }: UseResourceAdminProps) => {
     [token]
   );
 
+  const batchToggleResourceTrash = useCallback(
+    async (resourceIds: string[]) => {
+      setIsLoading(true);
+      try {
+        const promises = resourceIds.map((resourceId) =>
+          axios.patch(
+            `${BASE_URL}/resources/${resourceId}/trash-or-restore`,
+            {},
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+                'Content-Type': 'application/json',
+              },
+            }
+          )
+        );
+
+        const responses = await Promise.allSettled(promises);
+        const successful = responses.filter((result) => result.status === 'fulfilled').length;
+        const failed = responses.length - successful;
+
+        if (successful > 0) {
+          toast.success(`${successful} resource${successful > 1 ? 's' : ''} moved to recycle bin`, {
+            description: failed > 0 ? `${failed} failed to delete` : undefined,
+          });
+        }
+
+        if (failed > 0 && successful === 0) {
+          throw new Error('Failed to move resources to recycle bin');
+        }
+
+        return { successful, failed };
+      } catch (error) {
+        const { message } = getErrorMessage(
+          error as AxiosError<ErrorResponseData> | CustomError | Error
+        );
+        toast.error('Failed to move resources to recycle bin', {
+          description: message,
+          duration: 5000,
+        });
+        throw error;
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [token]
+  );
+
+  const batchRestoreResources = useCallback(
+    async (resourceIds: string[]) => {
+      setIsLoading(true);
+      try {
+        const promises = resourceIds.map((resourceId) =>
+          axios.patch(
+            `${BASE_URL}/resources/${resourceId}/trash-or-restore`,
+            {},
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+                'Content-Type': 'application/json',
+              },
+            }
+          )
+        );
+
+        const responses = await Promise.allSettled(promises);
+        const successful = responses.filter((result) => result.status === 'fulfilled').length;
+        const failed = responses.length - successful;
+
+        if (successful > 0) {
+          toast.success(`${successful} resource${successful > 1 ? 's' : ''} restored`, {
+            description: failed > 0 ? `${failed} failed to restore` : undefined,
+          });
+        }
+
+        if (failed > 0 && successful === 0) {
+          throw new Error('Failed to restore resources');
+        }
+
+        return { successful, failed };
+      } catch (error) {
+        const { message } = getErrorMessage(
+          error as AxiosError<ErrorResponseData> | CustomError | Error
+        );
+        toast.error('Failed to restore resources', {
+          description: message,
+          duration: 5000,
+        });
+        throw error;
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [token]
+  );
+
   const deleteResourcePermanently = useCallback(
     async (resourceId: string) => {
       setIsLoading(true);
@@ -170,6 +266,50 @@ const useResourceAdmin = ({ token }: UseResourceAdminProps) => {
           error as AxiosError<ErrorResponseData> | CustomError | Error
         );
         toast.error('Failed to delete resource', {
+          description: message,
+          duration: 5000,
+        });
+        throw error;
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [token]
+  );
+
+  const batchDeleteResourcesPermanently = useCallback(
+    async (resourceIds: string[]) => {
+      setIsLoading(true);
+      try {
+        const promises = resourceIds.map((resourceId) =>
+          axios.delete(`${BASE_URL}/resources/${resourceId}`, {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          })
+        );
+
+        const responses = await Promise.allSettled(promises);
+        const successful = responses.filter((result) => result.status === 'fulfilled').length;
+        const failed = responses.length - successful;
+
+        if (successful > 0) {
+          toast.success(`${successful} resource${successful > 1 ? 's' : ''} permanently deleted`, {
+            description:
+              failed > 0 ? `${failed} failed to delete` : 'This action cannot be undone.',
+          });
+        }
+
+        if (failed > 0 && successful === 0) {
+          throw new Error('Failed to delete resources permanently');
+        }
+
+        return { successful, failed };
+      } catch (error) {
+        const { message } = getErrorMessage(
+          error as AxiosError<ErrorResponseData> | CustomError | Error
+        );
+        toast.error('Failed to delete resources permanently', {
           description: message,
           duration: 5000,
         });
@@ -269,8 +409,11 @@ const useResourceAdmin = ({ token }: UseResourceAdminProps) => {
     updateResource,
     toggleResourceTrash,
     getResourceAnalytics,
+    batchRestoreResources,
     deleteFileFromResource,
+    batchToggleResourceTrash,
     deleteResourcePermanently,
+    batchDeleteResourcesPermanently,
   };
 };
 

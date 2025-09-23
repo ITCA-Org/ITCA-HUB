@@ -99,7 +99,7 @@ const AdminDashboard: FC<UserProps> = ({ userData }) => {
           icon={<Users className="h-6 w-6 text-blue-600" />}
         />
         <DashboardStatsCard
-          title="Active Events"
+          title="Events"
           isLoading={isLoading}
           value={stats.totalEvents}
           icon={<Calendar className="h-6 w-6 text-amber-500" />}

@@ -21,7 +21,7 @@ const useResources = ({ token }: UseResourcesProps): UseResourcesReturn => {
   const [isError, setIsError] = useState(false);
   const [pagination, setPagination] = useState<Pagination>({
     total: 0,
-    limit: 10,
+    limit: 15,
     totalPages: 0,
     currentPage: 0,
     hasNextPage: false,
@@ -177,6 +177,142 @@ const useResources = ({ token }: UseResourcesProps): UseResourcesReturn => {
         );
 
         toast.error('Failed to load resources', {
+          description: message,
+          duration: 5000,
+        });
+      }
+    },
+    [token]
+  );
+
+  const fetchDeletedResources = useCallback(
+    async (params: FetchResourcesParams = {}) => {
+      const now = Date.now();
+      if (now - lastRequestRef.current < MIN_REQUEST_INTERVAL) {
+        await new Promise((resolve) =>
+          setTimeout(resolve, MIN_REQUEST_INTERVAL - (now - lastRequestRef.current))
+        );
+      }
+      lastRequestRef.current = Date.now();
+
+      const {
+        signal,
+        category,
+        page = 0,
+        limit = 10,
+        department,
+        visibility,
+        academicLevel,
+        sortOrder = 'desc',
+        sortBy = 'createdAt',
+      } = params;
+
+      const cacheKey = JSON.stringify({
+        endpoint: 'deleted',
+        page: page.toString(),
+        limit: limit.toString(),
+        search: params.search?.trim() || '',
+        category: category && category !== 'all' ? category : '',
+        visibility: visibility || '',
+        academicLevel: academicLevel && academicLevel !== 'all' ? academicLevel : '',
+        department: department && department !== 'all' ? department : '',
+        sortBy: sortBy || '',
+        sortOrder: sortOrder || '',
+        signal: signal ? 'present' : 'absent',
+      });
+
+      const existingRequest = requestCacheRef.current.get(cacheKey) as
+        | Promise<ResourcesResponse>
+        | undefined;
+      if (existingRequest) {
+        try {
+          const data = await existingRequest;
+          if (!signal?.aborted) {
+            setResources(data.data.resources);
+            setPagination((prev) => ({
+              ...prev,
+              ...data.data.pagination,
+            }));
+            setIsError(false);
+            setIsLoading(false);
+          }
+          return;
+        } catch {}
+      }
+
+      setIsLoading(true);
+      setIsError(false);
+
+      const requestPromise = (async () => {
+        try {
+          const { data } = await axios.get<ResourcesResponse>(
+            `${BASE_URL}/resources/trash/deleted`,
+            {
+              signal,
+              params: {
+                page: page.toString(),
+                limit: limit.toString(),
+                ...(params.search?.trim() && { search: params.search.trim() }),
+                ...(category && category !== 'all' && { category }),
+                ...(visibility && { visibility }),
+                ...(academicLevel && academicLevel !== 'all' && { academicLevel }),
+                ...(department && department !== 'all' && { department }),
+                ...(sortBy && { sortBy }),
+                ...(sortOrder && { sortOrder }),
+              },
+              headers: {
+                Authorization: `Bearer ${token}`,
+                'Content-Type': 'application/json',
+              },
+            }
+          );
+
+          if (data.status === 'success') {
+            return data;
+          } else {
+            throw new Error('Failed to fetch deleted resources');
+          }
+        } finally {
+          requestCacheRef.current.delete(cacheKey);
+          const timeout = cacheTimeoutRef.current.get(cacheKey);
+          if (timeout) {
+            clearTimeout(timeout);
+            cacheTimeoutRef.current.delete(cacheKey);
+          }
+        }
+      })();
+
+      requestCacheRef.current.set(cacheKey, requestPromise);
+
+      const timeout = setTimeout(() => {
+        requestCacheRef.current.delete(cacheKey);
+        cacheTimeoutRef.current.delete(cacheKey);
+      }, CACHE_DURATION);
+      cacheTimeoutRef.current.set(cacheKey, timeout);
+
+      try {
+        const data = (await requestPromise) as ResourcesResponse;
+
+        if (!signal?.aborted) {
+          setResources(data.data.resources);
+          setPagination((prev) => ({
+            ...prev,
+            ...data.data.pagination,
+          }));
+          setIsError(false);
+          setIsLoading(false);
+        }
+      } catch (err: unknown) {
+        if (axios.isCancel(err)) {
+          return;
+        }
+        setIsError(true);
+        setIsLoading(false);
+        const { message } = getErrorMessage(
+          err as AxiosError<ErrorResponseData> | CustomError | Error
+        );
+
+        toast.error('Failed to load deleted resources', {
           description: message,
           duration: 5000,
         });
@@ -423,6 +559,7 @@ const useResources = ({ token }: UseResourcesProps): UseResourcesReturn => {
     refreshResources,
     downloadResource,
     fetchSingleResource,
+    fetchDeletedResources,
   };
 };
 

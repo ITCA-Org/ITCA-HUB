@@ -70,8 +70,8 @@ export interface FetchResourcesParams {
   signal?: AbortSignal;
   includeDeleted?: boolean;
   sortOrder?: 'asc' | 'desc';
-  isIncrementalUpdate?: boolean;
   visibility?: 'all' | 'admin';
+  isIncrementalUpdate?: boolean;
   academicLevel?: 'undergraduate' | 'postgraduate' | 'all';
   department?: 'computer_science' | 'information_systems' | 'telecommunications' | 'all';
 }
@@ -250,6 +250,7 @@ export interface UseResourcesReturn {
   clearCache: () => void;
   refreshResources: (params?: FetchResourcesParams) => void;
   fetchResources: (params?: FetchResourcesParams) => Promise<void>;
+  fetchDeletedResources: (params?: FetchResourcesParams) => Promise<void>;
   trackDownload: (resourceId: string, role?: 'admin' | 'student') => Promise<void>;
   downloadResource: (resource: Resource, role?: 'admin' | 'student') => Promise<void>;
   fetchSingleResource: (resourceId: string, signal?: AbortSignal) => Promise<Resource | null>;

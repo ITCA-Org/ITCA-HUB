@@ -1,32 +1,34 @@
-import Link from 'next/link';
+import router from 'next/router';
 import { UserAuth } from '@/types';
 import { NextApiRequest } from 'next';
 import { ArrowLeft } from 'lucide-react';
 import { isLoggedIn } from '@/utils/auth';
+import { useEffect, useCallback, useMemo } from 'react';
 import useResources from '@/hooks/resources/use-resource';
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import { RecycleBinPageProps } from '@/types/interfaces/resource';
 import useResourceAdmin from '@/hooks/resources/use-resource-admin';
 import ResourceTable from '@/components/dashboard/table/resource-table';
-import { RecycleBinPageProps, Resource } from '@/types/interfaces/resource';
 import DashboardLayout from '@/components/dashboard/layout/dashboard-layout';
 import DashboardPageHeader from '@/components/dashboard/layout/dashboard-page-header';
 
 const RecycleBinPage = ({ userData }: RecycleBinPageProps) => {
-  const { resources, isLoading, pagination, fetchResources } = useResources({
+  const { resources, isLoading, isError, pagination, fetchDeletedResources } = useResources({
     token: userData.token,
   });
 
-  const { toggleResourceTrash, deleteResourcePermanently } = useResourceAdmin({
+  const {
+    toggleResourceTrash,
+    batchRestoreResources,
+    deleteResourcePermanently,
+    batchDeleteResourcesPermanently,
+  } = useResourceAdmin({
     token: userData.token,
   });
 
-  const [deletedResources, setDeletedResources] = useState<typeof resources>([]);
-
-  const { currentPage, limit } = pagination;
+  const { currentPage, limit, total, totalPages } = pagination;
 
   const fetchParams = useMemo(
     () => ({
-      includeDeleted: true,
       page: currentPage,
       limit,
     }),
@@ -35,92 +37,123 @@ const RecycleBinPage = ({ userData }: RecycleBinPageProps) => {
 
   useEffect(() => {
     const controller = new AbortController();
-    fetchResources({
+    fetchDeletedResources({
       ...fetchParams,
       signal: controller.signal,
     });
     return () => controller.abort();
-  }, [fetchResources, fetchParams]);
-
-  useEffect(() => {
-    setDeletedResources(resources.filter((r: Resource) => r.isDeleted));
-  }, [resources]);
+  }, [fetchDeletedResources, fetchParams]);
 
   const handlePageChange = useCallback(
     (newPage: number) => {
       const controller = new AbortController();
-      fetchResources({
-        includeDeleted: true,
+      fetchDeletedResources({
         page: newPage,
         limit,
         signal: controller.signal,
       });
     },
-    [fetchResources, limit]
+    [fetchDeletedResources, limit]
   );
 
   const handleRefresh = useCallback(() => {
-    fetchResources({
-      includeDeleted: true,
+    fetchDeletedResources({
       page: currentPage,
       limit,
     });
-  }, [fetchResources, currentPage, limit]);
+  }, [fetchDeletedResources, currentPage, limit]);
+
+  const handleSingleRestore = useCallback(
+    async (resourceId: string): Promise<boolean> => {
+      try {
+        await toggleResourceTrash(resourceId);
+        handleRefresh();
+        return true;
+      } catch {
+        return false;
+      }
+    },
+    [toggleResourceTrash, handleRefresh]
+  );
+
+  const handleBatchRestore = useCallback(
+    async (resourceIds: string[]): Promise<boolean> => {
+      try {
+        const result = await batchRestoreResources(resourceIds);
+        handleRefresh();
+        return result.successful > 0;
+      } catch {
+        return false;
+      }
+    },
+    [batchRestoreResources, handleRefresh]
+  );
+
+  const handleSinglePermanentDelete = useCallback(
+    async (resourceId: string): Promise<boolean> => {
+      try {
+        await deleteResourcePermanently(resourceId);
+        handleRefresh();
+        return true;
+      } catch {
+        return false;
+      }
+    },
+    [deleteResourcePermanently, handleRefresh]
+  );
+
+  const handleBatchPermanentDelete = useCallback(
+    async (resourceIds: string[]): Promise<boolean> => {
+      try {
+        const result = await batchDeleteResourcesPermanently(resourceIds);
+        handleRefresh();
+        return result.successful > 0;
+      } catch {
+        return false;
+      }
+    },
+    [batchDeleteResourcesPermanently, handleRefresh]
+  );
 
   return (
     <DashboardLayout title="Recycle Bin" token={userData.token}>
+      {/*==================== Page Header ====================*/}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
         <DashboardPageHeader
           title="Recycle"
           subtitle="Bin"
           description="View and manage deleted resources. Items remain here for 30 days before being permanently removed."
-          actions={
-            <div className="flex flex-col gap-4 w-full md:flex-row sm:mt-0 space-x-3">
-              <Link
-                href="/admin/resources"
-                className="inline-flex items-center rounded-lg bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
-              >
-                <ArrowLeft className="mr-2 h-4 w-4" />
-                Back to Resources
-              </Link>
-            </div>
+          leftActions={
+            <button onClick={() => router.back()}>
+              <ArrowLeft className="h-4 w-4 cursor-pointer" />
+            </button>
           }
         />
       </div>
+      {/*==================== End of Page Header ====================*/}
 
+      {/*==================== Resource Table ====================*/}
       <ResourceTable
         searchTerm=""
+        total={total}
         limit={limit}
-        isError={false}
         userRole="admin"
         mode="recycleBin"
+        isError={isError}
         page={currentPage}
         isLoading={isLoading}
         token={userData.token}
-        onClearFilters={() => {}}
+        resources={resources}
+        totalPages={totalPages}
         onRefresh={handleRefresh}
+        onClearFilters={() => {}}
         setPage={handlePageChange}
-        resources={deletedResources}
-        total={deletedResources.length}
-        allResources={deletedResources}
-        totalPages={Math.ceil(deletedResources.length / limit)}
-        onRestoreResource={async (resourceId: string) => {
-          try {
-            await toggleResourceTrash(resourceId);
-            return true;
-          } catch {
-            return false;
-          }
-        }}
-        onDeleteResource={async (resourceId: string) => {
-          try {
-            await deleteResourcePermanently(resourceId);
-            return true;
-          } catch {
-            return false;
-          }
-        }}
+        onRestoreMultiple={handleBatchRestore}
+        onRestoreResource={handleSingleRestore}
+        onDeleteMultiple={handleBatchPermanentDelete}
+        onDeleteResource={handleSinglePermanentDelete}
       />
+      {/*==================== End of Resource Table ====================*/}
     </DashboardLayout>
   );
 };
