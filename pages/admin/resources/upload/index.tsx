@@ -1,13 +1,16 @@
-import Link from 'next/link';
 import { UserAuth } from '@/types';
 import { NextApiRequest } from 'next';
 import { ArrowLeft } from 'lucide-react';
 import { isLoggedIn } from '@/utils/auth';
+import { useRouter } from 'next/router';
 import { AdminResourceUploadPageProps } from '@/types/interfaces/resource';
 import DashboardLayout from '@/components/dashboard/layout/dashboard-layout';
+import DashboardPageHeader from '@/components/dashboard/layout/dashboard-page-header';
 import ResourceUploader from '@/components/dashboard/shared/resources/resource-uploader';
 
 const AdminResourceUploadPage = ({ userData }: AdminResourceUploadPageProps) => {
+  const router = useRouter();
+
   const handleUploadComplete = (_fileData: {
     fileName: string;
     fileUrl: string;
@@ -16,36 +19,22 @@ const AdminResourceUploadPage = ({ userData }: AdminResourceUploadPageProps) => 
   }) => {};
 
   return (
-    <DashboardLayout title="Upload Resource">
+    <DashboardLayout title="Upload Resource" token={userData.token}>
+      {/*==================== Header ====================*/}
+      <DashboardPageHeader
+        title="Upload"
+        subtitle="Resource"
+        description="Add new educational materials to the resource library"
+        leftActions={
+          <button onClick={() => router.back()}>
+            <ArrowLeft className="h-4 w-4 cursor-pointer" />
+          </button>
+        }
+      />
+      {/*==================== End of Header ====================*/}
+
       <div className="relative">
         <div className="relative z-10">
-          {/*==================== Header Section ====================*/}
-          <div className="mb-8">
-            <div className="flex items-center">
-              <Link
-                href="/admin/resources"
-                className="mr-3 inline-flex items-center rounded-lg bg-white p-2 text-sm text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-gray-500 focus:ring-offset-2 transition-colors"
-              >
-                <ArrowLeft className="h-4 w-4" />
-              </Link>
-              <div>
-                <h1 className="text-2xl font-bold text-gray-900 mb-2 flex items-center">
-                  <span className="text-blue-700 mr-2">Upload</span>
-                  <span className="text-amber-500">Resources</span>
-                  <span className="ml-3 relative">
-                    <span className="absolute -top-1 -right-1 flex h-3 w-3">
-                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
-                      <span className="relative inline-flex rounded-full h-3 w-3 bg-amber-500"></span>
-                    </span>
-                  </span>
-                </h1>
-                <p className="text-gray-600">
-                  Add new educational materials to the resource library
-                </p>
-              </div>
-            </div>
-          </div>
-          {/*==================== End of Header Section ====================*/}
 
           {/*==================== Resource Uploader Component ====================*/}
           <ResourceUploader token={userData.token} onUploadComplete={handleUploadComplete} />
