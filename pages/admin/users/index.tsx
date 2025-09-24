@@ -39,13 +39,9 @@ const AdminUsersPage = ({ userData }: AdminUsersPageProps) => {
     });
   }, [clearCache, fetchUsers, page, limit, debouncedSearchQuery, role, status, isLoading]);
 
-  const handlePageChange = useCallback(
-    (newPage: number) => {
-      clearCache();
-      setPage(newPage);
-    },
-    [clearCache]
-  );
+  const handlePageChange = useCallback((newPage: number) => {
+    setPage(newPage);
+  }, []);
 
   const resetFilters = useCallback(() => {
     setIsClearingFilters(true);
@@ -93,14 +89,7 @@ const AdminUsersPage = ({ userData }: AdminUsersPageProps) => {
 
   useEffect(() => {
     setPage(1);
-    clearCache();
-  }, [debouncedSearchQuery, role, status, clearCache]);
-
-  useEffect(() => {
-    return () => {
-      clearCache();
-    };
-  }, [clearCache]);
+  }, [debouncedSearchQuery, role, status]);
 
   return (
     <DashboardLayout title="User Management" token={userData.token}>

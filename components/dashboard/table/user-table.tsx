@@ -11,8 +11,8 @@ import {
   ChevronRight,
   GraduationCap,
 } from 'lucide-react';
-import useUserActions from '@/hooks/users/use-user-actions';
 import { UserTableProps } from '@/types/interfaces/table';
+import useUserActions from '@/hooks/users/use-user-actions';
 import UserTableSkeleton from '../skeletons/user-table-skeleton';
 import UserActionsModal from '../modals/user/user-actions-modal';
 import { NetworkError, EmptyState, NoResults } from '@/components/dashboard/error-messages';
@@ -24,13 +24,13 @@ const UserTable = ({
   token,
   setPage,
   totalPages,
+  onUserUpdated,
+  onClearFilters,
   isError = false,
   isLoading = false,
-  total = users?.length,
-  onUserUpdated,
   showActions = true,
+  total = users?.length,
   hasActiveFilters = false,
-  onClearFilters,
 }: UserTableProps) => {
   const {
     deleteUser,
@@ -55,7 +55,7 @@ const UserTable = ({
 
   if (users?.length === 0) {
     return hasActiveFilters ? (
-      <NoResults onClearFilters={onClearFilters || (() => {})} />
+      <NoResults title="No matching users found" onClearFilters={onClearFilters || (() => {})} />
     ) : (
       <EmptyState
         itemName="user"
@@ -249,7 +249,11 @@ const UserTable = ({
                       return (
                         <button
                           key={`page-${pageNumber}`}
-                          onClick={() => setPage(pageNumber)}
+                          onClick={() => {
+                            if (pageNumber !== page) {
+                              setPage(pageNumber);
+                            }
+                          }}
                           className={`px-3 py-1 text-sm font-medium rounded-md ${
                             isCurrentPage
                               ? 'bg-blue-600 text-white'

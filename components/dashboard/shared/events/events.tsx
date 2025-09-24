@@ -157,7 +157,6 @@ const EventsComponent = ({ role, userData }: EventsComponentProps) => {
     setStatus('all');
     setPage(1);
     clearCache();
-    // isClearingFilters will be set to false by the useEffect when new data loads
   };
 
   /**===============================
@@ -208,15 +207,6 @@ const EventsComponent = ({ role, userData }: EventsComponentProps) => {
     };
   }, [page, limit, status, getAllEvents]);
 
-  /**=====================================
-   * Cleanup on component unmount
-   =====================================*/
-  useEffect(() => {
-    return () => {
-      clearCache();
-    };
-  }, [clearCache]);
-
   /**===============================
    * Reset page when filters change
    ===============================*/
@@ -236,7 +226,9 @@ const EventsComponent = ({ role, userData }: EventsComponentProps) => {
   };
 
   const handlePageClick = (pageNum: number) => {
-    setPage(pageNum);
+    if (pageNum !== page) {
+      setPage(pageNum);
+    }
   };
 
   /**===============================

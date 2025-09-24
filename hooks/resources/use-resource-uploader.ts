@@ -154,18 +154,30 @@ const useResourceUploader = ({ token, onUploadComplete, onError }: UseResourceUp
           percentage: startFromIndex > 0 ? Math.round((startFromIndex / totalFiles) * 100) : 0,
         }));
 
+        toast.loading(`Uploading resource... 0%`, {
+          id: 'resource-upload-progress',
+          duration: Infinity,
+        });
+
         const uploadedUrls: string[] = [...uploadProgress.uploadedUrls];
 
         for (let i = startFromIndex; i < totalFiles; i++) {
           const reverseIndex = totalFiles - 1 - i;
           const file = selectedFiles[reverseIndex];
 
+          const progress = Math.round((i / totalFiles) * 100);
+
           setUploadProgress((prev) => ({
             ...prev,
             currentFileIndex: i,
             currentFileName: file.name,
-            percentage: Math.round((i / totalFiles) * 100),
+            percentage: progress,
           }));
+
+          toast.loading(`Uploading resource... ${progress}%`, {
+            id: 'resource-upload-progress',
+            duration: Infinity,
+          });
 
           try {
             const fileUrl = await uploadFile(file);
@@ -207,6 +219,7 @@ const useResourceUploader = ({ token, onUploadComplete, onError }: UseResourceUp
         await createResource(resourcePayload);
 
         toast.success('Resource created successfully', {
+          id: 'resource-upload-progress',
           description: `${selectedFiles.length} files uploaded successfully`,
         });
 
@@ -225,6 +238,7 @@ const useResourceUploader = ({ token, onUploadComplete, onError }: UseResourceUp
           error as AxiosError<ErrorResponseData> | CustomError | Error
         );
         toast.error('Upload failed', {
+          id: 'resource-upload-progress',
           description: message,
         });
 
@@ -240,11 +254,11 @@ const useResourceUploader = ({ token, onUploadComplete, onError }: UseResourceUp
       onError,
       category,
       resetForm,
-      isFormValid,
       visibility,
       department,
       uploadFile,
       description,
+      isFormValid,
       selectedFiles,
       academicLevel,
       formatFileSize,
@@ -327,30 +341,30 @@ const useResourceUploader = ({ token, onUploadComplete, onError }: UseResourceUp
   }, []);
 
   return {
-    selectedFiles,
     title,
-    description,
     category,
     visibility,
-    academicLevel,
     department,
-    uploadProgress,
-    fileInputRef,
+    description,
     isFormValid,
     isUploading,
+    fileInputRef,
+    selectedFiles,
+    academicLevel,
+    uploadProgress,
     setTitle,
-    setDescription,
-    setCategory,
-    setVisibility,
-    setAcademicLevel,
-    setDepartment,
-    handleBatchUpload,
-    handleFileChange,
-    removeFile,
-    addMoreFiles,
     resetForm,
-    getButtonContent,
+    removeFile,
+    setCategory,
+    addMoreFiles,
+    setVisibility,
+    setDepartment,
     formatFileSize,
+    setDescription,
+    handleFileChange,
+    setAcademicLevel,
+    getButtonContent,
+    handleBatchUpload,
   };
 };
 

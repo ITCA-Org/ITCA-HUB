@@ -57,6 +57,17 @@ const ResourcesComponent = ({ role, userData }: ResourcesComponentProps) => {
     role,
   ]);
 
+  const loadResources = useCallback(() => {
+    const controller = new AbortController();
+    fetchResources({
+      page: 0,
+      limit,
+      ...filterParams,
+      signal: controller.signal,
+    });
+    return controller;
+  }, [fetchResources, limit, filterParams]);
+
   const handleDeleteResource = useCallback(
     async (resourceId: string, mode: 'soft' | 'permanent' = 'soft'): Promise<boolean> => {
       if (role !== 'admin' || !adminHook) return false;
@@ -67,13 +78,13 @@ const ResourcesComponent = ({ role, userData }: ResourcesComponentProps) => {
         } else {
           await adminHook.toggleResourceTrash(resourceId);
         }
-        clearCache();
+        loadResources();
         return true;
       } catch {
         return false;
       }
     },
-    [adminHook, role, clearCache]
+    [adminHook, role, loadResources]
   );
 
   const handleDeleteMultiple = useCallback(
@@ -86,13 +97,13 @@ const ResourcesComponent = ({ role, userData }: ResourcesComponentProps) => {
         } else {
           await adminHook.batchToggleResourceTrash(resourceIds);
         }
-        clearCache();
+        loadResources();
         return true;
       } catch {
         return false;
       }
     },
-    [adminHook, role, clearCache]
+    [adminHook, role, loadResources]
   );
 
   const handleRestoreResource = useCallback(
@@ -124,17 +135,6 @@ const ResourcesComponent = ({ role, userData }: ResourcesComponentProps) => {
     },
     [adminHook, role, clearCache]
   );
-
-  const loadResources = useCallback(() => {
-    const controller = new AbortController();
-    fetchResources({
-      page: 0,
-      limit,
-      ...filterParams,
-      signal: controller.signal,
-    });
-    return controller;
-  }, [fetchResources, limit, filterParams]);
 
   const handlePageChange = useCallback(
     (newPage: number) => {

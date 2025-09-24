@@ -31,10 +31,10 @@ import useResourceAdmin from '@/hooks/resources/use-resource-admin';
 import DashboardLayout from '@/components/dashboard/layout/dashboard-layout';
 import { NetworkError, EmptyState } from '@/components/dashboard/error-messages';
 import ConfirmationModal from '@/components/dashboard/modals/confirmation-modal';
-import DashboardPageHeader from '@/components/dashboard/layout/dashboard-page-header';
-import ResourceViewerSkeleton from '@/components/dashboard/skeletons/resource-viewer-skeleton';
 import AddFilesModal from '@/components/dashboard/modals/resources/add-files-modal';
+import DashboardPageHeader from '@/components/dashboard/layout/dashboard-page-header';
 import { FileItem, Resource, ResourceViewerComponentProps } from '@/types/interfaces/resource';
+import ResourceViewerSkeleton from '@/components/dashboard/skeletons/resource-viewer-skeleton';
 
 const ResourceViewerComponent = ({ role, userData }: ResourceViewerComponentProps) => {
   const router = useRouter();
@@ -58,48 +58,51 @@ const ResourceViewerComponent = ({ role, userData }: ResourceViewerComponentProp
 
   const adminHook = useResourceAdmin({ token: userData.token });
 
-  const loadResource = useCallback(async (shouldTrackView: boolean = true) => {
-    if (!id || !userData.token) return;
+  const loadResource = useCallback(
+    async (shouldTrackView: boolean = true) => {
+      if (!id || !userData.token) return;
 
-    const abortController = new AbortController();
+      const abortController = new AbortController();
 
-    try {
-      setIsLoading(true);
-      setError(null);
+      try {
+        setIsLoading(true);
+        setError(null);
 
-      const resourceData = await fetchSingleResource(id as string, abortController.signal);
+        const resourceData = await fetchSingleResource(id as string, abortController.signal);
 
-      if (resourceData && !abortController.signal.aborted) {
-        setResource(resourceData);
+        if (resourceData && !abortController.signal.aborted) {
+          setResource(resourceData);
 
-        const processedFiles = resourceData.fileUrls.map((url: string) => {
-          const fileName = url.split('/').pop() || 'Unknown';
-          const fileType = getFileType(fileName);
+          const processedFiles = resourceData.fileUrls.map((url: string) => {
+            const fileName = url.split('/').pop() || 'Unknown';
+            const fileType = getFileType(fileName);
 
-          return {
-            url,
-            name: fileName,
-            type: fileType,
-          };
-        });
+            return {
+              url,
+              name: fileName,
+              type: fileType,
+            };
+          });
 
-        setFiles(processedFiles);
+          setFiles(processedFiles);
 
-        if (shouldTrackView) {
-          const resourceId = resourceData._id || resourceData.resourceId;
-          if (resourceId) {
-            await trackView(resourceId, role, abortController.signal);
+          if (shouldTrackView) {
+            const resourceId = resourceData._id || resourceData.resourceId;
+            if (resourceId) {
+              await trackView(resourceId, role, abortController.signal);
+            }
           }
         }
+      } catch (err) {
+        if (!abortController.signal.aborted) {
+          setError(err instanceof Error ? err.message : 'Failed to load resource');
+        }
+      } finally {
+        setIsLoading(false);
       }
-    } catch (err) {
-      if (!abortController.signal.aborted) {
-        setError(err instanceof Error ? err.message : 'Failed to load resource');
-      }
-    } finally {
-      setIsLoading(false);
-    }
-  }, [id, userData.token, fetchSingleResource, trackView, role]);
+    },
+    [id, userData.token, fetchSingleResource, trackView, role]
+  );
 
   useEffect(() => {
     loadResource(true);
@@ -146,8 +149,7 @@ const ResourceViewerComponent = ({ role, userData }: ResourceViewerComponentProp
       setIsDeletingFile(fileToDelete);
       await adminHook.deleteFileFromResource(resource.resourceId || resource._id, fileToDelete);
 
-      // Refresh the resource instead of manual state updates
-      await loadResource(false); // Don't track view again
+      await loadResource(false);
 
       setShowDeleteFileModal(false);
       setFileToDelete(null);
@@ -686,12 +688,12 @@ const ResourceViewerComponent = ({ role, userData }: ResourceViewerComponentProp
       {/*==================== Add Files Modal ====================*/}
       {resource && (
         <AddFilesModal
-          isOpen={showAddFilesModal}
           resource={resource}
           token={userData.token}
+          isOpen={showAddFilesModal}
           onClose={() => setShowAddFilesModal(false)}
           onFilesAdded={async () => {
-            await loadResource(false); // Refresh resource without tracking view
+            await loadResource(false);
           }}
         />
       )}

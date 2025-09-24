@@ -91,7 +91,6 @@ const ResourceTable = ({
     mode,
   });
 
-
   const getDepartmentIcon = (department: string) => {
     switch (department) {
       case 'computer_science':
@@ -520,7 +519,11 @@ const ResourceTable = ({
                         return (
                           <button
                             key={pageNumber}
-                            onClick={() => setPage(pageNumber)}
+                            onClick={() => {
+                              if (pageNumber !== page) {
+                                setPage(pageNumber);
+                              }
+                            }}
                             className={`px-3 py-1 text-sm font-semibold rounded-md ${
                               page === pageNumber
                                 ? 'bg-blue-600 text-white'
@@ -598,12 +601,12 @@ const ResourceTable = ({
       {/*==================== Restore Modal ====================*/}
       {userRole === 'admin' && mode === 'recycleBin' && showRestoreModal && (
         <DeleteResourceModal
+          mode="restore"
           isLoading={isRestoring}
           isOpen={showRestoreModal}
+          onConfirm={confirmRestore}
           onClose={() => setShowRestoreModal(false)}
           resourceCount={hasMultipleSelected ? selectedCount : 1}
-          mode="restore"
-          onConfirm={confirmRestore}
         />
       )}
       {/*==================== End of Restore Modal ====================*/}
