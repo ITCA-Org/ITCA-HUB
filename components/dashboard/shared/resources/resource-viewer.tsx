@@ -26,7 +26,7 @@ import {
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { useRouter } from 'next/router';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import useResources from '@/hooks/resources/use-resource';
 import useResourceAdmin from '@/hooks/resources/use-resource-admin';
 import DashboardLayout from '@/components/dashboard/layout/dashboard-layout';
@@ -57,58 +57,52 @@ const ResourceViewerComponent = ({ role, userData }: ResourceViewerComponentProp
 
   const adminHook = useResourceAdmin({ token: userData.token });
 
-  useEffect(() => {
+  const loadResource = useCallback(async (shouldTrackView: boolean = true) => {
+    if (!id || !userData.token) return;
+
     const abortController = new AbortController();
-    let isMounted = true;
 
-    const loadResource = async () => {
-      if (!id || !userData.token) return;
+    try {
+      setIsLoading(true);
+      setError(null);
 
-      try {
-        setIsLoading(true);
-        setError(null);
+      const resourceData = await fetchSingleResource(id as string, abortController.signal);
 
-        const resourceData = await fetchSingleResource(id as string, abortController.signal);
+      if (resourceData && !abortController.signal.aborted) {
+        setResource(resourceData);
 
-        if (isMounted && resourceData && !abortController.signal.aborted) {
-          setResource(resourceData);
+        const processedFiles = resourceData.fileUrls.map((url: string) => {
+          const fileName = url.split('/').pop() || 'Unknown';
+          const fileType = getFileType(fileName);
 
-          const processedFiles = resourceData.fileUrls.map((url: string) => {
-            const fileName = url.split('/').pop() || 'Unknown';
-            const fileType = getFileType(fileName);
+          return {
+            url,
+            name: fileName,
+            type: fileType,
+          };
+        });
 
-            return {
-              url,
-              name: fileName,
-              type: fileType,
-            };
-          });
+        setFiles(processedFiles);
 
-          setFiles(processedFiles);
-
+        if (shouldTrackView) {
           const resourceId = resourceData._id || resourceData.resourceId;
           if (resourceId) {
             await trackView(resourceId, role, abortController.signal);
           }
         }
-      } catch (err) {
-        if (isMounted && !abortController.signal.aborted) {
-          setError(err instanceof Error ? err.message : 'Failed to load resource');
-        }
-      } finally {
-        if (isMounted) {
-          setIsLoading(false);
-        }
       }
-    };
-
-    loadResource();
-
-    return () => {
-      isMounted = false;
-      abortController.abort();
-    };
+    } catch (err) {
+      if (!abortController.signal.aborted) {
+        setError(err instanceof Error ? err.message : 'Failed to load resource');
+      }
+    } finally {
+      setIsLoading(false);
+    }
   }, [id, userData.token, fetchSingleResource, trackView, role]);
+
+  useEffect(() => {
+    loadResource(true);
+  }, [loadResource]);
 
   const handleDownload = async (file: FileItem) => {
     if (!resource) return;
@@ -149,12 +143,10 @@ const ResourceViewerComponent = ({ role, userData }: ResourceViewerComponentProp
 
     try {
       setIsDeletingFile(fileToDelete);
-      const updatedResource = await adminHook.deleteFileFromResource(resource._id, fileToDelete);
+      await adminHook.deleteFileFromResource(resource.resourceId || resource._id, fileToDelete);
 
-      setFiles((prev) => prev.filter((file) => file.url !== fileToDelete));
-      if (updatedResource) {
-        setResource(updatedResource);
-      }
+      // Refresh the resource instead of manual state updates
+      await loadResource(false); // Don't track view again
 
       setShowDeleteFileModal(false);
       setFileToDelete(null);
