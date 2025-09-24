@@ -2,11 +2,11 @@ import { DashboardPageHeaderProps } from '@/types/interfaces/dashboard';
 
 const DashboardPageHeader = ({
   title,
+  actions,
   subtitle,
   description,
-  showPulse = true,
-  actions,
   leftActions,
+  showPulse = true,
   titleColors = {
     primary: 'text-blue-700',
     secondary: 'text-amber-500',

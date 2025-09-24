@@ -1,8 +1,8 @@
 import { UserAuth } from '@/types';
 import { NextApiRequest } from 'next';
+import { useRouter } from 'next/router';
 import { ArrowLeft } from 'lucide-react';
 import { isLoggedIn } from '@/utils/auth';
-import { useRouter } from 'next/router';
 import { AdminResourceUploadPageProps } from '@/types/interfaces/resource';
 import DashboardLayout from '@/components/dashboard/layout/dashboard-layout';
 import DashboardPageHeader from '@/components/dashboard/layout/dashboard-page-header';
@@ -35,7 +35,6 @@ const AdminResourceUploadPage = ({ userData }: AdminResourceUploadPageProps) => 
 
       <div className="relative">
         <div className="relative z-10">
-
           {/*==================== Resource Uploader Component ====================*/}
           <ResourceUploader token={userData.token} onUploadComplete={handleUploadComplete} />
           {/*==================== End of Resource Uploader Component ====================*/}
