@@ -116,8 +116,8 @@ const AdminResourceUploadPage = ({ userData }: AdminResourceUploadPageProps) => 
           >
             <ResourceUploader
               token={userData.token}
-              onUploadComplete={handleUploadComplete}
               onError={handleUploadError}
+              onUploadComplete={handleUploadComplete}
             />
           </div>
           {/*==================== End of Resource Uploader Component ====================*/}

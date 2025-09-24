@@ -218,8 +218,8 @@ const useResourceUploader = ({ token, onUploadComplete, onError }: UseResourceUp
 
         await createResource(resourcePayload);
 
+        toast.dismiss('resource-upload-progress');
         toast.success('Resource created successfully', {
-          id: 'resource-upload-progress',
           description: `${selectedFiles.length} files uploaded successfully`,
         });
 
@@ -237,8 +237,8 @@ const useResourceUploader = ({ token, onUploadComplete, onError }: UseResourceUp
         const { message } = getErrorMessage(
           error as AxiosError<ErrorResponseData> | CustomError | Error
         );
+        toast.dismiss('resource-upload-progress');
         toast.error('Upload failed', {
-          id: 'resource-upload-progress',
           description: message,
         });
 
