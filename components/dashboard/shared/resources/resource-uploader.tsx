@@ -228,7 +228,7 @@ const ResourceUploader = ({ token, onUploadComplete, onError }: ResourceUploader
             <Upload className="h-5 w-5 text-green-600 mr-2" />
             Upload Files
             <span className="ml-2 text-sm font-normal text-gray-500">
-              ({selectedFiles.length}/20)
+              ({selectedFiles.length}/50)
             </span>
           </h3>
 

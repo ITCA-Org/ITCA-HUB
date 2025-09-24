@@ -1,22 +1,89 @@
 import { UserAuth } from '@/types';
 import { NextApiRequest } from 'next';
 import { useRouter } from 'next/router';
-import { ArrowLeft } from 'lucide-react';
 import { isLoggedIn } from '@/utils/auth';
+import { useState, useEffect, useRef } from 'react';
+import { ArrowLeft, AlertTriangle } from 'lucide-react';
 import { AdminResourceUploadPageProps } from '@/types/interfaces/resource';
 import DashboardLayout from '@/components/dashboard/layout/dashboard-layout';
+import ConfirmationModal from '@/components/dashboard/modals/confirmation-modal';
 import DashboardPageHeader from '@/components/dashboard/layout/dashboard-page-header';
 import ResourceUploader from '@/components/dashboard/shared/resources/resource-uploader';
 
 const AdminResourceUploadPage = ({ userData }: AdminResourceUploadPageProps) => {
   const router = useRouter();
+  const [showExitConfirmation, setShowExitConfirmation] = useState(false);
+  const [isUploadInProgress, setIsUploadInProgress] = useState(false);
+  const pendingNavigationRef = useRef<(() => void) | null>(null);
 
   const handleUploadComplete = (_fileData: {
     fileName: string;
     fileUrl: string;
     fileType: string;
     fileSize: string;
-  }) => {};
+  }) => {
+    setIsUploadInProgress(false);
+  };
+
+  const handleUploadError = () => {
+    setIsUploadInProgress(false);
+  };
+
+  useEffect(() => {
+    const handleRouteChange = (url: string) => {
+      if (isUploadInProgress) {
+        pendingNavigationRef.current = () => router.push(url);
+        setShowExitConfirmation(true);
+        throw 'routeChange aborted';
+      }
+    };
+
+    const handleBackButton = () => {
+      if (isUploadInProgress) {
+        pendingNavigationRef.current = () => router.back();
+        setShowExitConfirmation(true);
+      }
+    };
+
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      if (isUploadInProgress) {
+        e.preventDefault();
+        e.returnValue = 'Upload in progress. Are you sure you want to leave?';
+        return 'Upload in progress. Are you sure you want to leave?';
+      }
+    };
+
+    router.events.on('routeChangeStart', handleRouteChange);
+
+    router.beforePopState((_) => {
+      if (isUploadInProgress) {
+        handleBackButton();
+        return false;
+      }
+      return true;
+    });
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+
+    return () => {
+      router.events.off('routeChangeStart', handleRouteChange);
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+    };
+  }, [isUploadInProgress, router]);
+
+  const handleConfirmExit = () => {
+    setIsUploadInProgress(false);
+    setShowExitConfirmation(false);
+    if (pendingNavigationRef.current) {
+      pendingNavigationRef.current();
+      pendingNavigationRef.current = null;
+    }
+  };
+
+  const handleCancelExit = () => {
+    setShowExitConfirmation(false);
+    pendingNavigationRef.current = null;
+  };
 
   return (
     <DashboardLayout title="Upload Resource" token={userData.token}>
@@ -36,7 +103,23 @@ const AdminResourceUploadPage = ({ userData }: AdminResourceUploadPageProps) => 
       <div className="relative">
         <div className="relative z-10">
           {/*==================== Resource Uploader Component ====================*/}
-          <ResourceUploader token={userData.token} onUploadComplete={handleUploadComplete} />
+          <div
+            onClick={(e) => {
+              const target = e.target as HTMLElement;
+              const buttonElement = target as HTMLButtonElement;
+              if (buttonElement.type === 'submit' || target.closest('button[type="submit"]')) {
+                setTimeout(() => {
+                  setIsUploadInProgress(true);
+                }, 100);
+              }
+            }}
+          >
+            <ResourceUploader
+              token={userData.token}
+              onUploadComplete={handleUploadComplete}
+              onError={handleUploadError}
+            />
+          </div>
           {/*==================== End of Resource Uploader Component ====================*/}
 
           {/*==================== Guidelines Section ====================*/}
@@ -77,6 +160,20 @@ const AdminResourceUploadPage = ({ userData }: AdminResourceUploadPageProps) => 
           {/*==================== End of Guidelines Section ====================*/}
         </div>
       </div>
+
+      {/*==================== Exit Confirmation Modal ====================*/}
+      <ConfirmationModal
+        variant="warning"
+        title="Upload in Progress"
+        onClose={handleCancelExit}
+        confirmText="Leave Anyway"
+        isOpen={showExitConfirmation}
+        onConfirm={handleConfirmExit}
+        cancelText="Stay and Continue"
+        icon={<AlertTriangle className="h-5 w-5" />}
+        message="You have an active upload in progress. If you leave now, your upload will be canceled and you'll lose all progress. You'll need to start over from the beginning."
+      />
+      {/*==================== End of Exit Confirmation Modal ====================*/}
     </DashboardLayout>
   );
 };
