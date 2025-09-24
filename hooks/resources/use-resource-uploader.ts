@@ -270,14 +270,14 @@ const useResourceUploader = ({ token, onUploadComplete, onError }: UseResourceUp
         return;
       }
 
-      if (totalFiles > 20) {
-        const remainingSlots = 20 - selectedFiles.length;
+      if (totalFiles > 50) {
+        const remainingSlots = 50 - selectedFiles.length;
         const filesToAdd = newFiles.slice(0, remainingSlots);
         setSelectedFiles((prev) => [...prev, ...filesToAdd]);
 
         if (remainingSlots < newFiles.length) {
           toast.warning(`Only ${remainingSlots} files added`, {
-            description: 'Maximum 20 files allowed per resource',
+            description: 'Maximum 50 files allowed per resource',
           });
         }
       } else {

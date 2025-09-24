@@ -129,3 +129,20 @@ export interface ConfirmationModalProps {
   onConfirm: () => void;
   variant?: 'primary' | 'danger' | 'success' | 'warning';
 }
+
+export interface AddFilesModalProps {
+  isOpen: boolean;
+  resource: Resource;
+  token: string;
+  onClose: () => void;
+  onFilesAdded: () => void;
+}
+
+export interface UploadProgress {
+  phase: 'idle' | 'uploading' | 'updating' | 'completed';
+  currentFileIndex: number;
+  totalFiles: number;
+  uploadedUrls: string[];
+  currentFileName: string;
+  percentage: number;
+}

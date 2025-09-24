@@ -24,7 +24,6 @@ import {
   GraduationCap,
   FileSpreadsheet,
 } from 'lucide-react';
-import { toast } from 'sonner';
 import { useRouter } from 'next/router';
 import { useState, useEffect, useCallback } from 'react';
 import useResources from '@/hooks/resources/use-resource';
@@ -34,6 +33,7 @@ import { NetworkError, EmptyState } from '@/components/dashboard/error-messages'
 import ConfirmationModal from '@/components/dashboard/modals/confirmation-modal';
 import DashboardPageHeader from '@/components/dashboard/layout/dashboard-page-header';
 import ResourceViewerSkeleton from '@/components/dashboard/skeletons/resource-viewer-skeleton';
+import AddFilesModal from '@/components/dashboard/modals/resources/add-files-modal';
 import { FileItem, Resource, ResourceViewerComponentProps } from '@/types/interfaces/resource';
 
 const ResourceViewerComponent = ({ role, userData }: ResourceViewerComponentProps) => {
@@ -46,6 +46,7 @@ const ResourceViewerComponent = ({ role, userData }: ResourceViewerComponentProp
   const [isDownloading, setIsDownloading] = useState<string | null>(null);
   const [fileToDelete, setFileToDelete] = useState<string | null>(null);
   const [showDeleteFileModal, setShowDeleteFileModal] = useState(false);
+  const [showAddFilesModal, setShowAddFilesModal] = useState(false);
   const [resource, setResource] = useState<Resource | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [files, setFiles] = useState<FileItem[]>([]);
@@ -380,10 +381,7 @@ const ResourceViewerComponent = ({ role, userData }: ResourceViewerComponentProp
               {role === 'admin' && (
                 <div className="flex flex-col sm:flex-row gap-2">
                   <button
-                    onClick={() => {
-                      // TODO: Open add files modal
-                      toast.info('Add files modal coming soon');
-                    }}
+                    onClick={() => setShowAddFilesModal(true)}
                     className="inline-flex items-center rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 transition-colors"
                   >
                     <Plus className="mr-2 h-4 w-4" />
@@ -684,6 +682,20 @@ const ResourceViewerComponent = ({ role, userData }: ResourceViewerComponentProp
         message="Are you sure you want to delete this file? This action cannot be undone and the file will be permanently removed from this resource."
       />
       {/*==================== End of Delete File Confirmation Modal ====================*/}
+
+      {/*==================== Add Files Modal ====================*/}
+      {resource && (
+        <AddFilesModal
+          isOpen={showAddFilesModal}
+          resource={resource}
+          token={userData.token}
+          onClose={() => setShowAddFilesModal(false)}
+          onFilesAdded={async () => {
+            await loadResource(false); // Refresh resource without tracking view
+          }}
+        />
+      )}
+      {/*==================== End of Add Files Modal ====================*/}
     </DashboardLayout>
   );
 };

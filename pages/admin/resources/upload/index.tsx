@@ -67,7 +67,7 @@ const AdminResourceUploadPage = ({ userData }: AdminResourceUploadPageProps) => 
             <div className="rounded-lg sm:p-1 lg:p-4">
               {[
                 'All uploaded resources should be relevant to educational purposes.',
-                'Upload up to 20 files per resource with a maximum of 100MB per file.',
+                'Upload up to 50 files per resource with a maximum of 100MB per file.',
                 'Organize related files together - lectures with assignments, theory with practice examples.',
                 'Supported file types include PDFs, documents, spreadsheets, presentations, images, videos, and more.',
                 'Ensure you have the necessary rights or permissions to share all uploaded content.',

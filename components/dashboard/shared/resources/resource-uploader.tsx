@@ -247,7 +247,7 @@ const ResourceUploader = ({ token, onUploadComplete, onError }: ResourceUploader
                 <p className="mb-1 text-sm text-gray-500">
                   <span className="font-medium">Click to select files</span> or drag and drop
                 </p>
-                <p className="text-sm text-gray-500">Up to 20 files, 100MB per file</p>
+                <p className="text-sm text-gray-500">Up to 50 files, 100MB per file</p>
               </div>
               <input
                 type="file"
