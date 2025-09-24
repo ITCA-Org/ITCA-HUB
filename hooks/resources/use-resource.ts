@@ -405,7 +405,6 @@ const useResources = ({ token }: UseResourcesProps): UseResourcesReturn => {
   const trackView = useCallback(
     async (resourceId: string, role: 'admin' | 'student', signal?: AbortSignal) => {
       if (role !== 'student') return;
-
       const storageKey = `resource_view_${resourceId}`;
       const lastTracked = localStorage.getItem(storageKey);
       const now = Date.now();
@@ -465,42 +464,25 @@ const useResources = ({ token }: UseResourcesProps): UseResourcesReturn => {
     [token]
   );
 
-  const downloadResource = useCallback(
-    async (resource: Resource, role?: 'admin' | 'student') => {
+  const downloadFile = useCallback(
+    async (fileUrl: string, resourceId?: string, role?: 'admin' | 'student') => {
       try {
-        await trackDownload(resource._id, role);
-
-        if (resource.fileUrls.length === 1) {
-          window.open(resource.fileUrls[0], '_blank');
-          return;
+        if (resourceId && role) {
+          await trackDownload(resourceId, role);
         }
 
-        const zip = new JSZip();
-        const promises = resource.fileUrls.map(async (fileUrl, index) => {
-          const response = await fetch(fileUrl);
-          const blob = await response.blob();
-          const fileName = fileUrl.split('/').pop() || `file_${index + 1}`;
-          zip.file(fileName, blob);
-        });
-
-        await Promise.all(promises);
-
-        const zipBlob = await zip.generateAsync({ type: 'blob' });
-        const zipUrl = URL.createObjectURL(zipBlob);
-
         const link = document.createElement('a');
-        link.href = zipUrl;
-        link.download = `${resource.title}.zip`;
+        link.href = fileUrl;
+        link.target = '_blank';
+        link.download = fileUrl.split('/').pop() || 'download';
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
-
-        URL.revokeObjectURL(zipUrl);
       } catch (error) {
         const { message } = getErrorMessage(
           error as AxiosError<ErrorResponseData> | CustomError | Error
         );
-        toast.error('Failed to download resource', {
+        toast.error('Failed to download file', {
           description: message,
           duration: 5000,
         });
@@ -509,18 +491,59 @@ const useResources = ({ token }: UseResourcesProps): UseResourcesReturn => {
     [trackDownload]
   );
 
-  const downloadFile = useCallback(
-    async (fileUrl: string, resourceId?: string, role?: 'admin' | 'student') => {
+  const downloadResource = useCallback(
+    async (resource: Resource, role?: 'admin' | 'student') => {
       try {
-        if (resourceId && role) {
-          await trackDownload(resourceId, role);
+        if (role) {
+          await trackDownload(resource._id, role);
         }
-        window.open(fileUrl, '_blank');
+
+        if (resource.fileUrls.length === 1) {
+          const fileUrl = resource.fileUrls[0];
+          const link = document.createElement('a');
+          link.href = fileUrl;
+          link.target = '_blank';
+          link.download = fileUrl.split('/').pop() || `${resource.title}`;
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+        } else if (resource.fileUrls.length > 1) {
+          const zip = new JSZip();
+          const folder = zip.folder(resource.title);
+
+          const downloadPromises = resource.fileUrls.map(async (fileUrl, index) => {
+            try {
+              const response = await axios.get(fileUrl, { responseType: 'arraybuffer' });
+              const fileName = fileUrl.split('/').pop() || `file_${index + 1}`;
+              folder?.file(fileName, response.data);
+            } catch (error) {
+              console.error(`Failed to download file ${index + 1}:`, error);
+            }
+          });
+
+          await Promise.all(downloadPromises);
+
+          const content = await zip.generateAsync({ type: 'blob' });
+          const url = window.URL.createObjectURL(content);
+          const link = document.createElement('a');
+          link.href = url;
+          link.download = `${resource.title}.zip`;
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+          window.URL.revokeObjectURL(url);
+        }
+
+        toast.success('Resource downloaded successfully', {
+          description: `Downloaded ${resource.fileUrls.length} file${
+            resource.fileUrls.length > 1 ? 's' : ''
+          }`,
+        });
       } catch (error) {
         const { message } = getErrorMessage(
           error as AxiosError<ErrorResponseData> | CustomError | Error
         );
-        toast.error('Failed to download file', {
+        toast.error('Failed to download resource', {
           description: message,
           duration: 5000,
         });

@@ -146,3 +146,12 @@ export interface UploadProgress {
   currentFileName: string;
   percentage: number;
 }
+
+export interface DownloadResourceModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onConfirm: () => void;
+  isDownloading: boolean;
+  downloadProgress: number;
+  resource: Resource | null;
+}
