@@ -10,7 +10,7 @@ import DashboardStatsCard from '@/components/dashboard/layout/dashboard-stats-ca
 import DashboardPageHeader from '@/components/dashboard/layout/dashboard-page-header';
 
 const AdminDashboard: FC<UserProps> = ({ userData }) => {
-  const { isError, isLoading, dashboardData, clearCache, fetchDashboardData } = useDashboard({
+  const { isError, isLoading, dashboardData, fetchDashboardData } = useDashboard({
     token: userData.token,
   });
 
@@ -53,9 +53,8 @@ const AdminDashboard: FC<UserProps> = ({ userData }) => {
     return () => {
       isActive = false;
       abortController.abort();
-      clearCache();
     };
-  }, [fetchDashboardData, page, limit, clearCache]);
+  }, [fetchDashboardData, page, limit]);
 
   return (
     <DashboardLayout title="Admin Dashboard" token={userData.token}>

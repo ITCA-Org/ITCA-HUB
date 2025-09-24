@@ -519,11 +519,7 @@ const ResourceTable = ({
                         return (
                           <button
                             key={pageNumber}
-                            onClick={() => {
-                              if (pageNumber !== page) {
-                                setPage(pageNumber);
-                              }
-                            }}
+                            onClick={() => setPage(pageNumber)}
                             className={`px-3 py-1 text-sm font-semibold rounded-md ${
                               page === pageNumber
                                 ? 'bg-blue-600 text-white'
@@ -590,10 +586,10 @@ const ResourceTable = ({
         <DeleteResourceModal
           isLoading={isDeleting}
           isOpen={showDeleteModal}
-          onClose={() => setShowDeleteModal(false)}
-          resourceCount={hasMultipleSelected ? selectedCount : 1}
-          mode={mode === 'recycleBin' ? 'permanent' : 'soft'}
           onConfirm={confirmDelete}
+          onClose={() => setShowDeleteModal(false)}
+          mode={mode === 'recycleBin' ? 'permanent' : 'soft'}
+          resourceCount={hasMultipleSelected ? selectedCount : 1}
         />
       )}
       {/*==================== End of Delete Modal ====================*/}

@@ -249,11 +249,7 @@ const UserTable = ({
                       return (
                         <button
                           key={`page-${pageNumber}`}
-                          onClick={() => {
-                            if (pageNumber !== page) {
-                              setPage(pageNumber);
-                            }
-                          }}
+                          onClick={() => setPage(pageNumber)}
                           className={`px-3 py-1 text-sm font-medium rounded-md ${
                             isCurrentPage
                               ? 'bg-blue-600 text-white'

@@ -112,13 +112,13 @@ const ResourcesComponent = ({ role, userData }: ResourcesComponentProps) => {
 
       try {
         await adminHook.toggleResourceTrash(resourceId);
-        clearCache();
+        loadResources();
         return true;
       } catch {
         return false;
       }
     },
-    [adminHook, role, clearCache]
+    [adminHook, role, loadResources]
   );
 
   const handleRestoreMultiple = useCallback(
@@ -127,17 +127,20 @@ const ResourcesComponent = ({ role, userData }: ResourcesComponentProps) => {
 
       try {
         await adminHook.batchRestoreResources(resourceIds);
-        clearCache();
+        loadResources();
         return true;
       } catch {
         return false;
       }
     },
-    [adminHook, role, clearCache]
+    [adminHook, role, loadResources]
   );
 
   const handlePageChange = useCallback(
     (newPage: number) => {
+      if (newPage === pagination.currentPage) {
+        return;
+      }
       const controller = new AbortController();
       fetchResources({
         page: newPage,
@@ -146,7 +149,7 @@ const ResourcesComponent = ({ role, userData }: ResourcesComponentProps) => {
         signal: controller.signal,
       });
     },
-    [fetchResources, limit, filterParams]
+    [fetchResources, limit, filterParams, pagination.currentPage]
   );
 
   const clearFilters = useCallback(() => {

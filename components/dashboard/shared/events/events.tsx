@@ -226,9 +226,7 @@ const EventsComponent = ({ role, userData }: EventsComponentProps) => {
   };
 
   const handlePageClick = (pageNum: number) => {
-    if (pageNum !== page) {
-      setPage(pageNum);
-    }
+    setPage(pageNum);
   };
 
   /**===============================
