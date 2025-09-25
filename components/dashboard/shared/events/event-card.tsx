@@ -335,9 +335,9 @@ const EventCard = ({
 
       {/*==================== Registration Confirmation Modal ====================*/}
       <ConfirmationModal
-        isOpen={showConfirmationModal}
         cancelText="Cancel"
         isLoading={isRegistering}
+        isOpen={showConfirmationModal}
         onConfirm={handleConfirmRegistration}
         variant={isRegistered ? 'danger' : 'primary'}
         onClose={() => setShowConfirmationModal(false)}

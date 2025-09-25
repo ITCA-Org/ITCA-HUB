@@ -115,7 +115,7 @@ const ResourceViewerSkeleton = ({ role }: ResourceFilterSkeletonProps) => {
             </thead>
 
             <tbody className="bg-white">
-              {[...Array(4)].map((_, index) => (
+              {[...Array(10)].map((_, index) => (
                 <tr
                   key={index}
                   className="even:bg-gray-100/80 hover:bg-amber-100 border-none transition-colors cursor-pointer"
