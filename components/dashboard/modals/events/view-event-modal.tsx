@@ -8,7 +8,7 @@ import ViewEventModalSkeleton from '../../skeletons/view-event-modal-skeleton';
 const ViewEventModal = ({ isOpen, eventId, token, onClose }: ViewEventModalProps) => {
   const [event, setEvent] = useState<EventProps | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   const { getEventById } = useEvents({ token });
 
@@ -47,11 +47,11 @@ const ViewEventModal = ({ isOpen, eventId, token, onClose }: ViewEventModalProps
 
   if (!isOpen) return null;
 
-  if (isLoading) {
+  if (isLoading || (!event && !error)) {
     return <ViewEventModalSkeleton />;
   }
 
-  if (error || !event) {
+  if (error) {
     return (
       <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
         <div className="bg-white rounded-xl shadow-lg p-6 max-w-4xl w-full mx-4">
@@ -74,6 +74,8 @@ const ViewEventModal = ({ isOpen, eventId, token, onClose }: ViewEventModalProps
       </div>
     );
   }
+
+  if (!event) return null;
 
   return (
     <div className="fixed inset-0 bg-black/30 backdrop-blur-md bg-opacity-50 flex items-center justify-center z-50">
