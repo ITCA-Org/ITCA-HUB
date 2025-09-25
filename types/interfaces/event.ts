@@ -45,9 +45,21 @@ export interface EventProps {
   status: 'upcoming' | 'ongoing' | 'completed';
   attendees: Array<{
     _id: string;
+    firstName: string;
+    lastName: string;
+    schoolEmail: string;
   }>;
   createdBy: {
     _id: string;
+    firstName: string;
+    lastName: string;
+    schoolEmail: string;
+  };
+  updatedBy?: {
+    _id: string;
+    firstName: string;
+    lastName: string;
+    schoolEmail: string;
   };
   createdAt: string;
   updatedAt: string;
@@ -59,6 +71,7 @@ export interface EventCardProps {
   role: 'admin' | 'student';
   onEdit?: (eventId: string) => void;
   onDelete?: (eventId: string) => void;
+  onView?: (eventId: string) => void;
   onRegister?: (eventId: string) => Promise<void>;
   onUnregister?: (eventId: string) => Promise<void>;
 }
@@ -69,4 +82,11 @@ export interface AdminEventsPageProps {
 
 export interface StudentEventsPageProps {
   userData: UserAuth;
+}
+
+export interface ViewEventModalProps {
+  token: string;
+  isOpen: boolean;
+  eventId: string;
+  onClose: () => void;
 }

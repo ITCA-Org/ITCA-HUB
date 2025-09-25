@@ -10,6 +10,7 @@ import {
   Calendar,
   UserMinus,
   CheckCircle,
+  EyeIcon,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import Image from 'next/image';
@@ -20,6 +21,7 @@ const EventCard = ({
   role,
   event,
   onEdit,
+  onView,
   onDelete,
   onRegister,
   onUnregister,
@@ -217,16 +219,23 @@ const EventCard = ({
           {role === 'admin' && (
             <div className="ml-3 flex space-x-1">
               <button
+                title="View Event"
+                onClick={() => onView?.(event._id)}
+                className="rounded-md p-1.5 text-gray-400 hover:bg-green-50 hover:text-green-400 transition-colors cursor-pointer"
+              >
+                <EyeIcon className="h-4 w-4" />
+              </button>
+              <button
                 title="Edit event"
                 onClick={() => onEdit?.(event._id)}
-                className="rounded-md p-1.5 text-gray-400 hover:bg-blue-50 hover:text-blue-600 transition-colors"
+                className="rounded-md p-1.5 text-gray-400 hover:bg-blue-50 hover:text-blue-600 transition-colors cursor-pointer"
               >
                 <Edit className="h-4 w-4" />
               </button>
               <button
                 title="Delete event"
                 onClick={() => onDelete?.(event._id)}
-                className="rounded-md p-1.5 text-gray-400 hover:bg-red-50 hover:text-red-600 transition-colors"
+                className="rounded-md p-1.5 text-gray-400 hover:bg-red-50 hover:text-red-600 transition-colors cursor-pointer"
               >
                 <Trash2 className="h-4 w-4" />
               </button>

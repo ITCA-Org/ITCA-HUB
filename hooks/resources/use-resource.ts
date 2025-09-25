@@ -507,7 +507,7 @@ const useResources = ({ token }: UseResourcesProps): UseResourcesReturn => {
           document.body.appendChild(link);
           link.click();
           document.body.removeChild(link);
-        } else if (resource.fileUrls.length > 1) {
+        } else if (resource.fileUrls.length > 1) {  
           const zip = new JSZip();
           const folder = zip.folder(resource.title);
 

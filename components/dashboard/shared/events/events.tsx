@@ -3,6 +3,7 @@ import useEvents from '@/hooks/events/use-event';
 import { useState, useEffect, useCallback } from 'react';
 import DashboardLayout from '@/components/dashboard/layout/dashboard-layout';
 import EditEventModal from '@/components/dashboard/modals/events/edit-event-modal';
+import ViewEventModal from '@/components/dashboard/modals/events/view-event-modal';
 import EventCardSkeleton from '@/components/dashboard/skeletons/event-card-skeleton';
 import DashboardPageHeader from '@/components/dashboard/layout/dashboard-page-header';
 import CreateEventModal from '@/components/dashboard/modals/events/create-event-modal';
@@ -14,16 +15,18 @@ import { CreateEventData, EventProps, EventsComponentProps } from '@/types/inter
 const EventsComponent = ({ role, userData }: EventsComponentProps) => {
   const [eventToDelete, setEventToDelete] = useState<string | null>(null);
   const [eventToEdit, setEventToEdit] = useState<EventProps | null>(null);
+  const [eventToView, setEventToView] = useState<string | null>(null);
+  const [isClearingFilters, setIsClearingFilters] = useState(false);
   const [events, setEvents] = useState<EventProps[] | null>(null);
   const [currentUserId, setCurrentUserId] = useState<string>('');
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
+  const [showViewModal, setShowViewModal] = useState(false);
   const [totalEvents, setTotalEvents] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
   const [status, setStatus] = useState('all');
   const [page, setPage] = useState(1);
-  const [isClearingFilters, setIsClearingFilters] = useState(false);
   const limit = 9;
 
   const {
@@ -149,6 +152,11 @@ const EventsComponent = ({ role, userData }: EventsComponentProps) => {
   const handleDeleteClick = (eventId: string) => {
     setEventToDelete(eventId);
     setShowDeleteModal(true);
+  };
+
+  const handleViewClick = async (eventId: string) => {
+    setEventToView(eventId);
+    setShowViewModal(true);
   };
 
   const resetFilters = () => {
@@ -427,6 +435,7 @@ const EventsComponent = ({ role, userData }: EventsComponentProps) => {
                   event={event}
                   key={event._id}
                   onEdit={handleEditClick}
+                  onView={handleViewClick}
                   onRegister={handleRegister}
                   onDelete={handleDeleteClick}
                   currentUserId={currentUserId}
@@ -442,6 +451,20 @@ const EventsComponent = ({ role, userData }: EventsComponentProps) => {
         </div>
       )}
       {/*==================== End of Content Area ====================*/}
+
+      {/*==================== View Event Modal ====================*/}
+      {showViewModal && eventToView && (
+        <ViewEventModal
+          isOpen={showViewModal}
+          eventId={eventToView}
+          token={userData.token}
+          onClose={() => {
+            setShowViewModal(false);
+            setEventToView(null);
+          }}
+        />
+      )}
+      {/*==================== End of View Event Modal ====================*/}
 
       {/*==================== Admin Modals ====================*/}
       {role === 'admin' && (
