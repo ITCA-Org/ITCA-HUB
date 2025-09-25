@@ -76,7 +76,7 @@ const ViewEventModal = ({ isOpen, eventId, token, onClose }: ViewEventModalProps
   }
 
   return (
-    <div className="fixed inset-0 bg-black/30 backdrop-blur-sm bg-opacity-50 flex items-center justify-center z-50">
+    <div className="fixed inset-0 bg-black/30 backdrop-blur-md bg-opacity-50 flex items-center justify-center z-50">
       <div className="bg-white rounded-xl shadow-lg p-6 max-w-4xl w-full mx-4 max-h-[90vh] overflow-y-auto relative hide-scrollbar">
         <div>
           <div className="flex items-center justify-between w-full mb-6">
@@ -110,14 +110,14 @@ const ViewEventModal = ({ isOpen, eventId, token, onClose }: ViewEventModalProps
           <div className="grid grid-cols-1 mb-6 border-t border-b">
             <div className="rounded-lg p-4 grid grid-cols-1 lg:grid-cols-2 gap-4">
               <div>
-                <p className="text-sm text-gray-500 mb-1">Created At</p>
-                <p className="text-sm font-medium text-gray-900">
+                <p className="text-md text-gray-500 mb-1">Created At</p>
+                <p className="text-md font-medium text-gray-900">
                   {formatDateTime(event.createdAt)}
                 </p>
               </div>
               <div>
-                <p className="text-sm text-gray-500 mb-1">Last Updated</p>
-                <p className="text-sm font-medium text-gray-900">
+                <p className="text-md text-gray-500 mb-1">Last Updated</p>
+                <p className="text-md font-medium text-gray-900">
                   {formatDateTime(event.updatedAt)}
                 </p>
               </div>
@@ -125,27 +125,27 @@ const ViewEventModal = ({ isOpen, eventId, token, onClose }: ViewEventModalProps
 
             <div className="rounded-lg p-4 grid grid-cols-1 lg:grid-cols-2 gap-4">
               <div>
-                <p className="text-sm text-gray-500 mb-1">Created By</p>
-                <p className="text-sm font-medium text-gray-900">
+                <p className="text-md text-gray-500 mb-1">Created By</p>
+                <p className="text-md font-medium text-gray-900">
                   {event.createdBy.firstName} {event.createdBy.lastName}
                 </p>
-                <p className="text-xs text-gray-500">{event.createdBy.schoolEmail}</p>
+                <p className="text-md text-gray-500">{event.createdBy.schoolEmail}</p>
               </div>
               <div>
-                <p className="text-sm text-gray-500 mb-1">Last Updated By</p>
+                <p className="text-md text-gray-500 mb-1">Last Updated By</p>
                 {event.updatedBy ? (
                   <>
-                    <p className="text-sm font-medium text-gray-900">
+                    <p className="text-md font-medium text-gray-900">
                       {event.updatedBy.firstName} {event.updatedBy.lastName}
                     </p>
-                    <p className="text-xs text-gray-500">{event.updatedBy.schoolEmail}</p>
+                    <p className="text-md text-gray-500">{event.updatedBy.schoolEmail}</p>
                   </>
                 ) : (
                   <>
-                    <p className="text-sm font-medium text-gray-900">
+                    <p className="text-md font-medium text-gray-900">
                       {event.createdBy.firstName} {event.createdBy.lastName}
                     </p>
-                    <p className="text-xs text-gray-500">{event.createdBy.schoolEmail}</p>
+                    <p className="text-md text-gray-500">{event.createdBy.schoolEmail}</p>
                   </>
                 )}
               </div>
@@ -155,7 +155,7 @@ const ViewEventModal = ({ isOpen, eventId, token, onClose }: ViewEventModalProps
           <div className="pt-4">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-lg font-medium text-gray-900">Attendees</h3>
-              <span className="text-sm text-gray-500">
+              <span className="text-md text-gray-500">
                 {event.attendees.length} {event.attendees.length === 1 ? 'attendee' : 'attendees'}
               </span>
             </div>
@@ -175,9 +175,9 @@ const ViewEventModal = ({ isOpen, eventId, token, onClose }: ViewEventModalProps
                         <p className="font-medium text-gray-900">
                           {attendee.firstName} {attendee.lastName}
                         </p>
-                        <p className="text-sm text-gray-500">{attendee.schoolEmail}</p>
+                        <p className="text-md text-gray-500">{attendee.schoolEmail}</p>
                       </div>
-                      <span className="text-xs text-gray-400">#{index + 1}</span>
+                      <span className="text-md text-gray-400">#{index + 1}</span>
                     </div>
                   ))}
                 </div>
