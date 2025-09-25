@@ -47,6 +47,10 @@ const ViewEventModal = ({ isOpen, eventId, token, onClose }: ViewEventModalProps
 
   if (!isOpen) return null;
 
+  if (isLoading) {
+    return <ViewEventModalSkeleton />;
+  }
+
   if (error || !event) {
     return (
       <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
@@ -70,9 +74,6 @@ const ViewEventModal = ({ isOpen, eventId, token, onClose }: ViewEventModalProps
       </div>
     );
   }
-  if (isLoading) {
-    return <ViewEventModalSkeleton />;
-  }
 
   return (
     <div className="fixed inset-0 bg-black/30 backdrop-blur-sm bg-opacity-50 flex items-center justify-center z-50">
@@ -93,7 +94,7 @@ const ViewEventModal = ({ isOpen, eventId, token, onClose }: ViewEventModalProps
                   height={256}
                   alt={event.title}
                   src={event.imageUrl}
-                  className="w-full h-64 object-cover"
+                  className="w-full h-full object-cover"
                 />
               </div>
             </div>
