@@ -794,7 +794,7 @@ const ResourceViewerComponent = ({ role, userData }: ResourceViewerComponentProp
 
       {/*==================== File Viewer Modal ====================*/}
       {viewingFile && (
-        <div className="fixed inset-0 z-50 overflow-y-auto">
+        <div className="fixed inset-0 z-10 overflow-y-auto">
           <div className="flex min-h-screen items-center justify-center p-4">
             {/*==================== Backdrop ====================*/}
             <div
