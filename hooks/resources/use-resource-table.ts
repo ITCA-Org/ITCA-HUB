@@ -1,11 +1,11 @@
 import { toast } from 'sonner';
-import { BASE_URL } from '@/utils/url';
 import { useRouter } from 'next/router';
-import axios, { AxiosError } from 'axios';
+import { AxiosError } from 'axios';
 import { getErrorMessage } from '@/utils/error';
 import { CustomError, ErrorResponseData } from '@/types';
 import { useState, useMemo, useEffect, useCallback } from 'react';
-import { Resource, UseResourceTableProps } from '@/types/interfaces/resource';
+import { Resource, UseResourceTableProps, UpdateResourcePayload } from '@/types/interfaces/resource';
+import useResourceAdmin from './use-resource-admin';
 
 const useResourceTable = ({
   resources,
@@ -19,6 +19,7 @@ const useResourceTable = ({
   mode = 'default',
 }: UseResourceTableProps) => {
   const router = useRouter();
+  const adminHook = useResourceAdmin({ token });
 
   const [selectedResources, setSelectedResources] = useState<Record<string, boolean>>({});
   const [selectedResource, setSelectedResource] = useState<Resource | null>(null);
@@ -28,7 +29,6 @@ const useResourceTable = ({
   const [showEditModal, setShowEditModal] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [isRestoring, setIsRestoring] = useState(false);
-  const [isEditing, setIsEditing] = useState(false);
 
   const selectedCount = useMemo(
     () => Object.values(selectedResources).filter(Boolean).length,
@@ -213,50 +213,38 @@ const useResourceTable = ({
   };
 
   /**=============================================
-   * Save resource changes using direct API call
+   * Save resource changes using adminHook
    =============================================*/
   const handleSaveResource = async (updatedResource: Partial<Resource>) => {
-    setIsEditing(true);
+    if (!selectedResource) return;
+
     try {
-      if (!selectedResource) {
-        throw new Error('No resource selected');
+      const resourceId = selectedResource._id || selectedResource.resourceId;
+      if (!resourceId) {
+        throw new Error('Resource ID not found');
       }
 
-      const response = await axios.patch(
-        `${BASE_URL}/resources/${selectedResource._id}`,
-        updatedResource,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/json',
-          },
-        }
-      );
+      const payload: UpdateResourcePayload = {
+        title: updatedResource.title,
+        description: updatedResource.description,
+        category: updatedResource.category as UpdateResourcePayload['category'],
+        visibility: updatedResource.visibility,
+        academicLevel: updatedResource.academicLevel,
+        department: updatedResource.department,
+      };
 
-      if (response.data.status === 'success') {
-        toast.success('Resource updated successfully');
-        setShowEditModal(false);
-        setSelectedResource(null);
-        onRefresh();
-      } else {
-        throw new Error(response.data.message || 'Failed to update resource');
-      }
+      await adminHook.updateResource(resourceId, payload);
+      setShowEditModal(false);
+      setSelectedResource(null);
+      onRefresh();
     } catch (error) {
-      const { message } = getErrorMessage(
-        error as AxiosError<ErrorResponseData> | CustomError | Error
-      );
-      toast.error('Failed to update resource', {
-        description: message,
-        duration: 5000,
-      });
+      // Error handling is already done in the adminHook.updateResource method
       throw error;
-    } finally {
-      setIsEditing(false);
     }
   };
 
   return {
-    isEditing,
+    isEditing: adminHook.isLoading,
     selectAll,
     isDeleting,
     isRestoring,

@@ -1,9 +1,11 @@
 import {
+  X,
   Tag,
   Eye,
   User,
   File,
   Plus,
+  Edit,
   Video,
   Music,
   Clock,
@@ -23,8 +25,8 @@ import {
   Presentation,
   GraduationCap,
   FileSpreadsheet,
-  X,
 } from 'lucide-react';
+import axios from 'axios';
 import { useRouter } from 'next/router';
 import { useState, useEffect, useCallback } from 'react';
 import useResources from '@/hooks/resources/use-resource';
@@ -40,8 +42,10 @@ import ConfirmationModal from '@/components/dashboard/modals/confirmation-modal'
 import GenericViewer from '@/components/dashboard/resource-viewers/generic-viewer';
 import AddFilesModal from '@/components/dashboard/modals/resources/add-files-modal';
 import DashboardPageHeader from '@/components/dashboard/layout/dashboard-page-header';
-import { FileItem, Resource, ResourceViewerComponentProps } from '@/types/interfaces/resource';
+import ResourceEditModal from '@/components/dashboard/modals/resources/edit-resource-modal';
 import ResourceViewerSkeleton from '@/components/dashboard/skeletons/resource-viewer-skeleton';
+import DownloadResourceModal from '@/components/dashboard/modals/resources/download-resource-modal';
+import { FileItem, Resource, ResourceViewerComponentProps, UpdateResourcePayload } from '@/types/interfaces/resource';
 
 const ResourceViewerComponent = ({ role, userData }: ResourceViewerComponentProps) => {
   const router = useRouter();
@@ -56,13 +60,22 @@ const ResourceViewerComponent = ({ role, userData }: ResourceViewerComponentProp
   const [viewingFile, setViewingFile] = useState<FileItem | null>(null);
   const [fileToDelete, setFileToDelete] = useState<string | null>(null);
   const [showDeleteFileModal, setShowDeleteFileModal] = useState(false);
+  const [showDownloadModal, setShowDownloadModal] = useState(false);
   const [showAddFilesModal, setShowAddFilesModal] = useState(false);
   const [resource, setResource] = useState<Resource | null>(null);
+  const [showEditModal, setShowEditModal] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [files, setFiles] = useState<FileItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  const { fetchSingleResource, trackView, downloadFile } = useResources({
+  const {
+    fetchSingleResource,
+    trackView,
+    downloadFile,
+    downloadResource,
+    isDownloading: isDownloadingResource,
+    downloadProgress,
+  } = useResources({
     token: userData.token,
   });
 
@@ -77,29 +90,39 @@ const ResourceViewerComponent = ({ role, userData }: ResourceViewerComponentProp
   };
 
   const fetchFileSizes = useCallback(async (files: FileItem[]) => {
-    for (const file of files) {
-      try {
-        setLoadingFileSizes((prev) => ({ ...prev, [file.url]: true }));
+    const loadingState = files.reduce((acc, file) => ({ ...acc, [file.url]: true }), {});
+    setLoadingFileSizes(loadingState);
 
+    const fetchPromises = files.map(async (file) => {
+      try {
         const fileName = file.name;
-        const response = await fetch(
+        const response = await axios.get(
           `https://jeetix-file-service.onrender.com/api/storage/file/itca-resources/${fileName}`
         );
-        const data = await response.json();
+        const data = response.data;
 
         if (data.status === 'success' && data.data.metadata?.size) {
           const sizeInBytes = parseInt(data.data.metadata.size);
           const formattedSize = formatFileSize(sizeInBytes);
-          setFileSizes((prev) => ({ ...prev, [file.url]: formattedSize }));
+          return { url: file.url, size: formattedSize };
         } else {
-          setFileSizes((prev) => ({ ...prev, [file.url]: 'Unknown' }));
+          return { url: file.url, size: 'Unknown' };
         }
       } catch {
-        setFileSizes((prev) => ({ ...prev, [file.url]: 'Unknown' }));
-      } finally {
-        setLoadingFileSizes((prev) => ({ ...prev, [file.url]: false }));
+        return { url: file.url, size: 'Unknown' };
       }
-    }
+    });
+
+    const results = await Promise.all(fetchPromises);
+
+    const sizesUpdate = results.reduce(
+      (acc, result) => ({ ...acc, [result.url]: result.size }),
+      {}
+    );
+    const loadingUpdate = files.reduce((acc, file) => ({ ...acc, [file.url]: false }), {});
+
+    setFileSizes((prev) => ({ ...prev, ...sizesUpdate }));
+    setLoadingFileSizes((prev) => ({ ...prev, ...loadingUpdate }));
   }, []);
 
   const loadResource = useCallback(
@@ -212,6 +235,51 @@ const ResourceViewerComponent = ({ role, userData }: ResourceViewerComponentProp
 
   const handleRetry = () => {
     loadResource(true);
+  };
+
+  const handleDownloadAll = () => {
+    if (!resource) return;
+    setShowDownloadModal(true);
+  };
+
+  const confirmDownloadAll = async () => {
+    if (!resource) return;
+    try {
+      await downloadResource(resource, role);
+      setShowDownloadModal(false);
+    } catch (error) {
+      console.error('Download failed:', error);
+    }
+  };
+
+  const handleEditResource = () => {
+    setShowEditModal(true);
+  };
+
+  const handleSaveResource = async (updatedResource: Partial<Resource>) => {
+    if (!resource) return;
+
+    try {
+      const resourceId = resource._id || resource.resourceId;
+      if (!resourceId) {
+        throw new Error('Resource ID not found');
+      }
+
+      const payload: UpdateResourcePayload = {
+        title: updatedResource.title,
+        description: updatedResource.description,
+        category: updatedResource.category as UpdateResourcePayload['category'],
+        visibility: updatedResource.visibility,
+        academicLevel: updatedResource.academicLevel,
+        department: updatedResource.department,
+      };
+
+      await adminHook.updateResource(resourceId, payload);
+      setShowEditModal(false);
+      await loadResource(false);
+    } catch (error) {
+      throw error;
+    }
   };
 
   const getDepartmentIcon = (department: string) => {
@@ -440,7 +508,7 @@ const ResourceViewerComponent = ({ role, userData }: ResourceViewerComponentProp
       ) : error || !resource ? (
         <NetworkError
           onRetry={handleRetry}
-          retryButtonText="Try Again"
+          retryButtonText="Refresh"
           title="Unable to fetch the resource"
           description="Please check your internet connection and try again."
         />
@@ -458,6 +526,13 @@ const ResourceViewerComponent = ({ role, userData }: ResourceViewerComponentProp
               </div>
               {role === 'admin' && (
                 <div className="flex flex-col sm:flex-row gap-2">
+                  <button
+                    onClick={handleEditResource}
+                    className="inline-flex items-center rounded-lg bg-gray-100 px-4 py-2 text-sm font-medium text-black hover:bg-gray-200/70 cursor-pointer transition-colors"
+                  >
+                    <Edit className="mr-2 h-4 w-4" />
+                    Edit Resource
+                  </button>
                   <button
                     onClick={() => setShowAddFilesModal(true)}
                     className="inline-flex items-center rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 transition-colors"
@@ -618,10 +693,26 @@ const ResourceViewerComponent = ({ role, userData }: ResourceViewerComponentProp
           {/*==================== Files Table ====================*/}
           <div className="bg-white rounded-2xl overflow-hidden">
             <div className="px-5 py-4 border-b border-gray-200">
-              <h3 className="text-lg font-semibold text-gray-900 flex items-center">
-                <FileText className="mr-2 h-5 w-5 text-blue-600" />
-                Files ({files.length})
-              </h3>
+              <div className="flex items-center justify-between">
+                <h3 className="text-lg font-semibold text-gray-900 flex items-center">
+                  <FileText className="mr-2 h-5 w-5 text-blue-600" />
+                  Files ({files.length})
+                </h3>
+                {files.length > 0 && (
+                  <button
+                    onClick={handleDownloadAll}
+                    disabled={isDownloadingResource}
+                    className="inline-flex items-center rounded-lg bg-blue-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-blue-700 transition-colors disabled:opacity-50"
+                  >
+                    {isDownloadingResource ? (
+                      <Loader className="mr-2 h-4 w-4 animate-spin" />
+                    ) : (
+                      <Download className="mr-2 h-4 w-4" />
+                    )}
+                    Download All
+                  </button>
+                )}
+              </div>
             </div>
 
             {files.length === 0 ? (
@@ -795,7 +886,7 @@ const ResourceViewerComponent = ({ role, userData }: ResourceViewerComponentProp
       {/*==================== File Viewer Modal ====================*/}
       {viewingFile && (
         <div className="fixed inset-0 z-20 overflow-y-auto">
-          <div className="flex min-h-screen items-center justify-center p-4">
+          <div className="flex min-h-full items-center justify-center p-4">
             {/*==================== Backdrop ====================*/}
             <div
               className="fixed inset-0 bg-black/30 backdrop-blur-sm bg-opacity-50 transition-opacity"
@@ -804,7 +895,7 @@ const ResourceViewerComponent = ({ role, userData }: ResourceViewerComponentProp
             {/*==================== End of Backdrop ====================*/}
 
             {/*==================== Modal ====================*/}
-            <div className="relative w-full max-w-7xl bg-white rounded-lg">
+            <div className="relative w-full max-w-7xl bg-white rounded-lg max-h-[90vh] overflow-y-auto">
               {/*==================== Header ====================*/}
               <div className="flex items-center justify-between p-4 border-b">
                 <div className="flex items-center space-x-3">
@@ -857,6 +948,29 @@ const ResourceViewerComponent = ({ role, userData }: ResourceViewerComponentProp
         </div>
       )}
       {/*==================== End of File Viewer Modal ====================*/}
+
+      {/*==================== Edit Resource Modal ====================*/}
+      {resource && (
+        <ResourceEditModal
+          resource={resource}
+          isOpen={showEditModal}
+          isLoading={adminHook.isLoading}
+          onSave={handleSaveResource}
+          onClose={() => setShowEditModal(false)}
+        />
+      )}
+      {/*==================== End of Edit Resource Modal ====================*/}
+
+      {/*==================== Download All Modal ====================*/}
+      <DownloadResourceModal
+        resource={resource}
+        isOpen={showDownloadModal}
+        onConfirm={confirmDownloadAll}
+        downloadProgress={downloadProgress}
+        isDownloading={isDownloadingResource}
+        onClose={() => setShowDownloadModal(false)}
+      />
+      {/*==================== End of Download All Modal ====================*/}
     </DashboardLayout>
   );
 };

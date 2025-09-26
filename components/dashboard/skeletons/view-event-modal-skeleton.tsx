@@ -14,7 +14,7 @@ const ViewEventModalSkeleton = () => {
 
           {/*==================== Image Skeleton ====================*/}
           <div className="mb-6">
-            <div className="rounded-lg overflow-hidden bg-gray-200 w-full h-64 animate-pulse"></div>
+            <div className="rounded-lg overflow-hidden bg-gray-200 w-full h-96 animate-pulse"></div>
           </div>
           {/*==================== End of Image Skeleton ====================*/}
 
