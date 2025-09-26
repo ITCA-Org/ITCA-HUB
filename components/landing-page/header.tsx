@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Menu, X, Facebook, Twitter, Instagram, Mail, Phone } from 'lucide-react';
+import { Menu, X, Facebook, Twitter, Instagram, Mail, Linkedin } from 'lucide-react';
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -273,13 +273,31 @@ const Header = () => {
                       <div className="h-10 w-10 rounded-full bg-[#1d4ed8]/20 flex items-center justify-center">
                         <Mail className="h-5 w-5 text-[#1d4ed8]" />
                       </div>
-                      <span className="text-gray-300 text-sm">info@itca.com</span>
+                      <span className="text-gray-300 text-sm">itca@utg.edu.gm</span>
                     </div>
                     <div className="flex items-center space-x-3">
                       <div className="h-10 w-10 rounded-full bg-[#f59e0b]/20 flex items-center justify-center">
-                        <Phone className="h-5 w-5 text-[#f59e0b]" />
+                        <svg
+                          className="h-5 w-5 text-[#f59e0b]"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+                          />
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+                          />
+                        </svg>
                       </div>
-                      <span className="text-gray-300 text-sm">+1 (234) 567-8900</span>
+                      <span className="text-gray-300 text-sm">Faraba Banta Campus</span>
                     </div>
                   </motion.div>
 
@@ -290,10 +308,16 @@ const Header = () => {
                     className="mt-12 flex space-x-4"
                   >
                     <a
-                      href="#"
+                      href="https://www.facebook.com/share/1GUd1gGihV/?mibextid=wwXIfr"
                       className="h-10 w-10 rounded-full bg-gray-700 flex items-center justify-center text-white hover:bg-[#1d4ed8] transition-colors duration-300"
                     >
                       <Facebook className="h-5 w-5" />
+                    </a>
+                    <a
+                      href="https://www.instagram.com/utgitca?igsh=MTRwcTF4amRuZ2x0YQ=="
+                      className="h-10 w-10 rounded-full bg-gray-700 flex items-center justify-center text-white hover:bg-[#1d4ed8] transition-colors duration-300"
+                    >
+                      <Instagram className="h-5 w-5" />
                     </a>
                     <a
                       href="#"
@@ -302,10 +326,10 @@ const Header = () => {
                       <Twitter className="h-5 w-5" />
                     </a>
                     <a
-                      href="#"
+                      href="https://gm.linkedin.com/company/utg-itca-information-technology-communication-association-university-of-the-gambia"
                       className="h-10 w-10 rounded-full bg-gray-700 flex items-center justify-center text-white hover:bg-[#1d4ed8] transition-colors duration-300"
                     >
-                      <Instagram className="h-5 w-5" />
+                      <Linkedin className="h-5 w-5" />
                     </a>
                   </motion.div>
                 </div>
