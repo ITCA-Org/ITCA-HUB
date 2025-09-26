@@ -794,7 +794,7 @@ const ResourceViewerComponent = ({ role, userData }: ResourceViewerComponentProp
 
       {/*==================== File Viewer Modal ====================*/}
       {viewingFile && (
-        <div className="fixed inset-0 z-10 overflow-y-auto">
+        <div className="fixed inset-0 z-20 overflow-y-auto">
           <div className="flex min-h-screen items-center justify-center p-4">
             {/*==================== Backdrop ====================*/}
             <div
@@ -804,7 +804,7 @@ const ResourceViewerComponent = ({ role, userData }: ResourceViewerComponentProp
             {/*==================== End of Backdrop ====================*/}
 
             {/*==================== Modal ====================*/}
-            <div className="relative w-full max-w-6xl bg-white rounded-lg shadow-xl">
+            <div className="relative w-full max-w-7xl bg-white rounded-lg">
               {/*==================== Header ====================*/}
               <div className="flex items-center justify-between p-4 border-b">
                 <div className="flex items-center space-x-3">
@@ -826,7 +826,7 @@ const ResourceViewerComponent = ({ role, userData }: ResourceViewerComponentProp
               {/*==================== End of Header ====================*/}
 
               {/*==================== Content ====================*/}
-              <div className="h-96 md:h-[32rem]">{renderFileViewer(viewingFile)}</div>
+              <div className="h-96 md:h-[52rem]">{renderFileViewer(viewingFile)}</div>
               {/*==================== End of Content ====================*/}
 
               {/*==================== Footer ====================*/}
