@@ -1,203 +1,273 @@
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import Image from 'next/image';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Calendar, Clock, MapPin, ArrowRight, Bookmark, ChevronRight } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { Calendar, Clock, MapPin, Users, ArrowRight, ChevronRight } from 'lucide-react';
 import Link from 'next/link';
+import axios from 'axios';
 
 type Event = {
-  id: number;
+  _id: string;
   title: string;
+  description: string;
   date: string;
   time: string;
+  toDate?: string;
+  toTime?: string;
   location: string;
-  description: string;
-  image: string;
-  category: 'workshop' | 'conference' | 'hackathon' | 'seminar' | 'social';
+  status: 'upcoming' | 'ongoing' | 'completed';
+  registrationRequired: boolean;
+  imageUrl?: string;
+  capacity: number;
+  createdBy: {
+    _id: string;
+    firstName: string;
+    lastName: string;
+    schoolEmail: string;
+  };
+  attendees: Array<{
+    _id: string;
+    firstName: string;
+    lastName: string;
+    schoolEmail: string;
+  }>;
+  createdAt: string;
+  updatedAt: string;
 };
 
-const events: Event[] = [
-  {
-    id: 1,
-    title: 'ITCA Innovation Week 2025',
-    date: 'May 27th - 29th 2025',
-    time: '10:00 AM - 4:45PM',
-    location: 'UTG-ITC Faraba Campus',
-    description:
-      'Join us for our first technology conference featuring industry leaders and innovative showcases.',
-    image: '/images/General.png',
-    category: 'conference',
-  },
-  {
-    id: 2,
-    title: 'Google Developer Festival (DevFest)',
-    date: 'November 30, 2024',
-    time: '10:00 AM - 4:45 PM',
-    location: 'UTG KANIFING CAMPUS',
-    description: 'Anual Developer festival organized by Google Developer Group.',
-    image: '/images/DevFest.jpg',
-    category: 'conference',
-  },
-  {
-    id: 3,
-    title: 'Nationwide School Tour',
-    date: 'TBD',
-    time: 'TBD',
-    location: 'Nationwide',
-    description:
-      'A nationwide high school tour to raise awarenesr about Technology and The University of The Gambia School of Information Technology and Communication.',
-    image: '/images/event-3.jpg',
-    category: 'hackathon',
-  },
-  {
-    id: 4,
-    title: 'AI & Machine Learning Seminar',
-    date: 'November 10, 2023',
-    time: '3:00 PM - 5:00 PM',
-    location: 'Virtual (Zoom)',
-    description:
-      'Learn about the latest advancements in AI and machine learning from industry experts.',
-    image: '/images/event-2.jpg',
-    category: 'seminar',
-  },
-  {
-    id: 5,
-    title: 'GradTalk Seminar',
-    date: 'November 10, 2023',
-    time: '3:00 PM - 5:00 PM',
-    location: 'Virtual (Zoom)',
-    description:
-      'Learn about the latest advancements in AI and machine learning from industry experts.',
-    image: '/images/Faculty.jpg',
-    category: 'seminar',
-  },
-  {
-    id: 6,
-    title: 'ITCA Retreat',
-    date: 'February 8, 2025',
-    time: '12:00 PM - 12:00 AM',
-    location: 'Water Front Beach',
-    description: 'A social gathering to have fun, network and connect with colleauges.',
-    image: '/images/event-1.jpg',
-    category: 'social',
-  },
-  {
-    id: 7,
-    title: "ITCA Freshers' Connect",
-    date: 'February 26th - 27th, 2025',
-    time: '3:00 PM - 8:00 AM',
-    location: 'Palm Beach',
-    description:
-      'A social gathering to welcome our new students, have fun, network and connect with colleauges.',
-    image: '/images/event-2.jpg',
-    category: 'social',
-  },
-];
+/**===============================
+ * Format date for display
+ ===============================*/
+const formatDate = (dateString: string) => {
+  const date = new Date(dateString);
+  return date.toLocaleDateString('en-US', {
+    weekday: 'short',
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+  });
+};
 
-const EventCard = ({ event, index }: { event: Event; index: number }) => (
-  <motion.div
-    layout
-    initial={{ opacity: 0, y: 20 }}
-    animate={{ opacity: 1, y: 0 }}
-    exit={{ opacity: 0, y: -20 }}
-    transition={{
-      duration: 0.3,
-      delay: index * 0.05,
-      layout: { duration: 0.3 },
-    }}
-    className="group relative overflow-hidden rounded-xl border border-gray-200 bg-white/80 transition-all duration-300 hover:border-blue-700/30 hover:shadow-lg hover:shadow-blue-700/5"
-  >
-    <div className="flex flex-col h-full">
-      <div className="relative h-56 w-full overflow-hidden">
-        <Image
-          fill
-          alt={event.title}
-          placeholder="blur"
-          sizes="(max-width: 768px) 100vw, 50vw"
-          src={event.image || '/placeholder.svg'}
-          className="object-cover transition-transform duration-500 group-hover:scale-110"
-          blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCdABmX/9k="
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
+/**===============================
+ * Format time for display
+ ===============================*/
+const formatTime = (timeString: string) => {
+  try {
+    const date = new Date(timeString);
+    return date.toLocaleTimeString('en-US', {
+      hour: 'numeric',
+      minute: '2-digit',
+      hour12: true,
+    });
+  } catch {
+    return timeString;
+  }
+};
 
-        <div
-          className={`absolute top-4 right-4 rounded-full px-3 py-1 text-xs font-semibold uppercase text-white backdrop-blur-sm ${
-            event.category === 'workshop'
-              ? 'bg-blue-700/80'
-              : event.category === 'conference'
-                ? 'bg-amber-500/80'
-                : event.category === 'hackathon'
-                  ? 'bg-green-500/80'
-                  : 'bg-purple-500/80'
-          }`}
-        >
-          {event.category}
-        </div>
+/**===============================
+ * Format date range for display
+ ===============================*/
+const formatDateRange = (event: Event) => {
+  const startDate = formatDate(event.date);
 
-        <button className="absolute top-4 left-4 h-8 w-8 rounded-full bg-white/30 backdrop-blur-sm flex items-center justify-center text-white/90 hover:text-white transition-colors">
-          <Bookmark className="h-4 w-4" />
-        </button>
+  if (!event.toDate) {
+    return startDate;
+  }
+
+  const endDate = formatDate(event.toDate);
+  const startDateObj = new Date(event.date);
+  const endDateObj = new Date(event.toDate);
+
+  if (startDateObj.toDateString() === endDateObj.toDateString()) {
+    return startDate;
+  }
+
+  return `${startDate} - ${endDate}`;
+};
+
+/**===============================
+ * Format time range for display
+ ===============================*/
+const formatTimeRange = (event: Event) => {
+  const startTime = formatTime(event.time);
+
+  if (!event.toTime) {
+    return startTime;
+  }
+
+  if (event.toDate) {
+    const startDateObj = new Date(event.date);
+    const endDateObj = new Date(event.toDate);
+
+    if (startDateObj.toDateString() !== endDateObj.toDateString()) {
+      const endTime = formatTime(event.toTime);
+      return `Start: ${startTime} • End: ${endTime}`;
+    }
+  }
+
+  const endTime = formatTime(event.toTime);
+  return `${startTime} - ${endTime}`;
+};
+
+/**===============================
+ * Get status color and text
+ ===============================*/
+const getStatusConfig = (status: string) => {
+  switch (status) {
+    case 'upcoming':
+      return {
+        color: 'bg-blue-100 text-blue-800',
+        text: 'Upcoming',
+      };
+    case 'ongoing':
+      return {
+        color: 'bg-amber-100 text-amber-800',
+        text: 'Ongoing',
+      };
+    case 'completed':
+      return {
+        color: 'bg-green-100 text-green-800',
+        text: 'Completed',
+      };
+    default:
+      return {
+        color: 'bg-gray-100 text-gray-800',
+        text: 'Unknown',
+      };
+  }
+};
+
+const EventCard = ({ event, index }: { event: Event; index: number }) => {
+  const [imageError, setImageError] = useState(false);
+  const statusConfig = getStatusConfig(event.status);
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{
+        duration: 0.3,
+        delay: index * 0.05,
+      }}
+      className="group relative overflow-hidden rounded-xl border-none bg-white/60"
+    >
+      {/*==================== End of Error details (subtle) ====================*/}
+      <div className="aspect-video w-full overflow-hidden relative">
+        {event.imageUrl && !imageError ? (
+          <Image
+            fill
+            priority
+            alt={event.title}
+            src={event.imageUrl}
+            onError={() => setImageError(true)}
+            className="object-cover transition-transform duration-300 group-hover:scale-105"
+          />
+        ) : (
+          <div className="h-full w-full bg-gradient-to-br from-blue-500 via-amber-300 to-blue-500 flex items-center justify-center">
+            <Calendar className="h-16 w-16 text-white/80" />
+          </div>
+        )}
       </div>
+      {/*==================== End of Event Image ====================*/}
 
-      <div className="flex flex-1 flex-col justify-between p-6">
-        <div>
-          <h3 className="mb-3 text-xl font-bold text-gray-900 group-hover:text-blue-700 transition-colors">
-            {event.title}
-          </h3>
-          <p className="mb-5 text-gray-600">{event.description}</p>
-
-          <div className="space-y-2">
-            <div className="flex items-center text-sm text-gray-500">
-              <Calendar className="mr-3 h-4 w-4 text-amber-500" />
-              {event.date}
-            </div>
-            <div className="flex items-center text-sm text-gray-500">
-              <Clock className="mr-3 h-4 w-4 text-amber-500" />
-              {event.time}
-            </div>
-            <div className="flex items-center text-sm text-gray-500">
-              <MapPin className="mr-3 h-4 w-4 text-amber-500" />
-              {event.location}
-            </div>
+      {/*==================== Event Content ====================*/}
+      <div className="p-6">
+        {/*==================== Event Header ====================*/}
+        <div className="mb-4 flex items-start justify-between">
+          <div className="flex-1">
+            <h3 className="mb-2 text-lg font-semibold text-gray-900 line-clamp-2">{event.title}</h3>
+            <span
+              className={`inline-flex items-center rounded-full px-2.5 py-1 text-sm font-medium ${statusConfig.color}`}
+            >
+              {statusConfig.text}
+            </span>
           </div>
         </div>
+        {/*==================== End of Event Header ====================*/}
 
-        <div className="mt-6">
-          <button className="group/btn relative overflow-hidden rounded-full border border-blue-700/50 bg-transparent px-5 py-2 text-sm text-blue-700 transition-all hover:bg-blue-700 hover:text-white hover:border-blue-700 flex items-center">
-            <Link href="/auth" className="relative z-10 flex items-center justify-center">
-              <span>Register Now</span>
-              <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover/btn:translate-x-1" />
-            </Link>
-          </button>
+        {/*==================== Event Description ====================*/}
+        <p className="mb-4 text-md text-gray-600 line-clamp-2">{event.description}</p>
+        {/*==================== End of Event Description ====================*/}
+
+        {/*==================== Event Details ====================*/}
+        <div className="space-y-4 pt-2 text-sm text-gray-500">
+          <div className="flex items-center">
+            <Calendar className="mr-2 h-4 w-4 text-blue-500" />
+            <span className="text-gray-500">{formatDateRange(event)}</span>
+          </div>
+          <div className="flex items-center">
+            <Clock className="mr-2 h-4 w-4 text-amber-500" />
+            <span className="text-gray-500">{formatTimeRange(event)}</span>
+          </div>
+          <div className="flex items-center">
+            <MapPin className="mr-2 h-4 w-4 text-red-500" />
+            <span className="line-clamp-1 text-gray-500">{event.location}</span>
+          </div>
+          <div className="flex items-center">
+            <Users className="mr-2 h-4 w-4 text-green-500" />
+            <span className="text-gray-500">
+              {event.attendees.length} / {event.capacity} registered
+            </span>
+          </div>
         </div>
-      </div>
+        {/*==================== End of Event Details ====================*/}
 
-      <div className="absolute -bottom-2 -right-2 h-16 w-16 rounded-full bg-blue-700/5 blur-xl group-hover:bg-blue-700/10 transition-colors duration-300"></div>
-    </div>
-  </motion.div>
-);
+        {/*==================== Landing Page Registration Section ====================*/}
+        {event.registrationRequired && (
+          <div className="mt-4 pt-4 border-t border-gray-100">
+            <Link href="/auth" className="cursor-pointer">
+              <button className="w-full inline-flex justify-center items-center rounded-lg bg-gradient-to-r from-blue-600 to-blue-500 px-4 py-2 text-sm font-medium text-white hover:from-blue-700 hover:to-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-300 shadow-md hover:shadow-lg">
+                <ArrowRight className="h-4 w-4 mr-2" />
+                Register Now
+              </button>
+            </Link>
+          </div>
+        )}
+
+        {/*==================== No Registration Required ====================*/}
+        {!event.registrationRequired && (
+          <div className="mt-4 pt-4 border-t border-gray-100">
+            <div className="text-center text-sm text-green-600 font-medium">
+              <Calendar className="inline h-4 w-4 mr-1" />
+              No registration required - Join anytime!
+            </div>
+          </div>
+        )}
+        {/*==================== End of No Registration Required ====================*/}
+      </div>
+      {/*==================== End of Event Content ====================*/}
+    </motion.div>
+  );
+};
 
 const EventsSection = () => {
-  const [activeFilter, setActiveFilter] = useState<string>('all');
+  const [events, setEvents] = useState<Event[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  // Memoize filtered events to prevent unnecessary recalculations
-  const filteredEvents = useMemo(() => {
-    return activeFilter === 'all'
-      ? events
-      : events.filter((event) => event.category === activeFilter);
-  }, [activeFilter]);
+  useEffect(() => {
+    const fetchEvents = async () => {
+      try {
+        setIsLoading(true);
+        setError(null);
 
-  // Memoize filter change handler
-  const handleFilterChange = useCallback((filter: string) => {
-    setActiveFilter(filter);
+        const response = await axios.get(
+          'https://itca-hub-backend.onrender.com/api/events/upcoming?page=1&limit=6'
+        );
+
+        if (response.data.status === 'success') {
+          setEvents(response.data.data);
+        } else {
+          throw new Error('Failed to fetch events');
+        }
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Failed to load events');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchEvents();
   }, []);
-
-  const filterButtons = [
-    { key: 'all', label: 'All Events' },
-    { key: 'conference', label: 'Conferences' },
-    { key: 'hackathon', label: 'Hackathons' },
-    { key: 'seminar', label: 'Seminars' },
-    { key: 'social', label: 'Social' },
-  ];
 
   return (
     <section
@@ -239,38 +309,109 @@ const EventsSection = () => {
           </p>
         </motion.div>
 
-        <motion.div
-          initial={{ opacity: 0, y: 70 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6, delay: 0.2 }}
-          className="mb-12 flex flex-wrap justify-center gap-4"
-        >
-          {filterButtons.map((button) => (
-            <button
-              key={button.key}
-              onClick={() => handleFilterChange(button.key)}
-              className={`group relative overflow-hidden rounded-full px-6 py-2.5 text-sm font-medium transition-all duration-300 ${
-                activeFilter === button.key
-                  ? 'bg-blue-700 text-white shadow-md shadow-blue-700/30'
-                  : 'bg-white/70 backdrop-blur-sm text-gray-700 border border-gray-200 hover:border-blue-700/50 hover:text-white'
-              }`}
-            >
-              <span className="relative z-10">{button.label}</span>
-              {activeFilter !== button.key && (
-                <span className="absolute inset-0 -z-10 translate-y-full bg-blue-700 transition-transform duration-300 group-hover:translate-y-0"></span>
-              )}
-            </button>
-          ))}
-        </motion.div>
+        {isLoading ? (
+          <div className="flex items-center justify-center py-16">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-700"></div>
+          </div>
+        ) : error ? (
+          <div className="text-center py-20">
+            <div className="max-w-md mx-auto">
+              {/*==================== Error Icon Container ====================*/}
+              <div className="relative mb-8">
+                <div className="w-24 h-24 mx-auto rounded-full bg-gradient-to-br from-red-50 to-orange-50 flex items-center justify-center border border-red-100">
+                  <Calendar className="h-10 w-10 text-red-500" />
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="w-16 h-16 border-2 border-red-200 rounded-full"></div>
+                    <div className="absolute w-4 h-0.5 bg-red-400 transform rotate-45"></div>
+                    <div className="absolute w-4 h-0.5 bg-red-400 transform -rotate-45"></div>
+                  </div>
+                </div>
+                {/*==================== End of Error indicator dots ====================*/}
+              </div>
+              {/*==================== End of Error Icon Container ====================*/}
 
-        <div className="grid gap-8 md:grid-cols-2">
-          <AnimatePresence mode="wait">
-            {filteredEvents.map((event, index) => (
-              <EventCard key={`${activeFilter}-${event.id}`} event={event} index={index} />
+              {/*==================== Error Content ====================*/}
+              <div className="space-y-4">
+                <h3 className="text-2xl font-bold text-gray-800">Unable to Load Events</h3>
+                <p className="text-gray-600 leading-relaxed">
+                  We're having trouble connecting to our events service.
+                  <br />
+                  Please try refreshing the page or check back later.
+                </p>
+
+                {/*==================== Error details (subtle) ====================*/}
+                {error && (
+                  <details className="text-sm text-gray-500 mt-4">
+                    <summary className="cursor-pointer hover:text-gray-700">
+                      Technical details
+                    </summary>
+                    <p className="mt-2 p-3 bg-gray-50 rounded text-left font-mono text-xs">
+                      {error}
+                    </p>
+                  </details>
+                )}
+                {/*==================== End of Error details (subtle) ====================*/}
+
+                {/*==================== Retry CTA ====================*/}
+                <div className="pt-4">
+                  <button
+                    onClick={() => window.location.reload()}
+                    className="inline-flex items-center px-6 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors duration-200 font-medium"
+                  >
+                    <Calendar className="w-4 h-4 mr-2" />
+                    Try Again
+                  </button>
+                </div>
+                {/*==================== End of Retry CTA ====================*/}
+              </div>
+              {/*==================== End of Error Content ====================*/}
+            </div>
+          </div>
+        ) : events.length === 0 ? (
+          <div className="text-center py-20">
+            <div className="max-w-md mx-auto">
+              {/*==================== Icon Container ====================*/}
+              <div className="relative mb-8">
+                <div className="w-24 h-24 mx-auto rounded-full bg-gradient-to-br from-blue-50 to-amber-50 flex items-center justify-center border border-blue-100">
+                  <Calendar className="h-10 w-10 text-blue-600" />
+                </div>
+                {/*==================== Small decorative dots ====================*/}
+                <div className="absolute -top-1 -right-1 w-4 h-4 bg-amber-400 rounded-full"></div>
+                <div className="absolute -bottom-2 -left-2 w-3 h-3 bg-blue-400 rounded-full"></div>
+                {/*==================== End of Small decorative dots ====================*/}
+              </div>
+              {/*==================== End of Icon Container ====================*/}
+
+              {/*==================== Content ====================*/}
+              <div className="space-y-4">
+                <h3 className="text-2xl font-bold text-gray-800">No Upcoming Events</h3>
+                <p className="text-gray-600 leading-relaxed">
+                  We're planning exciting events for the ITCA community.
+                  <br />
+                  Check back soon or sign in to stay updated!
+                </p>
+
+                {/*==================== Simple CTA ====================*/}
+                <div className="pt-4">
+                  <Link href="/auth">
+                    <button className="inline-flex items-center px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200 font-medium">
+                      <Calendar className="w-4 h-4 mr-2" />
+                      Get Notified of Events
+                    </button>
+                  </Link>
+                </div>
+                {/*==================== End of Simple CTA ====================*/}
+              </div>
+              {/*==================== End of Content ====================*/}
+            </div>
+          </div>
+        ) : (
+          <div className="grid gap-8 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+            {events.map((event, index) => (
+              <EventCard key={event._id} event={event} index={index} />
             ))}
-          </AnimatePresence>
-        </div>
+          </div>
+        )}
 
         <motion.div
           viewport={{ once: true }}

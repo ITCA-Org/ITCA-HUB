@@ -66,12 +66,36 @@ const EventsComponent = ({ role, userData }: EventsComponentProps) => {
     [page, limit, status, getAllEvents]
   );
 
+  const refreshEvents = useCallback(
+    async (signal?: AbortSignal) => {
+      try {
+        const response = await getAllEvents({
+          page,
+          limit,
+          signal,
+          status: status !== 'all' ? status : undefined,
+        });
+
+        if (!signal?.aborted) {
+          setEvents(response.events);
+          setTotalEvents(response.total);
+          setTotalPages(response.pagination.totalPages || Math.ceil(response.total / limit));
+        }
+      } catch (error) {
+        if (!signal?.aborted) {
+          console.error('Failed to refresh events:', error);
+        }
+      }
+    },
+    [page, limit, status, getAllEvents]
+  );
+
   const handleCreateEvent = async (eventData: CreateEventData) => {
     const controller = new AbortController();
     try {
       await createEvent(eventData, controller.signal);
       setShowCreateModal(false);
-      loadEvents(controller.signal);
+      refreshEvents(controller.signal);
     } catch (error) {
       if (!controller.signal.aborted) {
         console.error('Failed to create event:', error);
@@ -83,9 +107,11 @@ const EventsComponent = ({ role, userData }: EventsComponentProps) => {
     const controller = new AbortController();
     try {
       await updateEvent(eventId, eventData, controller.signal);
+
       setShowEditModal(false);
       setEventToEdit(null);
-      loadEvents(controller.signal);
+
+      await refreshEvents(controller.signal);
     } catch (error) {
       if (!controller.signal.aborted) {
         console.error('Failed to update event:', error);
@@ -98,9 +124,11 @@ const EventsComponent = ({ role, userData }: EventsComponentProps) => {
     const controller = new AbortController();
     try {
       await deleteEvent(eventToDelete, controller.signal);
+
       setShowDeleteModal(false);
       setEventToDelete(null);
-      loadEvents(controller.signal);
+
+      await refreshEvents(controller.signal);
     } catch (error) {
       if (!controller.signal.aborted) {
         console.error('Failed to delete event:', error);
@@ -112,7 +140,7 @@ const EventsComponent = ({ role, userData }: EventsComponentProps) => {
     const controller = new AbortController();
     try {
       await registerForEvent(eventId, controller.signal);
-      loadEvents(controller.signal);
+      await refreshEvents(controller.signal);
     } catch (error) {
       if (!controller.signal.aborted) {
         console.error('Failed to register for event:', error);
@@ -124,7 +152,7 @@ const EventsComponent = ({ role, userData }: EventsComponentProps) => {
     const controller = new AbortController();
     try {
       await unregisterFromEvent(eventId, controller.signal);
-      loadEvents(controller.signal);
+      await refreshEvents(controller.signal);
     } catch (error) {
       if (!controller.signal.aborted) {
         console.error('Failed to unregister from event:', error);
@@ -395,7 +423,7 @@ const EventsComponent = ({ role, userData }: EventsComponentProps) => {
       {/*==================== End of Filters ====================*/}
 
       {/*==================== Content Area ====================*/}
-      {isLoading || events === null || isClearingFilters ? (
+      {isLoading || isClearingFilters ? (
         <EventCardSkeleton />
       ) : isError ? (
         <NetworkError
@@ -403,7 +431,7 @@ const EventsComponent = ({ role, userData }: EventsComponentProps) => {
           title="Unable to fetch events"
           description="Please check your internet connection and try again."
         />
-      ) : events.length === 0 ? (
+      ) : !events || events.length === 0 ? (
         hasActiveFilters && !isClearingFilters ? (
           <NoResults
             filterTerm={searchTerm}

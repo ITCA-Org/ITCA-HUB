@@ -153,12 +153,12 @@ const ResourceViewerComponent = ({ role, userData }: ResourceViewerComponentProp
 
           setFiles(processedFiles);
 
-          await fetchFileSizes(processedFiles);
+          fetchFileSizes(processedFiles);
 
           if (shouldTrackView) {
             const resourceId = resourceData._id || resourceData.resourceId;
             if (resourceId) {
-              await trackView(resourceId, role, abortController.signal);
+              trackView(resourceId, role, abortController.signal);
             }
           }
         }
