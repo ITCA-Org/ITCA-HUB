@@ -16,6 +16,7 @@ import {
   ChevronLeft,
   ChevronRight,
 } from 'lucide-react';
+import { useState } from 'react';
 import formatDepartment from '@/utils/format-department';
 import useResources from '@/hooks/resources/use-resource';
 import useResourceTable from '@/hooks/resources/use-resource-table';
@@ -24,6 +25,7 @@ import ResourceTableSkeleton from '../skeletons/resource-table-skeleton';
 import { Resource, ResourceTableProps } from '@/types/interfaces/resource';
 import DeleteResourceModal from '../modals/resources/delete-resource-modal';
 import ResourceAnalytics from '../modals/resources/analytics-resource-modal';
+import DownloadResourceModal from '../modals/resources/download-resource-modal';
 import { EmptyState, NetworkError, NoResults } from '@/components/dashboard/error-messages';
 
 const ResourceTable = ({
@@ -47,7 +49,9 @@ const ResourceTable = ({
   onRestoreResource,
   onRestoreMultiple,
 }: ResourceTableProps) => {
-  const { downloadResource } = useResources({ token });
+  const { downloadResource, isDownloading, downloadProgress } = useResources({ token });
+  const [showDownloadModal, setShowDownloadModal] = useState(false);
+  const [downloadingResource, setDownloadingResource] = useState<Resource | null>(null);
 
   const {
     isEditing,
@@ -133,10 +137,24 @@ const ResourceTable = ({
     }
   };
 
-  const handleDownload = async (resource: Resource, e?: React.MouseEvent) => {
+  const handleDownload = (resource: Resource, e?: React.MouseEvent) => {
     if (e) e.stopPropagation();
+    setDownloadingResource(resource);
+    setShowDownloadModal(true);
+  };
+
+  const handleConfirmDownload = async () => {
+    if (!downloadingResource) return;
     const role = userRole === 'admin' ? 'admin' : 'student';
-    await downloadResource(resource, role);
+    await downloadResource(downloadingResource, role);
+    setShowDownloadModal(false);
+    setDownloadingResource(null);
+  };
+
+  const handleCloseDownloadModal = () => {
+    if (isDownloading) return;
+    setShowDownloadModal(false);
+    setDownloadingResource(null);
   };
 
   const formatCategoryName = (category: string) => {
@@ -606,6 +624,17 @@ const ResourceTable = ({
         />
       )}
       {/*==================== End of Restore Modal ====================*/}
+
+      {/*==================== Download Resource Modal ====================*/}
+      <DownloadResourceModal
+        isOpen={showDownloadModal}
+        isDownloading={isDownloading}
+        resource={downloadingResource}
+        onConfirm={handleConfirmDownload}
+        onClose={handleCloseDownloadModal}
+        downloadProgress={downloadProgress}
+      />
+      {/*==================== End of Download Resource Modal ====================*/}
     </>
   );
 };

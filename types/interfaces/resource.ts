@@ -249,6 +249,9 @@ export interface UseResourcesReturn {
   resources: Resource[];
   pagination: Pagination;
   clearCache: () => void;
+  isDownloading: boolean;
+  downloadProgress: number;
+  fetchFileMediaLink: (fileUrl: string) => Promise<string>;
   refreshResources: (params?: FetchResourcesParams) => void;
   fetchResources: (params?: FetchResourcesParams) => Promise<void>;
   fetchDeletedResources: (params?: FetchResourcesParams) => Promise<void>;

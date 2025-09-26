@@ -16,7 +16,9 @@ import { useState, useCallback, useRef } from 'react';
 import { CustomError, ErrorResponseData } from '@/types';
 
 const useResources = ({ token }: UseResourcesProps): UseResourcesReturn => {
+  const [downloadProgress, setDownloadProgress] = useState(0);
   const [resources, setResources] = useState<Resource[]>([]);
+  const [isDownloading, setIsDownloading] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [isError, setIsError] = useState(false);
   const [pagination, setPagination] = useState<Pagination>({
@@ -464,6 +466,24 @@ const useResources = ({ token }: UseResourcesProps): UseResourcesReturn => {
     [token]
   );
 
+  const fetchFileMediaLink = useCallback(async (fileUrl: string): Promise<string> => {
+    const fileName = fileUrl.split('/').pop();
+    if (!fileName) {
+      throw new Error('Invalid file URL');
+    }
+
+    const response = await fetch(
+      `https://jeetix-file-service.onrender.com/api/storage/file/itca-resources/${fileName}`
+    );
+    const data = await response.json();
+
+    if (data.status === 'success' && data.data.metadata?.mediaLink) {
+      return data.data.metadata.mediaLink;
+    } else {
+      throw new Error('Failed to get mediaLink from JeeTix');
+    }
+  }, []);
+
   const downloadFile = useCallback(
     async (fileUrl: string, resourceId?: string, role?: 'admin' | 'student') => {
       try {
@@ -471,8 +491,10 @@ const useResources = ({ token }: UseResourcesProps): UseResourcesReturn => {
           await trackDownload(resourceId, role);
         }
 
+        const downloadUrl = await fetchFileMediaLink(fileUrl);
+
         const link = document.createElement('a');
-        link.href = fileUrl;
+        link.href = downloadUrl;
         link.target = '_blank';
         link.download = fileUrl.split('/').pop() || 'download';
         document.body.appendChild(link);
@@ -488,34 +510,37 @@ const useResources = ({ token }: UseResourcesProps): UseResourcesReturn => {
         });
       }
     },
-    [trackDownload]
+    [trackDownload, fetchFileMediaLink]
   );
 
   const downloadResource = useCallback(
     async (resource: Resource, role?: 'admin' | 'student') => {
       try {
+        setIsDownloading(true);
+        setDownloadProgress(0);
+
         if (role) {
           await trackDownload(resource._id, role);
         }
 
         if (resource.fileUrls.length === 1) {
-          const fileUrl = resource.fileUrls[0];
-          const link = document.createElement('a');
-          link.href = fileUrl;
-          link.target = '_blank';
-          link.download = fileUrl.split('/').pop() || `${resource.title}`;
-          document.body.appendChild(link);
-          link.click();
-          document.body.removeChild(link);
-        } else if (resource.fileUrls.length > 1) {  
+          await downloadFile(resource.fileUrls[0], resource._id, role);
+          setIsDownloading(false);
+          return;
+        } else if (resource.fileUrls.length > 1) {
           const zip = new JSZip();
           const folder = zip.folder(resource.title);
+          const totalFiles = resource.fileUrls.length;
 
           const downloadPromises = resource.fileUrls.map(async (fileUrl, index) => {
             try {
-              const response = await axios.get(fileUrl, { responseType: 'arraybuffer' });
+              const downloadUrl = await fetchFileMediaLink(fileUrl);
+              const response = await axios.get(downloadUrl, { responseType: 'arraybuffer' });
               const fileName = fileUrl.split('/').pop() || `file_${index + 1}`;
               folder?.file(fileName, response.data);
+
+              const progress = Math.round(((index + 1) / totalFiles) * 80);
+              setDownloadProgress(progress);
             } catch (error) {
               console.error(`Failed to download file ${index + 1}:`, error);
             }
@@ -523,7 +548,10 @@ const useResources = ({ token }: UseResourcesProps): UseResourcesReturn => {
 
           await Promise.all(downloadPromises);
 
+          setDownloadProgress(90);
           const content = await zip.generateAsync({ type: 'blob' });
+
+          setDownloadProgress(100);
           const url = window.URL.createObjectURL(content);
           const link = document.createElement('a');
           link.href = url;
@@ -547,9 +575,12 @@ const useResources = ({ token }: UseResourcesProps): UseResourcesReturn => {
           description: message,
           duration: 5000,
         });
+      } finally {
+        setIsDownloading(false);
+        setDownloadProgress(0);
       }
     },
-    [trackDownload]
+    [trackDownload, downloadFile, fetchFileMediaLink]
   );
 
   const refreshResources = useCallback(
@@ -578,9 +609,12 @@ const useResources = ({ token }: UseResourcesProps): UseResourcesReturn => {
     clearCache,
     downloadFile,
     trackDownload,
+    isDownloading,
     fetchResources,
     refreshResources,
     downloadResource,
+    downloadProgress,
+    fetchFileMediaLink,
     fetchSingleResource,
     fetchDeletedResources,
   };

@@ -23,14 +23,21 @@ import {
   Presentation,
   GraduationCap,
   FileSpreadsheet,
+  X,
 } from 'lucide-react';
 import { useRouter } from 'next/router';
 import { useState, useEffect, useCallback } from 'react';
 import useResources from '@/hooks/resources/use-resource';
 import useResourceAdmin from '@/hooks/resources/use-resource-admin';
+import PDFViewer from '@/components/dashboard/resource-viewers/pdf-viewer';
+import TextViewer from '@/components/dashboard/resource-viewers/text-viewer';
 import DashboardLayout from '@/components/dashboard/layout/dashboard-layout';
+import AudioViewer from '@/components/dashboard/resource-viewers/audio-viewer';
+import ImageViewer from '@/components/dashboard/resource-viewers/image-viewer';
+import VideoViewer from '@/components/dashboard/resource-viewers/video-viewer';
 import { NetworkError, EmptyState } from '@/components/dashboard/error-messages';
 import ConfirmationModal from '@/components/dashboard/modals/confirmation-modal';
+import GenericViewer from '@/components/dashboard/resource-viewers/generic-viewer';
 import AddFilesModal from '@/components/dashboard/modals/resources/add-files-modal';
 import DashboardPageHeader from '@/components/dashboard/layout/dashboard-page-header';
 import { FileItem, Resource, ResourceViewerComponentProps } from '@/types/interfaces/resource';
@@ -40,10 +47,13 @@ const ResourceViewerComponent = ({ role, userData }: ResourceViewerComponentProp
   const router = useRouter();
   const { id } = router.query;
 
+  const [loadingFileSizes, setLoadingFileSizes] = useState<{ [key: string]: boolean }>({});
   const [fileToDownload, setFileToDownload] = useState<FileItem | null>(null);
   const [isDeletingFile, setIsDeletingFile] = useState<string | null>(null);
+  const [fileSizes, setFileSizes] = useState<{ [key: string]: string }>({});
   const [showDownloadFileModal, setShowDownloadFileModal] = useState(false);
   const [isDownloading, setIsDownloading] = useState<string | null>(null);
+  const [viewingFile, setViewingFile] = useState<FileItem | null>(null);
   const [fileToDelete, setFileToDelete] = useState<string | null>(null);
   const [showDeleteFileModal, setShowDeleteFileModal] = useState(false);
   const [showAddFilesModal, setShowAddFilesModal] = useState(false);
@@ -57,6 +67,40 @@ const ResourceViewerComponent = ({ role, userData }: ResourceViewerComponentProp
   });
 
   const adminHook = useResourceAdmin({ token: userData.token });
+
+  const formatFileSize = (bytes: number): string => {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+  };
+
+  const fetchFileSizes = useCallback(async (files: FileItem[]) => {
+    for (const file of files) {
+      try {
+        setLoadingFileSizes((prev) => ({ ...prev, [file.url]: true }));
+
+        const fileName = file.name;
+        const response = await fetch(
+          `https://jeetix-file-service.onrender.com/api/storage/file/itca-resources/${fileName}`
+        );
+        const data = await response.json();
+
+        if (data.status === 'success' && data.data.metadata?.size) {
+          const sizeInBytes = parseInt(data.data.metadata.size);
+          const formattedSize = formatFileSize(sizeInBytes);
+          setFileSizes((prev) => ({ ...prev, [file.url]: formattedSize }));
+        } else {
+          setFileSizes((prev) => ({ ...prev, [file.url]: 'Unknown' }));
+        }
+      } catch {
+        setFileSizes((prev) => ({ ...prev, [file.url]: 'Unknown' }));
+      } finally {
+        setLoadingFileSizes((prev) => ({ ...prev, [file.url]: false }));
+      }
+    }
+  }, []);
 
   const loadResource = useCallback(
     async (shouldTrackView: boolean = true) => {
@@ -86,6 +130,8 @@ const ResourceViewerComponent = ({ role, userData }: ResourceViewerComponentProp
 
           setFiles(processedFiles);
 
+          await fetchFileSizes(processedFiles);
+
           if (shouldTrackView) {
             const resourceId = resourceData._id || resourceData.resourceId;
             if (resourceId) {
@@ -101,7 +147,7 @@ const ResourceViewerComponent = ({ role, userData }: ResourceViewerComponentProp
         setIsLoading(false);
       }
     },
-    [id, userData.token, fetchSingleResource, trackView, role]
+    [id, userData.token, fetchSingleResource, trackView, role, fetchFileSizes]
   );
 
   useEffect(() => {
@@ -165,7 +211,7 @@ const ResourceViewerComponent = ({ role, userData }: ResourceViewerComponentProp
   };
 
   const handleRetry = () => {
-    window.location.reload();
+    loadResource(true);
   };
 
   const getDepartmentIcon = (department: string) => {
@@ -296,6 +342,36 @@ const ResourceViewerComponent = ({ role, userData }: ResourceViewerComponentProp
     return typeMap[extension] || 'File';
   };
 
+  const handleViewFile = (file: FileItem) => {
+    setViewingFile(file);
+  };
+
+  const handleCloseFileModal = () => {
+    setViewingFile(null);
+  };
+
+  const renderFileViewer = (file: FileItem) => {
+    const extension = file.name.split('.').pop()?.toLowerCase() || '';
+
+    switch (extension) {
+      case 'jpg':
+      case 'jpeg':
+      case 'png':
+      case 'gif':
+        return <ImageViewer fileUrl={file.url} title={file.name} />;
+      case 'pdf':
+        return <PDFViewer fileUrl={file.url} title={file.name} />;
+      case 'txt':
+        return <TextViewer fileUrl={file.url} title={file.name} />;
+      case 'mp3':
+        return <AudioViewer fileUrl={file.url} title={file.name} />;
+      case 'mp4':
+        return <VideoViewer fileUrl={file.url} title={file.name} />;
+      default:
+        return <GenericViewer fileUrl={file.url} title={file.name} />;
+    }
+  };
+
   const formatCategory = (category: string): string => {
     return category
       .split('_')
@@ -364,7 +440,7 @@ const ResourceViewerComponent = ({ role, userData }: ResourceViewerComponentProp
       ) : error || !resource ? (
         <NetworkError
           onRetry={handleRetry}
-          retryButtonText="Reload Page"
+          retryButtonText="Try Again"
           title="Unable to fetch the resource"
           description="Please check your internet connection and try again."
         />
@@ -575,6 +651,12 @@ const ResourceViewerComponent = ({ role, userData }: ResourceViewerComponentProp
                       </th>
                       <th
                         scope="col"
+                        className="px-6 py-3 text-left text-sm font-normal uppercase tracking-wider text-gray-500"
+                      >
+                        Size
+                      </th>
+                      <th
+                        scope="col"
                         className="px-6 py-3 text-left text-sm font-normal uppercase tracking-wider text-gray-500 w-32"
                       >
                         Actions
@@ -585,6 +667,7 @@ const ResourceViewerComponent = ({ role, userData }: ResourceViewerComponentProp
                     {files.map((file, index) => (
                       <tr
                         key={index}
+                        onClick={() => handleViewFile(file)}
                         className={`${
                           index % 2 === 1 ? 'bg-gray-100/80' : ''
                         } hover:bg-amber-100 border-none transition-colors cursor-pointer`}
@@ -605,6 +688,16 @@ const ResourceViewerComponent = ({ role, userData }: ResourceViewerComponentProp
                           <span className="inline-flex items-center px-1.5 py-0.5 text-md font-normal text-gray-500">
                             {file.type}
                           </span>
+                        </td>
+                        <td className="px-5 py-4 text-md font-normal text-gray-500">
+                          {loadingFileSizes[file.url] ? (
+                            <div className="flex items-center">
+                              <Loader className="h-3 w-3 animate-spin mr-2" />
+                              <span className="text-sm text-gray-400">Loading...</span>
+                            </div>
+                          ) : (
+                            <span>{fileSizes[file.url] || 'Unknown'}</span>
+                          )}
                         </td>
                         <td className="whitespace-nowrap px-5 py-4 text-md">
                           <div className="flex items-center justify-end space-x-2">
@@ -698,6 +791,72 @@ const ResourceViewerComponent = ({ role, userData }: ResourceViewerComponentProp
         />
       )}
       {/*==================== End of Add Files Modal ====================*/}
+
+      {/*==================== File Viewer Modal ====================*/}
+      {viewingFile && (
+        <div className="fixed inset-0 z-50 overflow-y-auto">
+          <div className="flex min-h-screen items-center justify-center p-4">
+            {/*==================== Backdrop ====================*/}
+            <div
+              className="fixed inset-0 bg-black/30 backdrop-blur-sm bg-opacity-50 transition-opacity"
+              onClick={handleCloseFileModal}
+            />
+            {/*==================== End of Backdrop ====================*/}
+
+            {/*==================== Modal ====================*/}
+            <div className="relative w-full max-w-6xl bg-white rounded-lg shadow-xl">
+              {/*==================== Header ====================*/}
+              <div className="flex items-center justify-between p-4 border-b">
+                <div className="flex items-center space-x-3">
+                  {getFileIcon(viewingFile.name)}
+                  <div>
+                    <h3 className="text-lg font-medium text-gray-900">{viewingFile.name}</h3>
+                    <p className="text-sm text-gray-500">
+                      {viewingFile.type} • {fileSizes[viewingFile.url] || 'Unknown size'}
+                    </p>
+                  </div>
+                </div>
+                <button
+                  onClick={handleCloseFileModal}
+                  className="rounded-full p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100"
+                >
+                  <X className="h-5 w-5" />
+                </button>
+              </div>
+              {/*==================== End of Header ====================*/}
+
+              {/*==================== Content ====================*/}
+              <div className="h-96 md:h-[32rem]">{renderFileViewer(viewingFile)}</div>
+              {/*==================== End of Content ====================*/}
+
+              {/*==================== Footer ====================*/}
+              <div className="flex items-center justify-end space-x-3 p-4 border-t">
+                <button
+                  onClick={() => handleDownload(viewingFile)}
+                  disabled={isDownloading === viewingFile.url}
+                  className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50"
+                >
+                  {isDownloading === viewingFile.url ? (
+                    <Loader className="h-4 w-4 animate-spin mr-2" />
+                  ) : (
+                    <Download className="h-4 w-4 mr-2" />
+                  )}
+                  Download
+                </button>
+                <button
+                  onClick={handleCloseFileModal}
+                  className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700"
+                >
+                  Close
+                </button>
+              </div>
+              {/*==================== End of Footer ====================*/}
+            </div>
+            {/*==================== End of Modal ====================*/}
+          </div>
+        </div>
+      )}
+      {/*==================== End of File Viewer Modal ====================*/}
     </DashboardLayout>
   );
 };
