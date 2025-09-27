@@ -10,7 +10,7 @@ import DashboardPageHeader from '@/components/dashboard/layout/dashboard-page-he
 import { Upload, Filter, Building2, Tag, Eye, Search, GraduationCap, Trash2 } from 'lucide-react';
 
 const ResourcesComponent = ({ role, userData }: ResourcesComponentProps) => {
-  const { isError, resources, isLoading, pagination, fetchResources, clearCache } = useResources({
+  const { isError, resources, isLoading, pagination, fetchResources, clearCache, forceRefreshResources } = useResources({
     token: userData.token,
   });
 
@@ -57,16 +57,25 @@ const ResourcesComponent = ({ role, userData }: ResourcesComponentProps) => {
     role,
   ]);
 
-  const loadResources = useCallback(() => {
+  const loadResources = useCallback((forceRefresh = false) => {
     const controller = new AbortController();
-    fetchResources({
-      page: 0,
-      limit,
-      ...filterParams,
-      signal: controller.signal,
-    });
+    if (forceRefresh) {
+      forceRefreshResources({
+        page: 0,
+        limit,
+        ...filterParams,
+        signal: controller.signal,
+      });
+    } else {
+      fetchResources({
+        page: 0,
+        limit,
+        ...filterParams,
+        signal: controller.signal,
+      });
+    }
     return controller;
-  }, [fetchResources, limit, filterParams]);
+  }, [fetchResources, forceRefreshResources, limit, filterParams]);
 
   const handleDeleteResource = useCallback(
     async (resourceId: string, mode: 'soft' | 'permanent' = 'soft'): Promise<boolean> => {
@@ -78,7 +87,7 @@ const ResourcesComponent = ({ role, userData }: ResourcesComponentProps) => {
         } else {
           await adminHook.toggleResourceTrash(resourceId);
         }
-        loadResources();
+        loadResources(true);
         return true;
       } catch {
         return false;
@@ -97,7 +106,7 @@ const ResourcesComponent = ({ role, userData }: ResourcesComponentProps) => {
         } else {
           await adminHook.batchToggleResourceTrash(resourceIds);
         }
-        loadResources();
+        loadResources(true);
         return true;
       } catch {
         return false;
@@ -112,7 +121,7 @@ const ResourcesComponent = ({ role, userData }: ResourcesComponentProps) => {
 
       try {
         await adminHook.toggleResourceTrash(resourceId);
-        loadResources();
+        loadResources(true);
         return true;
       } catch {
         return false;
@@ -127,7 +136,7 @@ const ResourcesComponent = ({ role, userData }: ResourcesComponentProps) => {
 
       try {
         await adminHook.batchRestoreResources(resourceIds);
-        loadResources();
+        loadResources(true);
         return true;
       } catch {
         return false;
@@ -396,7 +405,7 @@ const ResourcesComponent = ({ role, userData }: ResourcesComponentProps) => {
           token={userData.token}
           total={pagination.total}
           limit={pagination.limit}
-          onRefresh={loadResources}
+          onRefresh={() => loadResources(true)}
           setPage={handlePageChange}
           page={pagination.currentPage}
           onClearFilters={clearFilters}
@@ -409,6 +418,7 @@ const ResourcesComponent = ({ role, userData }: ResourcesComponentProps) => {
           onDeleteMultiple={role === 'admin' ? handleDeleteMultiple : undefined}
           onRestoreResource={role === 'admin' ? handleRestoreResource : undefined}
           onRestoreMultiple={role === 'admin' ? handleRestoreMultiple : undefined}
+          onCacheInvalidate={clearCache}
         />
       </>
     </DashboardLayout>

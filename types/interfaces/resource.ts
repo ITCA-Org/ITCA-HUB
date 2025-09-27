@@ -258,6 +258,7 @@ export interface UseResourcesReturn {
   downloadProgress: number;
   fetchFileMediaLink: (fileUrl: string) => Promise<string>;
   refreshResources: (params?: FetchResourcesParams) => void;
+  forceRefreshResources: (params?: FetchResourcesParams) => void;
   fetchResources: (params?: FetchResourcesParams) => Promise<void>;
   fetchDeletedResources: (params?: FetchResourcesParams) => Promise<void>;
   trackDownload: (resourceId: string, role?: 'admin' | 'student') => Promise<void>;

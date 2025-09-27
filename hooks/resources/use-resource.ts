@@ -616,6 +616,12 @@ const useResources = ({ token }: UseResourcesProps): UseResourcesReturn => {
     [trackDownload, downloadFile, fetchFileMediaLink]
   );
 
+  const clearCache = useCallback(() => {
+    requestCacheRef.current.clear();
+    activeRequestsRef.current.clear();
+    singleResourceRequestsRef.current.clear();
+  }, []);
+
   const refreshResources = useCallback(
     (params: FetchResourcesParams = {}) => {
       fetchResources({
@@ -627,11 +633,17 @@ const useResources = ({ token }: UseResourcesProps): UseResourcesReturn => {
     [fetchResources, pagination.currentPage, pagination.limit]
   );
 
-  const clearCache = useCallback(() => {
-    requestCacheRef.current.clear();
-    activeRequestsRef.current.clear();
-    singleResourceRequestsRef.current.clear();
-  }, []);
+  const forceRefreshResources = useCallback(
+    (params: FetchResourcesParams = {}) => {
+      clearCache();
+      fetchResources({
+        page: pagination.currentPage,
+        limit: pagination.limit,
+        ...params,
+      });
+    },
+    [fetchResources, pagination.currentPage, pagination.limit, clearCache]
+  );
 
   return {
     isError,
@@ -645,6 +657,7 @@ const useResources = ({ token }: UseResourcesProps): UseResourcesReturn => {
     isDownloading,
     fetchResources,
     refreshResources,
+    forceRefreshResources,
     downloadResource,
     downloadProgress,
     fetchFileMediaLink,

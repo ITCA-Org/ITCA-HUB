@@ -16,8 +16,9 @@ const useResourceTable = ({
   onDeleteMultiple,
   onRestoreResource,
   onRestoreMultiple,
+  onCacheInvalidate,
   mode = 'default',
-}: UseResourceTableProps) => {
+}: UseResourceTableProps & { onCacheInvalidate?: () => void }) => {
   const router = useRouter();
   const adminHook = useResourceAdmin({ token });
 
@@ -234,6 +235,9 @@ const useResourceTable = ({
       };
 
       await adminHook.updateResource(resourceId, payload);
+      if (onCacheInvalidate) {
+        onCacheInvalidate();
+      }
       setShowEditModal(false);
       setSelectedResource(null);
       onRefresh();

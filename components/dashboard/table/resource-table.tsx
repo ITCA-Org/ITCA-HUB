@@ -48,7 +48,8 @@ const ResourceTable = ({
   onDeleteMultiple,
   onRestoreResource,
   onRestoreMultiple,
-}: ResourceTableProps) => {
+  onCacheInvalidate,
+}: ResourceTableProps & { onCacheInvalidate?: () => void }) => {
   const { downloadResource, isDownloading, downloadProgress } = useResources({ token });
   const [showDownloadModal, setShowDownloadModal] = useState(false);
   const [downloadingResource, setDownloadingResource] = useState<Resource | null>(null);
@@ -92,6 +93,7 @@ const ResourceTable = ({
     onDeleteMultiple,
     onRestoreResource,
     onRestoreMultiple,
+    onCacheInvalidate,
     mode,
   });
 
