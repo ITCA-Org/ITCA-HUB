@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Menu, X, Facebook, Twitter, Instagram, Mail, Linkedin } from 'lucide-react';
+import { Menu, X, Facebook, Instagram, Mail, Linkedin } from 'lucide-react';
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -318,12 +318,6 @@ const Header = () => {
                       className="h-10 w-10 rounded-full bg-gray-700 flex items-center justify-center text-white hover:bg-[#1d4ed8] transition-colors duration-300"
                     >
                       <Instagram className="h-5 w-5" />
-                    </a>
-                    <a
-                      href="#"
-                      className="h-10 w-10 rounded-full bg-gray-700 flex items-center justify-center text-white hover:bg-[#1d4ed8] transition-colors duration-300"
-                    >
-                      <Twitter className="h-5 w-5" />
                     </a>
                     <a
                       href="https://gm.linkedin.com/company/utg-itca-information-technology-communication-association-university-of-the-gambia"

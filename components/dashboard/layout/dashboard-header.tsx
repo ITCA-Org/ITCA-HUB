@@ -282,14 +282,14 @@ const DashboardHeader = ({
                 {/*==================== Dropdown Links ====================*/}
                 <div className="py-1">
                   <Link
-                    href="/profile"
+                    href={userRole === 'admin' ? '/admin/profile' : '/student/profile'}
                     className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                   >
                     <User className="mr-3 h-4 w-4 text-gray-500" />
                     Profile
                   </Link>
                   <Link
-                    href="/help"
+                    href={userRole === 'admin' ? '/admin/help' : '/student/help'}
                     className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                   >
                     <HelpCircle className="mr-3 h-4 w-4 text-gray-500" />

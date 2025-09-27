@@ -1,6 +1,3 @@
-import Link from 'next/link';
-import { useRef } from 'react';
-import { useRouter } from 'next/router';
 import {
   X,
   User,
@@ -11,8 +8,11 @@ import {
   HelpCircle,
   LayoutDashboardIcon,
 } from 'lucide-react';
+import Link from 'next/link';
 import Image from 'next/image';
+import { useRef } from 'react';
 import { NavItem } from '@/types';
+import { useRouter } from 'next/router';
 import { motion, AnimatePresence } from 'framer-motion';
 import { DashboardSidebarProps } from '@/types/interfaces/dashboard';
 
@@ -45,6 +45,11 @@ const Sidebar = ({ open, setOpen }: DashboardSidebarProps) => {
       name: 'Profile',
       href: '/admin/profile',
       icon: <User2Icon className="h-5 w-5" />,
+    },
+    {
+      name: 'Help',
+      href: '/admin/help',
+      icon: <HelpCircle className="h-5 w-5" />,
     },
   ];
 
