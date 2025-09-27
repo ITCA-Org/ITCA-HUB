@@ -1,9 +1,9 @@
 import Head from 'next/head';
 import { useState } from 'react';
+import { motion } from 'framer-motion';
 import Sidebar from './dashboard-sidebar';
 import DashboardHeader from './dashboard-header';
 import { DashboardLayoutProps } from '@/types/interfaces/dashboard';
-import { motion } from 'framer-motion';
 
 const DashboardLayout = ({ children, title = 'Dashboard', token }: DashboardLayoutProps) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);

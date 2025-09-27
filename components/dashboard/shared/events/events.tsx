@@ -46,7 +46,7 @@ const EventsComponent = ({ role, userData }: EventsComponentProps) => {
   /**===============================
    * Check if there are active filters
    ===============================*/
-  const hasActiveFilters = searchTerm.trim() !== '' || status !== 'all';
+  const hasActiveFilters = status !== 'all';
 
   const loadEvents = useCallback(
     async (signal?: AbortSignal) => {
@@ -161,8 +161,6 @@ const EventsComponent = ({ role, userData }: EventsComponentProps) => {
   };
 
   const handleRefresh = () => {
-    setSearchTerm('');
-    setStatus('all');
     setPage(1);
     clearCache();
     const controller = new AbortController();
@@ -188,8 +186,8 @@ const EventsComponent = ({ role, userData }: EventsComponentProps) => {
   };
 
   const resetFilters = () => {
+    if (!hasActiveFilters) return;
     setIsClearingFilters(true);
-    setSearchTerm('');
     setStatus('all');
     setPage(1);
     clearCache();
@@ -414,7 +412,12 @@ const EventsComponent = ({ role, userData }: EventsComponentProps) => {
         <div>
           <button
             onClick={resetFilters}
-            className="w-full rounded-lg bg-white px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-200"
+            disabled={!hasActiveFilters}
+            className={`w-full rounded-lg px-4 py-2.5 text-sm font-medium ${
+              hasActiveFilters
+                ? 'bg-white text-gray-700 hover:bg-gray-200'
+                : 'bg-gray-100 text-gray-400 cursor-not-allowed'
+            }`}
           >
             Reset Filters
           </button>
@@ -423,7 +426,7 @@ const EventsComponent = ({ role, userData }: EventsComponentProps) => {
       {/*==================== End of Filters ====================*/}
 
       {/*==================== Content Area ====================*/}
-      {isLoading || isClearingFilters ? (
+      {isLoading || isClearingFilters || (!events && !isError) ? (
         <EventCardSkeleton />
       ) : isError ? (
         <NetworkError
@@ -431,8 +434,8 @@ const EventsComponent = ({ role, userData }: EventsComponentProps) => {
           title="Unable to fetch events"
           description="Please check your internet connection and try again."
         />
-      ) : !events || events.length === 0 ? (
-        hasActiveFilters && !isClearingFilters ? (
+      ) : events && events.length === 0 ? (
+        (searchTerm.trim() !== '' || hasActiveFilters) && !isClearingFilters ? (
           <NoResults
             filterTerm={searchTerm}
             title="No matching events"
@@ -457,7 +460,7 @@ const EventsComponent = ({ role, userData }: EventsComponentProps) => {
         <div className="bg-transparent">
           <div className="py-6">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {events.map((event) => (
+              {events?.map((event) => (
                 <EventCard
                   role={role}
                   event={event}
@@ -474,7 +477,7 @@ const EventsComponent = ({ role, userData }: EventsComponentProps) => {
           </div>
 
           {/*==================== Pagination ====================*/}
-          {events.length > 0 && renderPagination()}
+          {events && events.length > 0 && renderPagination()}
           {/*==================== End of Pagination ====================*/}
         </div>
       )}

@@ -152,33 +152,33 @@ const ResourcesComponent = ({ role, userData }: ResourcesComponentProps) => {
     [fetchResources, limit, filterParams, pagination.currentPage]
   );
 
+  const hasActiveFilters = useMemo(() => {
+    return (
+      filters.department !== 'all' ||
+      filters.category !== 'all' ||
+      filters.academicLevel !== 'all' ||
+      (role === 'admin' && filters.visibility !== 'all')
+    );
+  }, [filters, role]);
+
   const clearFilters = useCallback(() => {
+    if (!hasActiveFilters) return;
     setIsClearingFilters(true);
-    setFilters({
-      searchTerm: '',
+    setFilters((prev) => ({
+      ...prev,
       department: 'all',
       category: 'all',
       visibility: 'all',
       academicLevel: 'all',
-    });
+    }));
     clearCache();
-  }, [clearCache]);
+  }, [clearCache, hasActiveFilters]);
 
   useEffect(() => {
     if (isClearingFilters && !isLoading) {
       setIsClearingFilters(false);
     }
   }, [isClearingFilters, isLoading]);
-
-  const hasActiveFilters = useMemo(() => {
-    return (
-      !!debouncedSearchTerm ||
-      filters.department !== 'all' ||
-      filters.category !== 'all' ||
-      filters.academicLevel !== 'all' ||
-      (role === 'admin' && filters.visibility !== 'all')
-    );
-  }, [debouncedSearchTerm, filters, role]);
 
   useEffect(() => {
     const abortController = new AbortController();
@@ -265,8 +265,12 @@ const ResourcesComponent = ({ role, userData }: ResourcesComponentProps) => {
             </div>
             <button
               onClick={clearFilters}
-              disabled={isLoading}
-              className="text-sm text-gray-500 hover:text-blue-600 cursor-pointer transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              disabled={isLoading || !hasActiveFilters}
+              className={`text-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
+                hasActiveFilters
+                  ? 'text-gray-500 hover:text-blue-600 cursor-pointer'
+                  : 'text-gray-400 cursor-not-allowed'
+              }`}
             >
               Clear Filters
             </button>
@@ -400,7 +404,7 @@ const ResourcesComponent = ({ role, userData }: ResourcesComponentProps) => {
           totalPages={pagination.totalPages}
           isLoading={isLoading || isClearingFilters}
           userRole={role === 'admin' ? 'admin' : 'user'}
-          hasActiveFilters={hasActiveFilters && !isClearingFilters}
+          hasActiveFilters={(!!debouncedSearchTerm || hasActiveFilters) && !isClearingFilters}
           onDeleteResource={role === 'admin' ? handleDeleteResource : undefined}
           onDeleteMultiple={role === 'admin' ? handleDeleteMultiple : undefined}
           onRestoreResource={role === 'admin' ? handleRestoreResource : undefined}
