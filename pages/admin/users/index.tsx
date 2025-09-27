@@ -23,7 +23,7 @@ const AdminUsersPage = ({ userData }: AdminUsersPageProps) => {
 
   const debouncedSearchQuery = useDebounce(searchTerm, 500);
 
-  const hasActiveFilters = !!debouncedSearchQuery || role !== 'all' || status !== 'all';
+  const hasActiveFilters = role !== 'all' || status !== 'all';
 
   const refreshUsers = useCallback(() => {
     if (isLoading) return;
@@ -44,13 +44,13 @@ const AdminUsersPage = ({ userData }: AdminUsersPageProps) => {
   }, []);
 
   const resetFilters = useCallback(() => {
+    if (!hasActiveFilters) return;
     setIsClearingFilters(true);
-    setSearchTerm('');
     setRole('all');
     setStatus('all');
     setPage(1);
     clearCache();
-  }, [clearCache]);
+  }, [clearCache, hasActiveFilters]);
 
   useEffect(() => {
     if (isClearingFilters && !isLoading) {
@@ -150,7 +150,12 @@ const AdminUsersPage = ({ userData }: AdminUsersPageProps) => {
           <div>
             <button
               onClick={resetFilters}
-              className="rounded-lg bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-200"
+              disabled={!hasActiveFilters}
+              className={`rounded-lg px-4 py-2 text-sm font-medium ${
+                hasActiveFilters
+                  ? 'bg-white text-gray-700 hover:bg-gray-200'
+                  : 'bg-gray-100 text-gray-400 cursor-not-allowed'
+              }`}
             >
               Reset Filters
             </button>
@@ -176,7 +181,7 @@ const AdminUsersPage = ({ userData }: AdminUsersPageProps) => {
             total={usersData.pagination.total}
             isLoading={isLoading || isClearingFilters}
             totalPages={usersData.pagination.totalPages}
-            hasActiveFilters={hasActiveFilters && !isClearingFilters}
+            hasActiveFilters={(!!debouncedSearchQuery || hasActiveFilters) && !isClearingFilters}
           />
         </div>
       </div>
