@@ -181,7 +181,7 @@ const ProfileComponent = ({ role, userData }: ProfileComponentProps) => {
           {/*==================== Profile Information Card ====================*/}
           <div className="lg:col-span-2">
             <div className="bg-white rounded-2xl p-6 mb-6">
-              <div className="flex items-center justify-between mb-6">
+              <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between mb-6">
                 <h2 className="text-lg font-bold text-gray-500 flex items-center">
                   {role === 'admin' ? (
                     <>
@@ -209,7 +209,7 @@ const ProfileComponent = ({ role, userData }: ProfileComponentProps) => {
               {!isEditingProfile ? (
                 /*==================== Display Mode ====================*/
                 <div className="space-y-6">
-                  <div className="flex items-center space-x-4 border-b pt-2 pb-4">
+                  <div className="flex flex-col md:flex-row md:flex items-center space-x-4 border-b pt-2 pb-4">
                     <div className="relative">
                       {profile?.profilePictureUrl ? (
                         <Image
@@ -276,7 +276,7 @@ const ProfileComponent = ({ role, userData }: ProfileComponentProps) => {
 
                 /*==================== Edit Mode ====================*/
                 <div className="space-y-6">
-                  <div className="flex items-center space-x-4">
+                  <div className="flex flex-col md:flex-row md:flex items-center space-x-4">
                     <div className="relative">
                       {profileForm.profilePictureUrl || profile?.profilePictureUrl ? (
                         <Image
@@ -376,7 +376,7 @@ const ProfileComponent = ({ role, userData }: ProfileComponentProps) => {
 
             {/*==================== Password Change Card ====================*/}
             <div className="bg-white rounded-2xl p-6">
-              <div className="flex items-center justify-between mb-6">
+              <div className="flex gap-4 flex-col md:flex-row md:flex md:items-center md:justify-between mb-6">
                 <h2 className="text-lg font-bold text-gray-500 flex items-center">
                   <Lock className="h-5 w-5 text-blue-600 mr-2" />
                   Password & Security
@@ -544,9 +544,7 @@ const ProfileComponent = ({ role, userData }: ProfileComponentProps) => {
               </h2>
               <div className="space-y-4">
                 <div>
-                  <label className="block text-sm font-bold text-gray-500 mb-1">
-                    MEMBER SINCE
-                  </label>
+                  <label className="block text-sm font-bold text-gray-500 mb-1">MEMBER SINCE</label>
                   <p className="text-gray-500 font-normal">
                     {profile?.createdAt ? formatDate(profile.createdAt) : 'N/A'}
                   </p>
@@ -558,9 +556,7 @@ const ProfileComponent = ({ role, userData }: ProfileComponentProps) => {
                   </p>
                 </div>
                 <div>
-                  <label className="block text-sm font-bold text-gray-500 mb-1">
-                    EMAIL STATUS
-                  </label>
+                  <label className="block text-sm font-bold text-gray-500 mb-1">EMAIL STATUS</label>
                   <div className="flex items-center">
                     {profile?.isEmailVerified ? (
                       <span className="inline-flex items-center rounded-full bg-green-100 px-2 py-1 text-xs font-medium text-green-800">
