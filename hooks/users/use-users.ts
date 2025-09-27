@@ -58,7 +58,7 @@ const useUsers = ({ token }: UseUsersProps): UseUsersReturn => {
 
       const cached = requestCache.current.get(cacheKey);
 
-      if (cached && now - cached.timestamp < 60000) {
+      if (cached && now - cached.timestamp < 300000) {
         setUsersData(cached.data);
         setIsLoading(false);
         setIsError(false);

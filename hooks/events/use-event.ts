@@ -21,7 +21,7 @@ const useEvents = ({ token }: UseEventsProps) => {
 
   const requestCacheRef = useRef<Map<string, { data: { events: EventProps[]; pagination: Record<string, unknown>; total: number }; timestamp: number }>>(new Map());
   const activeRequestsRef = useRef<Map<string, Promise<{ events: EventProps[]; pagination: Record<string, unknown>; total: number }>>>(new Map());
-  const CACHE_DURATION = 60000;
+  const CACHE_DURATION = 300000;
 
   const debouncedSearchQuery = useDebounce(searchTerm, 500);
 

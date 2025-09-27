@@ -36,7 +36,7 @@ const useResources = ({ token }: UseResourcesProps): UseResourcesReturn => {
   const requestCacheRef = useRef<Map<string, { data: ResourcesResponse | SingleResourceResponse; timestamp: number }>>(new Map());
   const activeRequestsRef = useRef<Map<string, Promise<ResourcesResponse>>>(new Map());
   const singleResourceRequestsRef = useRef<Map<string, Promise<SingleResourceResponse>>>(new Map());
-  const CACHE_DURATION = 60000;
+  const CACHE_DURATION = 300000;
 
   const fetchResources = useCallback(
     async (params: FetchResourcesParams = {}) => {

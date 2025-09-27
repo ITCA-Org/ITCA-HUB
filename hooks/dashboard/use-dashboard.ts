@@ -54,7 +54,7 @@ const useDashboard = ({ token }: UseDashboardProps): UseDashboardReturn => {
 
       const cacheKey = JSON.stringify({ page, limit });
       const cached = requestCache.current.get(cacheKey);
-      const CACHE_TTL = 60000;
+      const CACHE_TTL = 300000;
 
       if (cached && now - cached.timestamp < CACHE_TTL) {
         setDashboardData(cached.data);
