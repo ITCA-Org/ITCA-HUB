@@ -33,9 +33,10 @@ const useResources = ({ token }: UseResourcesProps): UseResourcesReturn => {
   const lastRequestRef = useRef<number>(0);
   const MIN_REQUEST_INTERVAL = 500;
 
-  const requestCacheRef = useRef<Map<string, Promise<unknown>>>(new Map());
-  const cacheTimeoutRef = useRef<Map<string, NodeJS.Timeout>>(new Map());
-  const CACHE_DURATION = 30000;
+  const requestCacheRef = useRef<Map<string, { data: ResourcesResponse | SingleResourceResponse; timestamp: number }>>(new Map());
+  const activeRequestsRef = useRef<Map<string, Promise<ResourcesResponse>>>(new Map());
+  const singleResourceRequestsRef = useRef<Map<string, Promise<SingleResourceResponse>>>(new Map());
+  const CACHE_DURATION = 60000;
 
   const fetchResources = useCallback(
     async (params: FetchResourcesParams = {}) => {
@@ -71,12 +72,34 @@ const useResources = ({ token }: UseResourcesProps): UseResourcesReturn => {
         sortBy: sortBy || '',
         sortOrder: sortOrder || '',
         includeDeleted,
-        signal: signal ? 'present' : 'absent',
       });
 
-      const existingRequest = requestCacheRef.current.get(cacheKey) as
-        | Promise<ResourcesResponse>
-        | undefined;
+      const cached = requestCacheRef.current.get(cacheKey);
+      if (cached && now - cached.timestamp < CACHE_DURATION) {
+        if (!signal?.aborted) {
+          const resourcesData = cached.data as ResourcesResponse;
+          if ('resources' in resourcesData.data) {
+            let filteredResources = resourcesData.data.resources;
+
+            if (!includeDeleted) {
+              filteredResources = filteredResources.filter(
+                (resource: Resource) => !resource.isDeleted
+              );
+            }
+
+            setResources(filteredResources);
+            setPagination((prev) => ({
+              ...prev,
+              ...resourcesData.data.pagination,
+            }));
+            setIsError(false);
+            setIsLoading(false);
+          }
+        }
+        return;
+      }
+
+      const existingRequest = activeRequestsRef.current.get(cacheKey);
       if (existingRequest) {
         try {
           const data = await existingRequest;
@@ -126,30 +149,23 @@ const useResources = ({ token }: UseResourcesProps): UseResourcesReturn => {
           });
 
           if (data.status === 'success') {
+            requestCacheRef.current.set(cacheKey, {
+              data,
+              timestamp: Date.now(),
+            });
             return data;
           } else {
             throw new Error('Failed to fetch resources');
           }
         } finally {
-          requestCacheRef.current.delete(cacheKey);
-          const timeout = cacheTimeoutRef.current.get(cacheKey);
-          if (timeout) {
-            clearTimeout(timeout);
-            cacheTimeoutRef.current.delete(cacheKey);
-          }
+          activeRequestsRef.current.delete(cacheKey);
         }
       })();
 
-      requestCacheRef.current.set(cacheKey, requestPromise);
-
-      const timeout = setTimeout(() => {
-        requestCacheRef.current.delete(cacheKey);
-        cacheTimeoutRef.current.delete(cacheKey);
-      }, CACHE_DURATION);
-      cacheTimeoutRef.current.set(cacheKey, timeout);
+      activeRequestsRef.current.set(cacheKey, requestPromise);
 
       try {
-        const data = (await requestPromise) as ResourcesResponse;
+        const data = await requestPromise;
 
         if (!signal?.aborted) {
           let filteredResources = data.data.resources;
@@ -223,9 +239,24 @@ const useResources = ({ token }: UseResourcesProps): UseResourcesReturn => {
         signal: signal ? 'present' : 'absent',
       });
 
-      const existingRequest = requestCacheRef.current.get(cacheKey) as
-        | Promise<ResourcesResponse>
-        | undefined;
+      const cached = requestCacheRef.current.get(cacheKey);
+      if (cached && now - cached.timestamp < CACHE_DURATION) {
+        if (!signal?.aborted) {
+          const resourcesData = cached.data as ResourcesResponse;
+          if ('resources' in resourcesData.data) {
+            setResources(resourcesData.data.resources);
+            setPagination((prev) => ({
+              ...prev,
+              ...resourcesData.data.pagination,
+            }));
+            setIsError(false);
+            setIsLoading(false);
+          }
+        }
+        return;
+      }
+
+      const existingRequest = activeRequestsRef.current.get(cacheKey);
       if (existingRequest) {
         try {
           const data = await existingRequest;
@@ -270,30 +301,23 @@ const useResources = ({ token }: UseResourcesProps): UseResourcesReturn => {
           );
 
           if (data.status === 'success') {
+            requestCacheRef.current.set(cacheKey, {
+              data,
+              timestamp: Date.now(),
+            });
             return data;
           } else {
             throw new Error('Failed to fetch deleted resources');
           }
         } finally {
-          requestCacheRef.current.delete(cacheKey);
-          const timeout = cacheTimeoutRef.current.get(cacheKey);
-          if (timeout) {
-            clearTimeout(timeout);
-            cacheTimeoutRef.current.delete(cacheKey);
-          }
+          activeRequestsRef.current.delete(cacheKey);
         }
       })();
 
-      requestCacheRef.current.set(cacheKey, requestPromise);
-
-      const timeout = setTimeout(() => {
-        requestCacheRef.current.delete(cacheKey);
-        cacheTimeoutRef.current.delete(cacheKey);
-      }, CACHE_DURATION);
-      cacheTimeoutRef.current.set(cacheKey, timeout);
+      activeRequestsRef.current.set(cacheKey, requestPromise);
 
       try {
-        const data = (await requestPromise) as ResourcesResponse;
+        const data = await requestPromise;
 
         if (!signal?.aborted) {
           setResources(data.data.resources);
@@ -327,9 +351,21 @@ const useResources = ({ token }: UseResourcesProps): UseResourcesReturn => {
     async (resourceId: string, signal?: AbortSignal): Promise<Resource | null> => {
       const cacheKey = `single_resource_${resourceId}`;
 
-      const existingRequest = requestCacheRef.current.get(cacheKey) as
-        | Promise<SingleResourceResponse>
-        | undefined;
+      const cached = requestCacheRef.current.get(cacheKey);
+      if (cached && Date.now() - cached.timestamp < CACHE_DURATION) {
+        if (!signal?.aborted && cached.data.status === 'success') {
+          const singleResourceData = cached.data as SingleResourceResponse;
+          if ('resource' in singleResourceData.data) {
+            const resource = singleResourceData.data.resource;
+            return {
+              ...resource,
+              _id: resource.resourceId || resource._id,
+            };
+          }
+        }
+      }
+
+      const existingRequest = singleResourceRequestsRef.current.get(cacheKey);
       if (existingRequest) {
         try {
           const data = await existingRequest;
@@ -357,30 +393,23 @@ const useResources = ({ token }: UseResourcesProps): UseResourcesReturn => {
           );
 
           if (!signal?.aborted && response.data.status === 'success') {
+            requestCacheRef.current.set(cacheKey, {
+              data: response.data,
+              timestamp: Date.now(),
+            });
             return response.data;
           } else {
             throw new Error('Failed to fetch resource');
           }
         } finally {
-          requestCacheRef.current.delete(cacheKey);
-          const timeout = cacheTimeoutRef.current.get(cacheKey);
-          if (timeout) {
-            clearTimeout(timeout);
-            cacheTimeoutRef.current.delete(cacheKey);
-          }
+          singleResourceRequestsRef.current.delete(cacheKey);
         }
       })();
 
-      requestCacheRef.current.set(cacheKey, requestPromise);
-
-      const timeout = setTimeout(() => {
-        requestCacheRef.current.delete(cacheKey);
-        cacheTimeoutRef.current.delete(cacheKey);
-      }, CACHE_DURATION);
-      cacheTimeoutRef.current.set(cacheKey, timeout);
+      singleResourceRequestsRef.current.set(cacheKey, requestPromise);
 
       try {
-        const data = (await requestPromise) as SingleResourceResponse;
+        const data = await requestPromise;
         const resource = data.data.resource;
         return {
           ...resource,
@@ -596,8 +625,8 @@ const useResources = ({ token }: UseResourcesProps): UseResourcesReturn => {
 
   const clearCache = useCallback(() => {
     requestCacheRef.current.clear();
-    cacheTimeoutRef.current.forEach((timeout) => clearTimeout(timeout));
-    cacheTimeoutRef.current.clear();
+    activeRequestsRef.current.clear();
+    singleResourceRequestsRef.current.clear();
   }, []);
 
   return {

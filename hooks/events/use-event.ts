@@ -19,14 +19,9 @@ const useEvents = ({ token }: UseEventsProps) => {
   const lastRequestRef = useRef<number>(0);
   const MIN_REQUEST_INTERVAL = 500;
 
-  const requestCacheRef = useRef<
-    Map<
-      string,
-      Promise<{ events: EventProps[]; pagination: Record<string, unknown>; total: number }>
-    >
-  >(new Map());
-  const cacheTimeoutRef = useRef<Map<string, NodeJS.Timeout>>(new Map());
-  const CACHE_DURATION = 30000;
+  const requestCacheRef = useRef<Map<string, { data: { events: EventProps[]; pagination: Record<string, unknown>; total: number }; timestamp: number }>>(new Map());
+  const activeRequestsRef = useRef<Map<string, Promise<{ events: EventProps[]; pagination: Record<string, unknown>; total: number }>>>(new Map());
+  const CACHE_DURATION = 60000;
 
   const debouncedSearchQuery = useDebounce(searchTerm, 500);
 
@@ -48,12 +43,28 @@ const useEvents = ({ token }: UseEventsProps) => {
         limit: params.limit || 10,
         status: params.status,
         search: debouncedSearchQuery.trim(),
-        signal: params.signal ? 'present' : 'absent',
       });
 
-      const existingRequest = requestCacheRef.current.get(cacheKey);
+      const cached = requestCacheRef.current.get(cacheKey);
+      if (cached && now - cached.timestamp < CACHE_DURATION) {
+        setIsLoading(false);
+        setIsError(false);
+        return cached.data;
+      }
+
+      const existingRequest = activeRequestsRef.current.get(cacheKey);
       if (existingRequest) {
-        return existingRequest;
+        try {
+          const data = await existingRequest;
+          setIsLoading(false);
+          setIsError(false);
+          return data;
+        } catch {
+          if (params.signal?.aborted) return { events: [], pagination: {}, total: 0 };
+          setIsError(true);
+          setIsLoading(false);
+          return { events: [], pagination: {}, total: 0 };
+        }
       }
 
       setIsLoading(true);
@@ -79,6 +90,11 @@ const useEvents = ({ token }: UseEventsProps) => {
             pagination: data.pagination || {},
             total: data.total || 0,
           };
+
+          requestCacheRef.current.set(cacheKey, {
+            data: result,
+            timestamp: Date.now(),
+          });
 
           setIsError(false);
           return result;
@@ -108,24 +124,26 @@ const useEvents = ({ token }: UseEventsProps) => {
           };
         } finally {
           setIsLoading(false);
-          requestCacheRef.current.delete(cacheKey);
-          const timeout = cacheTimeoutRef.current.get(cacheKey);
-          if (timeout) {
-            clearTimeout(timeout);
-            cacheTimeoutRef.current.delete(cacheKey);
-          }
+          activeRequestsRef.current.delete(cacheKey);
         }
       })();
 
-      requestCacheRef.current.set(cacheKey, requestPromise);
+      activeRequestsRef.current.set(cacheKey, requestPromise);
 
-      const timeout = setTimeout(() => {
-        requestCacheRef.current.delete(cacheKey);
-        cacheTimeoutRef.current.delete(cacheKey);
-      }, CACHE_DURATION);
-      cacheTimeoutRef.current.set(cacheKey, timeout);
-
-      return requestPromise;
+      try {
+        const data = await requestPromise;
+        if (!params.signal?.aborted) {
+          setIsLoading(false);
+          setIsError(false);
+        }
+        return data;
+      } catch {
+        if (!params.signal?.aborted) {
+          setIsError(true);
+          setIsLoading(false);
+        }
+        return { events: [], pagination: {}, total: 0 };
+      }
     },
     [token, debouncedSearchQuery]
   );
@@ -150,8 +168,7 @@ const useEvents = ({ token }: UseEventsProps) => {
           });
 
           requestCacheRef.current.clear();
-          cacheTimeoutRef.current.forEach((timeout) => clearTimeout(timeout));
-          cacheTimeoutRef.current.clear();
+          activeRequestsRef.current.clear();
         }
 
         return data.data;
@@ -198,8 +215,7 @@ const useEvents = ({ token }: UseEventsProps) => {
           });
 
           requestCacheRef.current.clear();
-          cacheTimeoutRef.current.forEach((timeout) => clearTimeout(timeout));
-          cacheTimeoutRef.current.clear();
+          activeRequestsRef.current.clear();
         }
 
         return data.data;
@@ -246,8 +262,7 @@ const useEvents = ({ token }: UseEventsProps) => {
           });
 
           requestCacheRef.current.clear();
-          cacheTimeoutRef.current.forEach((timeout) => clearTimeout(timeout));
-          cacheTimeoutRef.current.clear();
+          activeRequestsRef.current.clear();
         }
 
         return true;
@@ -298,8 +313,7 @@ const useEvents = ({ token }: UseEventsProps) => {
           });
 
           requestCacheRef.current.clear();
-          cacheTimeoutRef.current.forEach((timeout) => clearTimeout(timeout));
-          cacheTimeoutRef.current.clear();
+          activeRequestsRef.current.clear();
         }
 
         return data.data;
@@ -346,8 +360,7 @@ const useEvents = ({ token }: UseEventsProps) => {
           });
 
           requestCacheRef.current.clear();
-          cacheTimeoutRef.current.forEach((timeout) => clearTimeout(timeout));
-          cacheTimeoutRef.current.clear();
+          activeRequestsRef.current.clear();
         }
 
         return data.data;
@@ -414,8 +427,7 @@ const useEvents = ({ token }: UseEventsProps) => {
 
   const clearCache = useCallback(() => {
     requestCacheRef.current.clear();
-    cacheTimeoutRef.current.forEach((timeout) => clearTimeout(timeout));
-    cacheTimeoutRef.current.clear();
+    activeRequestsRef.current.clear();
   }, []);
 
   return {
