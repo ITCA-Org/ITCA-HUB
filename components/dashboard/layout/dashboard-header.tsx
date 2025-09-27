@@ -20,6 +20,7 @@ const CACHE_KEY = 'user_profile_display';
 const CACHE_DURATION = 10 * 60 * 1000;
 
 interface CachedProfileData {
+  role: string;
   firstName: string | undefined;
   lastName: string | undefined;
   schoolEmail: string | undefined;
@@ -30,7 +31,6 @@ const DashboardHeader = ({
   sidebarOpen,
   token,
   setSidebarOpen,
-  userRole,
 }: DashboardHeaderProps) => {
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [userData, setUserData] = useState<UserAuth | null>(null);
@@ -54,6 +54,7 @@ const DashboardHeader = ({
   const setCachedProfile = useCallback((profileData: UserAuth) => {
     try {
       const displayData: CachedProfileData = {
+        role: profileData.role,
         firstName: profileData.firstName,
         lastName: profileData.lastName,
         schoolEmail: profileData.schoolEmail,
@@ -105,7 +106,6 @@ const DashboardHeader = ({
     if (cachedProfile) {
       setUserData({
         ...cachedProfile,
-        role: '',
         token: '',
         userId: '',
       } as UserAuth);
@@ -250,7 +250,7 @@ const DashboardHeader = ({
                   />
                 ) : (
                   <div className="h-full w-full bg-gradient-to-br from-blue-500 via-amber-300 to-blue-500 flex items-center justify-center">
-                    {userRole === 'admin' ? (
+                    {userData?.role === 'admin' ? (
                       <Crown className="w-5 h-5 text-white/80" />
                     ) : (
                       <ImageIcon className="w-5 h-5 text-white/80" />
@@ -282,14 +282,14 @@ const DashboardHeader = ({
                 {/*==================== Dropdown Links ====================*/}
                 <div className="py-1">
                   <Link
-                    href={userRole === 'admin' ? '/admin/profile' : '/student/profile'}
+                    href={userData?.role === 'admin' ? '/admin/profile' : '/student/profile'}
                     className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                   >
                     <User className="mr-3 h-4 w-4 text-gray-500" />
                     Profile
                   </Link>
                   <Link
-                    href={userRole === 'admin' ? '/admin/help' : '/student/help'}
+                    href={userData?.role === 'admin' ? '/admin/help' : '/student/help'}
                     className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                   >
                     <HelpCircle className="mr-3 h-4 w-4 text-gray-500" />

@@ -16,7 +16,6 @@ export interface DashboardHeaderProps {
   sidebarOpen: boolean;
   setSidebarOpen: (open: boolean) => void;
   token?: string;
-  userRole?: string;
 }
 
 export interface DashboardPageHeaderProps {
