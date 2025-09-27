@@ -187,7 +187,7 @@ const ResourceTable = ({
             description={
               mode === 'recycleBin'
                 ? 'No resources in recycle bin. Deleted resources will appear here.'
-                : 'Get started by uploading your first educational resource to the library.'
+                : 'Get started by uploading the first educational resource to the library.'
             }
           />
         ))}
