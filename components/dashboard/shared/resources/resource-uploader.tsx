@@ -286,7 +286,7 @@ const ResourceUploader = ({ token, onUploadComplete, onError }: ResourceUploader
                   .map((file, reverseIndex) => {
                     const actualIndex = selectedFiles.length - 1 - reverseIndex;
                     const reverseFileIndex = selectedFiles.length - 1 - actualIndex;
-                    const isUploaded = uploadProgress.uploadedUrls.length > reverseFileIndex;
+                    const isUploaded = uploadProgress.uploadedFiles.length > reverseFileIndex;
                     const isCurrentlyUploading =
                       uploadProgress.phase === 'uploading' &&
                       uploadProgress.currentFileIndex === reverseFileIndex;

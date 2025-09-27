@@ -375,10 +375,6 @@ const EventsSection = () => {
                 <div className="w-24 h-24 mx-auto rounded-full bg-gradient-to-br from-blue-50 to-amber-50 flex items-center justify-center border border-blue-100">
                   <Calendar className="h-10 w-10 text-blue-600" />
                 </div>
-                {/*==================== Small decorative dots ====================*/}
-                <div className="absolute -top-1 -right-1 w-4 h-4 bg-amber-400 rounded-full"></div>
-                <div className="absolute -bottom-2 -left-2 w-3 h-3 bg-blue-400 rounded-full"></div>
-                {/*==================== End of Small decorative dots ====================*/}
               </div>
               {/*==================== End of Icon Container ====================*/}
 

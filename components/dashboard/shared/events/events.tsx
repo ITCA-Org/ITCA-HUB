@@ -451,9 +451,11 @@ const EventsComponent = ({ role, userData }: EventsComponentProps) => {
             showRefreshButton={true}
             onRefresh={handleRefresh}
             showUploadButton={role === 'admin'}
-            uploadUrl={role === 'admin' ? '/events' : '/help'}
-            description="There are no events at the moment. Check back later!"
-            uploadButtonText={role === 'admin' ? 'Create Event' : 'Go To Dashboard'}
+            description={
+              role === 'admin'
+                ? 'There are no events at the moment. Create an event.'
+                : 'No events at the moment. ITCA is organizing exciting events and they will appear here.'
+            }
           />
         )
       ) : (

@@ -1,6 +1,6 @@
 import { ActionType } from '..';
 import { ReactNode } from 'react';
-import { Resource } from './resource';
+import { Resource, FileUpload } from './resource';
 import { CreateEventData, EventProps } from './event';
 
 export interface ModalState {
@@ -71,11 +71,11 @@ export interface ResourceAnalyticsData {
     category: string;
     downloads: number;
     viewCount: number;
-    fileUrls: string[];
     visibility: string;
     department: string;
     description: string;
     academicLevel: string;
+    fileUrls: FileUpload[];
   };
 }
 
@@ -99,21 +99,21 @@ export interface BaseModalProps {
 }
 
 export interface ModalActionProps extends BaseModalProps {
-  onConfirm: () => Promise<void>;
   isLoading?: boolean;
+  onConfirm: () => Promise<void>;
 }
 
 export interface ModalApiResponse<T = unknown> {
-  status: 'success' | 'error';
   data?: T;
   message?: string;
+  status: 'success' | 'error';
 }
 
 export interface ResourceModalActions {
   onEdit: (resource: Resource) => void;
   onDelete: (resource: Resource) => void;
-  onAnalytics: (resource: Resource) => void;
   onRestore?: (resource: Resource) => void;
+  onAnalytics: (resource: Resource) => void;
 }
 
 export interface ConfirmationModalProps {
@@ -131,20 +131,20 @@ export interface ConfirmationModalProps {
 }
 
 export interface AddFilesModalProps {
+  token: string;
   isOpen: boolean;
   resource: Resource;
-  token: string;
   onClose: () => void;
   onFilesAdded: () => void;
 }
 
 export interface UploadProgress {
-  phase: 'idle' | 'uploading' | 'updating' | 'completed';
-  currentFileIndex: number;
   totalFiles: number;
-  uploadedUrls: string[];
-  currentFileName: string;
   percentage: number;
+  currentFileName: string;
+  currentFileIndex: number;
+  uploadedFiles: FileUpload[];
+  phase: 'idle' | 'uploading' | 'updating' | 'completed';
 }
 
 export interface DownloadResourceModalProps {

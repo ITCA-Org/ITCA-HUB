@@ -29,7 +29,7 @@ const useResourceUploader = ({ token, onUploadComplete, onError }: UseResourceUp
   const [uploadProgress, setUploadProgress] = useState<UploadProgress>({
     currentFileIndex: 0,
     totalFiles: 0,
-    uploadedUrls: [],
+    uploadedFiles: [],
     percentage: 0,
     currentFileName: '',
     phase: 'idle',
@@ -89,7 +89,7 @@ const useResourceUploader = ({ token, onUploadComplete, onError }: UseResourceUp
     setUploadProgress({
       currentFileIndex: 0,
       totalFiles: 0,
-      uploadedUrls: [],
+      uploadedFiles: [],
       percentage: 0,
       currentFileName: '',
       phase: 'idle',
@@ -144,7 +144,7 @@ const useResourceUploader = ({ token, onUploadComplete, onError }: UseResourceUp
         }
 
         const totalFiles = selectedFiles.length;
-        const startFromIndex = uploadProgress.uploadedUrls.length;
+        const startFromIndex = uploadProgress.uploadedFiles.length;
 
         setUploadProgress((prev) => ({
           ...prev,
@@ -159,7 +159,7 @@ const useResourceUploader = ({ token, onUploadComplete, onError }: UseResourceUp
           duration: Infinity,
         });
 
-        const uploadedUrls: string[] = [...uploadProgress.uploadedUrls];
+        const uploadedFiles: { fileName: string; filePath: string }[] = [...uploadProgress.uploadedFiles];
 
         for (let i = startFromIndex; i < totalFiles; i++) {
           const reverseIndex = totalFiles - 1 - i;
@@ -181,11 +181,14 @@ const useResourceUploader = ({ token, onUploadComplete, onError }: UseResourceUp
 
           try {
             const fileUrl = await uploadFile(file);
-            uploadedUrls.push(fileUrl);
+            uploadedFiles.push({
+              fileName: file.name,
+              filePath: fileUrl,
+            });
 
             setUploadProgress((prev) => ({
               ...prev,
-              uploadedUrls: [...uploadedUrls],
+              uploadedFiles: uploadedFiles,
             }));
           } catch (error) {
             const { message } = getErrorMessage(
@@ -210,7 +213,7 @@ const useResourceUploader = ({ token, onUploadComplete, onError }: UseResourceUp
           title: title.trim(),
           description: description.trim(),
           category,
-          fileUrls: uploadedUrls,
+          fileUrls: uploadedFiles,
           visibility,
           academicLevel,
           department,
@@ -228,7 +231,7 @@ const useResourceUploader = ({ token, onUploadComplete, onError }: UseResourceUp
         if (onUploadComplete) {
           onUploadComplete({
             fileName: `${selectedFiles.length} files`,
-            fileUrl: uploadedUrls[0],
+            fileUrl: uploadedFiles[0]?.filePath || '',
             fileType: 'multiple',
             fileSize: formatFileSize(selectedFiles.reduce((total, file) => total + file.size, 0)),
           });
@@ -265,7 +268,7 @@ const useResourceUploader = ({ token, onUploadComplete, onError }: UseResourceUp
       createResource,
       onUploadComplete,
       checkForDuplicates,
-      uploadProgress.uploadedUrls,
+      uploadProgress.uploadedFiles,
     ]
   );
 
@@ -326,7 +329,7 @@ const useResourceUploader = ({ token, onUploadComplete, onError }: UseResourceUp
         setUploadProgress((prev) => ({
           ...prev,
           phase: 'idle',
-          uploadedUrls: [],
+          uploadedFiles: [],
           percentage: 0,
           currentFileName: '',
           currentFileIndex: 0,

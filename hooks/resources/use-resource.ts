@@ -33,7 +33,9 @@ const useResources = ({ token }: UseResourcesProps): UseResourcesReturn => {
   const lastRequestRef = useRef<number>(0);
   const MIN_REQUEST_INTERVAL = 500;
 
-  const requestCacheRef = useRef<Map<string, { data: ResourcesResponse | SingleResourceResponse; timestamp: number }>>(new Map());
+  const requestCacheRef = useRef<
+    Map<string, { data: ResourcesResponse | SingleResourceResponse; timestamp: number }>
+  >(new Map());
   const activeRequestsRef = useRef<Map<string, Promise<ResourcesResponse>>>(new Map());
   const singleResourceRequestsRef = useRef<Map<string, Promise<SingleResourceResponse>>>(new Map());
   const CACHE_DURATION = 300000;
@@ -501,10 +503,10 @@ const useResources = ({ token }: UseResourcesProps): UseResourcesReturn => {
       throw new Error('Invalid file URL');
     }
 
-    const response = await fetch(
+    const response = await axios.get(
       `https://jeetix-file-service.onrender.com/api/storage/file/itca-resources/${fileName}`
     );
-    const data = await response.json();
+    const data = response.data;
 
     if (data.status === 'success' && data.data.metadata?.mediaLink) {
       return data.data.metadata.mediaLink;
@@ -552,20 +554,24 @@ const useResources = ({ token }: UseResourcesProps): UseResourcesReturn => {
           await trackDownload(resource._id, role);
         }
 
-        if (resource.fileUrls.length === 1) {
-          await downloadFile(resource.fileUrls[0], resource._id, role);
+        const fileUrls = resource.fileUrls.map((fileItem) => fileItem.filePath);
+
+        if (fileUrls.length === 1) {
+          await downloadFile(fileUrls[0], resource._id, role);
           setIsDownloading(false);
           return;
-        } else if (resource.fileUrls.length > 1) {
+        } else if (fileUrls.length > 1) {
           const zip = new JSZip();
           const folder = zip.folder(resource.title);
-          const totalFiles = resource.fileUrls.length;
+          const totalFiles = fileUrls.length;
 
-          const downloadPromises = resource.fileUrls.map(async (fileUrl, index) => {
+          const downloadPromises = fileUrls.map(async (fileUrl, index) => {
             try {
               const downloadUrl = await fetchFileMediaLink(fileUrl);
               const response = await axios.get(downloadUrl, { responseType: 'arraybuffer' });
-              const fileName = fileUrl.split('/').pop() || `file_${index + 1}`;
+
+              const fileName = resource.fileUrls[index].fileName || `file_${index + 1}`;
+
               folder?.file(fileName, response.data);
 
               const progress = Math.round(((index + 1) / totalFiles) * 80);
@@ -592,9 +598,7 @@ const useResources = ({ token }: UseResourcesProps): UseResourcesReturn => {
         }
 
         toast.success('Resource downloaded successfully', {
-          description: `Downloaded ${resource.fileUrls.length} file${
-            resource.fileUrls.length > 1 ? 's' : ''
-          }`,
+          description: `Downloaded ${fileUrls.length} file${fileUrls.length > 1 ? 's' : ''}`,
         });
       } catch (error) {
         const { message } = getErrorMessage(

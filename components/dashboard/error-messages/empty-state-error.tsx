@@ -27,7 +27,7 @@ const EmptyState: React.FC<EmptyStateProps> = ({
         {showRefreshButton && onRefresh && (
           <button
             onClick={onRefresh}
-            className="inline-flex items-center rounded-lg border-none bg-gray-200/60 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-200"
+            className="inline-flex items-center rounded-lg border-none bg-gray-200/60 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-200 cursor-pointer"
           >
             <RefreshCw className="mr-2 h-4 w-4" />
             Refresh

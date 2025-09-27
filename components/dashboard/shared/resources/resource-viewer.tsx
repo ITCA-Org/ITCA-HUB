@@ -95,9 +95,9 @@ const ResourceViewerComponent = ({ role, userData }: ResourceViewerComponentProp
 
     const fetchPromises = files.map(async (file) => {
       try {
-        const fileName = file.name;
+        const fileId = file.url.split('/').pop();
         const response = await axios.get(
-          `https://jeetix-file-service.onrender.com/api/storage/file/itca-resources/${fileName}`
+          `https://jeetix-file-service.onrender.com/api/storage/file/itca-resources/${fileId}`
         );
         const data = response.data;
 
@@ -140,8 +140,9 @@ const ResourceViewerComponent = ({ role, userData }: ResourceViewerComponentProp
         if (resourceData && !abortController.signal.aborted) {
           setResource(resourceData);
 
-          const processedFiles = resourceData.fileUrls.map((url: string) => {
-            const fileName = url.split('/').pop() || 'Unknown';
+          const processedFiles = resourceData.fileUrls.map((fileItem) => {
+            const url = fileItem.filePath;
+            const fileName = fileItem.fileName;
             const fileType = getFileType(fileName);
 
             return {

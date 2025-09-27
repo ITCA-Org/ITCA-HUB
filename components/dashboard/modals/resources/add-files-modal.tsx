@@ -23,7 +23,7 @@ const AddFilesModal = ({ isOpen, resource, token, onClose, onFilesAdded }: AddFi
     phase: 'idle',
     currentFileIndex: 0,
     totalFiles: 0,
-    uploadedUrls: [],
+    uploadedFiles: [],
     currentFileName: '',
     percentage: 0,
   });
@@ -112,7 +112,7 @@ const AddFilesModal = ({ isOpen, resource, token, onClose, onFilesAdded }: AddFi
           phase: 'idle',
           currentFileIndex: 0,
           totalFiles: 0,
-          uploadedUrls: [],
+          uploadedFiles: [],
           currentFileName: '',
           percentage: 0,
         });
@@ -134,12 +134,12 @@ const AddFilesModal = ({ isOpen, resource, token, onClose, onFilesAdded }: AddFi
         phase: 'uploading',
         currentFileIndex: 0,
         totalFiles,
-        uploadedUrls: [],
+        uploadedFiles: [],
         currentFileName: selectedFiles[0].name,
         percentage: 0,
       });
 
-      const uploadedUrls: string[] = [];
+      const uploadedFiles: { fileName: string; filePath: string }[] = [];
 
       for (let i = 0; i < totalFiles; i++) {
         const reverseIndex = totalFiles - 1 - i;
@@ -153,11 +153,14 @@ const AddFilesModal = ({ isOpen, resource, token, onClose, onFilesAdded }: AddFi
         }));
 
         const fileUrl = await uploadFile(file);
-        uploadedUrls.push(fileUrl);
+        uploadedFiles.push({
+          fileName: file.name,
+          filePath: fileUrl,
+        });
 
         setUploadProgress((prev) => ({
           ...prev,
-          uploadedUrls: [...uploadedUrls],
+          uploadedFiles: uploadedFiles,
         }));
       }
 
@@ -169,7 +172,11 @@ const AddFilesModal = ({ isOpen, resource, token, onClose, onFilesAdded }: AddFi
         currentFileName: '',
       }));
 
-      const updatedFileUrls = [...resource.fileUrls, ...uploadedUrls];
+      const existingFiles = resource.fileUrls.map((fileItem) => ({
+        fileName: fileItem.fileName,
+        filePath: fileItem.filePath,
+      }));
+      const updatedFileUrls = [...existingFiles, ...uploadedFiles];
       await updateResource(resource.resourceId || resource._id || '', {
         fileUrls: updatedFileUrls,
       });
@@ -190,7 +197,7 @@ const AddFilesModal = ({ isOpen, resource, token, onClose, onFilesAdded }: AddFi
           phase: 'idle',
           currentFileIndex: 0,
           totalFiles: 0,
-          uploadedUrls: [],
+          uploadedFiles: [],
           currentFileName: '',
           percentage: 0,
         });
@@ -298,7 +305,7 @@ const AddFilesModal = ({ isOpen, resource, token, onClose, onFilesAdded }: AddFi
                   .map((file, reverseIndex) => {
                     const actualIndex = selectedFiles.length - 1 - reverseIndex;
                     const reverseFileIndex = selectedFiles.length - 1 - actualIndex;
-                    const isUploaded = uploadProgress.uploadedUrls.length > reverseFileIndex;
+                    const isUploaded = uploadProgress.uploadedFiles.length > reverseFileIndex;
                     const isCurrentlyUploading =
                       uploadProgress.phase === 'uploading' &&
                       uploadProgress.currentFileIndex === reverseFileIndex;

@@ -14,7 +14,7 @@ export interface Resource {
   };
   createdAt: string;
   updatedAt: string;
-  fileUrls: string[];
+  fileUrls: FileUpload[];
   isDeleted: boolean;
   updatedBy?: {
     _id: string;
@@ -106,6 +106,11 @@ export interface StudentResourcesPageProps {
   userData: UserAuth;
 }
 
+export interface FileUpload {
+  fileName: string;
+  filePath: string;
+}
+
 export interface CreateResourcePayload {
   title: string;
   description: string;
@@ -116,7 +121,7 @@ export interface CreateResourcePayload {
     | 'tutorial'
     | 'textbook'
     | 'research_papers';
-  fileUrls: string[];
+  fileUrls: FileUpload[];
   visibility: 'all' | 'admin';
   academicLevel: 'undergraduate' | 'postgraduate' | 'all';
   department: 'computer_science' | 'information_systems' | 'telecommunications' | 'all';
@@ -132,7 +137,7 @@ export interface UpdateResourcePayload {
     | 'tutorial'
     | 'textbook'
     | 'research_papers';
-  fileUrls?: string[];
+  fileUrls?: FileUpload[];
   visibility?: 'all' | 'admin';
   academicLevel?: 'undergraduate' | 'postgraduate' | 'all';
   department?: 'computer_science' | 'information_systems' | 'telecommunications' | 'all';
@@ -157,11 +162,11 @@ export interface ResourceAnalyticsData {
     category: string;
     downloads: number;
     viewCount: number;
-    fileUrls: string[];
     visibility: string;
     department: string;
     description: string;
     academicLevel: string;
+    fileUrls: FileUpload[];
   };
 }
 
@@ -192,9 +197,9 @@ export interface ResourceUploaderProps {
 export interface UploadProgress {
   percentage: number;
   totalFiles: number;
-  uploadedUrls: string[];
   currentFileName: string;
   currentFileIndex: number;
+  uploadedFiles: FileUpload[];
   phase: 'idle' | 'validating' | 'uploading' | 'creating' | 'failed';
 }
 
