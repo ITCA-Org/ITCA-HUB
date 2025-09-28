@@ -20,7 +20,7 @@ const ResourceViewerSkeleton = ({ role }: ResourceFilterSkeletonProps) => {
         </div>
 
         {role === 'admin' && (
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
             {[...Array(4)].map((_, index) => (
               <div key={index} className="bg-gray-50 rounded-lg p-4">
                 <div className="flex items-center mb-2">
@@ -136,7 +136,7 @@ const ResourceViewerSkeleton = ({ role }: ResourceFilterSkeletonProps) => {
                       <div className="h-4 w-16 bg-gray-200 rounded animate-pulse" />
                     </div>
                   </td>
-                  
+
                   <td className="px-5 py-4 max-w-[250px]">
                     <div className="inline-flex items-center px-1.5 py-0.5">
                       <div className="h-4 w-16 bg-gray-200 rounded animate-pulse" />
