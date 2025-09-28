@@ -218,7 +218,6 @@ const ResourceViewerComponent = ({ role, userData }: ResourceViewerComponentProp
     try {
       setIsDeletingFile(fileToDelete);
       await adminHook.deleteFileFromResource(resource.resourceId || resource._id, fileToDelete);
-
       await loadResource(false);
 
       setShowDeleteFileModal(false);
@@ -276,7 +275,6 @@ const ResourceViewerComponent = ({ role, userData }: ResourceViewerComponentProp
       };
 
       await adminHook.updateResource(resourceId, payload);
-      setShowEditModal(false);
       await loadResource(false);
     } catch (error) {
       throw error;
@@ -879,6 +877,7 @@ const ResourceViewerComponent = ({ role, userData }: ResourceViewerComponentProp
           onClose={() => setShowAddFilesModal(false)}
           onFilesAdded={async () => {
             await loadResource(false);
+            // Note: Modal will close itself after this function completes
           }}
         />
       )}

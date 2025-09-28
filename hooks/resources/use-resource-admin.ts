@@ -337,7 +337,7 @@ const useResourceAdmin = ({ token }: UseResourceAdminProps) => {
         }
 
         const currentFileUrls = currentResourceResponse.data.data.resource.fileUrls;
-        const updatedFileUrls = currentFileUrls.filter((url: string) => url !== fileUrlToDelete);
+        const updatedFileUrls = currentFileUrls.filter((fileItem: { fileName: string; filePath: string }) => fileItem.filePath !== fileUrlToDelete);
 
         const response = await axios.patch(
           `${BASE_URL}/resources/${resourceId}`,

@@ -320,7 +320,9 @@ const ResourceTable = ({
                         : (e) => toggleSelection(resource, e)
                     }
                     onDoubleClick={
-                      userRole === 'admin' ? () => handleDoubleClick(resource) : undefined
+                      userRole === 'admin' && mode !== 'recycleBin'
+                        ? () => handleDoubleClick(resource)
+                        : undefined
                     }
                     className={`${
                       userRole === 'admin' && selectedResources[resource._id]

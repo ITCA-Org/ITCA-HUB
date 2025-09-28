@@ -164,7 +164,6 @@ const AddFilesModal = ({ isOpen, resource, token, onClose, onFilesAdded }: AddFi
         }));
       }
 
-      // Update resource with new file URLs
       setUploadProgress((prev) => ({
         ...prev,
         phase: 'updating',
@@ -191,19 +190,18 @@ const AddFilesModal = ({ isOpen, resource, token, onClose, onFilesAdded }: AddFi
         description: `Added ${selectedFiles.length} file${selectedFiles.length > 1 ? 's' : ''} to resource`,
       });
 
-      setTimeout(() => {
-        setSelectedFiles([]);
-        setUploadProgress({
-          phase: 'idle',
-          currentFileIndex: 0,
-          totalFiles: 0,
-          uploadedFiles: [],
-          currentFileName: '',
-          percentage: 0,
-        });
-        onFilesAdded();
-        onClose();
-      }, 1500);
+      setSelectedFiles([]);
+      setUploadProgress({
+        phase: 'idle',
+        currentFileIndex: 0,
+        totalFiles: 0,
+        uploadedFiles: [],
+        currentFileName: '',
+        percentage: 0,
+      });
+
+      await onFilesAdded();
+      onClose();
     } catch (error) {
       console.error('Error adding files:', error);
       toast.error('Failed to add files', {
