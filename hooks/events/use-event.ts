@@ -150,9 +150,6 @@ const useEvents = ({ token }: UseEventsProps) => {
 
   const createEvent = useCallback(
     async (eventData: CreateEventData, signal?: AbortSignal) => {
-      setIsLoading(true);
-      setIsError(false);
-
       try {
         const { data } = await axios.post(`${BASE_URL}/events`, eventData, {
           headers: {
@@ -188,8 +185,6 @@ const useEvents = ({ token }: UseEventsProps) => {
         });
 
         throw error;
-      } finally {
-        setIsLoading(false);
       }
     },
     [token]
@@ -197,9 +192,6 @@ const useEvents = ({ token }: UseEventsProps) => {
 
   const updateEvent = useCallback(
     async (eventId: string, eventData: Partial<CreateEventData>, signal?: AbortSignal) => {
-      setIsLoading(true);
-      setIsError(false);
-
       try {
         const { data } = await axios.put(`${BASE_URL}/events/${eventId}`, eventData, {
           headers: {
@@ -235,8 +227,6 @@ const useEvents = ({ token }: UseEventsProps) => {
         });
 
         throw error;
-      } finally {
-        setIsLoading(false);
       }
     },
     [token]
@@ -244,9 +234,6 @@ const useEvents = ({ token }: UseEventsProps) => {
 
   const deleteEvent = useCallback(
     async (eventId: string, signal?: AbortSignal) => {
-      setIsLoading(true);
-      setIsError(false);
-
       try {
         await axios.delete(`${BASE_URL}/events/${eventId}`, {
           headers: {
@@ -282,8 +269,6 @@ const useEvents = ({ token }: UseEventsProps) => {
         });
 
         throw error;
-      } finally {
-        setIsLoading(false);
       }
     },
     [token]
