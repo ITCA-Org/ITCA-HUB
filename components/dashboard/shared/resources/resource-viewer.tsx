@@ -45,7 +45,12 @@ import DashboardPageHeader from '@/components/dashboard/layout/dashboard-page-he
 import ResourceEditModal from '@/components/dashboard/modals/resources/edit-resource-modal';
 import ResourceViewerSkeleton from '@/components/dashboard/skeletons/resource-viewer-skeleton';
 import DownloadResourceModal from '@/components/dashboard/modals/resources/download-resource-modal';
-import { FileItem, Resource, ResourceViewerComponentProps, UpdateResourcePayload } from '@/types/interfaces/resource';
+import {
+  FileItem,
+  Resource,
+  ResourceViewerComponentProps,
+  UpdateResourcePayload,
+} from '@/types/interfaces/resource';
 
 const ResourceViewerComponent = ({ role, userData }: ResourceViewerComponentProps) => {
   const router = useRouter();
@@ -69,10 +74,11 @@ const ResourceViewerComponent = ({ role, userData }: ResourceViewerComponentProp
   const [isLoading, setIsLoading] = useState(true);
 
   const {
-    fetchSingleResource,
     trackView,
+    clearCache,
     downloadFile,
     downloadResource,
+    fetchSingleResource,
     isDownloading: isDownloadingResource,
     downloadProgress,
   } = useResources({
@@ -174,6 +180,14 @@ const ResourceViewerComponent = ({ role, userData }: ResourceViewerComponentProp
     [id, userData.token, fetchSingleResource, trackView, role, fetchFileSizes]
   );
 
+  const forceReloadResource = useCallback(
+    async (shouldTrackView: boolean = false) => {
+      clearCache();
+      await loadResource(shouldTrackView);
+    },
+    [clearCache, loadResource]
+  );
+
   useEffect(() => {
     loadResource(true);
   }, [loadResource]);
@@ -218,7 +232,7 @@ const ResourceViewerComponent = ({ role, userData }: ResourceViewerComponentProp
     try {
       setIsDeletingFile(fileToDelete);
       await adminHook.deleteFileFromResource(resource.resourceId || resource._id, fileToDelete);
-      await loadResource(false);
+      await forceReloadResource(false);
 
       setShowDeleteFileModal(false);
       setFileToDelete(null);
@@ -234,7 +248,7 @@ const ResourceViewerComponent = ({ role, userData }: ResourceViewerComponentProp
   };
 
   const handleRetry = () => {
-    loadResource(true);
+    forceReloadResource(true);
   };
 
   const handleDownloadAll = () => {
@@ -275,7 +289,7 @@ const ResourceViewerComponent = ({ role, userData }: ResourceViewerComponentProp
       };
 
       await adminHook.updateResource(resourceId, payload);
-      await loadResource(false);
+      await forceReloadResource(false);
     } catch (error) {
       throw error;
     }
@@ -876,7 +890,7 @@ const ResourceViewerComponent = ({ role, userData }: ResourceViewerComponentProp
           isOpen={showAddFilesModal}
           onClose={() => setShowAddFilesModal(false)}
           onFilesAdded={async () => {
-            await loadResource(false);
+            await forceReloadResource(false);
             // Note: Modal will close itself after this function completes
           }}
         />

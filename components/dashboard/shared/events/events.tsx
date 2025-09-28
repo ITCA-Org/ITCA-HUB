@@ -94,8 +94,7 @@ const EventsComponent = ({ role, userData }: EventsComponentProps) => {
     const controller = new AbortController();
     try {
       await createEvent(eventData, controller.signal);
-      setShowCreateModal(false);
-      refreshEvents(controller.signal);
+      await refreshEvents(controller.signal);
     } catch (error) {
       if (!controller.signal.aborted) {
         console.error('Failed to create event:', error);
@@ -107,11 +106,9 @@ const EventsComponent = ({ role, userData }: EventsComponentProps) => {
     const controller = new AbortController();
     try {
       await updateEvent(eventId, eventData, controller.signal);
-
-      setShowEditModal(false);
-      setEventToEdit(null);
-
       await refreshEvents(controller.signal);
+
+      setEventToEdit(null);
     } catch (error) {
       if (!controller.signal.aborted) {
         console.error('Failed to update event:', error);
@@ -124,11 +121,11 @@ const EventsComponent = ({ role, userData }: EventsComponentProps) => {
     const controller = new AbortController();
     try {
       await deleteEvent(eventToDelete, controller.signal);
+      await refreshEvents(controller.signal);
 
+      // Close modal and reset state
       setShowDeleteModal(false);
       setEventToDelete(null);
-
-      await refreshEvents(controller.signal);
     } catch (error) {
       if (!controller.signal.aborted) {
         console.error('Failed to delete event:', error);

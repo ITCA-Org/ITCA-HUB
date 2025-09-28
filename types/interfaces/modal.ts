@@ -37,6 +37,12 @@ export interface CreateEventModalProps {
   onSave: (newEvent: CreateEventData) => Promise<void>;
 }
 
+export interface DeleteEventModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onConfirm: () => Promise<void>;
+}
+
 export interface ResourceEditModalProps {
   isOpen: boolean;
   resource: Resource;

@@ -1,16 +1,10 @@
-import { AlertTriangle, X, Loader } from 'lucide-react';
 import { useEffect, useState } from 'react';
-
-interface DeleteEventModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  onConfirm: () => Promise<void>;
-}
+import { AlertTriangle, X, Loader } from 'lucide-react';
+import { DeleteEventModalProps } from '@/types/interfaces/modal';
 
 const DeleteEventModal = ({ isOpen, onClose, onConfirm }: DeleteEventModalProps) => {
   const [isDeleting, setIsDeleting] = useState(false);
 
-  // Close modal on escape key
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
       if (e.key === 'Escape' && !isDeleting) onClose();
