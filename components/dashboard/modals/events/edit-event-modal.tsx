@@ -194,7 +194,7 @@ const EditEventModal = ({ isOpen, event, onClose, onSave }: EditEventModalProps)
               <div className="mb-5 flex justify-between items-center">
                 <div className="flex items-center">
                   <div className="mr-3 flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-blue-100">
-                    <Calendar className="h-5 w-5 text-blue-600" />
+                    <Calendar className="h-5 w-5 text-blue-500" />
                   </div>
                   <h3 className="text-lg font-medium flex items-center">
                     <span className="text-blue-700 mr-2">Edit</span>
@@ -394,7 +394,7 @@ const EditEventModal = ({ isOpen, event, onClose, onSave }: EditEventModalProps)
                         type="checkbox"
                         checked={registrationRequired}
                         onChange={(e) => setRegistrationRequired(e.target.checked)}
-                        className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                        className="rounded border-gray-300 text-blue-500 focus:ring-blue-500"
                       />
                       <span className="text-sm font-semibold text-gray-700">
                         Registration Required

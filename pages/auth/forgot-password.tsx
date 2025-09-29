@@ -128,7 +128,7 @@ const ForgotPassword = () => {
             className="text-center p-6 bg-blue-50 rounded-lg border border-blue-100"
           >
             <div className="mb-4 flex justify-center">
-              <Mail className="h-12 w-12 text-blue-600" />
+              <Mail className="h-12 w-12 text-blue-500" />
             </div>
             <h2 className="text-xl font-semibold mb-2 text-gray-900">Check your UTG email</h2>
             <p className="text-gray-600 mb-4">
@@ -177,7 +177,7 @@ const ForgotPassword = () => {
             Remember your password?{' '}
             <Link
               href="/auth"
-              className="text-blue-700 hover:text-blue-600 font-medium transition-colors"
+              className="text-blue-700 hover:text-blue-500 font-medium transition-colors"
             >
               Sign in
             </Link>

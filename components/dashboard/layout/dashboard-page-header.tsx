@@ -15,9 +15,9 @@ const DashboardPageHeader = ({
   const renderTitle = () => {
     if (subtitle) {
       return (
-        <h1 className="text-2xl font-bold text-gray-900 mb-2 flex items-center">
+        <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2 flex items-center">
           <span className={`${titleColors.primary} mr-2`}>{title}</span>
-          <span className={titleColors.secondary}>{subtitle}</span>
+          <span className={`${titleColors.secondary}`}>{subtitle}</span>
           {showPulse && (
             <span className="ml-3 relative">
               <span className="absolute -top-1 -right-1 flex h-3 w-3">
@@ -29,20 +29,6 @@ const DashboardPageHeader = ({
         </h1>
       );
     }
-
-    return (
-      <h1 className="text-2xl font-bold text-gray-900 mb-2 flex items-center">
-        <span className={titleColors.primary}>{title}</span>
-        {showPulse && (
-          <span className="ml-3 relative">
-            <span className="absolute -top-1 -right-1 flex h-3 w-3">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-3 w-3 bg-amber-500"></span>
-            </span>
-          </span>
-        )}
-      </h1>
-    );
   };
 
   return (
@@ -59,7 +45,7 @@ const DashboardPageHeader = ({
         {/*==================== Title and Description ====================*/}
         <div className="flex-1">
           {renderTitle()}
-          {description && <p className="text-gray-600">{description}</p>}
+          {description && <p className="text-gray-600 sm:text-md md:text-lg">{description}</p>}
         </div>
         {/*==================== End of Title and Description ====================*/}
 

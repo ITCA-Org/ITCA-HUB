@@ -97,7 +97,7 @@ const ResourceEditModal = ({
               <div className="mb-5 flex justify-between items-center">
                 <div className="flex items-center">
                   <div className="mr-3 flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-blue-100">
-                    <Pencil className="h-5 w-5 text-blue-600" />
+                    <Pencil className="h-5 w-5 text-blue-500" />
                   </div>
                   <h3 className="text-lg font-medium flex items-center">
                     <span className="text-blue-700 mr-2">Edit</span>

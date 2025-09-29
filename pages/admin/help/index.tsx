@@ -84,7 +84,7 @@ const AdminHelpPage: FC<IHelpPage> = ({ userData }) => {
         {/*==================== Quick Start Guide ====================*/}
         <div className="bg-white rounded-2xl px-6 py-10">
           <div className="flex items-center mb-6">
-            <Shield className="h-6 w-6 text-blue-600 mr-3" />
+            <Shield className="h-6 w-6 text-blue-500 mr-3" />
             <h2 className="text-xl font-semibold text-gray-900">Admin Quick Start Guide</h2>
           </div>
 
@@ -92,7 +92,7 @@ const AdminHelpPage: FC<IHelpPage> = ({ userData }) => {
             <div className=" rounded-lg p-4 hover:border-blue-300 transition-colors">
               <div className="flex items-center mb-3">
                 <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center mr-3">
-                  <span className="text-blue-600 font-semibold text-md">1</span>
+                  <span className="text-blue-500 font-semibold text-md">1</span>
                 </div>
                 <h3 className="font-medium text-gray-900">Upload Resources</h3>
               </div>
@@ -105,7 +105,7 @@ const AdminHelpPage: FC<IHelpPage> = ({ userData }) => {
             <div className=" rounded-lg p-4 hover:border-blue-300 transition-colors">
               <div className="flex items-center mb-3">
                 <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center mr-3">
-                  <span className="text-blue-600 font-semibold text-md">2</span>
+                  <span className="text-blue-500 font-semibold text-md">2</span>
                 </div>
                 <h3 className="font-medium text-gray-900">Manage Users</h3>
               </div>
@@ -118,7 +118,7 @@ const AdminHelpPage: FC<IHelpPage> = ({ userData }) => {
             <div className=" rounded-lg p-4 hover:border-blue-300 transition-colors">
               <div className="flex items-center mb-3">
                 <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center mr-3">
-                  <span className="text-blue-600 font-semibold text-md">3</span>
+                  <span className="text-blue-500 font-semibold text-md">3</span>
                 </div>
                 <h3 className="font-medium text-gray-900">Monitor Analytics</h3>
               </div>
@@ -134,14 +134,14 @@ const AdminHelpPage: FC<IHelpPage> = ({ userData }) => {
         {/*==================== Feature Overview ====================*/}
         <div className="bg-white rounded-2xl p-6">
           <div className="flex items-center mb-8">
-            <Settings className="h-6 w-6 text-blue-600 mr-3" />
+            <Settings className="h-6 w-6 text-blue-500 mr-3" />
             <h2 className="text-xl font-semibold text-gray-900">Admin Features</h2>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-8">
               <div className="flex items-start space-x-3">
-                <Upload className="h-5 w-5 text-blue-600 mt-1 flex-shrink-0" />
+                <Upload className="h-5 w-5 text-blue-500 mt-1 flex-shrink-0" />
                 <div>
                   <h3 className="font-medium text-gray-900 mb-1">Resource Management</h3>
                   <p className="text-md text-gray-600 leading-8">
@@ -152,7 +152,7 @@ const AdminHelpPage: FC<IHelpPage> = ({ userData }) => {
               </div>
 
               <div className="flex items-start space-x-3">
-                <Users className="h-5 w-5 text-blue-600 mt-1 flex-shrink-0" />
+                <Users className="h-5 w-5 text-blue-500 mt-1 flex-shrink-0" />
                 <div>
                   <h3 className="font-medium text-gray-900 mb-1">User Administration</h3>
                   <p className="text-md text-gray-600 leading-8">
@@ -163,7 +163,7 @@ const AdminHelpPage: FC<IHelpPage> = ({ userData }) => {
               </div>
 
               <div className="flex items-start space-x-3">
-                <Calendar className="h-5 w-5 text-blue-600 mt-1 flex-shrink-0" />
+                <Calendar className="h-5 w-5 text-blue-500 mt-1 flex-shrink-0" />
                 <div>
                   <h3 className="font-medium text-gray-900 mb-1">Event Management</h3>
                   <p className="text-md text-gray-600 leading-8">
@@ -174,7 +174,7 @@ const AdminHelpPage: FC<IHelpPage> = ({ userData }) => {
               </div>
 
               <div className="flex items-start space-x-3">
-                <Trash2 className="h-5 w-5 text-blue-600 mt-1 flex-shrink-0" />
+                <Trash2 className="h-5 w-5 text-blue-500 mt-1 flex-shrink-0" />
                 <div>
                   <h3 className="font-medium text-gray-900 mb-1">Recycle Bin</h3>
                   <p className="text-md text-gray-600 leading-8">
@@ -187,7 +187,7 @@ const AdminHelpPage: FC<IHelpPage> = ({ userData }) => {
 
             <div className="space-y-8">
               <div className="flex items-start space-x-3">
-                <BarChart3 className="h-5 w-5 text-blue-600 mt-1 flex-shrink-0" />
+                <BarChart3 className="h-5 w-5 text-blue-500 mt-1 flex-shrink-0" />
                 <div>
                   <h3 className="font-medium text-gray-900 mb-1">Analytics & Reports</h3>
                   <p className="text-md text-gray-600">
@@ -198,7 +198,7 @@ const AdminHelpPage: FC<IHelpPage> = ({ userData }) => {
               </div>
 
               <div className="flex items-start space-x-3">
-                <Database className="h-5 w-5 text-blue-600 mt-1 flex-shrink-0" />
+                <Database className="h-5 w-5 text-blue-500 mt-1 flex-shrink-0" />
                 <div>
                   <h3 className="font-medium text-gray-900 mb-1">Content Organization</h3>
                   <p className="text-md text-gray-600">
@@ -209,7 +209,7 @@ const AdminHelpPage: FC<IHelpPage> = ({ userData }) => {
               </div>
 
               <div className="flex items-start space-x-3">
-                <Bell className="h-5 w-5 text-blue-600 mt-1 flex-shrink-0" />
+                <Bell className="h-5 w-5 text-blue-500 mt-1 flex-shrink-0" />
                 <div>
                   <h3 className="font-medium text-gray-900 mb-1">Notification System</h3>
                   <p className="text-md text-gray-600">
@@ -220,7 +220,7 @@ const AdminHelpPage: FC<IHelpPage> = ({ userData }) => {
               </div>
 
               <div className="flex items-start space-x-3">
-                <Shield className="h-5 w-5 text-blue-600 mt-1 flex-shrink-0" />
+                <Shield className="h-5 w-5 text-blue-500 mt-1 flex-shrink-0" />
                 <div>
                   <h3 className="font-medium text-gray-900 mb-1">Access Control</h3>
                   <p className="text-md text-gray-600">
@@ -237,7 +237,7 @@ const AdminHelpPage: FC<IHelpPage> = ({ userData }) => {
         {/*==================== Management Categories ====================*/}
         <div className="bg-white rounded-2xl p-6">
           <div className="flex items-center mb-6">
-            <FileText className="h-6 w-6 text-blue-600 mr-3" />
+            <FileText className="h-6 w-6 text-blue-500 mr-3" />
             <h2 className="text-xl font-semibold text-gray-900">Management Areas</h2>
           </div>
 
@@ -293,7 +293,7 @@ const AdminHelpPage: FC<IHelpPage> = ({ userData }) => {
         {/*==================== How-To Guides ====================*/}
         <div className="bg-white rounded-2xl p-6">
           <div className="flex items-center mb-8">
-            <GraduationCap className="h-6 w-6 text-blue-600 mr-3" />
+            <GraduationCap className="h-6 w-6 text-blue-500 mr-3" />
             <h2 className="text-xl font-semibold text-gray-900">Admin How-To Guides</h2>
           </div>
 
@@ -347,7 +347,7 @@ const AdminHelpPage: FC<IHelpPage> = ({ userData }) => {
         {/*==================== FAQ Section ====================*/}
         <div className="bg-white rounded-2xl p-6">
           <div className="flex items-center mb-6">
-            <HelpCircle className="h-6 w-6 text-blue-600 mr-3" />
+            <HelpCircle className="h-6 w-6 text-blue-500 mr-3" />
             <h2 className="text-xl font-semibold text-gray-900">Frequently Asked Questions</h2>
           </div>
 

@@ -1,17 +1,17 @@
 import { DashboardStatsCardProps } from '@/types/interfaces/dashboard';
 
 const DashboardStatsCard = ({
+  icon,
   title,
   value,
-  icon,
   isLoading = false,
   valueClassName = 'text-gray-900',
 }: DashboardStatsCardProps) => {
   return (
-    <div className="rounded-2xl bg-white/60 p-5 z-1 transition-all hover:-translate-y-2 duration-500">
+    <div className="rounded-2xl bg-white/70 shadow-2xl shadow-blue-100 hover:shadow-md p-5 z-1 transition-all duration-500">
       <div className="flex justify-between">
         <div>
-          <h3 className="text-md font-medium text-gray-500">{title}</h3>
+          <h3 className="text-md font-normal text-gray-500">{title}</h3>
 
           {isLoading ? (
             <div className="mt-2 h-8 w-20 animate-pulse rounded bg-gray-200"></div>

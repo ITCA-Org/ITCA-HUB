@@ -27,11 +27,7 @@ interface CachedProfileData {
   profilePictureUrl: string | undefined;
 }
 
-const DashboardHeader = ({
-  sidebarOpen,
-  token,
-  setSidebarOpen,
-}: DashboardHeaderProps) => {
+const DashboardHeader = ({ sidebarOpen, token, setSidebarOpen }: DashboardHeaderProps) => {
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [userData, setUserData] = useState<UserAuth | null>(null);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
@@ -202,7 +198,7 @@ const DashboardHeader = ({
                     <div className="flex items-start">
                       <div className="flex-shrink-0">
                         <div className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-100">
-                          <MessageSquare className="h-5 w-5 text-blue-600" />
+                          <MessageSquare className="h-5 w-5 text-blue-500" />
                         </div>
                       </div>
                       <div className="ml-3 w-0 flex-1">
@@ -221,7 +217,7 @@ const DashboardHeader = ({
               <div className="border-t border-gray-100 px-4 py-2">
                 <a
                   href="#"
-                  className="block text-center text-sm font-medium text-blue-600 hover:text-blue-700"
+                  className="block text-center text-sm font-medium text-blue-500 hover:text-blue-700"
                 >
                   View all notifications
                 </a>

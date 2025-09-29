@@ -16,7 +16,7 @@ const DashboardLayout = ({ children, title = 'Dashboard', token }: DashboardLayo
         <link rel="icon" href="/images/logo.jpg" />
       </Head>
 
-      <div className="flex h-screen overflow-hidden bg-amber-50/40 relative">
+      <div className="flex h-screen overflow-hidden bg-amber-50/70 relative">
         {/*==================== Background Elements ====================*/}
         <div className="absolute inset-0 pointer-events-none z-0">
           {/*==================== Prominent Geometric Elements - Top Right ====================*/}

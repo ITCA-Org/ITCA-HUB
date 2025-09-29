@@ -123,7 +123,7 @@ const AdminResourceUploadPage = ({ userData }: AdminResourceUploadPageProps) => 
           {/*==================== End of Resource Uploader Component ====================*/}
 
           {/*==================== Guidelines Section ====================*/}
-          <div className="mt-6 rounded-xl bg-white/50 p-6">
+          <div className="mt-6 rounded-xl bg-white/70 p-6">
             <h1 className="text-2xl font-bold flex items-center">
               <span className="text-blue-700 mr-2">Upload</span>
               <span className="text-amber-500">Guidelines</span>
@@ -149,7 +149,7 @@ const AdminResourceUploadPage = ({ userData }: AdminResourceUploadPageProps) => 
                   key={index}
                   className="even:bg-gray-100 flex items-start gap-3 rounded-lg px-2 py-4"
                 >
-                  <div className="flex-shrink-0 w-5 h-5 mt-0.5  bg-blue-100 text-blue-600 rounded-full flex items-center justify-center text-sm font-bold">
+                  <div className="flex-shrink-0 w-5 h-5 mt-0.5  bg-blue-100 text-blue-500 rounded-full flex items-center justify-center text-sm font-bold">
                     {index + 1}
                   </div>
                   <p className="text-gray-700">{guideline}</p>

@@ -152,7 +152,7 @@ const SignIn = () => {
               </label>
               <Link
                 href="/auth/forgot-password"
-                className="text-sm text-blue-700 hover:text-blue-600 transition-colors"
+                className="text-sm text-blue-700 hover:text-blue-500 transition-colors"
               >
                 Forgot password?
               </Link>
@@ -194,7 +194,7 @@ const SignIn = () => {
             Do not have an account?{' '}
             <Link
               href="/auth/sign-up"
-              className="text-blue-700 hover:text-blue-600 font-medium transition-colors"
+              className="text-blue-700 hover:text-blue-500 font-medium transition-colors"
             >
               Sign up
             </Link>

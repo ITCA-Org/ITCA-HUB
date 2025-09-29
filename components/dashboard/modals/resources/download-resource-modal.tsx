@@ -50,7 +50,7 @@ const DownloadResourceModal = ({
                 <div className="mb-5 flex justify-between items-start">
                   <div className="flex items-start">
                     <div className="mr-3 flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-blue-100">
-                      <Download className="h-5 w-5 text-blue-600" />
+                      <Download className="h-5 w-5 text-blue-500" />
                     </div>
                     <h3 className="text-lg font-medium text-gray-900 leading-6">
                       Download Resource
@@ -146,7 +146,7 @@ const DownloadResourceModal = ({
                         fill="none"
                         strokeDasharray={`${2 * Math.PI * 32}`}
                         strokeDashoffset={`${2 * Math.PI * 32 * (1 - downloadProgress / 100)}`}
-                        className="text-blue-600 transition-all duration-300 ease-out"
+                        className="text-blue-500 transition-all duration-300 ease-out"
                         strokeLinecap="round"
                       />
                     </svg>

@@ -264,6 +264,6 @@ export interface UseResourcesReturn {
   trackDownload: (resourceId: string, role?: 'admin' | 'student') => Promise<void>;
   downloadResource: (resource: Resource, role?: 'admin' | 'student') => Promise<void>;
   fetchSingleResource: (resourceId: string, signal?: AbortSignal) => Promise<Resource | null>;
-  downloadFile: (fileUrl: string, resourceId?: string, role?: 'admin' | 'student') => Promise<void>;
+  downloadFile: (fileUrl: string, fileName?: string, resourceId?: string, role?: 'admin' | 'student') => Promise<void>;
   trackView: (resourceId: string, role: 'admin' | 'student', signal?: AbortSignal) => Promise<void>;
 }

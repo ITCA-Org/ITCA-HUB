@@ -26,7 +26,7 @@ const PasswordStrengthIndicator = ({ password }: PasswordStrengthIndicatorProps)
               : strength === 2
                 ? 'text-yellow-600'
                 : strength === 3
-                  ? 'text-blue-600'
+                  ? 'text-blue-500'
                   : 'text-green-600'
           }`}
         >

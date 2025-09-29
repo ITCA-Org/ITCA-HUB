@@ -38,7 +38,7 @@ const ConfirmationModal = ({
       default:
         return {
           iconBg: 'bg-blue-100',
-          iconColor: 'text-blue-600',
+          iconColor: 'text-blue-500',
           buttonBg: 'bg-blue-600 hover:bg-blue-700 focus:ring-blue-500',
         };
     }

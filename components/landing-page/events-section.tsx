@@ -373,7 +373,7 @@ const EventsSection = () => {
               {/*==================== Icon Container ====================*/}
               <div className="relative mb-8">
                 <div className="w-24 h-24 mx-auto rounded-full bg-gradient-to-br from-blue-50 to-amber-50 flex items-center justify-center border border-blue-100">
-                  <Calendar className="h-10 w-10 text-blue-600" />
+                  <Calendar className="h-10 w-10 text-blue-500" />
                 </div>
               </div>
               {/*==================== End of Icon Container ====================*/}

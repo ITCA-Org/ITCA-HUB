@@ -84,7 +84,7 @@ const StudentHelpPage: FC<IHelpPage> = ({ userData }) => {
         {/*==================== Quick Start Guide ====================*/}
         <div className="bg-white rounded-2xl px-6 py-10">
           <div className="flex items-center mb-6">
-            <GraduationCap className="h-6 w-6 text-blue-600 mr-3" />
+            <GraduationCap className="h-6 w-6 text-blue-500 mr-3" />
             <h2 className="text-xl font-semibold text-gray-900">Quick Start Guide</h2>
           </div>
 
@@ -92,7 +92,7 @@ const StudentHelpPage: FC<IHelpPage> = ({ userData }) => {
             <div className=" rounded-lg p-4 hover:border-blue-300 transition-colors">
               <div className="flex items-center mb-3">
                 <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center mr-3">
-                  <span className="text-blue-600 font-semibold text-md">1</span>
+                  <span className="text-blue-500 font-semibold text-md">1</span>
                 </div>
                 <h3 className="font-medium text-gray-900">Explore Resources</h3>
               </div>
@@ -105,7 +105,7 @@ const StudentHelpPage: FC<IHelpPage> = ({ userData }) => {
             <div className=" rounded-lg p-4 hover:border-blue-300 transition-colors">
               <div className="flex items-center mb-3">
                 <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center mr-3">
-                  <span className="text-blue-600 font-semibold text-md">2</span>
+                  <span className="text-blue-500 font-semibold text-md">2</span>
                 </div>
                 <h3 className="font-medium text-gray-900">Search & Filter</h3>
               </div>
@@ -118,7 +118,7 @@ const StudentHelpPage: FC<IHelpPage> = ({ userData }) => {
             <div className=" rounded-lg p-4 hover:border-blue-300 transition-colors">
               <div className="flex items-center mb-3">
                 <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center mr-3">
-                  <span className="text-blue-600 font-semibold text-md">3</span>
+                  <span className="text-blue-500 font-semibold text-md">3</span>
                 </div>
                 <h3 className="font-medium text-gray-900">Stay Updated</h3>
               </div>
@@ -134,14 +134,14 @@ const StudentHelpPage: FC<IHelpPage> = ({ userData }) => {
         {/*==================== Feature Overview ====================*/}
         <div className="bg-white rounded-2xl p-6">
           <div className="flex items-center mb-8">
-            <BookOpen className="h-6 w-6 text-blue-600 mr-3" />
+            <BookOpen className="h-6 w-6 text-blue-500 mr-3" />
             <h2 className="text-xl font-semibold text-gray-900">Key Features</h2>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-8">
               <div className="flex items-start space-x-3">
-                <Search className="h-5 w-5 text-blue-600 mt-1 flex-shrink-0" />
+                <Search className="h-5 w-5 text-blue-500 mt-1 flex-shrink-0" />
                 <div>
                   <h3 className="font-medium text-gray-900 mb-1">Advanced Search</h3>
                   <p className="text-md text-gray-600 leading-8">
@@ -152,7 +152,7 @@ const StudentHelpPage: FC<IHelpPage> = ({ userData }) => {
               </div>
 
               <div className="flex items-start space-x-3">
-                <Download className="h-5 w-5 text-blue-600 mt-1 flex-shrink-0" />
+                <Download className="h-5 w-5 text-blue-500 mt-1 flex-shrink-0" />
                 <div>
                   <h3 className="font-medium text-gray-900 mb-1">Easy Downloads</h3>
                   <p className="text-md text-gray-600 leading-8">
@@ -163,7 +163,7 @@ const StudentHelpPage: FC<IHelpPage> = ({ userData }) => {
               </div>
 
               <div className="flex items-start space-x-3">
-                <Bookmark className="h-5 w-5 text-blue-600 mt-1 flex-shrink-0" />
+                <Bookmark className="h-5 w-5 text-blue-500 mt-1 flex-shrink-0" />
                 <div>
                   <h3 className="font-medium text-gray-900 mb-1">Bookmarks</h3>
                   <p className="text-md text-gray-600 leading-8">
@@ -173,7 +173,7 @@ const StudentHelpPage: FC<IHelpPage> = ({ userData }) => {
               </div>
 
               <div className="flex items-start space-x-3">
-                <Star className="h-5 w-5 text-blue-600 mt-1 flex-shrink-0" />
+                <Star className="h-5 w-5 text-blue-500 mt-1 flex-shrink-0" />
                 <div>
                   <h3 className="font-medium text-gray-900 mb-1">Rate & Review</h3>
                   <p className="text-md text-gray-600 leading-8">
@@ -186,7 +186,7 @@ const StudentHelpPage: FC<IHelpPage> = ({ userData }) => {
 
             <div className="space-y-8">
               <div className="flex items-start space-x-3">
-                <Bell className="h-5 w-5 text-blue-600 mt-1 flex-shrink-0" />
+                <Bell className="h-5 w-5 text-blue-500 mt-1 flex-shrink-0" />
                 <div>
                   <h3 className="font-medium text-gray-900 mb-1">Push Notifications</h3>
                   <p className="text-md text-gray-600">
@@ -197,7 +197,7 @@ const StudentHelpPage: FC<IHelpPage> = ({ userData }) => {
               </div>
 
               <div className="flex items-start space-x-3">
-                <User className="h-5 w-5 text-blue-600 mt-1 flex-shrink-0" />
+                <User className="h-5 w-5 text-blue-500 mt-1 flex-shrink-0" />
                 <div>
                   <h3 className="font-medium text-gray-900 mb-1">Profile Management</h3>
                   <p className="text-md text-gray-600">
@@ -208,7 +208,7 @@ const StudentHelpPage: FC<IHelpPage> = ({ userData }) => {
               </div>
 
               <div className="flex items-start space-x-3">
-                <Eye className="h-5 w-5 text-blue-600 mt-1 flex-shrink-0" />
+                <Eye className="h-5 w-5 text-blue-500 mt-1 flex-shrink-0" />
                 <div>
                   <h3 className="font-medium text-gray-900 mb-1">Resource Preview</h3>
                   <p className="text-md text-gray-600">
@@ -225,7 +225,7 @@ const StudentHelpPage: FC<IHelpPage> = ({ userData }) => {
         {/*==================== Resource Categories ====================*/}
         <div className="bg-white rounded-2xl p-6">
           <div className="flex items-center mb-6">
-            <FileText className="h-6 w-6 text-blue-600 mr-3" />
+            <FileText className="h-6 w-6 text-blue-500 mr-3" />
             <h2 className="text-xl font-semibold text-gray-900">Resource Categories</h2>
           </div>
 
@@ -278,7 +278,7 @@ const StudentHelpPage: FC<IHelpPage> = ({ userData }) => {
         {/*==================== How-To Guides ====================*/}
         <div className="bg-white rounded-2xl p-6">
           <div className="flex items-center mb-8">
-            <Settings className="h-6 w-6 text-blue-600 mr-3" />
+            <Settings className="h-6 w-6 text-blue-500 mr-3" />
             <h2 className="text-xl font-semibold text-gray-900">How-To Guides</h2>
           </div>
 
@@ -318,7 +318,7 @@ const StudentHelpPage: FC<IHelpPage> = ({ userData }) => {
         {/*==================== FAQ Section ====================*/}
         <div className="bg-white rounded-2xl p-6">
           <div className="flex items-center mb-6">
-            <HelpCircle className="h-6 w-6 text-blue-600 mr-3" />
+            <HelpCircle className="h-6 w-6 text-blue-500 mr-3" />
             <h2 className="text-xl font-semibold text-gray-900">Frequently Asked Questions</h2>
           </div>
 

@@ -70,7 +70,6 @@ const ProfileComponent = ({ role, userData }: ProfileComponentProps) => {
       await updateProfile(profileForm);
       setIsEditingProfile(false);
 
-      // Clear DashboardHeader cache to show updated profile info immediately
       if (typeof window !== 'undefined' && window.clearDashboardHeaderCache) {
         window.clearDashboardHeaderCache();
       }
@@ -185,12 +184,12 @@ const ProfileComponent = ({ role, userData }: ProfileComponentProps) => {
                 <h2 className="text-lg font-bold text-gray-500 flex items-center">
                   {role === 'admin' ? (
                     <>
-                      <Crown className="h-5 w-5 text-blue-600 mr-2" />
+                      <Crown className="h-5 w-5 text-blue-500 mr-2" />
                       Administrator Profile
                     </>
                   ) : (
                     <>
-                      <User className="h-5 w-5 text-blue-600 mr-2" />
+                      <User className="h-5 w-5 text-blue-500 mr-2" />
                       Profile Information
                     </>
                   )}
@@ -198,7 +197,7 @@ const ProfileComponent = ({ role, userData }: ProfileComponentProps) => {
                 {!isEditingProfile && (
                   <button
                     onClick={handleProfileEdit}
-                    className="inline-flex items-center rounded-lg bg-blue-600 px-3 py-2 text-sm font-medium text-white hover:bg-blue-700 transition-colors"
+                    className="inline-flex items-center rounded-lg bg-blue-600 px-3 py-2 text-sm font-medium text-white hover:bg-blue-700 transition-colors cursor-pointer"
                   >
                     <Edit3 className="h-4 w-4 mr-2" />
                     Edit Profile
@@ -222,9 +221,9 @@ const ProfileComponent = ({ role, userData }: ProfileComponentProps) => {
                       ) : (
                         <div className="w-16 h-16 rounded-full bg-blue-100 flex items-center justify-center border-4 border-blue-200">
                           {role === 'admin' ? (
-                            <Crown className="w-8 h-8 text-blue-600" />
+                            <Crown className="w-8 h-8 text-blue-500" />
                           ) : (
-                            <User className="w-8 h-8 text-blue-600" />
+                            <User className="w-8 h-8 text-blue-500" />
                           )}
                         </div>
                       )}
@@ -258,12 +257,12 @@ const ProfileComponent = ({ role, userData }: ProfileComponentProps) => {
                     <div>
                       <label className="block text-sm font-bold text-gray-500 mb-1">ROLE</label>
                       {role === 'admin' ? (
-                        <span className="inline-flex items-center rounded-full bg-purple-100 px-3 py-1 text-sm font-medium text-purple-800">
+                        <span className="inline-flex items-center rounded-full bg-blue-100 px-3 py-1 text-sm font-medium text-blue-500">
                           <Crown className="w-4 h-4 mr-1" />
                           Administrator
                         </span>
                       ) : (
-                        <span className="inline-flex items-center rounded-full bg-blue-100 px-3 py-1 text-sm font-medium text-blue-800">
+                        <span className="inline-flex items-center rounded-full bg-blue-100 px-3 py-1 text-sm font-medium text-blue-500">
                           <GraduationCap className="w-4 h-4 mr-1" />
                           Student
                         </span>
@@ -289,16 +288,16 @@ const ProfileComponent = ({ role, userData }: ProfileComponentProps) => {
                       ) : (
                         <div className="w-16 h-16 rounded-full bg-blue-100 flex items-center justify-center border-4 border-blue-200">
                           {role === 'admin' ? (
-                            <Crown className="w-8 h-8 text-blue-600" />
+                            <Crown className="w-8 h-8 text-blue-500" />
                           ) : (
-                            <User className="w-8 h-8 text-blue-600" />
+                            <User className="w-8 h-8 text-blue-500" />
                           )}
                         </div>
                       )}
                       <button
-                        onClick={() => fileInputRef.current?.click()}
                         disabled={isUploadingImage}
-                        className="absolute -bottom-1 -right-1 w-6 h-6 bg-blue-600 rounded-full flex items-center justify-center text-white hover:bg-blue-700 transition-colors disabled:opacity-50"
+                        onClick={() => fileInputRef.current?.click()}
+                        className="absolute -bottom-1 -right-1 w-6 h-6 bg-blue-600 rounded-full flex items-center justify-center text-white hover:bg-blue-700 transition-colors disabled:opacity-50 cursor-pointer"
                       >
                         {isUploadingImage ? (
                           <div className="w-3 h-3 border border-white border-t-transparent rounded-full animate-spin"></div>
@@ -355,7 +354,7 @@ const ProfileComponent = ({ role, userData }: ProfileComponentProps) => {
                   <div className="flex justify-end space-x-3">
                     <button
                       onClick={() => setIsEditingProfile(false)}
-                      className="inline-flex items-center rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-500 hover:bg-gray-50"
+                      className="inline-flex items-center rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-500 hover:bg-gray-50 cursor-pointer"
                     >
                       <X className="h-4 w-4 mr-2" />
                       Cancel
@@ -363,7 +362,7 @@ const ProfileComponent = ({ role, userData }: ProfileComponentProps) => {
                     <button
                       onClick={handleProfileSave}
                       disabled={isUpdatingProfile}
-                      className="inline-flex items-center rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-50"
+                      className="inline-flex items-center rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-50 cursor-pointer"
                     >
                       <Save className="h-4 w-4 mr-2" />
                       {isUpdatingProfile ? 'Saving...' : 'Save Changes'}
@@ -378,13 +377,13 @@ const ProfileComponent = ({ role, userData }: ProfileComponentProps) => {
             <div className="bg-white rounded-2xl p-6">
               <div className="flex gap-4 flex-col md:flex-row md:flex md:items-center md:justify-between mb-6">
                 <h2 className="text-lg font-bold text-gray-500 flex items-center">
-                  <Lock className="h-5 w-5 text-blue-600 mr-2" />
+                  <Lock className="h-5 w-5 text-blue-500 mr-2" />
                   Password & Security
                 </h2>
                 {!isChangingPasswordMode && (
                   <button
                     onClick={() => setIsChangingPasswordMode(true)}
-                    className="inline-flex items-center rounded-lg bg-blue-600 px-3 py-2 text-sm font-medium text-white hover:bg-blue-700 transition-colors"
+                    className="inline-flex items-center rounded-lg bg-blue-600 px-3 py-2 text-sm font-medium text-white hover:bg-blue-700 transition-colors cursor-pointer"
                   >
                     <Lock className="h-4 w-4 mr-2" />
                     Change Password
@@ -426,7 +425,7 @@ const ProfileComponent = ({ role, userData }: ProfileComponentProps) => {
                       <button
                         type="button"
                         onClick={() => togglePasswordVisibility('current')}
-                        className="absolute inset-y-0 right-0 flex items-center pr-3"
+                        className="absolute inset-y-0 right-0 flex items-center pr-3 cursor-pointer"
                       >
                         {showPasswords.current ? (
                           <EyeOff className="h-4 w-4 text-gray-400" />
@@ -457,7 +456,7 @@ const ProfileComponent = ({ role, userData }: ProfileComponentProps) => {
                       <button
                         type="button"
                         onClick={() => togglePasswordVisibility('new')}
-                        className="absolute inset-y-0 right-0 flex items-center pr-3"
+                        className="absolute inset-y-0 right-0 flex items-center pr-3 cursor-pointer"
                       >
                         {showPasswords.new ? (
                           <EyeOff className="h-4 w-4 text-gray-400" />
@@ -488,7 +487,7 @@ const ProfileComponent = ({ role, userData }: ProfileComponentProps) => {
                       <button
                         type="button"
                         onClick={() => togglePasswordVisibility('confirm')}
-                        className="absolute inset-y-0 right-0 flex items-center pr-3"
+                        className="absolute inset-y-0 right-0 flex items-center pr-3 cursor-pointer"
                       >
                         {showPasswords.confirm ? (
                           <EyeOff className="h-4 w-4 text-gray-400" />
@@ -510,7 +509,7 @@ const ProfileComponent = ({ role, userData }: ProfileComponentProps) => {
                         });
                         setShowPasswords({ current: false, new: false, confirm: false });
                       }}
-                      className="inline-flex items-center rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-500 hover:bg-gray-50"
+                      className="inline-flex items-center rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-500 hover:bg-gray-50 cursor-pointer"
                     >
                       <X className="h-4 w-4 mr-2" />
                       Cancel
@@ -523,7 +522,7 @@ const ProfileComponent = ({ role, userData }: ProfileComponentProps) => {
                         !passwordForm.newPassword ||
                         passwordForm.newPassword !== passwordForm.confirmPassword
                       }
-                      className="inline-flex items-center rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-50"
+                      className="inline-flex items-center rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-50 cursor-pointer"
                     >
                       <Lock className="h-4 w-4 mr-2" />
                       {isChangingPassword ? 'Changing...' : 'Change Password'}
@@ -539,7 +538,7 @@ const ProfileComponent = ({ role, userData }: ProfileComponentProps) => {
           <div className="space-y-6">
             <div className="bg-white rounded-2xl p-6">
               <h2 className="text-lg font-bold text-gray-500 mb-4 flex items-center">
-                <Calendar className="h-5 w-5 text-blue-600 mr-2" />
+                <Calendar className="h-5 w-5 text-blue-500 mr-2" />
                 Account Summary
               </h2>
               <div className="space-y-4">

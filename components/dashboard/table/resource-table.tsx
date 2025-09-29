@@ -107,14 +107,14 @@ const ResourceTable = ({
         );
       case 'information_systems':
         return (
-          <div className="flex items-center justify-center h-10 w-10 rounded-full bg-green-100/70">
-            <Database className="h-5 w-5 text-green-500" />
+          <div className="flex items-center justify-center h-10 w-10 rounded-full bg-blue-100/70">
+            <Database className="h-5 w-5 text-blue-500" />
           </div>
         );
       case 'telecommunications':
         return (
-          <div className="flex items-center justify-center h-10 w-10 rounded-full bg-purple-100/70">
-            <Radio className="h-5 w-5 text-purple-500" />
+          <div className="flex items-center justify-center h-10 w-10 rounded-full bg-blue-100/70">
+            <Radio className="h-5 w-5 text-blue-500" />
           </div>
         );
       default:
@@ -131,9 +131,9 @@ const ResourceTable = ({
 
     switch (visibility) {
       case 'all':
-        return <Users className="h-4 w-4 text-green-500 mr-1" />;
+        return <Users className="h-4.5 w-4.5 text-blue-500 mr-1" />;
       case 'admin':
-        return <ShieldAlert className="h-4 w-4 text-purple-500 mr-1" />;
+        return <ShieldAlert className="h-4.5 w-4.5 text-blue-500 mr-1" />;
       default:
         return null;
     }
@@ -202,19 +202,19 @@ const ResourceTable = ({
             </h3>
             <div className="flex items-center mt-2 sm:mt-0">
               {selectedCount > 0 ? (
-                <div className="flex items-center space-x-3">
+                <div className="flex flex-col gap-4 md:flex-row md:items-center space-x-3">
                   <span className="text-sm font-medium text-blue-800">
                     {selectedCount} resource{selectedCount > 1 ? 's' : ''} selected
                   </span>
                   <button
                     onClick={clearSelection}
-                    className="inline-flex items-center rounded-lg bg-gray-100 text-gray-700 px-3 py-1.5 text-sm font-medium hover:bg-gray-200"
+                    className="inline-flex items-center rounded-lg bg-gray-100 text-gray-700 px-3 py-1.5 text-sm font-medium hover:bg-gray-200 cursor-pointer"
                   >
                     Clear Selection
                   </button>
                   <button
                     onClick={selectAll}
-                    className="inline-flex items-center rounded-lg bg-blue-100 text-blue-700 px-3 py-1.5 text-sm font-medium hover:bg-blue-200"
+                    className="inline-flex items-center rounded-lg bg-blue-100 text-blue-700 px-3 py-1.5 text-sm font-medium hover:bg-blue-200 cursor-pointer"
                   >
                     {resources.every((item) => selectedResources[item._id])
                       ? 'Deselect All'
@@ -226,13 +226,13 @@ const ResourceTable = ({
                         <>
                           <button
                             onClick={handleRestoreSelected}
-                            className="inline-flex items-center rounded-lg bg-green-100 text-green-700 px-3 py-1.5 text-sm font-medium hover:bg-green-200"
+                            className="inline-flex items-center rounded-lg bg-blue-100 text-green-700 px-3 py-1.5 text-sm font-medium hover:bg-green-200 cursor-pointer"
                           >
                             Restore Selected
                           </button>
                           <button
                             onClick={handleDeleteSelected}
-                            className="inline-flex items-center rounded-lg bg-red-100 text-red-700 px-3 py-1.5 text-sm font-medium hover:bg-red-200"
+                            className="inline-flex items-center rounded-lg bg-red-100 text-red-700 px-3 py-1.5 text-sm font-medium hover:bg-red-200 cursor-pointer"
                           >
                             Delete Permanently
                           </button>
@@ -240,7 +240,7 @@ const ResourceTable = ({
                       ) : (
                         <button
                           onClick={handleDeleteSelected}
-                          className="inline-flex items-center rounded-lg bg-red-100 text-red-700 px-3 py-1.5 text-sm font-medium hover:bg-red-200"
+                          className="inline-flex items-center rounded-lg bg-red-100 text-red-700 px-3 py-1.5 text-sm font-medium hover:bg-red-200 cursor-pointer"
                         >
                           Delete Selected
                         </button>
@@ -256,7 +256,7 @@ const ResourceTable = ({
               <button
                 onClick={onRefresh}
                 title="Refresh resources"
-                className="ml-3 p-1 rounded-md text-gray-400 hover:text-blue-600 hover:bg-blue-50"
+                className="ml-3 p-1 rounded-md text-gray-400 hover:text-blue-500 hover:bg-blue-50"
               >
                 <RefreshCw className="h-4 w-4" />
               </button>
@@ -428,7 +428,7 @@ const ResourceTable = ({
                                     setSelectedResource(resource);
                                     handleEditResource(resource, e);
                                   }}
-                                  className="rounded-full p-1.5 text-gray-500 hover:bg-gray-100 hover:text-blue-600"
+                                  className="rounded-full p-1.5 text-gray-500 hover:bg-gray-100 hover:text-blue-500"
                                 >
                                   <Edit className="h-4 w-4" />
                                 </button>
@@ -436,7 +436,7 @@ const ResourceTable = ({
                                 <button
                                   title="Download Resource"
                                   onClick={(e) => handleDownload(resource, e)}
-                                  className="rounded-full p-1.5 text-gray-500 hover:bg-gray-100 hover:text-blue-600"
+                                  className="rounded-full p-1.5 text-gray-500 hover:bg-gray-100 hover:text-blue-500"
                                 >
                                   <Download className="h-4 w-4" />
                                 </button>
@@ -448,7 +448,7 @@ const ResourceTable = ({
                                     setSelectedResource(resource);
                                     handleViewAnalytics(resource, e);
                                   }}
-                                  className="rounded-full p-1.5 text-gray-500 hover:bg-gray-100 hover:text-blue-600"
+                                  className="rounded-full p-1.5 text-gray-500 hover:bg-gray-100 hover:text-blue-500"
                                 >
                                   <BarChart2 className="h-4 w-4" />
                                 </button>
@@ -476,7 +476,7 @@ const ResourceTable = ({
                             <button
                               title="Download Resource"
                               onClick={(e) => handleDownload(resource, e)}
-                              className="rounded-full p-1.5 text-gray-500 hover:bg-gray-100 hover:text-blue-600"
+                              className="rounded-full p-1.5 text-gray-500 hover:bg-gray-100 hover:text-blue-500"
                             >
                               <Download className="h-4 w-4" />
                             </button>

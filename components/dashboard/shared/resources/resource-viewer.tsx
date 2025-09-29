@@ -204,7 +204,7 @@ const ResourceViewerComponent = ({ role, userData }: ResourceViewerComponentProp
 
     try {
       setIsDownloading(fileToDownload.url);
-      await downloadFile(fileToDownload.url, resource._id, role);
+      await downloadFile(fileToDownload.url, fileToDownload.name, resource._id, role);
 
       setShowDownloadFileModal(false);
       setFileToDownload(null);
@@ -563,7 +563,7 @@ const ResourceViewerComponent = ({ role, userData }: ResourceViewerComponentProp
                 <div className="bg-gradient-to-r from-amber-100/70 to-blue-100/70 rounded-lg p-4">
                   <div className="flex items-center mb-2">
                     <div className="bg-blue-100/70 p-2 rounded-full mr-2">
-                      <Eye className="h-4 w-4 text-blue-600" />
+                      <Eye className="h-4 w-4 text-blue-500" />
                     </div>
                     <span className="text-sm font-medium text-gray-700">Views</span>
                   </div>
@@ -608,9 +608,9 @@ const ResourceViewerComponent = ({ role, userData }: ResourceViewerComponentProp
               <div>
                 <div className="flex items-center mb-2">
                   <div className="bg-blue-100/70 p-2 rounded-full mr-2">
-                    <Building2 className="h-4 w-4 text-blue-600" />
+                    <Building2 className="h-4 w-4 text-blue-500" />
                   </div>
-                  <span className="text-sm font-normal text-gray-500">DEPARTMENT</span>
+                  <span className="text-base font-normal text-gray-500">DEPARTMENT</span>
                 </div>
                 <p className="text-gray-500 font-normal">{formatDepartment(resource.department)}</p>
               </div>
@@ -619,10 +619,10 @@ const ResourceViewerComponent = ({ role, userData }: ResourceViewerComponentProp
               {/*==================== Academic Level ====================*/}
               <div>
                 <div className="flex items-center mb-2">
-                  <div className="bg-green-100/70 p-2 rounded-full mr-2">
-                    <GraduationCap className="h-4 w-4 text-green-600" />
+                  <div className="bg-blue-100/70 p-2 rounded-full mr-2">
+                    <GraduationCap className="h-4 w-4 text-blue-500" />
                   </div>
-                  <span className="text-sm font-normal text-gray-500">ACADEMIC LEVEL</span>
+                  <span className="text-base font-normal text-gray-500">ACADEMIC LEVEL</span>
                 </div>
                 <p className="text-gray-500 font-normal">
                   {formatAcademicLevel(resource.academicLevel)}
@@ -634,10 +634,10 @@ const ResourceViewerComponent = ({ role, userData }: ResourceViewerComponentProp
               {role === 'student' && (
                 <div>
                   <div className="flex items-center mb-2">
-                    <div className="bg-amber-100/70 p-2 rounded-full mr-2">
-                      <Tag className="h-4 w-4 text-amber-600" />
+                    <div className="bg-blue-100/70 p-2 rounded-full mr-2">
+                      <Tag className="h-4 w-4 text-blue-500" />
                     </div>
-                    <span className="text-sm font-normal text-gray-500">CATEGORY</span>
+                    <span className="text-base font-normal text-gray-500">CATEGORY</span>
                   </div>
                   <p className="text-gray-500 font-normal">{formatCategory(resource.category)}</p>
                 </div>
@@ -649,16 +649,16 @@ const ResourceViewerComponent = ({ role, userData }: ResourceViewerComponentProp
                 <>
                   <div>
                     <div className="flex items-center mb-2">
-                      <div className="bg-orange-100/70 p-2 rounded-full mr-2">
-                        <Shield className="h-4 w-4 text-orange-600" />
+                      <div className="bg-blue-100/70 p-2 rounded-full mr-2">
+                        <Shield className="h-4 w-4 text-blue-500" />
                       </div>
-                      <span className="text-sm font-normal text-gray-500">VISIBILITY</span>
+                      <span className="text-base font-normal text-gray-500">VISIBILITY</span>
                     </div>
                     <span
                       className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
                         resource.visibility === 'all'
-                          ? 'bg-green-100 text-green-800'
-                          : 'bg-orange-100 text-orange-800'
+                          ? 'bg-blue-100 text-blue-500'
+                          : 'bg-blue-100 text-blue-500'
                       }`}
                     >
                       {resource.visibility === 'all' ? 'Public' : 'Admin Only'}
@@ -667,20 +667,20 @@ const ResourceViewerComponent = ({ role, userData }: ResourceViewerComponentProp
 
                   <div>
                     <div className="flex items-center mb-2">
-                      <div className="bg-purple-100/70 p-2 rounded-full mr-2">
-                        <User className="h-4 w-4 text-purple-600" />
+                      <div className="bg-blue-100/70 p-2 rounded-full mr-2">
+                        <User className="h-4 w-4 text-blue-500" />
                       </div>
-                      <span className="text-sm font-normal text-gray-500">CREATED BY</span>
+                      <span className="text-base font-normal text-gray-500">CREATED BY</span>
                     </div>
                     <p className="text-gray-500 font-normal">{formatCreator(resource.createdBy)}</p>
                   </div>
 
                   <div>
                     <div className="flex items-center mb-2">
-                      <div className="bg-amber-100/70 p-2 rounded-full mr-2">
-                        <Calendar className="h-4 w-4 text-amber-600" />
+                      <div className="bg-blue-100/70 p-2 rounded-full mr-2">
+                        <Calendar className="h-4 w-4 text-blue-500" />
                       </div>
-                      <span className="text-sm font-normal text-gray-500">CREATED AT</span>
+                      <span className="text-base font-normal text-gray-500">CREATED AT</span>
                     </div>
                     <p className="text-gray-500 font-normal">{formatDate(resource.createdAt)}</p>
                   </div>
@@ -688,10 +688,10 @@ const ResourceViewerComponent = ({ role, userData }: ResourceViewerComponentProp
                   {resource.updatedAt !== resource.createdAt && (
                     <div>
                       <div className="flex items-center mb-2">
-                        <div className="bg-red-100/70 p-2 rounded-full mr-2">
-                          <Clock className="h-4 w-4 text-red-600" />
+                        <div className="bg-blue-100/70 p-2 rounded-full mr-2">
+                          <Clock className="h-4 w-4 text-blue-500" />
                         </div>
-                        <span className="text-sm font-normal text-gray-500">LAST UPDATED</span>
+                        <span className="text-base font-normal text-gray-500">LAST UPDATED</span>
                       </div>
                       <p className="text-gray-500 font-normal">{formatDate(resource.updatedAt)}</p>
                     </div>
@@ -708,7 +708,7 @@ const ResourceViewerComponent = ({ role, userData }: ResourceViewerComponentProp
             <div className="px-5 py-4 border-b border-gray-200">
               <div className="flex items-center justify-between">
                 <h3 className="text-lg font-semibold text-gray-900 flex items-center">
-                  <FileText className="mr-2 h-5 w-5 text-blue-600" />
+                  <FileText className="mr-2 h-5 w-5 text-blue-500" />
                   Files ({files.length})
                 </h3>
                 {files.length > 0 && (
@@ -811,7 +811,7 @@ const ResourceViewerComponent = ({ role, userData }: ResourceViewerComponentProp
                                 handleDownload(file);
                               }}
                               disabled={isDownloading === file.url}
-                              className="rounded-full p-1.5 text-gray-500 hover:bg-gray-100 hover:text-blue-600 disabled:opacity-50"
+                              className="rounded-full p-1.5 text-gray-500 hover:bg-gray-100 hover:text-blue-500 disabled:opacity-50"
                               title="Download File"
                             >
                               {isDownloading === file.url ? (

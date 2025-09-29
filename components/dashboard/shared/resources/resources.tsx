@@ -10,7 +10,15 @@ import DashboardPageHeader from '@/components/dashboard/layout/dashboard-page-he
 import { Upload, Filter, Building2, Tag, Eye, Search, GraduationCap, Trash2 } from 'lucide-react';
 
 const ResourcesComponent = ({ role, userData }: ResourcesComponentProps) => {
-  const { isError, resources, isLoading, pagination, fetchResources, clearCache, forceRefreshResources } = useResources({
+  const {
+    isError,
+    resources,
+    isLoading,
+    pagination,
+    fetchResources,
+    clearCache,
+    forceRefreshResources,
+  } = useResources({
     token: userData.token,
   });
 
@@ -57,25 +65,28 @@ const ResourcesComponent = ({ role, userData }: ResourcesComponentProps) => {
     role,
   ]);
 
-  const loadResources = useCallback((forceRefresh = false) => {
-    const controller = new AbortController();
-    if (forceRefresh) {
-      forceRefreshResources({
-        page: 0,
-        limit,
-        ...filterParams,
-        signal: controller.signal,
-      });
-    } else {
-      fetchResources({
-        page: 0,
-        limit,
-        ...filterParams,
-        signal: controller.signal,
-      });
-    }
-    return controller;
-  }, [fetchResources, forceRefreshResources, limit, filterParams]);
+  const loadResources = useCallback(
+    (forceRefresh = false) => {
+      const controller = new AbortController();
+      if (forceRefresh) {
+        forceRefreshResources({
+          page: 0,
+          limit,
+          ...filterParams,
+          signal: controller.signal,
+        });
+      } else {
+        fetchResources({
+          page: 0,
+          limit,
+          ...filterParams,
+          signal: controller.signal,
+        });
+      }
+      return controller;
+    },
+    [fetchResources, forceRefreshResources, limit, filterParams]
+  );
 
   const handleDeleteResource = useCallback(
     async (resourceId: string, mode: 'soft' | 'permanent' = 'soft'): Promise<boolean> => {
@@ -265,10 +276,10 @@ const ResourcesComponent = ({ role, userData }: ResourcesComponentProps) => {
 
       <>
         <div className="mb-6 bg-white rounded-xl p-4">
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center">
-              <div className="mr-2 bg-green-100/70 p-2 rounded-full">
-                <Filter className="h-5 w-5 text-green-600" />
+          <div className="flex flex-col md:flex-row items-left md:items-center justify-between mb-4">
+            <div className="flex md:flex-row items-left md:items-center">
+              <div className="mr-2 bg-blue-100/80 p-2 rounded-full">
+                <Filter className="h-5 w-5 text-blue-500" />
               </div>
               <h3 className="text-lg font-medium text-gray-900">Filter Resources</h3>
             </div>
@@ -277,7 +288,7 @@ const ResourcesComponent = ({ role, userData }: ResourcesComponentProps) => {
               disabled={isLoading || !hasActiveFilters}
               className={`text-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
                 hasActiveFilters
-                  ? 'text-gray-500 hover:text-blue-600 cursor-pointer'
+                  ? 'text-gray-500 hover:text-blue-500 cursor-pointer'
                   : 'text-gray-400 cursor-not-allowed'
               }`}
             >
@@ -307,7 +318,7 @@ const ResourcesComponent = ({ role, userData }: ResourcesComponentProps) => {
             <div>
               <label className="flex items-center text-m text-gray-500 mb-2">
                 <div className="bg-blue-100/70 p-2 rounded-full mr-2">
-                  <Building2 className="h-5 w-5 text-blue-600" />
+                  <Building2 className="h-5 w-5 text-blue-500" />
                 </div>
                 Department
               </label>
@@ -330,8 +341,8 @@ const ResourcesComponent = ({ role, userData }: ResourcesComponentProps) => {
 
             <div>
               <label className="flex items-center text-m text-gray-500 mb-2">
-                <div className="bg-purple-100/70 p-2 rounded-full mr-2">
-                  <Tag className="h-5 w-5 text-purple-600" />
+                <div className="bg-blue-100/70 p-2 rounded-full mr-2">
+                  <Tag className="h-5 w-5 text-blue-500" />
                 </div>
                 Category
               </label>
@@ -352,8 +363,8 @@ const ResourcesComponent = ({ role, userData }: ResourcesComponentProps) => {
 
             <div>
               <label className="flex items-center text-m text-gray-500 mb-2">
-                <div className="bg-green-100/70 p-2 rounded-full mr-2">
-                  <GraduationCap className="h-5 w-5 text-green-600" />
+                <div className="bg-blue-100/70 p-2 rounded-full mr-2">
+                  <GraduationCap className="h-5 w-5 text-blue-500" />
                 </div>
                 Academic Level
               </label>
@@ -376,8 +387,8 @@ const ResourcesComponent = ({ role, userData }: ResourcesComponentProps) => {
             {role === 'admin' && (
               <div>
                 <label className="flex items-center text-m text-gray-500 mb-2">
-                  <div className="bg-orange-100/70 p-2 rounded-full mr-2">
-                    <Eye className="h-5 w-5 text-orange-600" />
+                  <div className="bg-blue-100/70 p-2 rounded-full mr-2">
+                    <Eye className="h-5 w-5 text-blue-500" />
                   </div>
                   Visibility
                 </label>

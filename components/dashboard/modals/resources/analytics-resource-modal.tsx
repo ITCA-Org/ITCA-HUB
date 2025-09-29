@@ -87,7 +87,7 @@ const ResourceAnalytics = ({ token, isOpen = true, resource, onClose }: Resource
         <button
           className={`px-4 py-2 font-medium text-sm ${
             activeTab === 'overview'
-              ? 'text-blue-600 border-b-2 border-blue-600'
+              ? 'text-blue-500 border-b-2 border-blue-600'
               : 'text-gray-500 hover:text-gray-700'
           }`}
           onClick={() => setActiveTab('overview')}
@@ -97,7 +97,7 @@ const ResourceAnalytics = ({ token, isOpen = true, resource, onClose }: Resource
         <button
           className={`px-4 py-2 font-medium text-sm ${
             activeTab === 'views'
-              ? 'text-blue-600 border-b-2 border-blue-600'
+              ? 'text-blue-500 border-b-2 border-blue-600'
               : 'text-gray-500 hover:text-gray-700'
           }`}
           onClick={() => setActiveTab('views')}
@@ -107,7 +107,7 @@ const ResourceAnalytics = ({ token, isOpen = true, resource, onClose }: Resource
         <button
           className={`px-4 py-2 font-medium text-sm ${
             activeTab === 'downloads'
-              ? 'text-blue-600 border-b-2 border-blue-600'
+              ? 'text-blue-500 border-b-2 border-blue-600'
               : 'text-gray-500 hover:text-gray-700'
           }`}
           onClick={() => setActiveTab('downloads')}
@@ -121,7 +121,7 @@ const ResourceAnalytics = ({ token, isOpen = true, resource, onClose }: Resource
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
             <div className="bg-blue-50 rounded-lg p-4 flex items-center">
               <div className="bg-blue-100 rounded-full p-3 mr-3">
-                <Eye className="h-6 w-6 text-blue-600" />
+                <Eye className="h-6 w-6 text-blue-500" />
               </div>
               <div>
                 <p className="text-gray-500 text-sm">Total Views</p>

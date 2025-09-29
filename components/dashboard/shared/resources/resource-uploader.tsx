@@ -86,9 +86,9 @@ const ResourceUploader = ({ token, onUploadComplete, onError }: ResourceUploader
     <form onSubmit={handleBatchUpload} className="space-y-6">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/*==================== Left Column: Resource Information ====================*/}
-        <div className="rounded-2xl bg-white/50 p-6">
+        <div className="rounded-2xl bg-white/70 p-6">
           <h3 className="text-lg font-medium text-gray-900 mb-6 flex items-center">
-            <FileText className="h-5 w-5 text-blue-600 mr-2" />
+            <FileText className="h-5 w-5 text-blue-500 mr-2" />
             Resource Information
           </h3>
 
@@ -223,9 +223,9 @@ const ResourceUploader = ({ token, onUploadComplete, onError }: ResourceUploader
         {/*==================== End of Left Column: Resource Information ====================*/}
 
         {/*==================== Right Column: File Upload ====================*/}
-        <div className="rounded-2xl bg-white/50 p-6">
+        <div className="rounded-2xl bg-white/70 p-6">
           <h3 className="text-lg font-medium text-gray-900 mb-6 flex items-center">
-            <Upload className="h-5 w-5 text-green-600 mr-2" />
+            <Upload className="h-5 w-5 text-blue-500 mr-2" />
             Upload Files
             <span className="ml-2 text-sm font-normal text-gray-500">
               ({selectedFiles.length}/50)
@@ -271,7 +271,7 @@ const ResourceUploader = ({ token, onUploadComplete, onError }: ResourceUploader
                     type="button"
                     onClick={addMoreFiles}
                     disabled={isUploading}
-                    className="inline-flex items-center text-sm text-blue-600 hover:text-blue-700 disabled:text-gray-400"
+                    className="inline-flex items-center text-sm text-blue-500 hover:text-blue-700 disabled:text-gray-400"
                   >
                     <Plus className="h-3 w-3 mr-1" />
                     Add More

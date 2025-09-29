@@ -69,38 +69,38 @@ const AdminDashboard: FC<UserProps> = ({ userData }) => {
       {/*==================== End of Page Header ====================*/}
 
       {/*==================== Stats Cards ====================*/}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 md:gap-6 mb-8">
         <DashboardStatsCard
           title="Total Users"
           isLoading={isLoading}
           value={dashboardData.stats.totalUsers}
-          icon={<Users className="h-6 w-6 text-blue-600" />}
+          icon={<Users className="h-6 w-6 text-blue-500" />}
         />
         <DashboardStatsCard
           title="Events"
           isLoading={isLoading}
           value={dashboardData.stats.totalEvents}
-          icon={<Calendar className="h-6 w-6 text-amber-500" />}
+          icon={<Calendar className="h-6 w-6 text-blue-500" />}
         />
         <DashboardStatsCard
           title="Resources"
           isLoading={isLoading}
           value={dashboardData.stats.totalResources}
-          icon={<FileText className="h-6 w-6 text-green-500" />}
+          icon={<FileText className="h-6 w-6 text-blue-500" />}
         />
         <DashboardStatsCard
           title="Active Users"
           isLoading={isLoading}
           value={dashboardData.stats.activeUsers}
-          icon={<PieChart className="h-6 w-6 text-purple-500" />}
+          icon={<PieChart className="h-6 w-6 text-blue-500" />}
         />
       </div>
       {/*==================== End of Stats Cards ====================*/}
 
       {/*==================== Recent Users Table ====================*/}
-      <div className="grid grid-cols-1 gap-6 pt-4">
+      <div className="grid grid-cols-1 gap-6 pt-8">
         <div className="lg:col-span-2">
-          <h2 className="text-lg font-semibold mb-4">Recent Registrations</h2>
+          <h2 className="text-lg md:text-xl font-semibold mb-4">Recent Registrations</h2>
           <UserTable
             page={page}
             limit={limit}

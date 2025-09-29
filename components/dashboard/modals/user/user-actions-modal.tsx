@@ -49,7 +49,7 @@ const UserActionsModal = ({
       case 'changeRole':
         const newRole = userRole?.toLowerCase() === 'admin' ? 'Student' : 'Admin';
         return {
-          icon: <Crown className="h-5 w-5 text-blue-600" />,
+          icon: <Crown className="h-5 w-5 text-blue-500" />,
           iconBg: 'bg-blue-100',
           title: 'Change User Role',
           description: `Are you sure you want to change ${userName}'s role to ${newRole}?`,

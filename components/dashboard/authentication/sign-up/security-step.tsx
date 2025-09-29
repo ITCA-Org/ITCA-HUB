@@ -106,11 +106,11 @@ const SecurityStep = ({
           />
           <span className="ml-2 text-sm text-gray-600">
             I agree to the{' '}
-            <Link href="/terms" className="text-blue-700 hover:text-blue-600 underline">
+            <Link href="/terms" className="text-blue-700 hover:text-blue-500 underline">
               Terms of Service
             </Link>{' '}
             and{' '}
-            <Link href="/privacy" className="text-blue-700 hover:text-blue-600 underline">
+            <Link href="/privacy" className="text-blue-700 hover:text-blue-500 underline">
               Privacy Policy
             </Link>
           </span>

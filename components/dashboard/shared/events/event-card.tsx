@@ -182,7 +182,7 @@ const EventCard = ({
   const statusConfig = getStatusConfig(event.status);
 
   return (
-    <div className="group relative overflow-hidden rounded-xl border-none bg-white/60">
+    <div className="group relative overflow-hidden rounded-xl border-none bg-white/70">
       {/*==================== Event Image ====================*/}
       <div className="aspect-video w-full overflow-hidden relative">
         {event.imageUrl && !imageError ? (
@@ -228,7 +228,7 @@ const EventCard = ({
               <button
                 title="Edit event"
                 onClick={() => onEdit?.(event._id)}
-                className="rounded-md p-1.5 text-gray-400 hover:bg-blue-50 hover:text-blue-600 transition-colors cursor-pointer"
+                className="rounded-md p-1.5 text-gray-400 hover:bg-blue-50 hover:text-blue-500 transition-colors cursor-pointer"
               >
                 <Edit className="h-4 w-4" />
               </button>
@@ -256,15 +256,15 @@ const EventCard = ({
             <span className="text-gray-500">{formatDateRange()}</span>
           </div>
           <div className="flex items-center">
-            <Clock className="mr-2 h-4 w-4 text-amber-500" />
+            <Clock className="mr-2 h-4 w-4 text-blue-500" />
             <span className="text-gray-500">{formatTimeRange()}</span>
           </div>
           <div className="flex items-center">
-            <MapPin className="mr-2 h-4 w-4 text-red-500" />
+            <MapPin className="mr-2 h-4 w-4 text-blue-500" />
             <span className="line-clamp-1 text-gray-500">{event.location}</span>
           </div>
           <div className="flex items-center">
-            <Users className="mr-2 h-4 w-4 text-green-500" />
+            <Users className="mr-2 h-4 w-4 text-blue-500" />
             <span className="text-gray-500">
               {event.attendees.length} / {event.capacity} registered
             </span>

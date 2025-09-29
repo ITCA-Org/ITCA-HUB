@@ -171,7 +171,7 @@ const ViewEventModal = ({ isOpen, eventId, token, onClose }: ViewEventModalProps
                       className="flex items-center space-x-3 bg-white p-3 rounded-lg"
                     >
                       <div className="bg-blue-100 p-2 rounded-full">
-                        <User className="h-4 w-4 text-blue-600" />
+                        <User className="h-4 w-4 text-blue-500" />
                       </div>
                       <div className="flex-1">
                         <p className="font-medium text-gray-900">

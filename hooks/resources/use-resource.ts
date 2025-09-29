@@ -516,7 +516,7 @@ const useResources = ({ token }: UseResourcesProps): UseResourcesReturn => {
   }, []);
 
   const downloadFile = useCallback(
-    async (fileUrl: string, resourceId?: string, role?: 'admin' | 'student') => {
+    async (fileUrl: string, fileName?: string, resourceId?: string, role?: 'admin' | 'student') => {
       try {
         if (resourceId && role) {
           await trackDownload(resourceId, role);
@@ -524,13 +524,21 @@ const useResources = ({ token }: UseResourcesProps): UseResourcesReturn => {
 
         const downloadUrl = await fetchFileMediaLink(fileUrl);
 
+        const response = await axios.get(downloadUrl, {
+          responseType: 'blob',
+        });
+
+        const blob = new Blob([response.data]);
+        const blobUrl = window.URL.createObjectURL(blob);
+
         const link = document.createElement('a');
-        link.href = downloadUrl;
-        link.target = '_blank';
-        link.download = fileUrl.split('/').pop() || 'download';
+        link.href = blobUrl;
+        link.download = fileName || fileUrl.split('/').pop() || 'download';
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
+
+        window.URL.revokeObjectURL(blobUrl);
       } catch (error) {
         const { message } = getErrorMessage(
           error as AxiosError<ErrorResponseData> | CustomError | Error
@@ -557,7 +565,8 @@ const useResources = ({ token }: UseResourcesProps): UseResourcesReturn => {
         const fileUrls = resource.fileUrls.map((fileItem) => fileItem.filePath);
 
         if (fileUrls.length === 1) {
-          await downloadFile(fileUrls[0], resource._id, role);
+          const fileName = resource.fileUrls[0].fileName;
+          await downloadFile(fileUrls[0], fileName, resource._id, role);
           setIsDownloading(false);
           return;
         } else if (fileUrls.length > 1) {
@@ -657,11 +666,11 @@ const useResources = ({ token }: UseResourcesProps): UseResourcesReturn => {
     isDownloading,
     fetchResources,
     refreshResources,
-    forceRefreshResources,
     downloadResource,
     downloadProgress,
     fetchFileMediaLink,
     fetchSingleResource,
+    forceRefreshResources,
     fetchDeletedResources,
   };
 };
