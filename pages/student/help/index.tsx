@@ -281,7 +281,7 @@ const StudentHelpPage: FC<IHelpPage> = ({ userData }) => {
           </div>
 
           <div className="space-y-12">
-            <div className="border-l-4  border-t border-b py-6 border-blue-500 pl-4">
+            <div className="border-l-3 border-t border-b py-6 border-blue-500 pl-4">
               <h3 className="font-medium text-gray-900 mb-4">Finding Resources</h3>
               <ol className="text-md text-gray-600 space-y-6">
                 <li>1. Navigate to the "Resources" section from the sidebar</li>
@@ -291,7 +291,7 @@ const StudentHelpPage: FC<IHelpPage> = ({ userData }) => {
               </ol>
             </div>
 
-            <div className="border-r-4 border-t border-b py-6 border-blue-500 pl-4">
+            <div className="border-l-3border-t border-b py-6 border-blue-500 pl-4">
               <h3 className="font-medium text-gray-900 mb-4">Managing Your Profile</h3>
               <ol className="text-md text-gray-600 space-y-6">
                 <li>1. Go to "Profile" section from the sidebar</li>
@@ -302,7 +302,7 @@ const StudentHelpPage: FC<IHelpPage> = ({ userData }) => {
               </ol>
             </div>
 
-            <div className="border-l-4  border-t border-b py-6 border-blue-500 pl-4">
+            <div className="border-l-3 border-t border-b py-6 border-blue-500 pl-4">
               <h3 className="font-medium text-gray-900 mb-4">Registering for Events</h3>
               <ol className="text-md text-gray-600 space-y-6">
                 <li>1. Navigate to "Events" section from the sidebar</li>

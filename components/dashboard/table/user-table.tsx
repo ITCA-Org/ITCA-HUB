@@ -179,7 +179,7 @@ const UserTable = ({
 
                           {/*==================== Toggle User Status (Activate/Suspend) ====================*/}
                           <button
-                            onClick={() => toggleUserActivation(user._id!, userName, user.isActive)}
+                            onClick={() => toggleUserActivation(user._id!, userName, user.isActive ?? false)}
                             title={user.isActive ? 'Suspend User' : 'Activate User'}
                             className="rounded-full p-2 text-gray-400 hover:bg-white cursor-pointer"
                           >

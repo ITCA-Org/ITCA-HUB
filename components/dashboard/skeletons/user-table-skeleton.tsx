@@ -34,7 +34,7 @@ const UserTableSkeleton: React.FC<UserTableSkeletonProps> = ({ rows = 10 }) => {
 
           <tbody className="bg-white">
             {[...Array(rows)].map((_, index) => (
-              <tr key={index} className="hover:bg-amber-100/70 even:bg-gray-100/80">
+              <tr key={index} className="even:bg-gray-100/80">
                 {/* User */}
                 <td className="whitespace-nowrap px-8 py-4">
                   <div className="flex items-center">
