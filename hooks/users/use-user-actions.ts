@@ -20,12 +20,14 @@ const useUserActions = ({ token, onUserUpdated }: UseUserActionsProps) => {
     actionType: ActionType,
     userId: string,
     userName: string,
-    userRole?: string
+    userRole?: string,
+    isActive?: boolean
   ) => {
     setModalState({
       userId,
       userName,
       userRole,
+      isActive,
       actionType,
       isOpen: true,
       isLoading: false,
@@ -72,7 +74,8 @@ const useUserActions = ({ token, onUserUpdated }: UseUserActionsProps) => {
               headers: { Authorization: `Bearer ${token}` },
             }
           );
-          successMessage = `${modalState.userName}'s activation status has been updated successfully`;
+          const action = modalState.isActive ? 'suspended' : 'activated';
+          successMessage = `${modalState.userName} has been ${action} successfully`;
           break;
 
         default:
@@ -104,8 +107,8 @@ const useUserActions = ({ token, onUserUpdated }: UseUserActionsProps) => {
     openModal('delete', userId, userName);
   };
 
-  const toggleUserActivation = (userId: string, userName: string) => {
-    openModal('toggleActivation', userId, userName);
+  const toggleUserActivation = (userId: string, userName: string, isActive: boolean) => {
+    openModal('toggleActivation', userId, userName, undefined, isActive);
   };
 
   const updateUserRole = (userId: string, userName: string, currentRole: string) => {

@@ -87,8 +87,10 @@ const ResourceUploader = ({ token, onUploadComplete, onError }: ResourceUploader
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/*==================== Left Column: Resource Information ====================*/}
         <div className="rounded-2xl bg-white/70 p-6">
-          <h3 className="text-lg font-medium text-gray-900 mb-6 flex items-center">
-            <FileText className="h-5 w-5 text-blue-500 mr-2" />
+          <h3 className="text-lg font-medium text-gray-900 mb-6 flex items-center gap-3">
+            <div className="bg-blue-100 p-2 rounded-full">
+              <FileText className="h-5 w-5 text-blue-500" />
+            </div>
             Resource Information
           </h3>
 
@@ -224,12 +226,12 @@ const ResourceUploader = ({ token, onUploadComplete, onError }: ResourceUploader
 
         {/*==================== Right Column: File Upload ====================*/}
         <div className="rounded-2xl bg-white/70 p-6">
-          <h3 className="text-lg font-medium text-gray-900 mb-6 flex items-center">
-            <Upload className="h-5 w-5 text-blue-500 mr-2" />
+          <h3 className="text-lg font-medium text-gray-900 mb-6 flex items-center gap-3">
+            <div className="bg-blue-100 p-2 rounded-full">
+              <Upload className="h-5 w-5 text-blue-500" />
+            </div>
             Upload Files
-            <span className="ml-2 text-sm font-normal text-gray-500">
-              ({selectedFiles.length}/50)
-            </span>
+            <span className="text-sm font-normal text-gray-500">({selectedFiles.length}/50)</span>
           </h3>
 
           {/*==================== File Upload Area ====================*/}

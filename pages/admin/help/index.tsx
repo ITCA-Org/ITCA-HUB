@@ -1,6 +1,5 @@
 import { NextApiRequest } from 'next';
 import {
-  Bell,
   Users,
   Upload,
   Shield,
@@ -40,29 +39,29 @@ const AdminHelpPage: FC<IHelpPage> = ({ userData }) => {
         'Navigate to the Resources section, click "Upload Resource", select your files, fill in the required metadata (title, description, department, category), and click upload. Resources can be made visible to students or kept admin-only.',
     },
     {
-      question: 'How can I manage user accounts and permissions?',
+      question: 'How can I manage user accounts?',
       answer:
-        'Go to the Users section to view all registered users. You can activate/deactivate accounts, view user details, and manage student registrations. Admin permissions allow full access to all system features.',
+        'Go to the Users section to view all registered users. You can toggle user roles (Admin/Student), activate or suspend accounts, and delete users. Use the search and filter options to find specific users quickly.',
     },
     {
       question: 'How do I create and manage events?',
       answer:
-        'Visit the Events section, click "Create Event", fill in event details including title, description, date, location, and registration requirements. You can edit, delete, and view event registrations from the same section.',
+        'Visit the Events section, click "Create Event", fill in event details including title, description, date, time, location, and capacity. You can edit, delete, and view event registrations. Students can register/unregister from events.',
     },
     {
-      question: 'How can I track resource usage and analytics?',
+      question: 'How can I track resource analytics?',
       answer:
-        'Resource analytics are available for each uploaded file. Click on any resource to view download counts, view statistics, and user engagement metrics. This helps understand which resources are most valuable to students.',
+        'Click the analytics icon on any resource in the Resources table to view download counts, view statistics, and engagement metrics. This helps understand which resources are most popular with students.',
     },
     {
       question: 'What happens to deleted resources?',
       answer:
-        'Deleted resources are moved to the Recycle Bin where they can be restored or permanently deleted. This provides a safety net for accidentally deleted materials while keeping the main interface clean.',
+        'Deleted resources are moved to the Recycle Bin where they can be restored or permanently deleted. You can also batch restore or permanently delete multiple resources at once.',
     },
     {
-      question: 'How do I manage resource categories and visibility?',
+      question: 'Can I edit resources after uploading?',
       answer:
-        'When uploading or editing resources, you can set the category (lecture notes, assignments, etc.), department, academic level, and visibility. Admin-only resources are hidden from students.',
+        'Yes! Click the edit icon on any resource to update its title, description, category, department, academic level, or visibility settings without re-uploading files.',
     },
   ];
 
@@ -156,8 +155,8 @@ const AdminHelpPage: FC<IHelpPage> = ({ userData }) => {
                 <div>
                   <h3 className="font-medium text-gray-900 mb-1">User Administration</h3>
                   <p className="text-md text-gray-600 leading-8">
-                    Manage student accounts, approve registrations, deactivate users, and monitor
-                    user activity across the platform.
+                    Manage student accounts, toggle user roles, activate or suspend users, and
+                    monitor user activity across the platform.
                   </p>
                 </div>
               </div>
@@ -167,8 +166,8 @@ const AdminHelpPage: FC<IHelpPage> = ({ userData }) => {
                 <div>
                   <h3 className="font-medium text-gray-900 mb-1">Event Management</h3>
                   <p className="text-md text-gray-600 leading-8">
-                    Create, edit, and manage campus events. Track registrations and send
-                    notifications to students about upcoming activities.
+                    Create, edit, and manage campus events. Track student registrations and monitor
+                    event participation for better planning.
                   </p>
                 </div>
               </div>
@@ -209,23 +208,23 @@ const AdminHelpPage: FC<IHelpPage> = ({ userData }) => {
               </div>
 
               <div className="flex items-start space-x-3">
-                <Bell className="h-5 w-5 text-blue-500 mt-1 flex-shrink-0" />
-                <div>
-                  <h3 className="font-medium text-gray-900 mb-1">Notification System</h3>
-                  <p className="text-md text-gray-600">
-                    Send notifications to students about new resources, events, and important
-                    announcements through the integrated notification system.
-                  </p>
-                </div>
-              </div>
-
-              <div className="flex items-start space-x-3">
                 <Shield className="h-5 w-5 text-blue-500 mt-1 flex-shrink-0" />
                 <div>
                   <h3 className="font-medium text-gray-900 mb-1">Access Control</h3>
                   <p className="text-md text-gray-600">
                     Manage visibility settings for resources, control who can access what content,
                     and maintain admin-only restricted materials.
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-start space-x-3">
+                <GraduationCap className="h-5 w-5 text-blue-500 mt-1 flex-shrink-0" />
+                <div>
+                  <h3 className="font-medium text-gray-900 mb-1">Profile Management</h3>
+                  <p className="text-md text-gray-600">
+                    Update your admin profile information, change your password, and manage your
+                    account settings from the Profile section.
                   </p>
                 </div>
               </div>
@@ -253,8 +252,8 @@ const AdminHelpPage: FC<IHelpPage> = ({ userData }) => {
             <div className="bg-gray-50 rounded-lg p-4">
               <h3 className="font-medium text-green-900 mb-2">User Management</h3>
               <p className="text-md text-green-700">
-                Oversee student registrations, account activations, and user permissions across the
-                platform.
+                Toggle user roles, activate or suspend accounts, and manage user permissions across
+                the platform.
               </p>
             </div>
 
@@ -274,16 +273,18 @@ const AdminHelpPage: FC<IHelpPage> = ({ userData }) => {
             </div>
 
             <div className="bg-gray-50 rounded-lg p-4">
-              <h3 className="font-medium text-red-900 mb-2">Content Moderation</h3>
+              <h3 className="font-medium text-red-900 mb-2">Recycle Bin Management</h3>
               <p className="text-md text-red-700">
-                Review, approve, and moderate user-generated content and ensure quality standards.
+                View, restore, or permanently delete resources from the Recycle Bin. Batch
+                operations allow managing multiple items at once.
               </p>
             </div>
 
             <div className="bg-gray-100 rounded-lg p-4">
-              <h3 className="font-medium text-indigo-900 mb-2">System Administration</h3>
+              <h3 className="font-medium text-indigo-900 mb-2">Profile Settings</h3>
               <p className="text-md text-indigo-700">
-                Manage system settings, user roles, and platform configuration options.
+                Update your profile information, change password, and manage personal account
+                settings.
               </p>
             </div>
           </div>
@@ -298,7 +299,7 @@ const AdminHelpPage: FC<IHelpPage> = ({ userData }) => {
           </div>
 
           <div className="space-y-12">
-            <div className="border-l-4 border-t border-b py-6 border-blue-500 pl-4">
+            <div className="border-l-3 border-t border-b py-6 border-blue-500 pl-4">
               <h3 className="font-medium text-gray-900 mb-4">Uploading Resources</h3>
               <ol className="text-md text-gray-600 space-y-6">
                 <li>1. Navigate to "Resources" and click "Upload Resource"</li>
@@ -311,33 +312,40 @@ const AdminHelpPage: FC<IHelpPage> = ({ userData }) => {
               </ol>
             </div>
 
-            <div className="border-r-4 border-t border-b py-6 border-green-500 pl-4">
+            <div className="border-l-3 border-t border-b py-6 border-blue-500 pl-4">
               <h3 className="font-medium text-gray-900 mb-4">Managing User Accounts</h3>
               <ol className="text-md text-gray-600 space-y-6">
                 <li>1. Go to "Users" section to view all registered users</li>
-                <li>2. Click on any user to view their profile and activity</li>
-                <li>3. Use "Activate" or "Deactivate" to control account access</li>
-                <li>4. Review pending registrations and approve new student accounts</li>
+                <li>2. Search and filter users by name, email, role, or verification status</li>
+                <li>3. Use action buttons to toggle roles, activate/suspend, or delete users</li>
+                <li>4. Click "Refresh" to update the user list with latest data</li>
               </ol>
             </div>
 
-            <div className="border-l-4 border-t border-b py-6 border-purple-500 pl-4">
-              <h3 className="font-medium text-gray-900 mb-4">Creating Events</h3>
+            <div className="border-l-3 border-t border-b py-6 border-blue-500 pl-4">
+              <h3 className="font-medium text-gray-900 mb-4">Creating and Managing Events</h3>
               <ol className="text-md text-gray-600 space-y-6">
                 <li>1. Navigate to "Events" and click "Create Event"</li>
-                <li>2. Enter event details: title, description, date, time, location</li>
-                <li>3. Set registration requirements and capacity limits</li>
-                <li>4. Save the event to make it visible to students</li>
+                <li>
+                  2. Fill in event details: title, description, date, time, location, and capacity
+                </li>
+                <li>3. Save the event to make it visible to students</li>
+                <li>4. View registrations by clicking on any event card</li>
+                <li>5. Edit or delete events using the action buttons on each event card</li>
               </ol>
             </div>
 
-            <div className="border-r-4 border-t border-b py-6 border-red-500 pl-4">
+            <div className="border-l-3 border-t border-b py-6 border-blue-500 pl-4">
               <h3 className="font-medium text-gray-900 mb-4">Using the Recycle Bin</h3>
               <ol className="text-md text-gray-600 space-y-6">
-                <li>1. Access "Recycle Bin" from the Resources section</li>
-                <li>2. View all deleted resources with deletion dates</li>
-                <li>3. Click "Restore" to bring back accidentally deleted items</li>
-                <li>4. Use "Permanent Delete" to remove items completely</li>
+                <li>1. Access "Recycle Bin" from the Resources Management page</li>
+                <li>2. View all deleted resources with deletion timestamps</li>
+                <li>
+                  3. Select resources (hold Ctrl/Cmd for multiple) and click "Restore" or "Delete
+                  Permanently"
+                </li>
+                <li>4. Use search and filters to find specific deleted resources</li>
+                <li>5. Permanently deleted resources cannot be recovered</li>
               </ol>
             </div>
           </div>

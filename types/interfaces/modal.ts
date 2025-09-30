@@ -8,6 +8,7 @@ export interface ModalState {
   isOpen: boolean;
   userName: string;
   userRole?: string;
+  isActive?: boolean;
   isLoading: boolean;
   actionType: ActionType;
 }
@@ -18,6 +19,7 @@ export interface UserActionsModalProps {
   isOpen: boolean;
   userName: string;
   userRole?: string;
+  isActive?: boolean;
   isLoading: boolean;
   onClose: () => void;
   onConfirm: () => void;

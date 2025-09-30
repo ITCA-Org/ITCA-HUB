@@ -9,6 +9,7 @@ const UserActionsModal = ({
   actionType,
   userName,
   userRole,
+  isActive,
   onClose,
   onConfirm,
 }: UserActionsModalProps) => {
@@ -58,12 +59,14 @@ const UserActionsModal = ({
             'bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600',
         };
       case 'toggleActivation':
+        const action = isActive ? 'suspend' : 'activate';
+        const actionCapitalized = isActive ? 'Suspend' : 'Activate';
         return {
           icon: <UserX className="h-5 w-5 text-orange-600" />,
           iconBg: 'bg-orange-100',
-          title: 'Update User Status',
-          description: `Are you sure you want to update ${userName}'s activation status?`,
-          confirmText: isLoading ? 'Updating...' : 'Update Status',
+          title: `${actionCapitalized} User`,
+          description: `Are you sure you want to ${action} ${userName}?`,
+          confirmText: isLoading ? `${actionCapitalized}ing...` : `${actionCapitalized} User`,
           confirmClass:
             'bg-gradient-to-r from-orange-600 to-orange-500 hover:from-orange-700 hover:to-orange-600',
         };

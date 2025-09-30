@@ -1,25 +1,22 @@
-import React, { FC, useState } from 'react';
 import { NextApiRequest } from 'next';
 import {
+  Eye,
+  User,
   Search,
   Download,
   BookOpen,
-  Bell,
-  User,
-  Star,
-  Bookmark,
   FileText,
+  Settings,
   HelpCircle,
   ChevronDown,
   ChevronRight,
   GraduationCap,
-  Settings,
-  Eye,
 } from 'lucide-react';
-import DashboardLayout from '@/components/dashboard/layout/dashboard-layout';
-import DashboardPageHeader from '@/components/dashboard/layout/dashboard-page-header';
 import { UserAuth } from '@/types';
 import { isLoggedIn } from '@/utils/auth';
+import React, { FC, useState } from 'react';
+import DashboardLayout from '@/components/dashboard/layout/dashboard-layout';
+import DashboardPageHeader from '@/components/dashboard/layout/dashboard-page-header';
 
 interface FAQItem {
   question: string;
@@ -37,32 +34,32 @@ const StudentHelpPage: FC<IHelpPage> = ({ userData }) => {
     {
       question: 'How do I download resources?',
       answer:
-        'Navigate to the Resources section, find the resource you need, and click the download button. The system will track your download for analytics purposes.',
+        'Navigate to the Resources section, find the resource you need, and click the download button. The system automatically tracks your downloads for analytics.',
     },
     {
-      question: "Why can't I access certain resources?",
+      question: "Why can't I see certain resources?",
       answer:
-        'Some resources are restricted by department, academic level, or visibility settings. Contact your admin if you believe you should have access to specific resources.',
+        'Some resources may be restricted by department, academic level, or set to admin-only visibility. Use the filters to find resources relevant to your level and department.',
     },
     {
-      question: 'How do I enable notifications?',
+      question: 'How do I register for events?',
       answer:
-        "Go to your browser settings and allow notifications for this site. You'll automatically receive alerts when new resources relevant to your studies are added.",
+        'Go to the Events section, browse available events, and click "Register" on any event card. You can view your registered events and unregister if needed.',
     },
     {
-      question: 'Can I bookmark resources for later?',
+      question: 'Can I preview resources before downloading?',
       answer:
-        'Yes! Use the bookmark feature to save frequently accessed materials. Your bookmarks are saved to your profile for easy access.',
+        'Yes! Click on any resource to view it in the resource viewer. You can preview PDFs, images, videos, audio files, and text files before downloading.',
     },
     {
-      question: 'How do I update my profile information?',
+      question: 'How do I update my profile?',
       answer:
-        "Visit the Profile section, click 'Edit Profile', update your information, and save changes. You can also upload a profile picture.",
+        "Visit the Profile section, click 'Edit Profile', update your information including name, email, department, and academic level, then save changes. You can also change your password.",
     },
     {
-      question: 'What file types are supported?',
+      question: 'What file types can I view and download?',
       answer:
-        'The system supports various file types including PDFs, documents (DOC, DOCX), presentations (PPT, PPTX), images, and archive files (ZIP, RAR).',
+        'The system supports PDFs, documents (DOC, DOCX), presentations (PPT, PPTX), images, videos, audio files, text files, and compressed archives (ZIP, RAR).',
     },
   ];
 
@@ -120,11 +117,11 @@ const StudentHelpPage: FC<IHelpPage> = ({ userData }) => {
                 <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center mr-3">
                   <span className="text-blue-500 font-semibold text-md">3</span>
                 </div>
-                <h3 className="font-medium text-gray-900">Stay Updated</h3>
+                <h3 className="font-medium text-gray-900">Register for Events</h3>
               </div>
               <p className="text-md text-gray-600 leading-8">
-                Enable notifications to get alerts when new resources are added or when there are
-                updates to your bookmarked materials.
+                Browse upcoming ITCA events and register to participate. View event details,
+                capacity, and manage your registrations from the Events section.
               </p>
             </div>
           </div>
@@ -163,22 +160,23 @@ const StudentHelpPage: FC<IHelpPage> = ({ userData }) => {
               </div>
 
               <div className="flex items-start space-x-3">
-                <Bookmark className="h-5 w-5 text-blue-500 mt-1 flex-shrink-0" />
+                <Eye className="h-5 w-5 text-blue-500 mt-1 flex-shrink-0" />
                 <div>
-                  <h3 className="font-medium text-gray-900 mb-1">Bookmarks</h3>
+                  <h3 className="font-medium text-gray-900 mb-1">Resource Viewer</h3>
                   <p className="text-md text-gray-600 leading-8">
-                    Save frequently used resources to your bookmarks for quick access anytime.
+                    Click any resource to preview it before downloading. Supports PDFs, images,
+                    videos, audio files, and text documents.
                   </p>
                 </div>
               </div>
 
               <div className="flex items-start space-x-3">
-                <Star className="h-5 w-5 text-blue-500 mt-1 flex-shrink-0" />
+                <GraduationCap className="h-5 w-5 text-blue-500 mt-1 flex-shrink-0" />
                 <div>
-                  <h3 className="font-medium text-gray-900 mb-1">Rate & Review</h3>
+                  <h3 className="font-medium text-gray-900 mb-1">Event Registration</h3>
                   <p className="text-md text-gray-600 leading-8">
-                    Rate resources and leave feedback to help other students and improve the quality
-                    of materials.
+                    Register for campus events, workshops, and activities. Track your registrations
+                    and unregister if plans change.
                   </p>
                 </div>
               </div>
@@ -186,34 +184,34 @@ const StudentHelpPage: FC<IHelpPage> = ({ userData }) => {
 
             <div className="space-y-8">
               <div className="flex items-start space-x-3">
-                <Bell className="h-5 w-5 text-blue-500 mt-1 flex-shrink-0" />
-                <div>
-                  <h3 className="font-medium text-gray-900 mb-1">Push Notifications</h3>
-                  <p className="text-md text-gray-600">
-                    Get instant notifications when new resources are added or when there are updates
-                    to existing materials.
-                  </p>
-                </div>
-              </div>
-
-              <div className="flex items-start space-x-3">
                 <User className="h-5 w-5 text-blue-500 mt-1 flex-shrink-0" />
                 <div>
                   <h3 className="font-medium text-gray-900 mb-1">Profile Management</h3>
                   <p className="text-md text-gray-600">
-                    Manage your profile information, update your details, and upload a profile
-                    picture.
+                    Update your profile information including name, email, department, and academic
+                    level. Change your password from the Profile section.
                   </p>
                 </div>
               </div>
 
               <div className="flex items-start space-x-3">
-                <Eye className="h-5 w-5 text-blue-500 mt-1 flex-shrink-0" />
+                <Search className="h-5 w-5 text-blue-500 mt-1 flex-shrink-0" />
                 <div>
-                  <h3 className="font-medium text-gray-900 mb-1">Resource Preview</h3>
+                  <h3 className="font-medium text-gray-900 mb-1">Smart Filtering</h3>
                   <p className="text-md text-gray-600">
-                    Preview documents before downloading to ensure they contain the information you
-                    need.
+                    Filter resources by department, academic level, and category. Search
+                    functionality helps you find exactly what you need quickly.
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-start space-x-3">
+                <FileText className="h-5 w-5 text-blue-500 mt-1 flex-shrink-0" />
+                <div>
+                  <h3 className="font-medium text-gray-900 mb-1">Multi-Format Support</h3>
+                  <p className="text-md text-gray-600">
+                    Access various file formats including PDFs, documents, presentations, images,
+                    videos, and audio files all in one place.
                   </p>
                 </div>
               </div>
@@ -293,22 +291,25 @@ const StudentHelpPage: FC<IHelpPage> = ({ userData }) => {
               </ol>
             </div>
 
-            <div className="border-r-4 border-t border-b py-6 border-green-500 pl-4">
+            <div className="border-r-4 border-t border-b py-6 border-blue-500 pl-4">
               <h3 className="font-medium text-gray-900 mb-4">Managing Your Profile</h3>
               <ol className="text-md text-gray-600 space-y-6">
                 <li>1. Go to "Profile" section from the sidebar</li>
-                <li>2. Click "Edit Profile" to update your information</li>
-                <li>3. Upload a profile picture by clicking the camera icon</li>
-                <li>4. Save your changes to update your profile</li>
+                <li>2. Click "Edit Profile" to update your personal information</li>
+                <li>3. Update your name, email, department, and academic level</li>
+                <li>4. Change your password using the "Change Password" option</li>
+                <li>5. Save changes to update your profile</li>
               </ol>
             </div>
 
-            <div className="border-l-4  border-t border-b py-6 border-purple-500 pl-4">
-              <h3 className="font-medium text-gray-900 mb-4">Enabling Notifications</h3>
+            <div className="border-l-4  border-t border-b py-6 border-blue-500 pl-4">
+              <h3 className="font-medium text-gray-900 mb-4">Registering for Events</h3>
               <ol className="text-md text-gray-600 space-y-6">
-                <li>1. Allow notifications when prompted by your browser</li>
-                <li>2. Notifications will automatically appear for new resources</li>
-                <li>3. You can manage notification settings in your browser preferences</li>
+                <li>1. Navigate to "Events" section from the sidebar</li>
+                <li>2. Browse upcoming events and click on any to view details</li>
+                <li>3. Click "Register" to sign up for an event</li>
+                <li>4. View your registered events in the Events section</li>
+                <li>5. Unregister from events if your plans change</li>
               </ol>
             </div>
           </div>

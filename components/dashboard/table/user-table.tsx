@@ -177,10 +177,10 @@ const UserTable = ({
                           </button>
                           {/*==================== End of Toggle User Role ====================*/}
 
-                          {/*==================== Toggle User Activation ====================*/}
+                          {/*==================== Toggle User Status (Activate/Suspend) ====================*/}
                           <button
-                            onClick={() => toggleUserActivation(user._id!, userName)}
-                            title={user.isActive ? 'Deactivate User' : 'Activate User'}
+                            onClick={() => toggleUserActivation(user._id!, userName, user.isActive)}
+                            title={user.isActive ? 'Suspend User' : 'Activate User'}
                             className="rounded-full p-2 text-gray-400 hover:bg-white cursor-pointer"
                           >
                             {user.isActive ? (
@@ -189,7 +189,7 @@ const UserTable = ({
                               <UserCheck className="h-4.5 w-4.5 text-gray-500 rounded-full" />
                             )}
                           </button>
-                          {/*==================== End of Toggle User Activation ====================*/}
+                          {/*==================== End of Toggle User Status ====================*/}
 
                           {/*==================== Delete User ====================*/}
                           <button
@@ -299,6 +299,7 @@ const UserTable = ({
         isOpen={modalState.isOpen}
         userName={modalState.userName}
         userRole={modalState.userRole}
+        isActive={modalState.isActive}
         isLoading={modalState.isLoading}
         actionType={modalState.actionType}
       />
