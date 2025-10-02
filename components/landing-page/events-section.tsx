@@ -136,7 +136,15 @@ const getStatusConfig = (status: string) => {
   }
 };
 
-const EventCard = ({ event, index, onView }: { event: Event; index: number; onView: (event: Event) => void }) => {
+const EventCard = ({
+  event,
+  index,
+  onView,
+}: {
+  event: Event;
+  index: number;
+  onView: (event: Event) => void;
+}) => {
   const [imageError, setImageError] = useState(false);
   const statusConfig = getStatusConfig(event.status);
 
@@ -170,7 +178,7 @@ const EventCard = ({ event, index, onView }: { event: Event; index: number; onVi
       {/*==================== End of Event Image ====================*/}
 
       {/*==================== Event Content ====================*/}
-      <div className="p-6">
+      <div className="px-6 pt-6 pb-2">
         {/*==================== Event Header ====================*/}
         <div className="mb-4 flex items-start justify-between">
           <div className="flex-1">
@@ -225,7 +233,7 @@ const EventCard = ({ event, index, onView }: { event: Event; index: number; onVi
 
         {/*==================== Landing Page Registration Section ====================*/}
         {event.registrationRequired && (
-          <div className="mt-4 pt-4 border-t border-gray-100">
+          <div className="mt-4 pt-2">
             <Link href="/auth" className="cursor-pointer">
               <button className="w-full inline-flex justify-center items-center rounded-lg bg-gradient-to-r from-blue-600 to-blue-500 px-4 py-2 text-sm font-medium text-white hover:from-blue-700 hover:to-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-300 shadow-md hover:shadow-lg">
                 <ArrowRight className="h-4 w-4 mr-2" />
@@ -237,7 +245,7 @@ const EventCard = ({ event, index, onView }: { event: Event; index: number; onVi
 
         {/*==================== No Registration Required ====================*/}
         {!event.registrationRequired && (
-          <div className="mt-4 pt-4 border-t border-gray-100">
+          <div className="mt-6 pt-4 border-t border-gray-300">
             <div className="text-center text-sm text-green-600 font-medium">
               <Calendar className="inline h-4 w-4 mr-1" />
               No registration required - Join anytime!
@@ -282,10 +290,21 @@ const EventsSection = () => {
     fetchEvents();
   }, []);
 
+  useEffect(() => {
+    if (viewingEvent) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [viewingEvent]);
+
   return (
     <section
       id="events"
-      style={{ contain: 'layout style' }}
       className="relative py-24 overflow-hidden bg-gradient-to-b from-white to-gray-100"
     >
       <div className="absolute inset-0 z-10 overflow-hidden opacity-20">
@@ -400,7 +419,7 @@ const EventsSection = () => {
                   Check back soon or sign in to stay updated!
                 </p>
 
-                {/*==================== Simple CTA ====================*/}
+                {/*==================== CTA ====================*/}
                 <div className="pt-4">
                   <Link href="/auth">
                     <button className="inline-flex items-center px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200 font-medium">
@@ -409,7 +428,7 @@ const EventsSection = () => {
                     </button>
                   </Link>
                 </div>
-                {/*==================== End of Simple CTA ====================*/}
+                {/*==================== End of CTA ====================*/}
               </div>
               {/*==================== End of Content ====================*/}
             </div>
@@ -424,34 +443,44 @@ const EventsSection = () => {
 
         {/*==================== View Event Modal ====================*/}
         {viewingEvent && (
-          <div className="fixed inset-0 bg-black/30 backdrop-blur-md bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white rounded-xl shadow-lg p-6 max-w-4xl w-full mx-4 max-h-[90vh] overflow-y-auto relative hide-scrollbar">
+          <div className="fixed inset-0 bg-black/30 backdrop-blur-md bg-opacity-50 flex items-center justify-center z-40 pt-20 pb-4 px-4">
+            <div className="bg-white rounded-xl shadow-lg p-6 max-w-4xl w-full max-h-full overflow-y-auto relative hide-scrollbar">
               <div>
                 <div className="flex items-center justify-between w-full mb-6">
                   <h2 className="text-2xl font-bold text-gray-900">{viewingEvent.title}</h2>
-                  <button onClick={() => setViewingEvent(null)} className="text-gray-400 hover:text-gray-600 cursor-pointer">
+                  <button
+                    title="View Event Details"
+                    onClick={() => setViewingEvent(null)}
+                    className="text-gray-400 hover:text-gray-600 cursor-pointer"
+                  >
                     <X className="w-5 h-5" />
                   </button>
                 </div>
 
-                {viewingEvent.imageUrl && (
-                  <div className="mb-6">
-                    <div className="rounded-lg overflow-hidden">
+                <div className="mb-6">
+                  <div className="rounded-lg overflow-hidden aspect-video w-full relative">
+                    {viewingEvent.imageUrl ? (
                       <Image
-                        width={800}
-                        height={256}
+                        fill
+                        priority
                         alt={viewingEvent.title}
                         src={viewingEvent.imageUrl}
-                        className="w-full h-full object-cover"
+                        className="object-cover"
                       />
-                    </div>
+                    ) : (
+                      <div className="h-full w-full bg-gradient-to-br from-blue-500 via-amber-300 to-blue-500 flex items-center justify-center">
+                        <Calendar className="h-16 w-16 text-white/80" />
+                      </div>
+                    )}
                   </div>
-                )}
+                </div>
 
                 {viewingEvent.description && (
                   <div className="mb-6">
                     <h3 className="text-lg font-medium mb-3 text-gray-900">Description</h3>
-                    <p className="text-gray-600 bg-gray-50 rounded-lg p-4">{viewingEvent.description}</p>
+                    <p className="text-gray-600 bg-gray-50 rounded-lg p-4">
+                      {viewingEvent.description}
+                    </p>
                   </div>
                 )}
               </div>

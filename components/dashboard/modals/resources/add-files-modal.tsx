@@ -246,7 +246,7 @@ const AddFilesModal = ({ isOpen, resource, token, onClose, onFilesAdded }: AddFi
           <button
             onClick={onClose}
             disabled={isUploading}
-            className="p-2 text-gray-400 hover:text-gray-600 transition-colors disabled:opacity-50"
+            className="p-2 text-gray-400 hover:text-gray-600 transition-colors disabled:opacity-50 cursor-pointer"
           >
             <X className="h-5 w-5" />
           </button>
@@ -377,7 +377,7 @@ const AddFilesModal = ({ isOpen, resource, token, onClose, onFilesAdded }: AddFi
           <button
             onClick={handleAddFiles}
             disabled={maxNewFiles === 0 || isUploading}
-            className="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
           >
             <Plus className="h-4 w-4 mr-2" />
             Add More Files
@@ -387,7 +387,7 @@ const AddFilesModal = ({ isOpen, resource, token, onClose, onFilesAdded }: AddFi
             <button
               onClick={onClose}
               disabled={isUploading}
-              className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50"
+              className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 cursor-pointer"
             >
               Cancel
             </button>

@@ -59,8 +59,8 @@ const DownloadResourceModal = ({
 
                   <button
                     type="button"
-                    className="rounded-full p-1.5 text-gray-400 hover:bg-gray-100 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-500"
                     onClick={onClose}
+                    className="rounded-full p-1.5 text-gray-400 hover:bg-gray-100 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-500 cursor-pointer"
                   >
                     <X className="h-5 w-5" />
                   </button>

@@ -160,7 +160,7 @@ const Sidebar = ({ open, setOpen }: DashboardSidebarProps) => {
                   className={`flex items-center px-4 py-3 text-lg font-medium  ${
                     isActive(item.href)
                       ? 'bg-gradient-to-r from-amber-100/70 to-blue-100/70 text-blue-700 border-none rounded-lg'
-                      : 'text-gray-700 hover:bg-amber-50/50 hover:text-blue-700'
+                      : 'text-gray-700 hover:bg-amber-50 hover:text-blue-700'
                   }`}
                 >
                   <span

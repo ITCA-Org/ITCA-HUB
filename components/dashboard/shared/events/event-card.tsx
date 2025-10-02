@@ -202,7 +202,7 @@ const EventCard = ({
       {/*==================== End of Event Image ====================*/}
 
       {/*==================== Event Content ====================*/}
-      <div className="p-6">
+      <div className="px-6 pt-6 pb-3">
         {/*==================== Event Header ====================*/}
         <div className="mb-4 flex items-start justify-between">
           <div className="flex-1">
@@ -217,7 +217,7 @@ const EventCard = ({
           {/*==================== Actions ====================*/}
           <div className="ml-3 flex space-x-1">
             <button
-              title="View Event"
+              title="View Event Details"
               onClick={() => onView?.(event._id)}
               className="rounded-md p-1.5 text-gray-400 hover:bg-green-50 hover:text-green-400 transition-colors cursor-pointer"
             >
@@ -277,7 +277,7 @@ const EventCard = ({
 
         {/*==================== Student Registration Section ====================*/}
         {role === 'student' && event.registrationRequired && (
-          <div className="mt-4 pt-4 border-t border-gray-100">
+          <div className="mt-4 pt-2">
             {isRegistered ? (
               <div className="space-y-3">
                 <button
@@ -334,9 +334,9 @@ const EventCard = ({
 
         {/*==================== Admin Registration Message ====================*/}
         {role === 'admin' && event.registrationRequired && (
-          <div className="mt-3 pt-3 border-t border-gray-300">
+          <div className="mt-6 pt-4 pb-2 border-t border-gray-300">
             <div className="text-center text-sm text-gray-500 font-medium">
-              Admins cannot register for events
+              Admins cannot register for events.
             </div>
           </div>
         )}
@@ -344,7 +344,7 @@ const EventCard = ({
 
         {/*==================== No Registration Required ====================*/}
         {!event.registrationRequired && (
-          <div className="mt-3 pt-3 border-t border-gray-300">
+          <div className="mt-6 pt-4 border-t border-gray-300">
             <div className="text-center text-sm text-green-600 font-medium">
               No registration required - Join anytime.
             </div>

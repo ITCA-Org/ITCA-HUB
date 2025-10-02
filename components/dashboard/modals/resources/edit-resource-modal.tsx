@@ -6,9 +6,9 @@ import { ResourceEditModalProps } from '@/types/interfaces/modal';
 
 const ResourceEditModal = ({
   isOpen,
-  resource,
-  onClose,
   onSave,
+  onClose,
+  resource,
   isLoading = false,
 }: ResourceEditModalProps) => {
   const [title, setTitle] = useState('');
@@ -113,10 +113,10 @@ const ResourceEditModal = ({
 
                 <button
                   type="button"
-                  className="rounded-full p-1.5 text-gray-400 hover:bg-gray-100 hover:text-gray-500 disabled:opacity-50"
                   onClick={onClose}
-                  disabled={isLoading}
                   aria-label="Close"
+                  disabled={isLoading}
+                  className="rounded-full p-1.5 text-gray-400 hover:bg-gray-100 hover:text-gray-500 disabled:opacity-50 cursor-pointer"
                 >
                   <X className="h-5 w-5" />
                 </button>
@@ -255,7 +255,7 @@ const ResourceEditModal = ({
                   type="button"
                   onClick={onClose}
                   disabled={isLoading}
-                  className="inline-flex justify-center rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50"
+                  className="inline-flex justify-center rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 cursor-pointer"
                 >
                   Cancel
                 </button>
@@ -263,7 +263,7 @@ const ResourceEditModal = ({
                   type="button"
                   onClick={handleSave}
                   disabled={isLoading || !title.trim()}
-                  className="inline-flex justify-center rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50"
+                  className="inline-flex justify-center rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 cursor-pointer"
                 >
                   {isLoading ? (
                     <>

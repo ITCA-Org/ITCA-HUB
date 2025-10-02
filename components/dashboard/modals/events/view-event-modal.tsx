@@ -58,7 +58,7 @@ const ViewEventModal = ({ isOpen, eventId, token, onClose, role }: ViewEventModa
         <div className="bg-white rounded-xl shadow-lg p-6 max-w-4xl w-full mx-4">
           <button
             onClick={onClose}
-            className="absolute top-4 right-4 text-gray-400 hover:text-gray-600"
+            className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 cursor-pointer"
           >
             <X className="w-5 h-5" />
           </button>
@@ -66,7 +66,7 @@ const ViewEventModal = ({ isOpen, eventId, token, onClose, role }: ViewEventModa
             <p className="text-center text-gray-500">{error}</p>
             <button
               onClick={onClose}
-              className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+              className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 cursor-pointer"
             >
               Close
             </button>

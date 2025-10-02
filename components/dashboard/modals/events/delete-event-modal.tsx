@@ -67,7 +67,7 @@ const DeleteEventModal = ({ isOpen, onClose, onConfirm }: DeleteEventModalProps)
               type="button"
               onClick={handleClose}
               disabled={isDeleting}
-              className="rounded-full p-1.5 text-gray-400 hover:bg-gray-100 hover:text-gray-500 disabled:opacity-50"
+              className="rounded-full p-1.5 text-gray-400 hover:bg-gray-100 hover:text-gray-500 disabled:opacity-50 cursor-pointer"
             >
               <X className="h-5 w-5" />
             </button>
@@ -88,7 +88,7 @@ const DeleteEventModal = ({ isOpen, onClose, onConfirm }: DeleteEventModalProps)
               type="button"
               onClick={handleClose}
               disabled={isDeleting}
-              className="inline-flex justify-center rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50"
+              className="inline-flex justify-center rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 cursor-pointer"
             >
               Cancel
             </button>
@@ -96,7 +96,7 @@ const DeleteEventModal = ({ isOpen, onClose, onConfirm }: DeleteEventModalProps)
               type="button"
               disabled={isDeleting}
               onClick={handleConfirm}
-              className="inline-flex justify-center items-center rounded-lg bg-gradient-to-r from-red-600 to-red-500 px-4 py-2 text-sm font-medium text-white hover:from-red-700 hover:to-red-600 focus:outline-none focus:ring-red-500 focus:ring-offset-2 transition-all duration-300 shadow-md hover:shadow-lg disabled:opacity-50"
+              className="inline-flex justify-center items-center rounded-lg bg-gradient-to-r from-red-600 to-red-500 px-4 py-2 text-sm font-medium text-white hover:from-red-700 hover:to-red-600 focus:outline-none focus:ring-red-500 focus:ring-offset-2 transition-all duration-300 shadow-md hover:shadow-lg disabled:opacity-50 cursor-pointer"
             >
               {isDeleting ? (
                 <>
