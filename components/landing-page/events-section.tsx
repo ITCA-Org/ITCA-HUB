@@ -447,7 +447,9 @@ const EventsSection = () => {
             <div className="bg-white rounded-xl shadow-lg p-6 max-w-4xl w-full max-h-full overflow-y-auto relative hide-scrollbar">
               <div>
                 <div className="flex items-center justify-between w-full mb-6">
-                  <h2 className="text-2xl font-bold text-gray-900">{viewingEvent.title}</h2>
+                  <h2 className="text-base md:text-2xl font-bold text-gray-900">
+                    {viewingEvent.title}
+                  </h2>
                   <button
                     title="View Event Details"
                     onClick={() => setViewingEvent(null)}
@@ -477,8 +479,8 @@ const EventsSection = () => {
 
                 {viewingEvent.description && (
                   <div className="mb-6">
-                    <h3 className="text-lg font-medium mb-3 text-gray-900">Description</h3>
-                    <p className="text-gray-600 bg-gray-50 rounded-lg p-4">
+                    <h3 className="text-base md:text-lg font-medium mb-3 text-gray-900">Description</h3>
+                    <p className="text-gray-600 text-sm md:text-[1.2rem] bg-gray-50 rounded-lg p-4">
                       {viewingEvent.description}
                     </p>
                   </div>

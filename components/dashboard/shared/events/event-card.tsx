@@ -344,7 +344,7 @@ const EventCard = ({
 
         {/*==================== No Registration Required ====================*/}
         {!event.registrationRequired && (
-          <div className="mt-6 pt-4 border-t border-gray-300">
+          <div className="mt-6 pt-4 pb-2 border-t border-gray-300">
             <div className="text-center text-sm text-green-600 font-medium">
               No registration required - Join anytime.
             </div>

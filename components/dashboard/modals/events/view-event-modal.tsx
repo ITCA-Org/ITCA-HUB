@@ -83,7 +83,7 @@ const ViewEventModal = ({ isOpen, eventId, token, onClose, role }: ViewEventModa
       <div className="bg-white rounded-xl shadow-lg p-6 max-w-4xl w-full mx-4 max-h-[90vh] overflow-y-auto relative hide-scrollbar">
         <div>
           <div className="flex items-center justify-between w-full mb-6">
-            <h2 className="text-2xl font-bold text-gray-900">{event.title}</h2>
+            <h2 className="text-[1.3rem] md:text-2xl font-bold text-gray-900">{event.title}</h2>
             <button onClick={onClose} className="text-gray-400 hover:text-gray-600 cursor-pointer">
               <X className="w-5 h-5" />
             </button>
