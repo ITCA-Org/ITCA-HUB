@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
-import { Calendar, Clock, MapPin, Users, ArrowRight, ChevronRight } from 'lucide-react';
+import { Calendar, Clock, MapPin, Users, ArrowRight, ChevronRight, EyeIcon, X } from 'lucide-react';
 import Link from 'next/link';
 import axios from 'axios';
 
@@ -136,7 +136,7 @@ const getStatusConfig = (status: string) => {
   }
 };
 
-const EventCard = ({ event, index }: { event: Event; index: number }) => {
+const EventCard = ({ event, index, onView }: { event: Event; index: number; onView: (event: Event) => void }) => {
   const [imageError, setImageError] = useState(false);
   const statusConfig = getStatusConfig(event.status);
 
@@ -181,6 +181,16 @@ const EventCard = ({ event, index }: { event: Event; index: number }) => {
               {statusConfig.text}
             </span>
           </div>
+
+          <div className="ml-3">
+            <button
+              title="View Event"
+              onClick={() => onView(event)}
+              className="rounded-md p-1.5 text-gray-400 hover:bg-green-50 hover:text-green-400 transition-colors cursor-pointer"
+            >
+              <EyeIcon className="h-4 w-4" />
+            </button>
+          </div>
         </div>
         {/*==================== End of Event Header ====================*/}
 
@@ -202,12 +212,14 @@ const EventCard = ({ event, index }: { event: Event; index: number }) => {
             <MapPin className="mr-2 h-4 w-4 text-red-500" />
             <span className="line-clamp-1 text-gray-500">{event.location}</span>
           </div>
-          <div className="flex items-center">
-            <Users className="mr-2 h-4 w-4 text-green-500" />
-            <span className="text-gray-500">
-              {event.attendees.length} / {event.capacity} registered
-            </span>
-          </div>
+          {event.registrationRequired && (
+            <div className="flex items-center">
+              <Users className="mr-2 h-4 w-4 text-green-500" />
+              <span className="text-gray-500">
+                {event.attendees.length} / {event.capacity} registered
+              </span>
+            </div>
+          )}
         </div>
         {/*==================== End of Event Details ====================*/}
 
@@ -243,6 +255,7 @@ const EventsSection = () => {
   const [events, setEvents] = useState<Event[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [viewingEvent, setViewingEvent] = useState<Event | null>(null);
 
   useEffect(() => {
     const fetchEvents = async () => {
@@ -404,10 +417,48 @@ const EventsSection = () => {
         ) : (
           <div className="grid gap-8 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
             {events.map((event, index) => (
-              <EventCard key={event._id} event={event} index={index} />
+              <EventCard key={event._id} event={event} index={index} onView={setViewingEvent} />
             ))}
           </div>
         )}
+
+        {/*==================== View Event Modal ====================*/}
+        {viewingEvent && (
+          <div className="fixed inset-0 bg-black/30 backdrop-blur-md bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-white rounded-xl shadow-lg p-6 max-w-4xl w-full mx-4 max-h-[90vh] overflow-y-auto relative hide-scrollbar">
+              <div>
+                <div className="flex items-center justify-between w-full mb-6">
+                  <h2 className="text-2xl font-bold text-gray-900">{viewingEvent.title}</h2>
+                  <button onClick={() => setViewingEvent(null)} className="text-gray-400 hover:text-gray-600 cursor-pointer">
+                    <X className="w-5 h-5" />
+                  </button>
+                </div>
+
+                {viewingEvent.imageUrl && (
+                  <div className="mb-6">
+                    <div className="rounded-lg overflow-hidden">
+                      <Image
+                        width={800}
+                        height={256}
+                        alt={viewingEvent.title}
+                        src={viewingEvent.imageUrl}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                  </div>
+                )}
+
+                {viewingEvent.description && (
+                  <div className="mb-6">
+                    <h3 className="text-lg font-medium mb-3 text-gray-900">Description</h3>
+                    <p className="text-gray-600 bg-gray-50 rounded-lg p-4">{viewingEvent.description}</p>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+        {/*==================== End of View Event Modal ====================*/}
 
         <motion.div
           viewport={{ once: true }}

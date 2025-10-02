@@ -6,11 +6,10 @@ import {
   MapPin,
   Trash2,
   XCircle,
+  EyeIcon,
   UserPlus,
   Calendar,
   UserMinus,
-  CheckCircle,
-  EyeIcon,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import Image from 'next/image';
@@ -215,33 +214,35 @@ const EventCard = ({
             </span>
           </div>
 
-          {/*==================== Admin Actions ====================*/}
-          {role === 'admin' && (
-            <div className="ml-3 flex space-x-1">
-              <button
-                title="View Event"
-                onClick={() => onView?.(event._id)}
-                className="rounded-md p-1.5 text-gray-400 hover:bg-green-50 hover:text-green-400 transition-colors cursor-pointer"
-              >
-                <EyeIcon className="h-4 w-4" />
-              </button>
-              <button
-                title="Edit event"
-                onClick={() => onEdit?.(event._id)}
-                className="rounded-md p-1.5 text-gray-400 hover:bg-blue-50 hover:text-blue-500 transition-colors cursor-pointer"
-              >
-                <Edit className="h-4 w-4" />
-              </button>
-              <button
-                title="Delete event"
-                onClick={() => onDelete?.(event._id)}
-                className="rounded-md p-1.5 text-gray-400 hover:bg-red-50 hover:text-red-600 transition-colors cursor-pointer"
-              >
-                <Trash2 className="h-4 w-4" />
-              </button>
-            </div>
-          )}
-          {/*==================== End of Admin Actions ====================*/}
+          {/*==================== Actions ====================*/}
+          <div className="ml-3 flex space-x-1">
+            <button
+              title="View Event"
+              onClick={() => onView?.(event._id)}
+              className="rounded-md p-1.5 text-gray-400 hover:bg-green-50 hover:text-green-400 transition-colors cursor-pointer"
+            >
+              <EyeIcon className="h-4 w-4" />
+            </button>
+            {role === 'admin' && (
+              <>
+                <button
+                  title="Edit event"
+                  onClick={() => onEdit?.(event._id)}
+                  className="rounded-md p-1.5 text-gray-400 hover:bg-blue-50 hover:text-blue-500 transition-colors cursor-pointer"
+                >
+                  <Edit className="h-4 w-4" />
+                </button>
+                <button
+                  title="Delete event"
+                  onClick={() => onDelete?.(event._id)}
+                  className="rounded-md p-1.5 text-gray-400 hover:bg-red-50 hover:text-red-600 transition-colors cursor-pointer"
+                >
+                  <Trash2 className="h-4 w-4" />
+                </button>
+              </>
+            )}
+          </div>
+          {/*==================== End of Actions ====================*/}
         </div>
         {/*==================== End of Event Header ====================*/}
 
@@ -263,12 +264,14 @@ const EventCard = ({
             <MapPin className="mr-2 h-4 w-4 text-blue-500" />
             <span className="line-clamp-1 text-gray-500">{event.location}</span>
           </div>
-          <div className="flex items-center">
-            <Users className="mr-2 h-4 w-4 text-blue-500" />
-            <span className="text-gray-500">
-              {event.attendees.length} / {event.capacity} registered
-            </span>
-          </div>
+          {event.registrationRequired && (
+            <div className="flex items-center">
+              <Users className="mr-2 h-4 w-4 text-blue-500" />
+              <span className="text-gray-500">
+                {event.attendees.length} / {event.capacity} registered
+              </span>
+            </div>
+          )}
         </div>
         {/*==================== End of Event Details ====================*/}
 
@@ -329,12 +332,21 @@ const EventCard = ({
           </div>
         )}
 
+        {/*==================== Admin Registration Message ====================*/}
+        {role === 'admin' && event.registrationRequired && (
+          <div className="mt-3 pt-3 border-t border-gray-300">
+            <div className="text-center text-sm text-gray-500 font-medium">
+              Admins cannot register for events
+            </div>
+          </div>
+        )}
+        {/*==================== End of Admin Registration Message ====================*/}
+
         {/*==================== No Registration Required ====================*/}
-        {role === 'student' && !event.registrationRequired && (
-          <div className="mt-4 pt-4 border-t border-gray-100">
+        {!event.registrationRequired && (
+          <div className="mt-3 pt-3 border-t border-gray-300">
             <div className="text-center text-sm text-green-600 font-medium">
-              <CheckCircle className="inline h-4 w-4 mr-1" />
-              No registration required - Join anytime!
+              No registration required - Join anytime.
             </div>
           </div>
         )}

@@ -89,4 +89,5 @@ export interface ViewEventModalProps {
   isOpen: boolean;
   eventId: string;
   onClose: () => void;
+  role?: 'admin' | 'student';
 }

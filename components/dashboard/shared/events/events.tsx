@@ -484,6 +484,7 @@ const EventsComponent = ({ role, userData }: EventsComponentProps) => {
       {/*==================== View Event Modal ====================*/}
       {showViewModal && eventToView && (
         <ViewEventModal
+          role={role}
           isOpen={showViewModal}
           eventId={eventToView}
           token={userData.token}

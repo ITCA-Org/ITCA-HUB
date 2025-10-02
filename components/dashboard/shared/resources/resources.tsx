@@ -416,20 +416,20 @@ const ResourcesComponent = ({ role, userData }: ResourcesComponentProps) => {
           token={userData.token}
           total={pagination.total}
           limit={pagination.limit}
-          onRefresh={() => loadResources(true)}
           setPage={handlePageChange}
           page={pagination.currentPage}
           onClearFilters={clearFilters}
+          onCacheInvalidate={clearCache}
           searchTerm={filters.searchTerm}
           totalPages={pagination.totalPages}
+          onRefresh={() => loadResources(true)}
           isLoading={isLoading || isClearingFilters}
           userRole={role === 'admin' ? 'admin' : 'user'}
-          hasActiveFilters={(!!debouncedSearchTerm || hasActiveFilters) && !isClearingFilters}
           onDeleteResource={role === 'admin' ? handleDeleteResource : undefined}
           onDeleteMultiple={role === 'admin' ? handleDeleteMultiple : undefined}
           onRestoreResource={role === 'admin' ? handleRestoreResource : undefined}
           onRestoreMultiple={role === 'admin' ? handleRestoreMultiple : undefined}
-          onCacheInvalidate={clearCache}
+          hasActiveFilters={(!!debouncedSearchTerm || hasActiveFilters) && !isClearingFilters}
         />
       </>
     </DashboardLayout>

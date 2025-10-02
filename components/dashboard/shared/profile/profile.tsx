@@ -37,6 +37,7 @@ const ProfileComponent = ({ role, userData }: ProfileComponentProps) => {
 
   const [isChangingPasswordMode, setIsChangingPasswordMode] = useState(false);
   const [isEditingProfile, setIsEditingProfile] = useState(false);
+  const [imageError, setImageError] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [showPasswords, setShowPasswords] = useState({
     current: false,
@@ -107,6 +108,7 @@ const ProfileComponent = ({ role, userData }: ProfileComponentProps) => {
     try {
       const imageUrl = await uploadImageOnly(file);
       if (imageUrl) {
+        setImageError(false);
         setProfileForm((prev) => ({
           ...prev,
           profilePictureUrl: imageUrl,
@@ -210,20 +212,21 @@ const ProfileComponent = ({ role, userData }: ProfileComponentProps) => {
                 <div className="space-y-6">
                   <div className="flex flex-col md:flex-row md:flex items-center space-x-4 border-b pt-2 pb-4">
                     <div className="relative">
-                      {profile?.profilePictureUrl ? (
+                      {profile?.profilePictureUrl && !imageError ? (
                         <Image
                           width={192}
                           height={192}
                           alt="Profile"
                           src={profile.profilePictureUrl}
+                          onError={() => setImageError(true)}
                           className="w-48 h-48 rounded-full object-cover border-4 border-blue-100"
                         />
                       ) : (
-                        <div className="w-16 h-16 rounded-full bg-blue-100 flex items-center justify-center border-4 border-blue-200">
+                        <div className="w-48 h-48 rounded-full bg-gradient-to-br from-blue-500 via-amber-300 to-blue-500 flex items-center justify-center">
                           {role === 'admin' ? (
-                            <Crown className="w-8 h-8 text-blue-500" />
+                            <Crown className="w-16 h-16 text-white/80" />
                           ) : (
-                            <User className="w-8 h-8 text-blue-500" />
+                            <User className="w-16 h-16 text-white/80" />
                           )}
                         </div>
                       )}
@@ -277,20 +280,21 @@ const ProfileComponent = ({ role, userData }: ProfileComponentProps) => {
                 <div className="space-y-6">
                   <div className="flex flex-col md:flex-row md:flex items-center space-x-4">
                     <div className="relative">
-                      {profileForm.profilePictureUrl || profile?.profilePictureUrl ? (
+                      {(profileForm.profilePictureUrl || profile?.profilePictureUrl) && !imageError ? (
                         <Image
                           width={192}
                           height={192}
                           alt="Profile"
                           src={profileForm.profilePictureUrl || profile?.profilePictureUrl || ''}
+                          onError={() => setImageError(true)}
                           className="w-48 h-48 rounded-full object-cover border-4 border-blue-100"
                         />
                       ) : (
-                        <div className="w-16 h-16 rounded-full bg-blue-100 flex items-center justify-center border-4 border-blue-200">
+                        <div className="w-48 h-48 rounded-full bg-gradient-to-br from-blue-500 via-amber-300 to-blue-500 flex items-center justify-center">
                           {role === 'admin' ? (
-                            <Crown className="w-8 h-8 text-blue-500" />
+                            <Crown className="w-16 h-16 text-white/80" />
                           ) : (
-                            <User className="w-8 h-8 text-blue-500" />
+                            <User className="w-16 h-16 text-white/80" />
                           )}
                         </div>
                       )}

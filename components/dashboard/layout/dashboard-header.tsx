@@ -31,6 +31,7 @@ const DashboardHeader = ({ sidebarOpen, token, setSidebarOpen }: DashboardHeader
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [userData, setUserData] = useState<UserAuth | null>(null);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
+  const [imageError, setImageError] = useState(false);
 
   const getCachedProfile = useCallback(() => {
     try {
@@ -131,6 +132,12 @@ const DashboardHeader = ({ sidebarOpen, token, setSidebarOpen }: DashboardHeader
       delete window.clearDashboardHeaderCache;
     };
   }, [clearCachedProfile]);
+
+  useEffect(() => {
+    if (userData?.profilePictureUrl) {
+      setImageError(false);
+    }
+  }, [userData?.profilePictureUrl]);
 
   const fullName = userData?.firstName + ' ' + userData?.lastName;
   const email = userData?.schoolEmail;
@@ -236,12 +243,13 @@ const DashboardHeader = ({ sidebarOpen, token, setSidebarOpen }: DashboardHeader
               onClick={() => setIsProfileOpen(!isProfileOpen)}
             >
               <div className="h-9 w-9 overflow-hidden rounded-full">
-                {profilePictureUrl ? (
+                {profilePictureUrl && !imageError ? (
                   <Image
                     width={36}
                     height={36}
                     alt="profile-image"
                     src={profilePictureUrl}
+                    onError={() => setImageError(true)}
                     className="w-full h-full object-cover"
                   />
                 ) : (
@@ -301,7 +309,7 @@ const DashboardHeader = ({ sidebarOpen, token, setSidebarOpen }: DashboardHeader
                     className="flex w-full items-center px-4 py-2.5 text-sm font-medium text-red-600 rounded-lg hover:bg-red-50 hover:text-red-600 transition-colors"
                   >
                     <LogOut className="mr-3 h-5 w-5 text-red-500" />
-                    <span>Logout</span>
+                    <span>Sign Out</span>
                   </button>
                 </div>
                 {/*==================== End of Logout Button ====================*/}

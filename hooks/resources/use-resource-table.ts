@@ -135,15 +135,15 @@ const useResourceTable = ({
     try {
       let success = false;
 
-      if (selectedResource && !hasMultipleSelected) {
-        if (onDeleteResource) {
-          const deleteMode = mode === 'recycleBin' ? 'permanent' : 'soft';
-          success = await onDeleteResource(selectedResource._id, deleteMode);
-        }
-      } else if (hasMultipleSelected) {
+      if (hasMultipleSelected || selectedCount > 0) {
         if (onDeleteMultiple) {
           const deleteMode = mode === 'recycleBin' ? 'permanent' : 'soft';
           success = await onDeleteMultiple(selectedResourceIds, deleteMode);
+        }
+      } else if (selectedResource) {
+        if (onDeleteResource) {
+          const deleteMode = mode === 'recycleBin' ? 'permanent' : 'soft';
+          success = await onDeleteResource(selectedResource._id, deleteMode);
         }
       }
 
@@ -184,13 +184,13 @@ const useResourceTable = ({
     try {
       let success = false;
 
-      if (selectedResource && !hasMultipleSelected) {
-        if (onRestoreResource) {
-          success = await onRestoreResource(selectedResource._id);
-        }
-      } else if (hasMultipleSelected) {
+      if (hasMultipleSelected || selectedCount > 0) {
         if (onRestoreMultiple) {
           success = await onRestoreMultiple(selectedResourceIds);
+        }
+      } else if (selectedResource) {
+        if (onRestoreResource) {
+          success = await onRestoreResource(selectedResource._id);
         }
       }
 

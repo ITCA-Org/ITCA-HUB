@@ -187,7 +187,9 @@ const ResourceTable = ({
             description={
               mode === 'recycleBin'
                 ? 'No resources in recycle bin. Deleted resources will appear here.'
-                : 'Get started by uploading the first educational resource to the library.'
+                : userRole === 'user'
+                  ? "No resources exist. When the admin uploads resources, you'll see them here."
+                  : 'Upload resources to the library by clicking the `Upload Resource` button.'
             }
           />
         ))}
@@ -609,7 +611,10 @@ const ResourceTable = ({
           isLoading={isDeleting}
           isOpen={showDeleteModal}
           onConfirm={confirmDelete}
-          onClose={() => setShowDeleteModal(false)}
+          onClose={() => {
+            setShowDeleteModal(false);
+            setSelectedResource(null);
+          }}
           mode={mode === 'recycleBin' ? 'permanent' : 'soft'}
           resourceCount={hasMultipleSelected ? selectedCount : 1}
         />
@@ -623,7 +628,10 @@ const ResourceTable = ({
           isLoading={isRestoring}
           isOpen={showRestoreModal}
           onConfirm={confirmRestore}
-          onClose={() => setShowRestoreModal(false)}
+          onClose={() => {
+            setShowRestoreModal(false);
+            setSelectedResource(null);
+          }}
           resourceCount={hasMultipleSelected ? selectedCount : 1}
         />
       )}
