@@ -538,7 +538,7 @@ const ResourceViewerComponent = ({ role, userData }: ResourceViewerComponentProp
                 <p className="text-gray-600 mb-4 leading-relaxed">{resource.description}</p>
               </div>
               {role === 'admin' && (
-                <div className="flex flex-col sm:flex-row gap-2">
+                <div className="flex flex-col sm:flex-row gap-4 md:gap-2 mb-4 md:mb-0">
                   <button
                     onClick={handleEditResource}
                     className="inline-flex items-center rounded-lg bg-gray-100 px-4 py-2 text-sm font-medium text-black hover:bg-gray-200/70 cursor-pointer transition-colors"
@@ -559,7 +559,7 @@ const ResourceViewerComponent = ({ role, userData }: ResourceViewerComponentProp
 
             {/*==================== Resource Stats Grid  ====================*/}
             {role === 'admin' && (
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-8 md:gap-4 mb-8">
                 <div className="bg-gradient-to-r from-amber-100/70 to-blue-100/70 rounded-lg p-4">
                   <div className="flex items-center mb-2">
                     <div className="bg-blue-100/70 p-2 rounded-full mr-2">
@@ -603,7 +603,7 @@ const ResourceViewerComponent = ({ role, userData }: ResourceViewerComponentProp
             {/*==================== End of Resource Stats Grid ====================*/}
 
             {/*==================== Resource Details Grid ====================*/}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-6">
               {/*==================== Department ====================*/}
               <div>
                 <div className="flex items-center mb-2">

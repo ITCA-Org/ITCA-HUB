@@ -1,89 +1,19 @@
-import axios from 'axios';
 import Link from 'next/link';
 import Image from 'next/image';
 import router from 'next/router';
-import { UserAuth } from '@/types';
 import { motion } from 'framer-motion';
-import { BASE_URL } from '@/utils/url';
-import { useState, useEffect, useCallback } from 'react';
+import useProfile from '@/hooks/profile/use-profile';
+import { useState, useEffect } from 'react';
 import { DashboardHeaderProps } from '@/types/interfaces/dashboard';
 import ConfirmationModal from '@/components/dashboard/modals/confirmation-modal';
 import { Menu, User, LogOut, HelpCircle, Crown, Image as ImageIcon } from 'lucide-react';
 
-declare global {
-  interface Window {
-    clearDashboardHeaderCache?: () => void;
-  }
-}
-
-const CACHE_KEY = 'user_profile_display';
-const CACHE_DURATION = 10 * 60 * 1000;
-
-interface CachedProfileData {
-  role: string;
-  firstName: string | undefined;
-  lastName: string | undefined;
-  schoolEmail: string | undefined;
-  profilePictureUrl: string | undefined;
-}
-
 const DashboardHeader = ({ sidebarOpen, token, setSidebarOpen }: DashboardHeaderProps) => {
   const [isProfileOpen, setIsProfileOpen] = useState(false);
-  const [userData, setUserData] = useState<UserAuth | null>(null);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const [imageError, setImageError] = useState(false);
 
-  const getCachedProfile = useCallback(() => {
-    try {
-      const cached = localStorage.getItem(CACHE_KEY);
-      if (cached) {
-        const { data, timestamp } = JSON.parse(cached);
-        if (Date.now() - timestamp < CACHE_DURATION) {
-          return data;
-        }
-      }
-    } catch {
-      localStorage.removeItem(CACHE_KEY);
-    }
-    return null;
-  }, []);
-
-  const setCachedProfile = useCallback((profileData: UserAuth) => {
-    try {
-      const displayData: CachedProfileData = {
-        role: profileData.role,
-        firstName: profileData.firstName,
-        lastName: profileData.lastName,
-        schoolEmail: profileData.schoolEmail,
-        profilePictureUrl: profileData.profilePictureUrl,
-      };
-      localStorage.setItem(
-        CACHE_KEY,
-        JSON.stringify({
-          data: displayData,
-          timestamp: Date.now(),
-        })
-      );
-    } catch {
-      console.warn('Failed to cache profile data');
-    }
-  }, []);
-
-  const fetchUserProfile = useCallback(async () => {
-    try {
-      const { data } = await axios.get(`${BASE_URL}/users/profile`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      const profileData = data.data;
-      setUserData(profileData);
-      setCachedProfile(profileData);
-    } catch {
-      console.error('Failed to fetch profile');
-    }
-  }, [token, setCachedProfile]);
+  const { profile } = useProfile({ token: token || '' });
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -97,51 +27,27 @@ const DashboardHeader = ({ sidebarOpen, token, setSidebarOpen }: DashboardHeader
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  useEffect(() => {
-    const cachedProfile = getCachedProfile();
-
-    if (cachedProfile) {
-      setUserData({
-        ...cachedProfile,
-        token: '',
-        userId: '',
-      } as UserAuth);
-    } else {
-      fetchUserProfile();
-    }
-  }, [getCachedProfile, fetchUserProfile]);
-
   const handleLogout = () => {
     setShowLogoutModal(true);
     setIsProfileOpen(false);
   };
 
   const confirmLogout = () => {
-    localStorage.removeItem(CACHE_KEY);
     router.push('/api/logout');
   };
 
-  const clearCachedProfile = useCallback(() => {
-    localStorage.removeItem(CACHE_KEY);
-    fetchUserProfile();
-  }, [fetchUserProfile]);
-
   useEffect(() => {
-    window.clearDashboardHeaderCache = clearCachedProfile;
-    return () => {
-      delete window.clearDashboardHeaderCache;
-    };
-  }, [clearCachedProfile]);
-
-  useEffect(() => {
-    if (userData?.profilePictureUrl) {
+    if (profile?.profilePictureUrl) {
       setImageError(false);
     }
-  }, [userData?.profilePictureUrl]);
+  }, [profile?.profilePictureUrl]);
 
-  const fullName = userData?.firstName + ' ' + userData?.lastName;
-  const email = userData?.schoolEmail;
-  const profilePictureUrl = userData?.profilePictureUrl;
+  const fullName = profile?.firstName && profile?.lastName
+    ? `${profile.firstName} ${profile.lastName}`
+    : '';
+  const email = profile?.schoolEmail || '';
+  const profilePictureUrl = profile?.profilePictureUrl || '';
+  const role = profile?.role || '';
 
   return (
     <header className="sticky z-20 flex h-16 items-center justify-between bg-white rounded-br-4xl rounded-bl-4xl px-4 transition-shadow duration-200 min-[968px]:px-6">
@@ -236,7 +142,7 @@ const DashboardHeader = ({ sidebarOpen, token, setSidebarOpen }: DashboardHeader
         {/*==================== End of Notifications ====================*/}
 
         {/*==================== User Menu ====================*/}
-        {userData && (
+        {profile && (
           <div className="relative max-[990px]:px-0 pr-3">
             <button
               className="profile-trigger flex items-center space-x-2 rounded-full focus:outline-none cursor-pointer"
@@ -254,7 +160,7 @@ const DashboardHeader = ({ sidebarOpen, token, setSidebarOpen }: DashboardHeader
                   />
                 ) : (
                   <div className="h-full w-full bg-gradient-to-br from-blue-500 via-amber-300 to-blue-500 flex items-center justify-center">
-                    {userData?.role === 'admin' ? (
+                    {role === 'admin' ? (
                       <Crown className="w-5 h-5 text-white/80" />
                     ) : (
                       <ImageIcon className="w-5 h-5 text-white/80" />
@@ -286,14 +192,14 @@ const DashboardHeader = ({ sidebarOpen, token, setSidebarOpen }: DashboardHeader
                 {/*==================== Dropdown Links ====================*/}
                 <div className="py-1">
                   <Link
-                    href={userData?.role === 'admin' ? '/admin/profile' : '/student/profile'}
+                    href={role === 'admin' ? '/admin/profile' : '/student/profile'}
                     className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                   >
                     <User className="mr-3 h-4 w-4 text-gray-500" />
                     Profile
                   </Link>
                   <Link
-                    href={userData?.role === 'admin' ? '/admin/help' : '/student/help'}
+                    href={role === 'admin' ? '/admin/help' : '/student/help'}
                     className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                   >
                     <HelpCircle className="mr-3 h-4 w-4 text-gray-500" />

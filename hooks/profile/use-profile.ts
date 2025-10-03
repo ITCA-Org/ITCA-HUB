@@ -11,50 +11,125 @@ import { getErrorMessage } from '@/utils/error';
 import { useState, useEffect, useCallback } from 'react';
 import { CustomError, ErrorResponseData } from '@/types';
 
+const MIN_REQUEST_INTERVAL = 500;
+const CACHE_DURATION = 300000;
+
+const sharedCache = {
+  data: null as UserProfile | null,
+  timestamp: 0,
+  activeRequest: null as Promise<UserProfile | null> | null,
+  lastRequestTime: 0,
+  subscribers: new Set<(data: UserProfile | null) => void>(),
+};
+
 const useProfile = ({ token }: UseProfileProps) => {
   const [isChangingPassword, setIsChangingPassword] = useState(false);
   const [isUpdatingProfile, setIsUpdatingProfile] = useState(false);
-  const [profile, setProfile] = useState<UserProfile | null>(null);
+  const [profile, setProfile] = useState<UserProfile | null>(sharedCache.data);
   const [isUploadingImage, setIsUploadingImage] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(!sharedCache.data);
 
   /**=================================
    * Fetches user profile from API
    =================================*/
   const fetchProfile = useCallback(
-    async (abortSignal?: AbortSignal) => {
+    async (abortSignal?: AbortSignal, forceRefresh = false): Promise<UserProfile | null> => {
+      const now = Date.now();
+
+      if (!forceRefresh && sharedCache.data) {
+        const age = now - sharedCache.timestamp;
+        if (age < CACHE_DURATION) {
+          setProfile(sharedCache.data);
+          setIsLoading(false);
+          setError(null);
+          return sharedCache.data;
+        }
+      }
+
+      if (sharedCache.activeRequest) {
+        try {
+          const data = await sharedCache.activeRequest;
+          if (!abortSignal?.aborted && data) {
+            setProfile(data);
+            setIsLoading(false);
+            setError(null);
+          }
+          return data;
+        } catch (err) {
+          if (axios.isCancel(err)) {
+            setIsLoading(false);
+            return null;
+          }
+          if (!abortSignal?.aborted) {
+            setIsLoading(false);
+          }
+          throw err;
+        }
+      }
+
+      const timeSinceLastRequest = now - sharedCache.lastRequestTime;
+      if (timeSinceLastRequest < MIN_REQUEST_INTERVAL) {
+        await new Promise((resolve) =>
+          setTimeout(resolve, MIN_REQUEST_INTERVAL - timeSinceLastRequest)
+        );
+      }
+
       setIsLoading(true);
       setError(null);
+      sharedCache.lastRequestTime = Date.now();
+
+      const requestPromise = (async (): Promise<UserProfile | null> => {
+        try {
+          const { data } = await axios.get(`${BASE_URL}/users/profile`, {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          });
+
+          const profileData = data.data;
+
+          sharedCache.data = profileData;
+          sharedCache.timestamp = Date.now();
+
+          sharedCache.subscribers.forEach((callback) => callback(profileData));
+
+          return profileData;
+        } catch (err) {
+          const { message } = getErrorMessage(
+            err as AxiosError<ErrorResponseData> | CustomError | Error
+          );
+
+          setError(message);
+          setIsLoading(false);
+
+          toast.error('Failed to load profile', {
+            description: message,
+            duration: 5000,
+          });
+
+          sharedCache.subscribers.forEach((callback) => callback(null));
+          throw err;
+        } finally {
+          sharedCache.activeRequest = null;
+        }
+      })();
+
+      sharedCache.activeRequest = requestPromise;
 
       try {
-        const { data } = await axios.get(`${BASE_URL}/users/profile`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-          signal: abortSignal,
-        });
-
-        if (!abortSignal?.aborted) {
-          setProfile(data.data);
+        const data = await requestPromise;
+        if (!abortSignal?.aborted && data) {
+          setProfile(data);
           setError(null);
+          setIsLoading(false);
         }
+        return data;
       } catch (err) {
-        if (axios.isCancel(err)) return;
-
-        const { message } = getErrorMessage(
-          err as AxiosError<ErrorResponseData> | CustomError | Error
-        );
-        setError(message);
-
-        toast.error('Failed to load profile', {
-          description: message,
-          duration: 5000,
-        });
-      } finally {
         if (!abortSignal?.aborted) {
           setIsLoading(false);
         }
+        throw err;
       }
     },
     [token]
@@ -86,7 +161,14 @@ const useProfile = ({ token }: UseProfileProps) => {
         },
       });
 
-      setProfile(data.data);
+      const updatedProfile = data.data;
+
+      sharedCache.data = updatedProfile;
+      sharedCache.timestamp = Date.now();
+
+      setProfile(updatedProfile);
+      sharedCache.subscribers.forEach((callback) => callback(updatedProfile));
+
       toast.success('Profile updated successfully', {
         description: 'Your profile information has been updated.',
         duration: 4000,
@@ -213,16 +295,28 @@ const useProfile = ({ token }: UseProfileProps) => {
 
   /**===========================================================
    * Fetch profile when component mounts
-   * Includes cleanup for unmounting and request cancellation
+   * Subscribe to shared cache updates
    ===========================================================*/
   useEffect(() => {
+    const updateProfile = (data: UserProfile | null) => {
+      setProfile(data);
+      setIsLoading(false);
+      if (data) {
+        setError(null);
+      }
+    };
+
+    sharedCache.subscribers.add(updateProfile);
+
     const abortController = new AbortController();
     fetchProfile(abortController.signal);
 
     return () => {
-      abortController.abort(); 
+      sharedCache.subscribers.delete(updateProfile);
+      abortController.abort();
     };
-  }, [fetchProfile]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return {
     error,
