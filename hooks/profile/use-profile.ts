@@ -12,7 +12,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { CustomError, ErrorResponseData } from '@/types';
 
 const MIN_REQUEST_INTERVAL = 500;
-const CACHE_DURATION = 300000;
+const CACHE_DURATION = 3600000;
 
 const sharedCache = {
   data: null as UserProfile | null,
