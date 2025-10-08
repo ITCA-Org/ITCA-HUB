@@ -42,7 +42,8 @@ const RecycleBinPage = ({ userData }: RecycleBinPageProps) => {
       signal: controller.signal,
     });
     return () => controller.abort();
-  }, [fetchDeletedResources, fetchParams]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [fetchParams]);
 
   const handlePageChange = useCallback(
     (newPage: number) => {
@@ -53,7 +54,8 @@ const RecycleBinPage = ({ userData }: RecycleBinPageProps) => {
         signal: controller.signal,
       });
     },
-    [fetchDeletedResources, limit]
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [limit]
   );
 
   const handleRefresh = useCallback(() => {
@@ -61,7 +63,8 @@ const RecycleBinPage = ({ userData }: RecycleBinPageProps) => {
       page: currentPage,
       limit,
     });
-  }, [fetchDeletedResources, currentPage, limit]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentPage, limit]);
 
   const handleSingleRestore = useCallback(
     async (resourceId: string): Promise<boolean> => {

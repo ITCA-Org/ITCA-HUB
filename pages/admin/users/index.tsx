@@ -37,7 +37,8 @@ const AdminUsersPage = ({ userData }: AdminUsersPageProps) => {
       status,
       signal: controller.signal,
     });
-  }, [clearCache, fetchUsers, page, limit, debouncedSearchQuery, role, status, isLoading]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [clearCache, page, limit, debouncedSearchQuery, role, status, isLoading]);
 
   const handlePageChange = useCallback((newPage: number) => {
     setPage(newPage);
@@ -85,7 +86,8 @@ const AdminUsersPage = ({ userData }: AdminUsersPageProps) => {
       isActive = false;
       abortController.abort();
     };
-  }, [fetchUsers, page, limit, debouncedSearchQuery, role, status]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [page, limit, debouncedSearchQuery, role, status]);
 
   useEffect(() => {
     setPage(1);

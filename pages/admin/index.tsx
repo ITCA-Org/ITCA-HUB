@@ -54,7 +54,8 @@ const AdminDashboard: FC<UserProps> = ({ userData }) => {
       isActive = false;
       abortController.abort();
     };
-  }, [fetchDashboardData, page, limit]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [page, limit]);
 
   return (
     <DashboardLayout title="Admin Dashboard" token={userData.token}>

@@ -235,7 +235,8 @@ const EventsComponent = ({ role, userData }: EventsComponentProps) => {
       isActive = false;
       abortController.abort();
     };
-  }, [page, limit, status, getAllEvents]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [page, limit, status]);
 
   /**===============================
    * Reset page when filters change

@@ -30,6 +30,9 @@ const useDashboard = ({ token }: UseDashboardProps): UseDashboardReturn => {
     },
   });
 
+  const tokenRef = useRef(token);
+  tokenRef.current = token;
+
   const lastRequestTime = useRef(0);
   const requestCache = useRef<Map<string, { data: DashboardData; timestamp: number }>>(new Map());
   const activeRequests = useRef<Map<string, Promise<DashboardData>>>(new Map());
@@ -85,7 +88,7 @@ const useDashboard = ({ token }: UseDashboardProps): UseDashboardReturn => {
 
         try {
           const headers = {
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${tokenRef.current}`,
           };
 
           const [statsResponse, recentRegistrationsResponse] = await Promise.all([
@@ -160,7 +163,7 @@ const useDashboard = ({ token }: UseDashboardProps): UseDashboardReturn => {
         }
       }
     },
-    [token]
+    []
   );
 
   return {

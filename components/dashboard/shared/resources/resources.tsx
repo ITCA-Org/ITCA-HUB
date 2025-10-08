@@ -225,7 +225,8 @@ const ResourcesComponent = ({ role, userData }: ResourcesComponentProps) => {
       isActive = false;
       abortController.abort();
     };
-  }, [filterParams, limit, fetchResources]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filterParams, limit]);
 
   const pageConfig = {
     admin: {

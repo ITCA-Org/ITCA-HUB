@@ -48,8 +48,8 @@ import DownloadResourceModal from '@/components/dashboard/modals/resources/downl
 import {
   FileItem,
   Resource,
-  ResourceViewerComponentProps,
   UpdateResourcePayload,
+  ResourceViewerComponentProps,
 } from '@/types/interfaces/resource';
 
 const ResourceViewerComponent = ({ role, userData }: ResourceViewerComponentProps) => {
@@ -190,7 +190,8 @@ const ResourceViewerComponent = ({ role, userData }: ResourceViewerComponentProp
 
   useEffect(() => {
     loadResource(true);
-  }, [loadResource]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [id]);
 
   const handleDownload = async (file: FileItem) => {
     if (!resource) return;

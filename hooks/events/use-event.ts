@@ -16,6 +16,10 @@ const useEvents = ({ token }: UseEventsProps) => {
   const [isLoading, setIsLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [isError, setIsError] = useState(false);
+
+  const tokenRef = useRef(token);
+  tokenRef.current = token;
+
   const lastRequestRef = useRef<number>(0);
   const MIN_REQUEST_INTERVAL = 500;
 
@@ -80,7 +84,7 @@ const useEvents = ({ token }: UseEventsProps) => {
               ...(debouncedSearchQuery.trim() && { search: debouncedSearchQuery.trim() }),
             },
             headers: {
-              Authorization: `Bearer ${token}`,
+              Authorization: `Bearer ${tokenRef.current}`,
             },
             signal: params.signal,
           });
@@ -145,7 +149,7 @@ const useEvents = ({ token }: UseEventsProps) => {
         return { events: [], pagination: {}, total: 0 };
       }
     },
-    [token, debouncedSearchQuery]
+    [debouncedSearchQuery]
   );
 
   const createEvent = useCallback(
@@ -153,7 +157,7 @@ const useEvents = ({ token }: UseEventsProps) => {
       try {
         const { data } = await axios.post(`${BASE_URL}/events`, eventData, {
           headers: {
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${tokenRef.current}`,
           },
           signal,
         });
@@ -187,7 +191,7 @@ const useEvents = ({ token }: UseEventsProps) => {
         throw error;
       }
     },
-    [token]
+    []
   );
 
   const updateEvent = useCallback(
@@ -195,7 +199,7 @@ const useEvents = ({ token }: UseEventsProps) => {
       try {
         const { data } = await axios.put(`${BASE_URL}/events/${eventId}`, eventData, {
           headers: {
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${tokenRef.current}`,
           },
           signal,
         });
@@ -229,7 +233,7 @@ const useEvents = ({ token }: UseEventsProps) => {
         throw error;
       }
     },
-    [token]
+    []
   );
 
   const deleteEvent = useCallback(
@@ -237,7 +241,7 @@ const useEvents = ({ token }: UseEventsProps) => {
       try {
         await axios.delete(`${BASE_URL}/events/${eventId}`, {
           headers: {
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${tokenRef.current}`,
           },
           signal,
         });
@@ -271,7 +275,7 @@ const useEvents = ({ token }: UseEventsProps) => {
         throw error;
       }
     },
-    [token]
+    []
   );
 
   const registerForEvent = useCallback(
@@ -285,7 +289,7 @@ const useEvents = ({ token }: UseEventsProps) => {
           {},
           {
             headers: {
-              Authorization: `Bearer ${token}`,
+              Authorization: `Bearer ${tokenRef.current}`,
             },
             signal,
           }
@@ -322,7 +326,7 @@ const useEvents = ({ token }: UseEventsProps) => {
         setIsLoading(false);
       }
     },
-    [token]
+    []
   );
 
   const unregisterFromEvent = useCallback(
@@ -333,7 +337,7 @@ const useEvents = ({ token }: UseEventsProps) => {
       try {
         const { data } = await axios.delete(`${BASE_URL}/events/${eventId}/register`, {
           headers: {
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${tokenRef.current}`,
           },
           signal,
         });
@@ -369,7 +373,7 @@ const useEvents = ({ token }: UseEventsProps) => {
         setIsLoading(false);
       }
     },
-    [token]
+    []
   );
 
   const getEventById = useCallback(
@@ -380,7 +384,7 @@ const useEvents = ({ token }: UseEventsProps) => {
       try {
         const { data } = await axios.get(`${BASE_URL}/events/${eventId}`, {
           headers: {
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${tokenRef.current}`,
           },
           signal,
         });
@@ -407,7 +411,7 @@ const useEvents = ({ token }: UseEventsProps) => {
         setIsLoading(false);
       }
     },
-    [token]
+    []
   );
 
   const clearCache = useCallback(() => {

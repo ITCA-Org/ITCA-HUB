@@ -30,6 +30,9 @@ const useResources = ({ token }: UseResourcesProps): UseResourcesReturn => {
     hasPrevPage: false,
   });
 
+  const tokenRef = useRef(token);
+  tokenRef.current = token;
+
   const lastRequestRef = useRef<number>(0);
   const MIN_REQUEST_INTERVAL = 500;
 
@@ -145,7 +148,7 @@ const useResources = ({ token }: UseResourcesProps): UseResourcesReturn => {
               ...(sortOrder && { sortOrder }),
             },
             headers: {
-              Authorization: `Bearer ${token}`,
+              Authorization: `Bearer ${tokenRef.current}`,
               'Content-Type': 'application/json',
             },
           });
@@ -202,7 +205,7 @@ const useResources = ({ token }: UseResourcesProps): UseResourcesReturn => {
         });
       }
     },
-    [token]
+    []
   );
 
   const fetchDeletedResources = useCallback(
@@ -296,7 +299,7 @@ const useResources = ({ token }: UseResourcesProps): UseResourcesReturn => {
                 ...(sortOrder && { sortOrder }),
               },
               headers: {
-                Authorization: `Bearer ${token}`,
+                Authorization: `Bearer ${tokenRef.current}`,
                 'Content-Type': 'application/json',
               },
             }
@@ -346,7 +349,7 @@ const useResources = ({ token }: UseResourcesProps): UseResourcesReturn => {
         });
       }
     },
-    [token]
+    []
   );
 
   const fetchSingleResource = useCallback(
@@ -387,7 +390,7 @@ const useResources = ({ token }: UseResourcesProps): UseResourcesReturn => {
             `${BASE_URL}/resources/${resourceId}`,
             {
               headers: {
-                Authorization: `Bearer ${token}`,
+                Authorization: `Bearer ${tokenRef.current}`,
                 'Content-Type': 'application/json',
               },
               signal,
@@ -432,7 +435,7 @@ const useResources = ({ token }: UseResourcesProps): UseResourcesReturn => {
         return null;
       }
     },
-    [token]
+    []
   );
 
   const trackView = useCallback(
@@ -452,7 +455,7 @@ const useResources = ({ token }: UseResourcesProps): UseResourcesReturn => {
           {},
           {
             headers: {
-              Authorization: `Bearer ${token}`,
+              Authorization: `Bearer ${tokenRef.current}`,
               'Content-Type': 'application/json',
             },
             signal,
@@ -469,7 +472,7 @@ const useResources = ({ token }: UseResourcesProps): UseResourcesReturn => {
         console.warn('Failed to track resource view:', message);
       }
     },
-    [token]
+    []
   );
 
   const trackDownload = useCallback(
@@ -482,7 +485,7 @@ const useResources = ({ token }: UseResourcesProps): UseResourcesReturn => {
           {},
           {
             headers: {
-              Authorization: `Bearer ${token}`,
+              Authorization: `Bearer ${tokenRef.current}`,
               'Content-Type': 'application/json',
             },
           }
@@ -494,7 +497,7 @@ const useResources = ({ token }: UseResourcesProps): UseResourcesReturn => {
         console.warn('Failed to track resource download:', message);
       }
     },
-    [token]
+    []
   );
 
   const fetchFileMediaLink = useCallback(async (fileUrl: string): Promise<string> => {

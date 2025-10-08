@@ -24,6 +24,9 @@ const useUsers = ({ token }: UseUsersProps): UseUsersReturn => {
     },
   });
 
+  const tokenRef = useRef(token);
+  tokenRef.current = token;
+
   const lastRequestTime = useRef(0);
   const requestCache = useRef<Map<string, { data: UsersData; timestamp: number }>>(new Map());
   const activeRequests = useRef<Map<string, Promise<UsersData>>>(new Map());
@@ -106,7 +109,7 @@ const useUsers = ({ token }: UseUsersProps): UseUsersReturn => {
           const { data } = await axios.get(`${BASE_URL}/users`, {
             params: queryParams,
             headers: {
-              Authorization: `Bearer ${token}`,
+              Authorization: `Bearer ${tokenRef.current}`,
             },
             signal,
           });
@@ -165,7 +168,7 @@ const useUsers = ({ token }: UseUsersProps): UseUsersReturn => {
         }
       }
     },
-    [token]
+    []
   );
 
   return {
