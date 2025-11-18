@@ -50,7 +50,11 @@ const HomePage = () => {
           name="description"
           content="Information Technology Communication Association under the School of Information Communication and Technology"
         />
-        <meta name="google-site-verification" content="cYtk4C3rxSxsbweqGDktZcyXjEQLFbmShStbGJPmq44" />
+        <meta name="keywords" content="ITCA HUB, Itca hub, ITCA"></meta>
+        <meta
+          name="google-site-verification"
+          content="cYtk4C3rxSxsbweqGDktZcyXjEQLFbmShStbGJPmq44"
+        />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/images/logo.jpg" />
         <Link rel="preconnect" href="https://fonts.googleapis.com" />
