@@ -21,7 +21,7 @@ import DashboardLayout from '@/components/dashboard/layout/dashboard-layout';
 import UserProfileSkeleton from '@/components/dashboard/skeletons/user-profile';
 import DashboardPageHeader from '@/components/dashboard/layout/dashboard-page-header';
 
-const ProfileComponent = ({ role, userData }: ProfileComponentProps) => {
+const ProfileComponent = ({ role, token }: ProfileComponentProps) => {
   const {
     error,
     profile,
@@ -33,7 +33,7 @@ const ProfileComponent = ({ role, userData }: ProfileComponentProps) => {
     isUploadingImage,
     isUpdatingProfile,
     isChangingPassword,
-  } = useProfile({ token: userData.token });
+  } = useProfile(token);
 
   const [isChangingPasswordMode, setIsChangingPasswordMode] = useState(false);
   const [isEditingProfile, setIsEditingProfile] = useState(false);
@@ -149,8 +149,8 @@ const ProfileComponent = ({ role, userData }: ProfileComponentProps) => {
 
   return (
     <DashboardLayout
+      token={token}
       title={role === 'admin' ? 'Admin Profile' : 'My Profile'}
-      token={userData.token}
     >
       {/*==================== Page Header ====================*/}
       <DashboardPageHeader
@@ -218,7 +218,7 @@ const ProfileComponent = ({ role, userData }: ProfileComponentProps) => {
                           className="w-48 h-48 rounded-full object-cover border-4 border-blue-100"
                         />
                       ) : (
-                        <div className="w-48 h-48 rounded-full bg-gradient-to-br from-blue-500 via-amber-300 to-blue-500 flex items-center justify-center">
+                        <div className="w-48 h-48 rounded-full bg-linear-to-br from-blue-500 via-amber-300 to-blue-500 flex items-center justify-center">
                           {role === 'admin' ? (
                             <Crown className="w-16 h-16 text-white/80" />
                           ) : (
@@ -286,7 +286,7 @@ const ProfileComponent = ({ role, userData }: ProfileComponentProps) => {
                           className="w-48 h-48 rounded-full object-cover border-4 border-blue-100"
                         />
                       ) : (
-                        <div className="w-48 h-48 rounded-full bg-gradient-to-br from-blue-500 via-amber-300 to-blue-500 flex items-center justify-center">
+                        <div className="w-48 h-48 rounded-full bg-linear-to-br from-blue-500 via-amber-300 to-blue-500 flex items-center justify-center">
                           {role === 'admin' ? (
                             <Crown className="w-16 h-16 text-white/80" />
                           ) : (

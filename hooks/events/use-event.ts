@@ -1,438 +1,251 @@
-import { toast } from 'sonner';
-import {
-  EventProps,
-  UseEventsProps,
-  GetEventsParams,
-  CreateEventData,
-} from '@/types/interfaces/event';
-import { BASE_URL } from '@/utils/url';
+import { useCallback } from 'react';
+import useSWR, { mutate } from 'swr';
 import axios, { AxiosError } from 'axios';
-import useDebounce from '@/utils/debounce';
+import { toast } from 'sonner';
+import { BASE_URL } from '@/utils/url';
 import { getErrorMessage } from '@/utils/error';
-import { useState, useCallback, useRef } from 'react';
 import { CustomError, ErrorResponseData } from '@/types';
+import { EventProps, CreateEventData } from '@/types/interfaces/event';
 
-const useEvents = ({ token }: UseEventsProps) => {
-  const [isLoading, setIsLoading] = useState(false);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [isError, setIsError] = useState(false);
+type ErrorType = AxiosError<ErrorResponseData> | CustomError | Error;
 
-  const tokenRef = useRef(token);
-  tokenRef.current = token;
+export interface UseEventsOptions {
+  token: string;
+  page?: number;
+  limit?: number;
+  status?: string;
+  search?: string;
+}
 
-  const lastRequestRef = useRef<number>(0);
-  const MIN_REQUEST_INTERVAL = 500;
+interface EventsResponse {
+  events: EventProps[];
+  total: number;
+  totalPages: number;
+}
 
-  const requestCacheRef = useRef<Map<string, { data: { events: EventProps[]; pagination: Record<string, unknown>; total: number }; timestamp: number }>>(new Map());
-  const activeRequestsRef = useRef<Map<string, Promise<{ events: EventProps[]; pagination: Record<string, unknown>; total: number }>>>(new Map());
-  const CACHE_DURATION = 300000;
+async function fetchEvents(
+  _url: string,
+  token: string,
+  page: number,
+  limit: number,
+  status?: string,
+  search?: string
+): Promise<EventsResponse> {
+  const params: Record<string, string | number> = {
+    page: page + 1,
+    limit,
+  };
 
-  const debouncedSearchQuery = useDebounce(searchTerm, 500);
+  if (status && status !== 'all') {
+    params.status = status;
+  }
 
-  /**==============================================
-   * Get all events with pagination and filtering.
-   ==============================================*/
-  const getAllEvents = useCallback(
-    async (params: GetEventsParams = {}) => {
-      const now = Date.now();
-      if (now - lastRequestRef.current < MIN_REQUEST_INTERVAL) {
-        await new Promise((resolve) =>
-          setTimeout(resolve, MIN_REQUEST_INTERVAL - (now - lastRequestRef.current))
-        );
-      }
-      lastRequestRef.current = Date.now();
+  if (search?.trim()) {
+    params.search = search.trim();
+  }
 
-      const cacheKey = JSON.stringify({
-        page: params.page || 1,
-        limit: params.limit || 10,
-        status: params.status,
-        search: debouncedSearchQuery.trim(),
-      });
+  const { data } = await axios.get(`${BASE_URL}/events`, {
+    params,
+    headers: { Authorization: `Bearer ${token}` },
+  });
 
-      const cached = requestCacheRef.current.get(cacheKey);
-      if (cached && now - cached.timestamp < CACHE_DURATION) {
-        setIsLoading(false);
-        setIsError(false);
-        return cached.data;
-      }
+  return {
+    events: data.data || [],
+    total: data.total || 0,
+    totalPages: data.pagination?.totalPages || Math.ceil((data.total || 0) / limit),
+  };
+}
 
-      const existingRequest = activeRequestsRef.current.get(cacheKey);
-      if (existingRequest) {
-        try {
-          const data = await existingRequest;
-          setIsLoading(false);
-          setIsError(false);
-          return data;
-        } catch {
-          if (params.signal?.aborted) return { events: [], pagination: {}, total: 0 };
-          setIsError(true);
-          setIsLoading(false);
-          return { events: [], pagination: {}, total: 0 };
-        }
-      }
+const useEvents = (options: UseEventsOptions) => {
+  const { token, page = 0, limit = 9, status, search } = options;
 
-      setIsLoading(true);
-      setIsError(false);
-
-      const requestPromise = (async () => {
-        try {
-          const { data } = await axios.get(`${BASE_URL}/events`, {
-            params: {
-              page: params.page || 1,
-              limit: params.limit || 10,
-              ...(params.status && params.status !== 'all' && { status: params.status }),
-              ...(debouncedSearchQuery.trim() && { search: debouncedSearchQuery.trim() }),
-            },
-            headers: {
-              Authorization: `Bearer ${tokenRef.current}`,
-            },
-            signal: params.signal,
-          });
-
-          const result = {
-            events: data.data || [],
-            pagination: data.pagination || {},
-            total: data.total || 0,
-          };
-
-          requestCacheRef.current.set(cacheKey, {
-            data: result,
-            timestamp: Date.now(),
-          });
-
-          setIsError(false);
-          return result;
-        } catch (error) {
-          if (axios.isCancel(error)) {
-            return {
-              events: [],
-              pagination: {},
-              total: 0,
-            };
-          }
-
-          setIsError(true);
-          const { message } = getErrorMessage(
-            error as AxiosError<ErrorResponseData> | CustomError | Error
-          );
-
-          toast.error('Failed to load events', {
-            description: message,
-            duration: 5000,
-          });
-
-          return {
-            events: [],
-            pagination: {},
-            total: 0,
-          };
-        } finally {
-          setIsLoading(false);
-          activeRequestsRef.current.delete(cacheKey);
-        }
-      })();
-
-      activeRequestsRef.current.set(cacheKey, requestPromise);
-
-      try {
-        const data = await requestPromise;
-        if (!params.signal?.aborted) {
-          setIsLoading(false);
-          setIsError(false);
-        }
-        return data;
-      } catch {
-        if (!params.signal?.aborted) {
-          setIsError(true);
-          setIsLoading(false);
-        }
-        return { events: [], pagination: {}, total: 0 };
-      }
-    },
-    [debouncedSearchQuery]
+  const { data, error, isLoading, mutate: boundMutate } = useSWR(
+    token ? ['/events', page, limit, status, search] : null,
+    () => fetchEvents('/events', token, page, limit, status, search),
+    {
+      dedupingInterval: 5000,
+      revalidateOnFocus: false,
+      revalidateIfStale: false,
+      onError: (err) => {
+        toast.error('Failed to load events', {
+          description: getErrorMessage(err).message,
+        });
+      },
+    }
   );
 
+  return {
+    events: data?.events ?? [],
+    total: data?.total ?? 0,
+    totalPages: data?.totalPages ?? 0,
+    isLoading,
+    isError: !!error,
+    refresh: () => boundMutate(),
+  };
+};
+
+export const useEventActions = (token: string) => {
+  const invalidateEventsCache = useCallback(() => {
+    mutate(
+      (key) => Array.isArray(key) && key[0] === '/events',
+      undefined,
+      { revalidate: true }
+    );
+  }, []);
+
   const createEvent = useCallback(
-    async (eventData: CreateEventData, signal?: AbortSignal) => {
+    async (eventData: CreateEventData) => {
+      if (!token) throw new Error('Not authenticated');
+
       try {
         const { data } = await axios.post(`${BASE_URL}/events`, eventData, {
-          headers: {
-            Authorization: `Bearer ${tokenRef.current}`,
-          },
-          signal,
+          headers: { Authorization: `Bearer ${token}` },
         });
 
-        if (!signal?.aborted) {
-          toast.success('Event created successfully', {
-            description: 'The event has been added to the system',
-            duration: 4000,
-          });
+        toast.success('Event created successfully', {
+          description: 'The event has been added to the system',
+        });
 
-          requestCacheRef.current.clear();
-          activeRequestsRef.current.clear();
-        }
-
+        invalidateEventsCache();
         return data.data;
       } catch (error) {
-        if (axios.isCancel(error)) {
-          return null;
-        }
-
-        setIsError(true);
-        const { message } = getErrorMessage(
-          error as AxiosError<ErrorResponseData> | CustomError | Error
-        );
-
         toast.error('Failed to create event', {
-          description: message,
-          duration: 5000,
+          description: getErrorMessage(error as ErrorType).message,
         });
-
         throw error;
       }
     },
-    []
+    [token, invalidateEventsCache]
   );
 
   const updateEvent = useCallback(
-    async (eventId: string, eventData: Partial<CreateEventData>, signal?: AbortSignal) => {
+    async (eventId: string, eventData: Partial<CreateEventData>) => {
+      if (!token) throw new Error('Not authenticated');
+
       try {
         const { data } = await axios.put(`${BASE_URL}/events/${eventId}`, eventData, {
-          headers: {
-            Authorization: `Bearer ${tokenRef.current}`,
-          },
-          signal,
+          headers: { Authorization: `Bearer ${token}` },
         });
 
-        if (!signal?.aborted) {
-          toast.success('Event updated successfully', {
-            description: 'The event has been updated',
-            duration: 4000,
-          });
+        toast.success('Event updated successfully', {
+          description: 'The event has been updated',
+        });
 
-          requestCacheRef.current.clear();
-          activeRequestsRef.current.clear();
-        }
-
+        invalidateEventsCache();
         return data.data;
       } catch (error) {
-        if (axios.isCancel(error)) {
-          return null;
-        }
-
-        setIsError(true);
-        const { message } = getErrorMessage(
-          error as AxiosError<ErrorResponseData> | CustomError | Error
-        );
-
         toast.error('Failed to update event', {
-          description: message,
-          duration: 5000,
+          description: getErrorMessage(error as ErrorType).message,
         });
-
         throw error;
       }
     },
-    []
+    [token, invalidateEventsCache]
   );
 
   const deleteEvent = useCallback(
-    async (eventId: string, signal?: AbortSignal) => {
+    async (eventId: string) => {
+      if (!token) throw new Error('Not authenticated');
+
       try {
         await axios.delete(`${BASE_URL}/events/${eventId}`, {
-          headers: {
-            Authorization: `Bearer ${tokenRef.current}`,
-          },
-          signal,
+          headers: { Authorization: `Bearer ${token}` },
         });
 
-        if (!signal?.aborted) {
-          toast.success('Event deleted successfully', {
-            description: 'The event has been removed from the system',
-            duration: 4000,
-          });
+        toast.success('Event deleted successfully', {
+          description: 'The event has been removed from the system',
+        });
 
-          requestCacheRef.current.clear();
-          activeRequestsRef.current.clear();
-        }
-
+        invalidateEventsCache();
         return true;
       } catch (error) {
-        if (axios.isCancel(error)) {
-          return false;
-        }
-
-        setIsError(true);
-        const { message } = getErrorMessage(
-          error as AxiosError<ErrorResponseData> | CustomError | Error
-        );
-
         toast.error('Failed to delete event', {
-          description: message,
-          duration: 5000,
+          description: getErrorMessage(error as ErrorType).message,
         });
-
         throw error;
       }
     },
-    []
+    [token, invalidateEventsCache]
   );
 
   const registerForEvent = useCallback(
-    async (eventId: string, signal?: AbortSignal) => {
-      setIsLoading(true);
-      setIsError(false);
+    async (eventId: string) => {
+      if (!token) throw new Error('Not authenticated');
 
       try {
         const { data } = await axios.post(
           `${BASE_URL}/events/${eventId}/register`,
           {},
-          {
-            headers: {
-              Authorization: `Bearer ${tokenRef.current}`,
-            },
-            signal,
-          }
+          { headers: { Authorization: `Bearer ${token}` } }
         );
 
-        if (!signal?.aborted) {
-          toast.success('Successfully registered for event!', {
-            description: 'You will receive updates about this event',
-            duration: 4000,
-          });
-
-          requestCacheRef.current.clear();
-          activeRequestsRef.current.clear();
-        }
-
-        return data.data;
-      } catch (error) {
-        if (axios.isCancel(error)) {
-          return null;
-        }
-
-        setIsError(true);
-        const { message } = getErrorMessage(
-          error as AxiosError<ErrorResponseData> | CustomError | Error
-        );
-
-        toast.error('Failed to register for event', {
-          description: message,
-          duration: 5000,
+        toast.success('Successfully registered for event!', {
+          description: 'You will receive updates about this event',
         });
 
+        invalidateEventsCache();
+        return data.data;
+      } catch (error) {
+        toast.error('Failed to register for event', {
+          description: getErrorMessage(error as ErrorType).message,
+        });
         throw error;
-      } finally {
-        setIsLoading(false);
       }
     },
-    []
+    [token, invalidateEventsCache]
   );
 
   const unregisterFromEvent = useCallback(
-    async (eventId: string, signal?: AbortSignal) => {
-      setIsLoading(true);
-      setIsError(false);
+    async (eventId: string) => {
+      if (!token) throw new Error('Not authenticated');
 
       try {
         const { data } = await axios.delete(`${BASE_URL}/events/${eventId}/register`, {
-          headers: {
-            Authorization: `Bearer ${tokenRef.current}`,
-          },
-          signal,
+          headers: { Authorization: `Bearer ${token}` },
         });
 
-        if (!signal?.aborted) {
-          toast.success('Successfully unregistered from event!', {
-            description: 'You will no longer receive updates about this event',
-            duration: 4000,
-          });
+        toast.success('Successfully unregistered from event!', {
+          description: 'You will no longer receive updates about this event',
+        });
 
-          requestCacheRef.current.clear();
-          activeRequestsRef.current.clear();
-        }
-
+        invalidateEventsCache();
         return data.data;
       } catch (error) {
-        if (axios.isCancel(error)) {
-          return null;
-        }
-
-        setIsError(true);
-        const { message } = getErrorMessage(
-          error as AxiosError<ErrorResponseData> | CustomError | Error
-        );
-
         toast.error('Failed to unregister from event', {
-          description: message,
-          duration: 5000,
+          description: getErrorMessage(error as ErrorType).message,
         });
-
         throw error;
-      } finally {
-        setIsLoading(false);
       }
     },
-    []
+    [token, invalidateEventsCache]
   );
 
   const getEventById = useCallback(
-    async (eventId: string, signal?: AbortSignal) => {
-      setIsLoading(true);
-      setIsError(false);
+    async (eventId: string) => {
+      if (!token) throw new Error('Not authenticated');
 
       try {
         const { data } = await axios.get(`${BASE_URL}/events/${eventId}`, {
-          headers: {
-            Authorization: `Bearer ${tokenRef.current}`,
-          },
-          signal,
+          headers: { Authorization: `Bearer ${token}` },
         });
-
-        setIsError(false);
         return data.data;
       } catch (error) {
-        if (axios.isCancel(error)) {
-          return null;
-        }
-
-        setIsError(true);
-        const { message } = getErrorMessage(
-          error as AxiosError<ErrorResponseData> | CustomError | Error
-        );
-
         toast.error('Failed to load event', {
-          description: message,
-          duration: 5000,
+          description: getErrorMessage(error as ErrorType).message,
         });
-
         throw error;
-      } finally {
-        setIsLoading(false);
       }
     },
-    []
+    [token]
   );
 
-  const clearCache = useCallback(() => {
-    requestCacheRef.current.clear();
-    activeRequestsRef.current.clear();
-  }, []);
-
   return {
-    isError,
-    isLoading,
-    searchTerm,
-    clearCache,
     createEvent,
     updateEvent,
     deleteEvent,
-    getAllEvents,
     getEventById,
-    setSearchTerm,
     registerForEvent,
     unregisterFromEvent,
-    debouncedSearchQuery,
   };
 };
 

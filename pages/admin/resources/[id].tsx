@@ -1,11 +1,14 @@
 import { UserAuth } from '@/types';
 import { NextApiRequest } from 'next';
 import { isLoggedIn } from '@/utils/auth';
-import { AdminResourceViewPageProps } from '@/types/interfaces/resource';
 import ResourceViewerComponent from '@/components/dashboard/shared/resources/resource-viewer';
 
+interface AdminResourceViewPageProps {
+  userData: UserAuth;
+}
+
 const AdminResourceViewPage = ({ userData }: AdminResourceViewPageProps) => {
-  return <ResourceViewerComponent role="admin" userData={userData} />;
+  return <ResourceViewerComponent role="admin" token={userData.token} />;
 };
 
 export default AdminResourceViewPage;
@@ -34,8 +37,6 @@ export const getServerSideProps = async ({ req }: { req: NextApiRequest }) => {
   }
 
   return {
-    props: {
-      userData,
-    },
+    props: { userData },
   };
 };

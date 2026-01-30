@@ -22,13 +22,13 @@ const DashboardLayout = ({ children, title = 'Dashboard', token }: DashboardLayo
           {/*==================== Prominent Geometric Elements - Top Right ====================*/}
           <div className="absolute top-0 right-0 w-2/3 h-full">
             <div className="absolute top-10 right-0 w-full h-full">
-              <div className="absolute top-10 right-[-200px] h-[500px] w-[500px] rounded-full border-[40px] border-amber-500/15 animate-pulse"></div>
+              <div className="absolute top-10 right-[-200px] h-[500px] w-[500px] rounded-full border-40 border-amber-500/15 animate-pulse"></div>
               <div
-                className="absolute top-40 right-[-150px] h-[400px] w-[400px] rounded-full border-[30px] border-blue-700/15 animate-pulse"
+                className="absolute top-40 right-[-150px] h-[400px] w-[400px] rounded-full border-30 border-blue-700/15 animate-pulse"
                 style={{ animationDelay: '0.5s' }}
               ></div>
               <div
-                className="absolute top-60 right-[-100px] h-[300px] w-[300px] rounded-full border-[20px] border-amber-500/15 animate-pulse"
+                className="absolute top-60 right-[-100px] h-[300px] w-[300px] rounded-full border-20 border-amber-500/15 animate-pulse"
                 style={{ animationDelay: '0.8s' }}
               ></div>
             </div>
@@ -39,7 +39,7 @@ const DashboardLayout = ({ children, title = 'Dashboard', token }: DashboardLayo
           <div className="hidden md:block absolute bottom-0 left-15 w-2/5 h-2/5">
             <div className="absolute bottom-10 left-70 w-[200px] h-[200px] origin-center rotate-45 bg-blue-700/15 rounded-xl animate-pulse"></div>
             <div
-              className="absolute top-10 left-50 w-[160px] h-[160px] origin-center rotate-[30deg] bg-amber-500/15 rounded-xl animate-pulse"
+              className="absolute top-10 left-50 w-40 h-40 origin-center rotate-30 bg-amber-500/15 rounded-xl animate-pulse"
               style={{ animationDelay: '0.5s' }}
             ></div>
             <div

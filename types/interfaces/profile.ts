@@ -28,17 +28,9 @@ export interface ChangePasswordPayload {
   currentPassword: string;
 }
 
-export interface UseProfileProps {
-  token: string;
-}
-
 export interface ProfileComponentProps {
-  userData: {
-    role: string;
-    token: string;
-    userId: string;
-  };
   role: 'admin' | 'student';
+  token: string;
 }
 
 export interface AdminProfilePageProps {

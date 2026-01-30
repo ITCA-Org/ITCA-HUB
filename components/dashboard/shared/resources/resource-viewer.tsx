@@ -29,8 +29,8 @@ import {
 import axios from 'axios';
 import { useRouter } from 'next/router';
 import { useState, useEffect, useCallback } from 'react';
-import useResources from '@/hooks/resources/use-resource';
-import useResourceAdmin from '@/hooks/resources/use-resource-admin';
+import { useResource, useResourceDownload } from '@/hooks/resources/use-resource';
+import { useResourceActions } from '@/hooks/resources/use-resource-admin';
 import PDFViewer from '@/components/dashboard/resource-viewers/pdf-viewer';
 import TextViewer from '@/components/dashboard/resource-viewers/text-viewer';
 import DashboardLayout from '@/components/dashboard/layout/dashboard-layout';
@@ -52,40 +52,39 @@ import {
   ResourceViewerComponentProps,
 } from '@/types/interfaces/resource';
 
-const ResourceViewerComponent = ({ role, userData }: ResourceViewerComponentProps) => {
+const ResourceViewerComponent = ({ role, token }: ResourceViewerComponentProps) => {
   const router = useRouter();
   const { id } = router.query;
+  const resourceId = typeof id === 'string' ? id : null;
+  const userRole = role === 'admin' ? 'admin' : 'user';
 
   const [loadingFileSizes, setLoadingFileSizes] = useState<{ [key: string]: boolean }>({});
   const [fileToDownload, setFileToDownload] = useState<FileItem | null>(null);
   const [isDeletingFile, setIsDeletingFile] = useState<string | null>(null);
   const [fileSizes, setFileSizes] = useState<{ [key: string]: string }>({});
   const [showDownloadFileModal, setShowDownloadFileModal] = useState(false);
-  const [isDownloading, setIsDownloading] = useState<string | null>(null);
+  const [isDownloadingFile, setIsDownloadingFile] = useState<string | null>(null);
   const [viewingFile, setViewingFile] = useState<FileItem | null>(null);
   const [fileToDelete, setFileToDelete] = useState<string | null>(null);
   const [showDeleteFileModal, setShowDeleteFileModal] = useState(false);
   const [showDownloadModal, setShowDownloadModal] = useState(false);
   const [showAddFilesModal, setShowAddFilesModal] = useState(false);
-  const [resource, setResource] = useState<Resource | null>(null);
   const [showEditModal, setShowEditModal] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const [files, setFiles] = useState<FileItem[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isEditLoading, setIsEditLoading] = useState(false);
+  const [hasTrackedView, setHasTrackedView] = useState(false);
+
+  const { resource, isLoading, isError, refresh } = useResource(token, resourceId);
 
   const {
     trackView,
-    clearCache,
     downloadFile,
     downloadResource,
-    fetchSingleResource,
     isDownloading: isDownloadingResource,
     downloadProgress,
-  } = useResources({
-    token: userData.token,
-  });
+  } = useResourceDownload(token, userRole);
 
-  const adminHook = useResourceAdmin({ token: userData.token });
+  const { updateResource, deleteFileFromResource } = useResourceActions(token);
 
   const formatFileSize = (bytes: number): string => {
     if (bytes === 0) return '0 Bytes';
@@ -95,11 +94,36 @@ const ResourceViewerComponent = ({ role, userData }: ResourceViewerComponentProp
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
   };
 
-  const fetchFileSizes = useCallback(async (files: FileItem[]) => {
-    const loadingState = files.reduce((acc, file) => ({ ...acc, [file.url]: true }), {});
+  const getFileType = (fileName: string): string => {
+    const extension = fileName.split('.').pop()?.toLowerCase() || '';
+
+    const typeMap: { [key: string]: string } = {
+      pdf: 'PDF',
+      doc: 'Word',
+      docx: 'Word',
+      ppt: 'PowerPoint',
+      pptx: 'PowerPoint',
+      xls: 'Excel',
+      xlsx: 'Excel',
+      zip: 'Archive',
+      rar: 'Archive',
+      txt: 'Text',
+      jpg: 'Image',
+      jpeg: 'Image',
+      png: 'Image',
+      gif: 'Image',
+      mp4: 'Video',
+      mp3: 'Audio',
+    };
+
+    return typeMap[extension] || 'File';
+  };
+
+  const fetchFileSizes = useCallback(async (fileList: FileItem[]) => {
+    const loadingState = fileList.reduce((acc, file) => ({ ...acc, [file.url]: true }), {});
     setLoadingFileSizes(loadingState);
 
-    const fetchPromises = files.map(async (file) => {
+    const fetchPromises = fileList.map(async (file) => {
       try {
         const fileId = file.url.split('/').pop();
         const response = await axios.get(
@@ -125,77 +149,32 @@ const ResourceViewerComponent = ({ role, userData }: ResourceViewerComponentProp
       (acc, result) => ({ ...acc, [result.url]: result.size }),
       {}
     );
-    const loadingUpdate = files.reduce((acc, file) => ({ ...acc, [file.url]: false }), {});
+    const loadingUpdate = fileList.reduce((acc, file) => ({ ...acc, [file.url]: false }), {});
 
     setFileSizes((prev) => ({ ...prev, ...sizesUpdate }));
     setLoadingFileSizes((prev) => ({ ...prev, ...loadingUpdate }));
   }, []);
 
-  const loadResource = useCallback(
-    async (shouldTrackView: boolean = true) => {
-      if (!id || !userData.token) return;
-
-      const abortController = new AbortController();
-
-      try {
-        setIsLoading(true);
-        setError(null);
-
-        const resourceData = await fetchSingleResource(id as string, abortController.signal);
-
-        if (resourceData && !abortController.signal.aborted) {
-          setResource(resourceData);
-
-          const processedFiles = resourceData.fileUrls.map((fileItem) => {
-            const url = fileItem.filePath;
-            const fileName = fileItem.fileName;
-            const fileType = getFileType(fileName);
-
-            return {
-              url,
-              name: fileName,
-              type: fileType,
-            };
-          });
-
-          setFiles(processedFiles);
-
-          fetchFileSizes(processedFiles);
-
-          if (shouldTrackView) {
-            const resourceId = resourceData._id || resourceData.resourceId;
-            if (resourceId) {
-              trackView(resourceId, role, abortController.signal);
-            }
-          }
-        }
-      } catch (err) {
-        if (!abortController.signal.aborted) {
-          setError(err instanceof Error ? err.message : 'Failed to load resource');
-        }
-      } finally {
-        setIsLoading(false);
-      }
-    },
-    [id, userData.token, fetchSingleResource, trackView, role, fetchFileSizes]
-  );
-
-  const forceReloadResource = useCallback(
-    async (shouldTrackView: boolean = false) => {
-      clearCache();
-      await loadResource(shouldTrackView);
-    },
-    [clearCache, loadResource]
-  );
-
   useEffect(() => {
-    loadResource(true);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [id]);
+    if (resource) {
+      const processedFiles = resource.fileUrls.map((fileItem) => ({
+        url: fileItem.filePath,
+        name: fileItem.fileName,
+        type: getFileType(fileItem.fileName),
+      }));
+
+      setFiles(processedFiles);
+      fetchFileSizes(processedFiles);
+
+      if (!hasTrackedView && resource._id) {
+        trackView(resource._id);
+        setHasTrackedView(true);
+      }
+    }
+  }, [resource, fetchFileSizes, trackView, hasTrackedView]);
 
   const handleDownload = async (file: FileItem) => {
     if (!resource) return;
-
     setFileToDownload(file);
     setShowDownloadFileModal(true);
   };
@@ -204,14 +183,13 @@ const ResourceViewerComponent = ({ role, userData }: ResourceViewerComponentProp
     if (!fileToDownload || !resource) return;
 
     try {
-      setIsDownloading(fileToDownload.url);
-      await downloadFile(fileToDownload.url, fileToDownload.name, resource._id, role);
-
+      setIsDownloadingFile(fileToDownload.url);
+      await downloadFile(fileToDownload.url, fileToDownload.name, resource._id);
       setShowDownloadFileModal(false);
       setFileToDownload(null);
     } catch {
     } finally {
-      setIsDownloading(null);
+      setIsDownloadingFile(null);
     }
   };
 
@@ -222,7 +200,6 @@ const ResourceViewerComponent = ({ role, userData }: ResourceViewerComponentProp
 
   const handleDeleteFile = async (fileUrl: string) => {
     if (!resource || role !== 'admin') return;
-
     setFileToDelete(fileUrl);
     setShowDeleteFileModal(true);
   };
@@ -232,9 +209,8 @@ const ResourceViewerComponent = ({ role, userData }: ResourceViewerComponentProp
 
     try {
       setIsDeletingFile(fileToDelete);
-      await adminHook.deleteFileFromResource(resource.resourceId || resource._id, fileToDelete);
-      await forceReloadResource(false);
-
+      await deleteFileFromResource(resource.resourceId || resource._id, fileToDelete);
+      refresh();
       setShowDeleteFileModal(false);
       setFileToDelete(null);
     } catch {
@@ -249,7 +225,7 @@ const ResourceViewerComponent = ({ role, userData }: ResourceViewerComponentProp
   };
 
   const handleRetry = () => {
-    forceReloadResource(true);
+    refresh();
   };
 
   const handleDownloadAll = () => {
@@ -260,7 +236,7 @@ const ResourceViewerComponent = ({ role, userData }: ResourceViewerComponentProp
   const confirmDownloadAll = async () => {
     if (!resource) return;
     try {
-      await downloadResource(resource, role);
+      await downloadResource(resource);
       setShowDownloadModal(false);
     } catch (error) {
       console.error('Download failed:', error);
@@ -275,8 +251,9 @@ const ResourceViewerComponent = ({ role, userData }: ResourceViewerComponentProp
     if (!resource) return;
 
     try {
-      const resourceId = resource._id || resource.resourceId;
-      if (!resourceId) {
+      setIsEditLoading(true);
+      const resourceIdValue = resource._id || resource.resourceId;
+      if (!resourceIdValue) {
         throw new Error('Resource ID not found');
       }
 
@@ -289,10 +266,13 @@ const ResourceViewerComponent = ({ role, userData }: ResourceViewerComponentProp
         department: updatedResource.department,
       };
 
-      await adminHook.updateResource(resourceId, payload);
-      await forceReloadResource(false);
+      await updateResource(resourceIdValue, payload);
+      refresh();
+      setShowEditModal(false);
     } catch (error) {
       throw error;
+    } finally {
+      setIsEditLoading(false);
     }
   };
 
@@ -399,31 +379,6 @@ const ResourceViewerComponent = ({ role, userData }: ResourceViewerComponentProp
     }
   };
 
-  const getFileType = (fileName: string): string => {
-    const extension = fileName.split('.').pop()?.toLowerCase() || '';
-
-    const typeMap: { [key: string]: string } = {
-      pdf: 'PDF',
-      doc: 'Word',
-      docx: 'Word',
-      ppt: 'PowerPoint',
-      pptx: 'PowerPoint',
-      xls: 'Excel',
-      xlsx: 'Excel',
-      zip: 'Archive',
-      rar: 'Archive',
-      txt: 'Text',
-      jpg: 'Image',
-      jpeg: 'Image',
-      png: 'Image',
-      gif: 'Image',
-      mp4: 'Video',
-      mp3: 'Audio',
-    };
-
-    return typeMap[extension] || 'File';
-  };
-
   const handleViewFile = (file: FileItem) => {
     setViewingFile(file);
   };
@@ -498,8 +453,7 @@ const ResourceViewerComponent = ({ role, userData }: ResourceViewerComponentProp
   };
 
   return (
-    <DashboardLayout title={resource?.title || 'Resource Details'} token={userData.token}>
-      {/*==================== Header ====================*/}
+    <DashboardLayout title={resource?.title || 'Resource Details'} token={token}>
       <DashboardPageHeader
         title="Resource"
         subtitle="Details"
@@ -514,12 +468,10 @@ const ResourceViewerComponent = ({ role, userData }: ResourceViewerComponentProp
           </button>
         }
       />
-      {/*==================== End of Header ====================*/}
 
-      {/*==================== Content Area ====================*/}
       {isLoading ? (
         <ResourceViewerSkeleton role={role} />
-      ) : error || !resource ? (
+      ) : isError || !resource ? (
         <NetworkError
           onRetry={handleRetry}
           retryButtonText="Refresh"
@@ -528,7 +480,6 @@ const ResourceViewerComponent = ({ role, userData }: ResourceViewerComponentProp
         />
       ) : (
         <>
-          {/*==================== Resource Information ====================*/}
           <div className="bg-white rounded-2xl p-6 mb-6">
             <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between mb-4">
               <div className="flex-1 mb-4 lg:mb-0">
@@ -558,10 +509,9 @@ const ResourceViewerComponent = ({ role, userData }: ResourceViewerComponentProp
               )}
             </div>
 
-            {/*==================== Resource Stats Grid  ====================*/}
             {role === 'admin' && (
               <div className="grid grid-cols-1 md:grid-cols-4 gap-8 md:gap-4 mb-8">
-                <div className="bg-gradient-to-r from-amber-100/70 to-blue-100/70 rounded-lg p-4">
+                <div className="bg-linear-to-r from-amber-100/70 to-blue-100/70 rounded-lg p-4">
                   <div className="flex items-center mb-2">
                     <div className="bg-blue-100/70 p-2 rounded-full mr-2">
                       <Eye className="h-4 w-4 text-blue-500" />
@@ -570,7 +520,7 @@ const ResourceViewerComponent = ({ role, userData }: ResourceViewerComponentProp
                   </div>
                   <p className="text-2xl font-normal text-blue-700">{resource.viewCount}</p>
                 </div>
-                <div className="bg-gradient-to-r from-amber-100/70 to-blue-100/70 rounded-lg p-4">
+                <div className="bg-linear-to-r from-amber-100/70 to-blue-100/70 rounded-lg p-4">
                   <div className="flex items-center mb-2">
                     <div className="bg-green-100/70 p-2 rounded-full mr-2">
                       <Download className="h-4 w-4 text-green-600" />
@@ -579,7 +529,7 @@ const ResourceViewerComponent = ({ role, userData }: ResourceViewerComponentProp
                   </div>
                   <p className="text-2xl font-bold text-green-700">{resource.downloads}</p>
                 </div>
-                <div className="bg-gradient-to-r from-amber-100/70 to-blue-100/70 rounded-lg p-4">
+                <div className="bg-linear-to-r from-amber-100/70 to-blue-100/70 rounded-lg p-4">
                   <div className="flex items-center mb-2">
                     <div className="bg-purple-100/70 p-2 rounded-full mr-2">
                       <FileText className="h-4 w-4 text-purple-600" />
@@ -588,7 +538,7 @@ const ResourceViewerComponent = ({ role, userData }: ResourceViewerComponentProp
                   </div>
                   <p className="text-2xl font-bold text-purple-700">{files.length}</p>
                 </div>
-                <div className="bg-gradient-to-r from-amber-100/70 to-blue-100/70 rounded-lg p-4">
+                <div className="bg-linear-to-r from-amber-100/70 to-blue-100/70 rounded-lg p-4">
                   <div className="flex items-center mb-2">
                     <div className="bg-amber-100/70 p-2 rounded-full mr-2">
                       <Tag className="h-4 w-4 text-amber-600" />
@@ -601,11 +551,8 @@ const ResourceViewerComponent = ({ role, userData }: ResourceViewerComponentProp
                 </div>
               </div>
             )}
-            {/*==================== End of Resource Stats Grid ====================*/}
 
-            {/*==================== Resource Details Grid ====================*/}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-6">
-              {/*==================== Department ====================*/}
               <div>
                 <div className="flex items-center mb-2">
                   <div className="bg-blue-100/70 p-2 rounded-full mr-2">
@@ -615,9 +562,7 @@ const ResourceViewerComponent = ({ role, userData }: ResourceViewerComponentProp
                 </div>
                 <p className="text-gray-500 font-normal">{formatDepartment(resource.department)}</p>
               </div>
-              {/*==================== End of Department ====================*/}
 
-              {/*==================== Academic Level ====================*/}
               <div>
                 <div className="flex items-center mb-2">
                   <div className="bg-blue-100/70 p-2 rounded-full mr-2">
@@ -629,9 +574,7 @@ const ResourceViewerComponent = ({ role, userData }: ResourceViewerComponentProp
                   {formatAcademicLevel(resource.academicLevel)}
                 </p>
               </div>
-              {/*==================== End of Academic Level ====================*/}
 
-              {/*==================== Category (Student Only) ====================*/}
               {role === 'student' && (
                 <div>
                   <div className="flex items-center mb-2">
@@ -643,9 +586,7 @@ const ResourceViewerComponent = ({ role, userData }: ResourceViewerComponentProp
                   <p className="text-gray-500 font-normal">{formatCategory(resource.category)}</p>
                 </div>
               )}
-              {/*==================== End of Category ====================*/}
 
-              {/*==================== Admin-Only Fields ====================*/}
               {role === 'admin' && (
                 <>
                   <div>
@@ -699,12 +640,9 @@ const ResourceViewerComponent = ({ role, userData }: ResourceViewerComponentProp
                   )}
                 </>
               )}
-              {/*==================== End of Admin-Only Fields ====================*/}
             </div>
           </div>
-          {/*==================== End of Resource Information ====================*/}
 
-          {/*==================== Files Table ====================*/}
           <div className="bg-white rounded-2xl overflow-hidden">
             <div className="px-5 py-4 border-b border-gray-200">
               <div className="flex items-center justify-between">
@@ -779,7 +717,7 @@ const ResourceViewerComponent = ({ role, userData }: ResourceViewerComponentProp
                       >
                         <td className="px-5 py-4">
                           <div className="flex items-center">
-                            <div className="flex-shrink-0">{getFileIcon(file.name)}</div>
+                            <div className="shrink-0">{getFileIcon(file.name)}</div>
                             <div className="ml-2 max-w-[250px]">
                               <div className="flex items-center">
                                 <span className="text-md font-normal text-gray-500 mr-2 truncate">
@@ -811,11 +749,11 @@ const ResourceViewerComponent = ({ role, userData }: ResourceViewerComponentProp
                                 e.stopPropagation();
                                 handleDownload(file);
                               }}
-                              disabled={isDownloading === file.url}
+                              disabled={isDownloadingFile === file.url}
                               className="rounded-full p-1.5 text-gray-500 hover:bg-gray-100 hover:text-blue-500 disabled:opacity-50"
                               title="Download File"
                             >
-                              {isDownloading === file.url ? (
+                              {isDownloadingFile === file.url ? (
                                 <Loader className="h-4 w-4 animate-spin" />
                               ) : (
                                 <Download className="h-4 w-4" />
@@ -848,12 +786,9 @@ const ResourceViewerComponent = ({ role, userData }: ResourceViewerComponentProp
               </div>
             )}
           </div>
-          {/*==================== End of Files Table ====================*/}
         </>
       )}
-      {/*==================== End of Content Area ====================*/}
 
-      {/*==================== Download File Confirmation Modal ====================*/}
       <ConfirmationModal
         variant="primary"
         title="Download File"
@@ -863,12 +798,10 @@ const ResourceViewerComponent = ({ role, userData }: ResourceViewerComponentProp
         isOpen={showDownloadFileModal}
         onConfirm={confirmDownloadFile}
         onClose={handleCloseDownloadModal}
-        isLoading={isDownloading === fileToDownload?.url}
+        isLoading={isDownloadingFile === fileToDownload?.url}
         message={`Are you sure you want to download "${fileToDownload?.name}"? This action will start the file download.`}
       />
-      {/*==================== End of Download File Confirmation Modal ====================*/}
 
-      {/*==================== Delete File Confirmation Modal ====================*/}
       <ConfirmationModal
         variant="danger"
         title="Delete File"
@@ -881,37 +814,28 @@ const ResourceViewerComponent = ({ role, userData }: ResourceViewerComponentProp
         isLoading={isDeletingFile === fileToDelete}
         message="Are you sure you want to delete this file? This action cannot be undone and the file will be permanently removed from this resource."
       />
-      {/*==================== End of Delete File Confirmation Modal ====================*/}
 
-      {/*==================== Add Files Modal ====================*/}
       {resource && (
         <AddFilesModal
+          token={token}
           resource={resource}
-          token={userData.token}
           isOpen={showAddFilesModal}
           onClose={() => setShowAddFilesModal(false)}
           onFilesAdded={async () => {
-            await forceReloadResource(false);
-            // Note: Modal will close itself after this function completes
+            refresh();
           }}
         />
       )}
-      {/*==================== End of Add Files Modal ====================*/}
 
-      {/*==================== File Viewer Modal ====================*/}
       {viewingFile && (
         <div className="fixed inset-0 z-20 overflow-y-auto">
           <div className="flex min-h-full items-center justify-center p-4">
-            {/*==================== Backdrop ====================*/}
             <div
               className="fixed inset-0 bg-black/30 backdrop-blur-sm bg-opacity-50 transition-opacity"
               onClick={handleCloseFileModal}
             />
-            {/*==================== End of Backdrop ====================*/}
 
-            {/*==================== Modal ====================*/}
             <div className="relative w-full max-w-7xl bg-white rounded-lg max-h-[90vh] overflow-y-auto">
-              {/*==================== Header ====================*/}
               <div className="flex items-center justify-between p-4 border-b">
                 <div className="flex items-center space-x-3">
                   {getFileIcon(viewingFile.name)}
@@ -929,20 +853,16 @@ const ResourceViewerComponent = ({ role, userData }: ResourceViewerComponentProp
                   <X className="h-5 w-5" />
                 </button>
               </div>
-              {/*==================== End of Header ====================*/}
 
-              {/*==================== Content ====================*/}
-              <div className="h-96 md:h-[52rem]">{renderFileViewer(viewingFile)}</div>
-              {/*==================== End of Content ====================*/}
+              <div className="h-96 md:h-208">{renderFileViewer(viewingFile)}</div>
 
-              {/*==================== Footer ====================*/}
               <div className="flex items-center justify-end space-x-3 p-4 border-t">
                 <button
                   onClick={() => handleDownload(viewingFile)}
-                  disabled={isDownloading === viewingFile.url}
+                  disabled={isDownloadingFile === viewingFile.url}
                   className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50"
                 >
-                  {isDownloading === viewingFile.url ? (
+                  {isDownloadingFile === viewingFile.url ? (
                     <Loader className="h-4 w-4 animate-spin mr-2" />
                   ) : (
                     <Download className="h-4 w-4 mr-2" />
@@ -956,27 +876,21 @@ const ResourceViewerComponent = ({ role, userData }: ResourceViewerComponentProp
                   Close
                 </button>
               </div>
-              {/*==================== End of Footer ====================*/}
             </div>
-            {/*==================== End of Modal ====================*/}
           </div>
         </div>
       )}
-      {/*==================== End of File Viewer Modal ====================*/}
 
-      {/*==================== Edit Resource Modal ====================*/}
       {resource && (
         <ResourceEditModal
           resource={resource}
           isOpen={showEditModal}
-          isLoading={adminHook.isLoading}
+          isLoading={isEditLoading}
           onSave={handleSaveResource}
           onClose={() => setShowEditModal(false)}
         />
       )}
-      {/*==================== End of Edit Resource Modal ====================*/}
 
-      {/*==================== Download All Modal ====================*/}
       <DownloadResourceModal
         resource={resource}
         isOpen={showDownloadModal}
@@ -985,7 +899,6 @@ const ResourceViewerComponent = ({ role, userData }: ResourceViewerComponentProp
         isDownloading={isDownloadingResource}
         onClose={() => setShowDownloadModal(false)}
       />
-      {/*==================== End of Download All Modal ====================*/}
     </DashboardLayout>
   );
 };

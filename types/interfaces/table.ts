@@ -1,3 +1,5 @@
+import { LucideIcon } from 'lucide-react';
+
 export interface UserData {
   _id?: string;
   name: string;
@@ -11,19 +13,40 @@ export interface UserData {
   isEmailVerified?: boolean;
 }
 
-export interface UserTableProps {
+export interface Column {
+  key: string;
+  header: string;
+  className?: string;
+}
+
+export interface TableProps<T> {
+  data: T[];
+  columns: Column[];
+  keyExtractor: (item: T) => string;
+  renderRow: (item: T, index: number) => React.ReactNode;
   page: number;
   limit: number;
-  token: string;
-  total?: number;
-  setPage: Function;
-  isError?: boolean;
-  setLimit: Function;
+  total: number;
   totalPages: number;
-  users?: UserData[];
+  setPage: (page: number) => void;
   isLoading?: boolean;
-  showActions?: boolean;
-  onUserUpdated: () => void;
+  isError?: boolean;
+  title?: string;
+  onRefresh?: () => void;
   hasActiveFilters?: boolean;
   onClearFilters?: () => void;
+  searchTerm?: string;
+  emptyTitle?: string;
+  emptyDescription?: string;
+  emptyIcon?: LucideIcon;
+  skeleton?: React.ReactNode;
+  selectable?: boolean;
+  selectedItems?: Record<string, boolean>;
+  onSelectItem?: (item: T, event: React.MouseEvent) => void;
+  onSelectAll?: () => void;
+  selectedCount?: number;
+  onClearSelection?: () => void;
+  selectionActions?: React.ReactNode;
+  onRowClick?: (item: T, event: React.MouseEvent) => void;
+  onRowDoubleClick?: (item: T, event: React.MouseEvent) => void;
 }

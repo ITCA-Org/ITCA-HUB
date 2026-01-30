@@ -1,11 +1,14 @@
 import { UserAuth } from '@/types';
 import { NextApiRequest } from 'next';
 import { isLoggedIn } from '@/utils/auth';
-import { StudentResourceViewPageProps } from '@/types/interfaces/resource';
 import ResourceViewerComponent from '@/components/dashboard/shared/resources/resource-viewer';
 
+interface StudentResourceViewPageProps {
+  userData: UserAuth;
+}
+
 const StudentResourceViewPage = ({ userData }: StudentResourceViewPageProps) => {
-  return <ResourceViewerComponent role="student" userData={userData} />;
+  return <ResourceViewerComponent role="student" token={userData.token} />;
 };
 
 export default StudentResourceViewPage;
@@ -34,8 +37,6 @@ export const getServerSideProps = async ({ req }: { req: NextApiRequest }) => {
   }
 
   return {
-    props: {
-      userData,
-    },
+    props: { userData },
   };
 };

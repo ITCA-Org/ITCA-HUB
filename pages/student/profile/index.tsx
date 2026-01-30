@@ -1,11 +1,14 @@
 import { UserAuth } from '@/types';
 import { NextApiRequest } from 'next';
 import { isLoggedIn } from '@/utils/auth';
-import { StudentProfilePageProps } from '@/types/interfaces/profile';
 import ProfileComponent from '@/components/dashboard/shared/profile/profile';
 
+interface StudentProfilePageProps {
+  userData: UserAuth;
+}
+
 const StudentProfilePage = ({ userData }: StudentProfilePageProps) => {
-  return <ProfileComponent role="student" userData={userData} />;
+  return <ProfileComponent role="student" token={userData.token} />;
 };
 
 export default StudentProfilePage;

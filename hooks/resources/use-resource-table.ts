@@ -4,23 +4,22 @@ import { AxiosError } from 'axios';
 import { getErrorMessage } from '@/utils/error';
 import { CustomError, ErrorResponseData } from '@/types';
 import { useState, useMemo, useEffect, useCallback } from 'react';
-import { Resource, UseResourceTableProps, UpdateResourcePayload } from '@/types/interfaces/resource';
-import useResourceAdmin from './use-resource-admin';
+import { Resource, UpdateResourcePayload, UseResourceTableProps } from '@/types/interfaces/resource';
+import { useResourceActions } from './use-resource-admin';
 
 const useResourceTable = ({
   resources,
-  token,
   userRole,
   onRefresh,
   onDeleteResource,
   onDeleteMultiple,
   onRestoreResource,
   onRestoreMultiple,
-  onCacheInvalidate,
   mode = 'default',
-}: UseResourceTableProps & { onCacheInvalidate?: () => void }) => {
+  token,
+}: UseResourceTableProps) => {
   const router = useRouter();
-  const adminHook = useResourceAdmin({ token });
+  const { updateResource } = useResourceActions(token);
 
   const [selectedResources, setSelectedResources] = useState<Record<string, boolean>>({});
   const [selectedResource, setSelectedResource] = useState<Resource | null>(null);
@@ -30,6 +29,7 @@ const useResourceTable = ({
   const [showEditModal, setShowEditModal] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [isRestoring, setIsRestoring] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
 
   const selectedCount = useMemo(
     () => Object.values(selectedResources).filter(Boolean).length,
@@ -54,9 +54,6 @@ const useResourceTable = ({
     clearSelection();
   }, [clearSelection]);
 
-  /**=======================================
-   * Handle single row selection
-   =======================================*/
   const toggleSelection = useCallback((resource: Resource, event: React.MouseEvent) => {
     const isMultiSelectKey = event.ctrlKey || event.metaKey;
 
@@ -79,9 +76,6 @@ const useResourceTable = ({
     });
   }, []);
 
-  /**=======================================
-   * Select all resources on current page
-   =======================================*/
   const selectAll = useCallback(() => {
     const newSelection = { ...selectedResources };
     const allSelected = resources.every((item) => selectedResources[item._id]);
@@ -159,7 +153,6 @@ const useResourceTable = ({
       );
       toast.error('Failed to delete resource(s)', {
         description: message,
-        duration: 5000,
       });
     } finally {
       setIsDeleting(false);
@@ -206,19 +199,16 @@ const useResourceTable = ({
       );
       toast.error('Failed to restore resource(s)', {
         description: message,
-        duration: 5000,
       });
     } finally {
       setIsRestoring(false);
     }
   };
 
-  /**=============================================
-   * Save resource changes using adminHook
-   =============================================*/
   const handleSaveResource = async (updatedResource: Partial<Resource>) => {
     if (!selectedResource) return;
 
+    setIsEditing(true);
     try {
       const resourceId = selectedResource._id || selectedResource.resourceId;
       if (!resourceId) {
@@ -234,21 +224,19 @@ const useResourceTable = ({
         department: updatedResource.department,
       };
 
-      await adminHook.updateResource(resourceId, payload);
-      if (onCacheInvalidate) {
-        onCacheInvalidate();
-      }
+      await updateResource(resourceId, payload);
       setShowEditModal(false);
       setSelectedResource(null);
       onRefresh();
     } catch (error) {
-      // Error handling is already done in the adminHook.updateResource method
       throw error;
+    } finally {
+      setIsEditing(false);
     }
   };
 
   return {
-    isEditing: adminHook.isLoading,
+    isEditing,
     selectAll,
     isDeleting,
     isRestoring,

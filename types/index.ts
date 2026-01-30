@@ -28,13 +28,5 @@ export type NavItem = {
   icon: JSX.Element;
   children?: NavItem[];
 };
-export interface UseUserActionsProps {
-  token: string;
-  onUserUpdated: () => void;
-}
 
 export type ActionType = 'delete' | 'changeRole' | 'toggleActivation';
-
-export interface AdminUsersPageProps {
-  userData: UserAuth;
-}

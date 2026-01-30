@@ -54,10 +54,10 @@ export interface ResourceEditModalProps {
 }
 
 export interface ResourceAnalyticsProps {
-  token: string;
   isOpen?: boolean;
   resource: Resource;
   onClose: () => void;
+  token: string;
 }
 
 export interface ResourceAnalyticsData {
@@ -139,11 +139,11 @@ export interface ConfirmationModalProps {
 }
 
 export interface AddFilesModalProps {
-  token: string;
   isOpen: boolean;
   resource: Resource;
   onClose: () => void;
   onFilesAdded: () => void;
+  token: string;
 }
 
 export interface UploadProgress {

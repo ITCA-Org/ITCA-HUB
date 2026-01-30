@@ -1,17 +1,17 @@
 import Image from 'next/image';
-import useEvents from '@/hooks/events/use-event';
 import React, { useEffect, useState } from 'react';
 import { X, Users, User, Calendar } from 'lucide-react';
+import { useEventActions } from '@/hooks/events/use-event';
 import { ViewEventModalProps, EventProps } from '@/types/interfaces/event';
 import ViewEventModalSkeleton from '../../skeletons/view-event-modal-skeleton';
 
-const ViewEventModal = ({ isOpen, eventId, token, onClose, role }: ViewEventModalProps) => {
+const ViewEventModal = ({ isOpen, eventId, onClose, role, token }: ViewEventModalProps) => {
   const [event, setEvent] = useState<EventProps | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [imageError, setImageError] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
-  const { getEventById } = useEvents({ token });
+  const { getEventById } = useEventActions(token);
 
   useEffect(() => {
     const fetchEvent = async () => {
@@ -101,7 +101,7 @@ const ViewEventModal = ({ isOpen, eventId, token, onClose, role }: ViewEventModa
                   className="object-cover"
                 />
               ) : (
-                <div className="h-full w-full bg-gradient-to-br from-blue-500 via-amber-300 to-blue-500 flex items-center justify-center">
+                <div className="h-full w-full bg-linear-to-br from-blue-500 via-amber-300 to-blue-500 flex items-center justify-center">
                   <Calendar className="h-16 w-16 text-white/80" />
                 </div>
               )}

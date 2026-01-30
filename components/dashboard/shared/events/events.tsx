@@ -1,6 +1,7 @@
+import { useState } from 'react';
 import EventCard from './event-card';
-import useEvents from '@/hooks/events/use-event';
-import { useState, useEffect, useCallback } from 'react';
+import useDebounce from '@/utils/debounce';
+import useEvents, { useEventActions } from '@/hooks/events/use-event';
 import DashboardLayout from '@/components/dashboard/layout/dashboard-layout';
 import EditEventModal from '@/components/dashboard/modals/events/edit-event-modal';
 import ViewEventModal from '@/components/dashboard/modals/events/view-event-modal';
@@ -12,159 +13,80 @@ import { NetworkError, EmptyState, NoResults } from '@/components/dashboard/erro
 import { Calendar, Search, RefreshCw, Plus, ChevronLeft, ChevronRight } from 'lucide-react';
 import { CreateEventData, EventProps, EventsComponentProps } from '@/types/interfaces/event';
 
-const EventsComponent = ({ role, userData }: EventsComponentProps) => {
-  const [eventToDelete, setEventToDelete] = useState<string | null>(null);
-  const [eventToEdit, setEventToEdit] = useState<EventProps | null>(null);
-  const [eventToView, setEventToView] = useState<string | null>(null);
-  const [isClearingFilters, setIsClearingFilters] = useState(false);
-  const [events, setEvents] = useState<EventProps[] | null>(null);
-  const [currentUserId, setCurrentUserId] = useState<string>('');
-  const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [showCreateModal, setShowCreateModal] = useState(false);
-  const [showEditModal, setShowEditModal] = useState(false);
-  const [showViewModal, setShowViewModal] = useState(false);
-  const [totalEvents, setTotalEvents] = useState(0);
-  const [totalPages, setTotalPages] = useState(0);
+const LIMIT = 9;
+
+const EventsComponent = ({ role, token, userId }: EventsComponentProps) => {
+  const [page, setPage] = useState(0);
   const [status, setStatus] = useState('all');
-  const [page, setPage] = useState(1);
-  const limit = 9;
+  const [searchTerm, setSearchTerm] = useState('');
+  const [eventToView, setEventToView] = useState<string | null>(null);
+  const [eventToEdit, setEventToEdit] = useState<EventProps | null>(null);
+  const [eventToDelete, setEventToDelete] = useState<string | null>(null);
+  const [showViewModal, setShowViewModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [showCreateModal, setShowCreateModal] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
 
-  const {
-    isError,
-    isLoading,
-    searchTerm,
-    clearCache,
-    createEvent,
-    updateEvent,
-    deleteEvent,
-    getAllEvents,
-    setSearchTerm,
-    registerForEvent,
-    unregisterFromEvent,
-  } = useEvents({ token: userData.token });
+  const debouncedSearch = useDebounce(searchTerm, 500);
 
-  /**===============================
-   * Check if there are active filters
-   ===============================*/
-  const hasActiveFilters = status !== 'all';
+  const { events, total, totalPages, isLoading, isError, refresh } = useEvents({
+    token,
+    page,
+    limit: LIMIT,
+    status,
+    search: debouncedSearch,
+  });
 
-  const loadEvents = useCallback(
-    async (signal?: AbortSignal) => {
-      const response = await getAllEvents({
-        page,
-        limit,
-        signal,
-        status: status !== 'all' ? status : undefined,
-      });
+  const { createEvent, updateEvent, deleteEvent, registerForEvent, unregisterFromEvent } =
+    useEventActions(token);
 
-      if (!signal?.aborted) {
-        setEvents(response.events);
-        setTotalEvents(response.total);
-        setTotalPages(response.pagination.totalPages || Math.ceil(response.total / limit));
-      }
-    },
-    [page, limit, status, getAllEvents]
-  );
-
-  const refreshEvents = useCallback(
-    async (signal?: AbortSignal) => {
-      try {
-        const response = await getAllEvents({
-          page,
-          limit,
-          signal,
-          status: status !== 'all' ? status : undefined,
-        });
-
-        if (!signal?.aborted) {
-          setEvents(response.events);
-          setTotalEvents(response.total);
-          setTotalPages(response.pagination.totalPages || Math.ceil(response.total / limit));
-        }
-      } catch (error) {
-        if (!signal?.aborted) {
-          console.error('Failed to refresh events:', error);
-        }
-      }
-    },
-    [page, limit, status, getAllEvents]
-  );
+  const hasActiveFilters = status !== 'all' || searchTerm.trim() !== '';
+  const startIndex = page * LIMIT;
+  const endIndex = Math.min(startIndex + LIMIT, total);
 
   const handleCreateEvent = async (eventData: CreateEventData) => {
-    const controller = new AbortController();
     try {
-      await createEvent(eventData, controller.signal);
-      await refreshEvents(controller.signal);
-    } catch (error) {
-      if (!controller.signal.aborted) {
-        console.error('Failed to create event:', error);
-      }
+      await createEvent(eventData);
+      setShowCreateModal(false);
+    } catch {
     }
   };
 
   const handleEditEvent = async (eventId: string, eventData: CreateEventData) => {
-    const controller = new AbortController();
     try {
-      await updateEvent(eventId, eventData, controller.signal);
-      await refreshEvents(controller.signal);
-
+      await updateEvent(eventId, eventData);
+      setShowEditModal(false);
       setEventToEdit(null);
-    } catch (error) {
-      if (!controller.signal.aborted) {
-        console.error('Failed to update event:', error);
-      }
+    } catch {
     }
   };
 
   const handleDeleteEvent = async () => {
     if (!eventToDelete) return;
-    const controller = new AbortController();
     try {
-      await deleteEvent(eventToDelete, controller.signal);
-      await refreshEvents(controller.signal);
-
+      await deleteEvent(eventToDelete);
       setShowDeleteModal(false);
       setEventToDelete(null);
-    } catch (error) {
-      if (!controller.signal.aborted) {
-        console.error('Failed to delete event:', error);
-      }
+    } catch {
     }
   };
 
   const handleRegister = async (eventId: string) => {
-    const controller = new AbortController();
     try {
-      await registerForEvent(eventId, controller.signal);
-      await refreshEvents(controller.signal);
-    } catch (error) {
-      if (!controller.signal.aborted) {
-        console.error('Failed to register for event:', error);
-      }
+      await registerForEvent(eventId);
+    } catch {
     }
   };
 
   const handleUnregister = async (eventId: string) => {
-    const controller = new AbortController();
     try {
-      await unregisterFromEvent(eventId, controller.signal);
-      await refreshEvents(controller.signal);
-    } catch (error) {
-      if (!controller.signal.aborted) {
-        console.error('Failed to unregister from event:', error);
-      }
+      await unregisterFromEvent(eventId);
+    } catch {
     }
   };
 
-  const handleRefresh = () => {
-    setPage(1);
-    clearCache();
-    const controller = new AbortController();
-    loadEvents(controller.signal);
-  };
-
   const handleEditClick = (eventId: string) => {
-    const event = events?.find((e) => e._id === eventId);
+    const event = events.find((e) => e._id === eventId);
     if (event) {
       setEventToEdit(event);
       setShowEditModal(true);
@@ -176,106 +98,30 @@ const EventsComponent = ({ role, userData }: EventsComponentProps) => {
     setShowDeleteModal(true);
   };
 
-  const handleViewClick = async (eventId: string) => {
+  const handleViewClick = (eventId: string) => {
     setEventToView(eventId);
     setShowViewModal(true);
   };
 
   const resetFilters = () => {
-    if (!hasActiveFilters) return;
-    setIsClearingFilters(true);
     setStatus('all');
-    setPage(1);
-    clearCache();
+    setSearchTerm('');
+    setPage(0);
   };
 
-  /**===============================
-   * Get current user ID for students
-   ===============================*/
-  useEffect(() => {
-    if (role === 'student') {
-      setCurrentUserId(userData.userId || '');
-    }
-  }, [role, userData]);
-
-  /**=====================================
-   * Load events when dependencies change
-   =====================================*/
-  useEffect(() => {
-    const abortController = new AbortController();
-    let isActive = true;
-
-    const loadData = async () => {
-      try {
-        if (isActive) {
-          const response = await getAllEvents({
-            page,
-            limit,
-            status: status !== 'all' ? status : undefined,
-            signal: abortController.signal,
-          });
-
-          if (isActive && !abortController.signal.aborted) {
-            setEvents(response.events);
-            setTotalEvents(response.total);
-            setTotalPages(response.pagination.totalPages || Math.ceil(response.total / limit));
-            setIsClearingFilters(false);
-          }
-        }
-      } catch (error) {
-        if (isActive && !abortController.signal.aborted) {
-          console.error('Failed to load events:', error);
-        }
-      }
-    };
-
-    loadData();
-
-    return () => {
-      isActive = false;
-      abortController.abort();
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [page, limit, status]);
-
-  /**===============================
-   * Reset page when filters change
-   ===============================*/
-  useEffect(() => {
-    setPage(1);
-  }, [status]);
-
-  /**===============================
-   * Pagination handlers
-   ===============================*/
-  const handlePreviousPage = () => {
-    setPage((prev) => Math.max(1, prev - 1));
-  };
-
-  const handleNextPage = () => {
-    setPage((prev) => Math.min(totalPages, prev + 1));
-  };
-
-  const handlePageClick = (pageNum: number) => {
-    setPage(pageNum);
-  };
-
-  /**===============================
-   * Render pagination component
-   ===============================*/
   const renderPagination = () => {
     if (totalPages <= 1) return null;
 
-    const pageNumbers = [];
-    const maxVisiblePages = 5;
-    let startPage = Math.max(1, page - Math.floor(maxVisiblePages / 2));
-    let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+    const pageNumbers: number[] = [];
+    const maxVisible = 5;
+    let start = Math.max(0, page - Math.floor(maxVisible / 2));
+    const end = Math.min(totalPages, start + maxVisible);
 
-    if (endPage - startPage + 1 < maxVisiblePages) {
-      startPage = Math.max(1, endPage - maxVisiblePages + 1);
+    if (end - start < maxVisible) {
+      start = Math.max(0, end - maxVisible);
     }
 
-    for (let i = startPage; i <= endPage; i++) {
+    for (let i = start; i < end; i++) {
       pageNumbers.push(i);
     }
 
@@ -283,15 +129,15 @@ const EventsComponent = ({ role, userData }: EventsComponentProps) => {
       <div className="flex items-center justify-between bg-transparent border-t border-gray-200 pt-4">
         <div className="flex justify-between flex-1 sm:hidden">
           <button
-            disabled={page === 1}
-            onClick={handlePreviousPage}
+            disabled={page === 0}
+            onClick={() => setPage(Math.max(0, page - 1))}
             className="relative inline-flex items-center px-4 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             Previous
           </button>
           <button
-            onClick={handleNextPage}
-            disabled={page === totalPages}
+            onClick={() => setPage(Math.min(totalPages - 1, page + 1))}
+            disabled={page === totalPages - 1}
             className="relative inline-flex items-center px-4 py-2 ml-3 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             Next
@@ -301,17 +147,17 @@ const EventsComponent = ({ role, userData }: EventsComponentProps) => {
         <div className="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
           <div>
             <p className="text-sm text-gray-700">
-              Showing <span className="font-medium">{(page - 1) * limit + 1}</span> to{' '}
-              <span className="font-medium">{Math.min(page * limit, totalEvents)}</span> of{' '}
-              <span className="font-medium">{totalEvents}</span> results
+              Showing <span className="font-medium">{startIndex + 1}</span> to{' '}
+              <span className="font-medium">{endIndex}</span> of{' '}
+              <span className="font-medium">{total}</span> results
             </p>
           </div>
 
           <div>
             <nav className="relative z-0 inline-flex rounded-md -space-x-px">
               <button
-                disabled={page === 1}
-                onClick={handlePreviousPage}
+                disabled={page === 0}
+                onClick={() => setPage(Math.max(0, page - 1))}
                 className="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <ChevronLeft className="h-5 w-5" />
@@ -320,18 +166,18 @@ const EventsComponent = ({ role, userData }: EventsComponentProps) => {
               {pageNumbers.map((pageNum) => (
                 <button
                   key={pageNum}
-                  onClick={() => handlePageClick(pageNum)}
+                  onClick={() => setPage(pageNum)}
                   className={`relative inline-flex items-center px-4 py-0 border-none rounded-md text-sm font-medium ${
                     pageNum === page ? 'bg-blue-600 text-white' : 'text-gray-700 hover:bg-gray-100'
                   }`}
                 >
-                  {pageNum}
+                  {pageNum + 1}
                 </button>
               ))}
 
               <button
-                onClick={handleNextPage}
-                disabled={page === totalPages}
+                onClick={() => setPage(Math.min(totalPages - 1, page + 1))}
+                disabled={page === totalPages - 1}
                 className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <ChevronRight className="h-5 w-5" />
@@ -344,8 +190,7 @@ const EventsComponent = ({ role, userData }: EventsComponentProps) => {
   };
 
   return (
-    <DashboardLayout title="Events" token={userData.token}>
-      {/*==================== Page Header ====================*/}
+    <DashboardLayout title="Events" token={token}>
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
         <DashboardPageHeader
           title="ITCA"
@@ -354,7 +199,7 @@ const EventsComponent = ({ role, userData }: EventsComponentProps) => {
           actions={
             <div className="flex items-center space-x-3">
               <button
-                onClick={handleRefresh}
+                onClick={refresh}
                 className="inline-flex items-center rounded-lg bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-500 cursor-pointer"
               >
                 <RefreshCw className="h-4 w-4 mr-2" />
@@ -364,7 +209,7 @@ const EventsComponent = ({ role, userData }: EventsComponentProps) => {
               {role === 'admin' && (
                 <button
                   onClick={() => setShowCreateModal(true)}
-                  className="inline-flex items-center rounded-lg bg-gradient-to-r from-blue-600 to-blue-500 px-4 py-2 text-sm font-medium text-white hover:from-blue-700 hover:to-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-300 shadow-md hover:shadow-lg cursor-pointer"
+                  className="inline-flex items-center rounded-lg bg-linear-to-r from-blue-600 to-blue-500 px-4 py-2 text-sm font-medium text-white hover:from-blue-700 hover:to-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-300 shadow-md hover:shadow-lg cursor-pointer"
                 >
                   <Plus className="h-4 w-4 mr-2" />
                   Create Event
@@ -374,9 +219,7 @@ const EventsComponent = ({ role, userData }: EventsComponentProps) => {
           }
         />
       </div>
-      {/*==================== End of Page Header ====================*/}
 
-      {/*==================== Filters ====================*/}
       <div className="mb-6 grid grid-cols-1 gap-4 md:grid-cols-4">
         <div className="col-span-2">
           <div className="relative">
@@ -386,7 +229,10 @@ const EventsComponent = ({ role, userData }: EventsComponentProps) => {
             <input
               type="search"
               value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
+              onChange={(e) => {
+                setSearchTerm(e.target.value);
+                setPage(0);
+              }}
               placeholder="Search events by title, description, or location..."
               className="w-full rounded-lg border-none bg-white pl-10 pr-4 py-2.5 text-sm text-gray-700 focus:bg-gray-200/60 focus:outline-none"
             />
@@ -397,7 +243,10 @@ const EventsComponent = ({ role, userData }: EventsComponentProps) => {
           <select
             value={status}
             title="select"
-            onChange={(e) => setStatus(e.target.value)}
+            onChange={(e) => {
+              setStatus(e.target.value);
+              setPage(0);
+            }}
             className="w-full rounded-lg border-none bg-white py-2.5 pl-3 pr-8 text-sm text-gray-700 focus:border-blue-500 focus:outline-none focus:ring-blue-500"
           >
             <option value="all">All Events</option>
@@ -420,19 +269,17 @@ const EventsComponent = ({ role, userData }: EventsComponentProps) => {
           </button>
         </div>
       </div>
-      {/*==================== End of Filters ====================*/}
 
-      {/*==================== Content Area ====================*/}
-      {isLoading || isClearingFilters || (!events && !isError) ? (
+      {isLoading ? (
         <EventCardSkeleton />
       ) : isError ? (
         <NetworkError
-          onRetry={handleRefresh}
+          onRetry={refresh}
           title="Unable to fetch events"
           description="Please check your internet connection and try again."
         />
-      ) : events && events.length === 0 ? (
-        (searchTerm.trim() !== '' || hasActiveFilters) && !isClearingFilters ? (
+      ) : events.length === 0 ? (
+        hasActiveFilters ? (
           <NoResults
             filterTerm={searchTerm}
             title="No matching events"
@@ -446,7 +293,7 @@ const EventsComponent = ({ role, userData }: EventsComponentProps) => {
             uploadIcon={Calendar}
             title="No events found"
             showRefreshButton={true}
-            onRefresh={handleRefresh}
+            onRefresh={refresh}
             showUploadButton={role === 'admin'}
             description={
               role === 'admin'
@@ -459,7 +306,7 @@ const EventsComponent = ({ role, userData }: EventsComponentProps) => {
         <div className="bg-transparent">
           <div className="py-6">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {events?.map((event) => (
+              {events.map((event) => (
                 <EventCard
                   role={role}
                   event={event}
@@ -468,36 +315,30 @@ const EventsComponent = ({ role, userData }: EventsComponentProps) => {
                   onView={handleViewClick}
                   onRegister={handleRegister}
                   onDelete={handleDeleteClick}
-                  currentUserId={currentUserId}
                   onUnregister={handleUnregister}
+                  currentUserId={userId ?? undefined}
                 />
               ))}
             </div>
           </div>
 
-          {/*==================== Pagination ====================*/}
-          {events && events.length > 0 && renderPagination()}
-          {/*==================== End of Pagination ====================*/}
+          {events.length > 0 && renderPagination()}
         </div>
       )}
-      {/*==================== End of Content Area ====================*/}
 
-      {/*==================== View Event Modal ====================*/}
       {showViewModal && eventToView && (
         <ViewEventModal
           role={role}
+          token={token}
           isOpen={showViewModal}
           eventId={eventToView}
-          token={userData.token}
           onClose={() => {
             setShowViewModal(false);
             setEventToView(null);
           }}
         />
       )}
-      {/*==================== End of View Event Modal ====================*/}
 
-      {/*==================== Admin Modals ====================*/}
       {role === 'admin' && (
         <>
           {showCreateModal && (
@@ -532,7 +373,6 @@ const EventsComponent = ({ role, userData }: EventsComponentProps) => {
           )}
         </>
       )}
-      {/*==================== End of Admin Modals ====================*/}
     </DashboardLayout>
   );
 };

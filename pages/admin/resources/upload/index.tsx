@@ -4,11 +4,14 @@ import { useRouter } from 'next/router';
 import { isLoggedIn } from '@/utils/auth';
 import { useState, useEffect, useRef } from 'react';
 import { ArrowLeft, AlertTriangle } from 'lucide-react';
-import { AdminResourceUploadPageProps } from '@/types/interfaces/resource';
 import DashboardLayout from '@/components/dashboard/layout/dashboard-layout';
 import ConfirmationModal from '@/components/dashboard/modals/confirmation-modal';
 import DashboardPageHeader from '@/components/dashboard/layout/dashboard-page-header';
 import ResourceUploader from '@/components/dashboard/shared/resources/resource-uploader';
+
+interface AdminResourceUploadPageProps {
+  userData: UserAuth;
+}
 
 const AdminResourceUploadPage = ({ userData }: AdminResourceUploadPageProps) => {
   const router = useRouter();
@@ -86,8 +89,7 @@ const AdminResourceUploadPage = ({ userData }: AdminResourceUploadPageProps) => 
   };
 
   return (
-    <DashboardLayout title="Upload Resource" token={userData.token}>
-      {/*==================== Header ====================*/}
+    <DashboardLayout title="Upload Resource">
       <DashboardPageHeader
         title="Upload"
         subtitle="Resource"
@@ -98,11 +100,9 @@ const AdminResourceUploadPage = ({ userData }: AdminResourceUploadPageProps) => 
           </button>
         }
       />
-      {/*==================== End of Header ====================*/}
 
       <div className="relative">
         <div className="relative z-10">
-          {/*==================== Resource Uploader Component ====================*/}
           <div
             onClick={(e) => {
               const target = e.target as HTMLElement;
@@ -120,9 +120,7 @@ const AdminResourceUploadPage = ({ userData }: AdminResourceUploadPageProps) => 
               onUploadComplete={handleUploadComplete}
             />
           </div>
-          {/*==================== End of Resource Uploader Component ====================*/}
 
-          {/*==================== Guidelines Section ====================*/}
           <div className="mt-6 rounded-xl bg-white/70 p-6">
             <h1 className="text-2xl font-bold flex items-center">
               <span className="text-blue-700 mr-2">Upload</span>
@@ -149,7 +147,7 @@ const AdminResourceUploadPage = ({ userData }: AdminResourceUploadPageProps) => 
                   key={index}
                   className="even:bg-gray-100 flex items-start gap-3 rounded-lg px-2 py-4"
                 >
-                  <div className="flex-shrink-0 w-5 h-5 mt-0.5  bg-blue-100 text-blue-500 rounded-full flex items-center justify-center text-sm font-bold">
+                  <div className="shrink-0 w-5 h-5 mt-0.5  bg-blue-100 text-blue-500 rounded-full flex items-center justify-center text-sm font-bold">
                     {index + 1}
                   </div>
                   <p className="text-gray-700">{guideline}</p>
@@ -157,11 +155,9 @@ const AdminResourceUploadPage = ({ userData }: AdminResourceUploadPageProps) => 
               ))}
             </div>
           </div>
-          {/*==================== End of Guidelines Section ====================*/}
         </div>
       </div>
 
-      {/*==================== Exit Confirmation Modal ====================*/}
       <ConfirmationModal
         variant="warning"
         title="Upload in Progress"
@@ -173,7 +169,6 @@ const AdminResourceUploadPage = ({ userData }: AdminResourceUploadPageProps) => 
         icon={<AlertTriangle className="h-5 w-5" />}
         message="You have an active upload in progress. If you leave now, your upload will be canceled and you'll lose all progress. You'll need to start over from the beginning."
       />
-      {/*==================== End of Exit Confirmation Modal ====================*/}
     </DashboardLayout>
   );
 };
@@ -204,8 +199,6 @@ export const getServerSideProps = async ({ req }: { req: NextApiRequest }) => {
   }
 
   return {
-    props: {
-      userData,
-    },
+    props: { userData },
   };
 };

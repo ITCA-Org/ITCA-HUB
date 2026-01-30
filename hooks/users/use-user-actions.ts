@@ -1,12 +1,14 @@
+import { mutate } from 'swr';
 import { toast } from 'sonner';
 import { useState } from 'react';
 import { BASE_URL } from '@/utils/url';
 import axios, { AxiosError } from 'axios';
 import { getErrorMessage } from '@/utils/error';
 import { ModalState } from '@/types/interfaces/modal';
-import { ActionType, UseUserActionsProps, CustomError, ErrorResponseData } from '@/types';
+import { ActionType, CustomError, ErrorResponseData } from '@/types';
 
-const useUserActions = ({ token, onUserUpdated }: UseUserActionsProps) => {
+const useUserActions = (token: string) => {
+
   const [modalState, setModalState] = useState<ModalState>({
     userId: '',
     userName: '',
@@ -15,6 +17,14 @@ const useUserActions = ({ token, onUserUpdated }: UseUserActionsProps) => {
     isLoading: false,
     actionType: 'delete',
   });
+
+  const invalidateUsersCache = () => {
+    mutate(
+      (key) => Array.isArray(key) && key[0] === '/users',
+      undefined,
+      { revalidate: true }
+    );
+  };
 
   const openModal = (
     actionType: ActionType,
@@ -41,6 +51,8 @@ const useUserActions = ({ token, onUserUpdated }: UseUserActionsProps) => {
   };
 
   const executeAction = async () => {
+    if (!token) return;
+
     setModalState((prev) => ({ ...prev, isLoading: true }));
 
     try {
@@ -59,9 +71,7 @@ const useUserActions = ({ token, onUserUpdated }: UseUserActionsProps) => {
           await axios.patch(
             `${BASE_URL}/users/${modalState.userId}/role`,
             { role: newRole },
-            {
-              headers: { Authorization: `Bearer ${token}` },
-            }
+            { headers: { Authorization: `Bearer ${token}` } }
           );
           successMessage = `${modalState.userName}'s role has been changed successfully`;
           break;
@@ -70,9 +80,7 @@ const useUserActions = ({ token, onUserUpdated }: UseUserActionsProps) => {
           await axios.patch(
             `${BASE_URL}/users/${modalState.userId}/toggle-activation`,
             {},
-            {
-              headers: { Authorization: `Bearer ${token}` },
-            }
+            { headers: { Authorization: `Bearer ${token}` } }
           );
           const action = modalState.isActive ? 'suspended' : 'activated';
           successMessage = `${modalState.userName} has been ${action} successfully`;
@@ -87,7 +95,7 @@ const useUserActions = ({ token, onUserUpdated }: UseUserActionsProps) => {
         duration: 4000,
       });
 
-      onUserUpdated();
+      invalidateUsersCache();
       closeModal();
     } catch (error) {
       const { message } = getErrorMessage(

@@ -1,11 +1,14 @@
 import { UserAuth } from '@/types';
 import { NextApiRequest } from 'next';
 import { isLoggedIn } from '@/utils/auth';
-import { StudentResourcesPageProps } from '@/types/interfaces/resource';
 import ResourcesComponent from '@/components/dashboard/shared/resources/resources';
 
+interface StudentResourcesPageProps {
+  userData: UserAuth;
+}
+
 const StudentResourcesPage = ({ userData }: StudentResourcesPageProps) => {
-  return <ResourcesComponent role="student" userData={userData} />;
+  return <ResourcesComponent role="student" token={userData.token} />;
 };
 
 export default StudentResourcesPage;
@@ -34,8 +37,6 @@ export const getServerSideProps = async ({ req }: { req: NextApiRequest }) => {
   }
 
   return {
-    props: {
-      userData,
-    },
+    props: { userData },
   };
 };

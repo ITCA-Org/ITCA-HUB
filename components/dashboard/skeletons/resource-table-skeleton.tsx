@@ -28,7 +28,7 @@ const ResourceTableSkeleton = () => {
                 <tr key={index} className="even:bg-gray-100/80">
                   <td className="whitespace-nowrap px-6 py-4">
                     <div className="flex items-center">
-                      <div className="flex-shrink-0 h-10 w-10 rounded-full bg-gray-200 animate-pulse"></div>
+                      <div className="shrink-0 h-10 w-10 rounded-full bg-gray-200 animate-pulse"></div>
                       <div className="ml-4">
                         <div className="h-4 w-36 rounded bg-gray-200 animate-pulse"></div>
                         <div className="mt-1 h-3 w-24 rounded bg-gray-200 animate-pulse"></div>

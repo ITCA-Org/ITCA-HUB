@@ -1,11 +1,14 @@
 import { UserAuth } from '@/types';
 import { NextApiRequest } from 'next';
 import { isLoggedIn } from '@/utils/auth';
-import { AdminProfilePageProps } from '@/types/interfaces/profile';
 import ProfileComponent from '@/components/dashboard/shared/profile/profile';
 
+interface AdminProfilePageProps {
+  userData: UserAuth;
+}
+
 const AdminProfilePage = ({ userData }: AdminProfilePageProps) => {
-  return <ProfileComponent role="admin" userData={userData} />;
+  return <ProfileComponent role="admin" token={userData.token} />;
 };
 
 export default AdminProfilePage;

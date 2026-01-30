@@ -1,554 +1,241 @@
 import JSZip from 'jszip';
-import { toast } from 'sonner';
-import {
-  Resource,
-  Pagination,
-  UseResourcesProps,
-  ResourcesResponse,
-  UseResourcesReturn,
-  FetchResourcesParams,
-  SingleResourceResponse,
-} from '@/types/interfaces/resource';
-import { BASE_URL } from '@/utils/url';
+import { useState, useCallback } from 'react';
+import useSWR, { mutate } from 'swr';
 import axios, { AxiosError } from 'axios';
+import { toast } from 'sonner';
+import { BASE_URL } from '@/utils/url';
 import { getErrorMessage } from '@/utils/error';
-import { useState, useCallback, useRef } from 'react';
 import { CustomError, ErrorResponseData } from '@/types';
+import { Resource, ResourcesResponse, SingleResourceResponse } from '@/types/interfaces/resource';
 
-const useResources = ({ token }: UseResourcesProps): UseResourcesReturn => {
-  const [downloadProgress, setDownloadProgress] = useState(0);
-  const [resources, setResources] = useState<Resource[]>([]);
-  const [isDownloading, setIsDownloading] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
-  const [isError, setIsError] = useState(false);
-  const [pagination, setPagination] = useState<Pagination>({
-    total: 0,
-    limit: 15,
-    totalPages: 0,
-    currentPage: 0,
-    hasNextPage: false,
-    hasPrevPage: false,
+type ErrorType = AxiosError<ErrorResponseData> | CustomError | Error;
+
+export interface UseResourcesOptions {
+  token: string;
+  page?: number;
+  limit?: number;
+  search?: string;
+  category?: string;
+  department?: string;
+  visibility?: string;
+  academicLevel?: string;
+}
+
+interface ResourcesData {
+  resources: Resource[];
+  total: number;
+  totalPages: number;
+  currentPage: number;
+}
+
+async function fetchResources(
+  _url: string,
+  token: string,
+  page: number,
+  limit: number,
+  search?: string,
+  category?: string,
+  department?: string,
+  visibility?: string,
+  academicLevel?: string
+): Promise<ResourcesData> {
+  const params: Record<string, string | number> = {
+    page,
+    limit,
+  };
+
+  if (search?.trim()) params.search = search.trim();
+  if (category && category !== 'all') params.category = category;
+  if (department && department !== 'all') params.department = department;
+  if (visibility && visibility !== 'all') params.visibility = visibility;
+  if (academicLevel && academicLevel !== 'all') params.academicLevel = academicLevel;
+
+  const { data } = await axios.get<ResourcesResponse>(`${BASE_URL}/resources`, {
+    params,
+    headers: { Authorization: `Bearer ${token}` },
   });
 
-  const tokenRef = useRef(token);
-  tokenRef.current = token;
+  const resources = data.data.resources.filter((r) => !r.isDeleted);
 
-  const lastRequestRef = useRef<number>(0);
-  const MIN_REQUEST_INTERVAL = 500;
+  return {
+    resources,
+    total: data.data.pagination.total,
+    totalPages: data.data.pagination.totalPages,
+    currentPage: data.data.pagination.currentPage,
+  };
+}
 
-  const requestCacheRef = useRef<
-    Map<string, { data: ResourcesResponse | SingleResourceResponse; timestamp: number }>
-  >(new Map());
-  const activeRequestsRef = useRef<Map<string, Promise<ResourcesResponse>>>(new Map());
-  const singleResourceRequestsRef = useRef<Map<string, Promise<SingleResourceResponse>>>(new Map());
-  const CACHE_DURATION = 300000;
+export const useResources = (options: UseResourcesOptions) => {
+  const { token, page = 0, limit = 15, search, category, department, visibility, academicLevel } = options;
 
-  const fetchResources = useCallback(
-    async (params: FetchResourcesParams = {}) => {
-      const now = Date.now();
-      if (now - lastRequestRef.current < MIN_REQUEST_INTERVAL) {
-        await new Promise((resolve) =>
-          setTimeout(resolve, MIN_REQUEST_INTERVAL - (now - lastRequestRef.current))
-        );
-      }
-      lastRequestRef.current = Date.now();
-
-      const {
-        signal,
-        category,
-        page = 0,
-        limit = 10,
-        department,
-        visibility,
-        academicLevel,
-        sortOrder = 'desc',
-        sortBy = 'createdAt',
-        includeDeleted = false,
-      } = params;
-
-      const cacheKey = JSON.stringify({
-        page: page.toString(),
-        limit: limit.toString(),
-        search: params.search?.trim() || '',
-        category: category && category !== 'all' ? category : '',
-        visibility: visibility || '',
-        academicLevel: academicLevel && academicLevel !== 'all' ? academicLevel : '',
-        department: department && department !== 'all' ? department : '',
-        sortBy: sortBy || '',
-        sortOrder: sortOrder || '',
-        includeDeleted,
-      });
-
-      const cached = requestCacheRef.current.get(cacheKey);
-      if (cached && now - cached.timestamp < CACHE_DURATION) {
-        if (!signal?.aborted) {
-          const resourcesData = cached.data as ResourcesResponse;
-          if ('resources' in resourcesData.data) {
-            let filteredResources = resourcesData.data.resources;
-
-            if (!includeDeleted) {
-              filteredResources = filteredResources.filter(
-                (resource: Resource) => !resource.isDeleted
-              );
-            }
-
-            setResources(filteredResources);
-            setPagination((prev) => ({
-              ...prev,
-              ...resourcesData.data.pagination,
-            }));
-            setIsError(false);
-            setIsLoading(false);
-          }
-        }
-        return;
-      }
-
-      const existingRequest = activeRequestsRef.current.get(cacheKey);
-      if (existingRequest) {
-        try {
-          const data = await existingRequest;
-          if (!signal?.aborted) {
-            let filteredResources = data.data.resources;
-
-            if (!includeDeleted) {
-              filteredResources = filteredResources.filter(
-                (resource: Resource) => !resource.isDeleted
-              );
-            }
-
-            setResources(filteredResources);
-            setPagination((prev) => ({
-              ...prev,
-              ...data.data.pagination,
-            }));
-            setIsError(false);
-            setIsLoading(false);
-          }
-          return;
-        } catch {}
-      }
-
-      setIsLoading(true);
-      setIsError(false);
-
-      const requestPromise = (async () => {
-        try {
-          const { data } = await axios.get<ResourcesResponse>(`${BASE_URL}/resources`, {
-            signal,
-            params: {
-              page: page.toString(),
-              limit: limit.toString(),
-              ...(params.search?.trim() && { search: params.search.trim() }),
-              ...(category && category !== 'all' && { category }),
-              ...(visibility && { visibility }),
-              ...(academicLevel && academicLevel !== 'all' && { academicLevel }),
-              ...(department && department !== 'all' && { department }),
-              ...(sortBy && { sortBy }),
-              ...(sortOrder && { sortOrder }),
-            },
-            headers: {
-              Authorization: `Bearer ${tokenRef.current}`,
-              'Content-Type': 'application/json',
-            },
-          });
-
-          if (data.status === 'success') {
-            requestCacheRef.current.set(cacheKey, {
-              data,
-              timestamp: Date.now(),
-            });
-            return data;
-          } else {
-            throw new Error('Failed to fetch resources');
-          }
-        } finally {
-          activeRequestsRef.current.delete(cacheKey);
-        }
-      })();
-
-      activeRequestsRef.current.set(cacheKey, requestPromise);
-
-      try {
-        const data = await requestPromise;
-
-        if (!signal?.aborted) {
-          let filteredResources = data.data.resources;
-
-          if (!includeDeleted) {
-            filteredResources = filteredResources.filter(
-              (resource: Resource) => !resource.isDeleted
-            );
-          }
-
-          setResources(filteredResources);
-          setPagination((prev) => ({
-            ...prev,
-            ...data.data.pagination,
-          }));
-          setIsError(false);
-          setIsLoading(false);
-        }
-      } catch (err: unknown) {
-        if (axios.isCancel(err)) {
-          return;
-        }
-        setIsError(true);
-        setIsLoading(false);
-        const { message } = getErrorMessage(
-          err as AxiosError<ErrorResponseData> | CustomError | Error
-        );
-
+  const { data, error, isLoading, mutate: boundMutate } = useSWR(
+    token ? ['/resources', page, limit, search, category, department, visibility, academicLevel] : null,
+    () => fetchResources('/resources', token, page, limit, search, category, department, visibility, academicLevel),
+    {
+      dedupingInterval: 5000,
+      revalidateOnFocus: false,
+      revalidateIfStale: false,
+      onError: (err) => {
         toast.error('Failed to load resources', {
-          description: message,
-          duration: 5000,
+          description: getErrorMessage(err).message,
         });
-      }
-    },
-    []
+      },
+    }
   );
 
-  const fetchDeletedResources = useCallback(
-    async (params: FetchResourcesParams = {}) => {
-      const now = Date.now();
-      if (now - lastRequestRef.current < MIN_REQUEST_INTERVAL) {
-        await new Promise((resolve) =>
-          setTimeout(resolve, MIN_REQUEST_INTERVAL - (now - lastRequestRef.current))
-        );
-      }
-      lastRequestRef.current = Date.now();
+  return {
+    resources: data?.resources ?? [],
+    total: data?.total ?? 0,
+    totalPages: data?.totalPages ?? 0,
+    currentPage: data?.currentPage ?? 0,
+    isLoading,
+    isError: !!error,
+    refresh: () => boundMutate(),
+  };
+};
 
-      const {
-        signal,
-        category,
-        page = 0,
-        limit = 10,
-        department,
-        visibility,
-        academicLevel,
-        sortOrder = 'desc',
-        sortBy = 'createdAt',
-      } = params;
+async function fetchDeletedResources(
+  _url: string,
+  token: string,
+  page: number,
+  limit: number
+): Promise<ResourcesData> {
+  const { data } = await axios.get<ResourcesResponse>(`${BASE_URL}/resources/trash/deleted`, {
+    params: { page, limit },
+    headers: { Authorization: `Bearer ${token}` },
+  });
 
-      const cacheKey = JSON.stringify({
-        endpoint: 'deleted',
-        page: page.toString(),
-        limit: limit.toString(),
-        search: params.search?.trim() || '',
-        category: category && category !== 'all' ? category : '',
-        visibility: visibility || '',
-        academicLevel: academicLevel && academicLevel !== 'all' ? academicLevel : '',
-        department: department && department !== 'all' ? department : '',
-        sortBy: sortBy || '',
-        sortOrder: sortOrder || '',
-        signal: signal ? 'present' : 'absent',
-      });
+  return {
+    resources: data.data.resources,
+    total: data.data.pagination.total,
+    totalPages: data.data.pagination.totalPages,
+    currentPage: data.data.pagination.currentPage,
+  };
+}
 
-      const cached = requestCacheRef.current.get(cacheKey);
-      if (cached && now - cached.timestamp < CACHE_DURATION) {
-        if (!signal?.aborted) {
-          const resourcesData = cached.data as ResourcesResponse;
-          if ('resources' in resourcesData.data) {
-            setResources(resourcesData.data.resources);
-            setPagination((prev) => ({
-              ...prev,
-              ...resourcesData.data.pagination,
-            }));
-            setIsError(false);
-            setIsLoading(false);
-          }
-        }
-        return;
-      }
+export const useDeletedResources = (options: { token: string; page?: number; limit?: number }) => {
+  const { token, page = 0, limit = 15 } = options;
 
-      const existingRequest = activeRequestsRef.current.get(cacheKey);
-      if (existingRequest) {
-        try {
-          const data = await existingRequest;
-          if (!signal?.aborted) {
-            setResources(data.data.resources);
-            setPagination((prev) => ({
-              ...prev,
-              ...data.data.pagination,
-            }));
-            setIsError(false);
-            setIsLoading(false);
-          }
-          return;
-        } catch {}
-      }
-
-      setIsLoading(true);
-      setIsError(false);
-
-      const requestPromise = (async () => {
-        try {
-          const { data } = await axios.get<ResourcesResponse>(
-            `${BASE_URL}/resources/trash/deleted`,
-            {
-              signal,
-              params: {
-                page: page.toString(),
-                limit: limit.toString(),
-                ...(params.search?.trim() && { search: params.search.trim() }),
-                ...(category && category !== 'all' && { category }),
-                ...(visibility && { visibility }),
-                ...(academicLevel && academicLevel !== 'all' && { academicLevel }),
-                ...(department && department !== 'all' && { department }),
-                ...(sortBy && { sortBy }),
-                ...(sortOrder && { sortOrder }),
-              },
-              headers: {
-                Authorization: `Bearer ${tokenRef.current}`,
-                'Content-Type': 'application/json',
-              },
-            }
-          );
-
-          if (data.status === 'success') {
-            requestCacheRef.current.set(cacheKey, {
-              data,
-              timestamp: Date.now(),
-            });
-            return data;
-          } else {
-            throw new Error('Failed to fetch deleted resources');
-          }
-        } finally {
-          activeRequestsRef.current.delete(cacheKey);
-        }
-      })();
-
-      activeRequestsRef.current.set(cacheKey, requestPromise);
-
-      try {
-        const data = await requestPromise;
-
-        if (!signal?.aborted) {
-          setResources(data.data.resources);
-          setPagination((prev) => ({
-            ...prev,
-            ...data.data.pagination,
-          }));
-          setIsError(false);
-          setIsLoading(false);
-        }
-      } catch (err: unknown) {
-        if (axios.isCancel(err)) {
-          return;
-        }
-        setIsError(true);
-        setIsLoading(false);
-        const { message } = getErrorMessage(
-          err as AxiosError<ErrorResponseData> | CustomError | Error
-        );
-
+  const { data, error, isLoading, mutate: boundMutate } = useSWR(
+    token ? ['/resources/deleted', page, limit] : null,
+    () => fetchDeletedResources('/resources/deleted', token, page, limit),
+    {
+      dedupingInterval: 5000,
+      revalidateOnFocus: false,
+      revalidateIfStale: false,
+      onError: (err) => {
         toast.error('Failed to load deleted resources', {
-          description: message,
-          duration: 5000,
+          description: getErrorMessage(err).message,
         });
-      }
-    },
-    []
+      },
+    }
   );
 
-  const fetchSingleResource = useCallback(
-    async (resourceId: string, signal?: AbortSignal): Promise<Resource | null> => {
-      const cacheKey = `single_resource_${resourceId}`;
+  return {
+    resources: data?.resources ?? [],
+    total: data?.total ?? 0,
+    totalPages: data?.totalPages ?? 0,
+    currentPage: data?.currentPage ?? 0,
+    isLoading,
+    isError: !!error,
+    refresh: () => boundMutate(),
+  };
+};
 
-      const cached = requestCacheRef.current.get(cacheKey);
-      if (cached && Date.now() - cached.timestamp < CACHE_DURATION) {
-        if (!signal?.aborted && cached.data.status === 'success') {
-          const singleResourceData = cached.data as SingleResourceResponse;
-          if ('resource' in singleResourceData.data) {
-            const resource = singleResourceData.data.resource;
-            return {
-              ...resource,
-              _id: resource.resourceId || resource._id,
-            };
-          }
-        }
-      }
+async function fetchSingleResource(
+  _url: string,
+  token: string,
+  resourceId: string
+): Promise<Resource> {
+  const { data } = await axios.get<SingleResourceResponse>(`${BASE_URL}/resources/${resourceId}`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
 
-      const existingRequest = singleResourceRequestsRef.current.get(cacheKey);
-      if (existingRequest) {
-        try {
-          const data = await existingRequest;
-          if (!signal?.aborted && data.status === 'success') {
-            const resource = data.data.resource;
-            return {
-              ...resource,
-              _id: resource.resourceId || resource._id,
-            };
-          }
-        } catch {}
-      }
+  const resource = data.data.resource;
+  return {
+    ...resource,
+    _id: resource.resourceId || resource._id,
+  };
+}
 
-      const requestPromise = (async () => {
-        try {
-          const response = await axios.get<SingleResourceResponse>(
-            `${BASE_URL}/resources/${resourceId}`,
-            {
-              headers: {
-                Authorization: `Bearer ${tokenRef.current}`,
-                'Content-Type': 'application/json',
-              },
-              signal,
-            }
-          );
-
-          if (!signal?.aborted && response.data.status === 'success') {
-            requestCacheRef.current.set(cacheKey, {
-              data: response.data,
-              timestamp: Date.now(),
-            });
-            return response.data;
-          } else {
-            throw new Error('Failed to fetch resource');
-          }
-        } finally {
-          singleResourceRequestsRef.current.delete(cacheKey);
-        }
-      })();
-
-      singleResourceRequestsRef.current.set(cacheKey, requestPromise);
-
-      try {
-        const data = await requestPromise;
-        const resource = data.data.resource;
-        return {
-          ...resource,
-          _id: resource.resourceId || resource._id,
-        };
-      } catch (error) {
-        if (axios.isCancel(error)) {
-          return null;
-        }
-
-        const { message } = getErrorMessage(
-          error as AxiosError<ErrorResponseData> | CustomError | Error
-        );
-        toast.error('Failed to fetch resource', {
-          description: message,
-          duration: 5000,
+export const useResource = (token: string, resourceId: string | null) => {
+  const { data, error, isLoading, mutate: boundMutate } = useSWR(
+    token && resourceId ? ['/resources/single', resourceId] : null,
+    () => fetchSingleResource('/resources/single', token, resourceId!),
+    {
+      dedupingInterval: 5000,
+      revalidateOnFocus: false,
+      revalidateIfStale: false,
+      onError: (err) => {
+        toast.error('Failed to load resource', {
+          description: getErrorMessage(err).message,
         });
-        return null;
-      }
-    },
-    []
+      },
+    }
   );
 
-  const trackView = useCallback(
-    async (resourceId: string, role: 'admin' | 'student', signal?: AbortSignal) => {
-      if (role !== 'student') return;
-      const storageKey = `resource_view_${resourceId}`;
-      const lastTracked = localStorage.getItem(storageKey);
-      const now = Date.now();
+  return {
+    resource: data ?? null,
+    isLoading,
+    isError: !!error,
+    refresh: () => boundMutate(),
+  };
+};
 
-      if (lastTracked && now - parseInt(lastTracked) < 30000) {
-        return;
-      }
-
-      try {
-        await axios.post(
-          `${BASE_URL}/resources/analytics/track-view/${resourceId}`,
-          {},
-          {
-            headers: {
-              Authorization: `Bearer ${tokenRef.current}`,
-              'Content-Type': 'application/json',
-            },
-            signal,
-          }
-        );
-
-        localStorage.setItem(storageKey, now.toString());
-      } catch (error) {
-        if (axios.isCancel(error)) return;
-
-        const { message } = getErrorMessage(
-          error as AxiosError<ErrorResponseData> | CustomError | Error
-        );
-        console.warn('Failed to track resource view:', message);
-      }
-    },
-    []
-  );
-
-  const trackDownload = useCallback(
-    async (resourceId: string, role?: 'admin' | 'student') => {
-      if (role !== 'student') return;
-
-      try {
-        await axios.post(
-          `${BASE_URL}/resources/analytics/track-download/${resourceId}`,
-          {},
-          {
-            headers: {
-              Authorization: `Bearer ${tokenRef.current}`,
-              'Content-Type': 'application/json',
-            },
-          }
-        );
-      } catch (error) {
-        const { message } = getErrorMessage(
-          error as AxiosError<ErrorResponseData> | CustomError | Error
-        );
-        console.warn('Failed to track resource download:', message);
-      }
-    },
-    []
-  );
+export const useResourceDownload = (token: string, role: string) => {
+  const [isDownloading, setIsDownloading] = useState(false);
+  const [downloadProgress, setDownloadProgress] = useState(0);
 
   const fetchFileMediaLink = useCallback(async (fileUrl: string): Promise<string> => {
     const fileName = fileUrl.split('/').pop();
-    if (!fileName) {
-      throw new Error('Invalid file URL');
-    }
+    if (!fileName) throw new Error('Invalid file URL');
 
     const response = await axios.get(
       `https://jeetix-file-service.onrender.com/api/storage/file/itca-resources/${fileName}`
     );
-    const data = response.data;
 
-    if (data.status === 'success' && data.data.metadata?.mediaLink) {
-      return data.data.metadata.mediaLink;
-    } else {
-      throw new Error('Failed to get mediaLink from JeeTix');
+    if (response.data.status === 'success' && response.data.data.metadata?.mediaLink) {
+      return response.data.data.metadata.mediaLink;
     }
+    throw new Error('Failed to get mediaLink');
   }, []);
 
-  const downloadFile = useCallback(
-    async (fileUrl: string, fileName?: string, resourceId?: string, role?: 'admin' | 'student') => {
+  const trackDownload = useCallback(
+    async (resourceId: string) => {
+      if (role !== 'user') return;
       try {
-        if (resourceId && role) {
-          await trackDownload(resourceId, role);
-        }
+        await axios.post(
+          `${BASE_URL}/resources/analytics/track-download/${resourceId}`,
+          {},
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+      } catch (error) {
+        console.warn('Failed to track download:', getErrorMessage(error as ErrorType).message);
+      }
+    },
+    [token, role]
+  );
+
+  const downloadFile = useCallback(
+    async (fileUrl: string, fileName?: string, resourceId?: string) => {
+      try {
+        if (resourceId) await trackDownload(resourceId);
 
         const downloadUrl = await fetchFileMediaLink(fileUrl);
-
-        const response = await axios.get(downloadUrl, {
-          responseType: 'blob',
-        });
+        const response = await axios.get(downloadUrl, { responseType: 'blob' });
 
         const blob = new Blob([response.data]);
         const blobUrl = window.URL.createObjectURL(blob);
-
         const link = document.createElement('a');
         link.href = blobUrl;
         link.download = fileName || fileUrl.split('/').pop() || 'download';
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
-
         window.URL.revokeObjectURL(blobUrl);
       } catch (error) {
-        const { message } = getErrorMessage(
-          error as AxiosError<ErrorResponseData> | CustomError | Error
-        );
         toast.error('Failed to download file', {
-          description: message,
-          duration: 5000,
+          description: getErrorMessage(error as ErrorType).message,
         });
       }
     },
@@ -556,69 +243,58 @@ const useResources = ({ token }: UseResourcesProps): UseResourcesReturn => {
   );
 
   const downloadResource = useCallback(
-    async (resource: Resource, role?: 'admin' | 'student') => {
+    async (resource: Resource) => {
       try {
         setIsDownloading(true);
         setDownloadProgress(0);
 
-        if (role) {
-          await trackDownload(resource._id, role);
-        }
+        await trackDownload(resource._id);
 
-        const fileUrls = resource.fileUrls.map((fileItem) => fileItem.filePath);
+        const fileUrls = resource.fileUrls.map((f) => f.filePath);
 
         if (fileUrls.length === 1) {
-          const fileName = resource.fileUrls[0].fileName;
-          await downloadFile(fileUrls[0], fileName, resource._id, role);
+          await downloadFile(fileUrls[0], resource.fileUrls[0].fileName, resource._id);
           setIsDownloading(false);
           return;
-        } else if (fileUrls.length > 1) {
-          const zip = new JSZip();
-          const folder = zip.folder(resource.title);
-          const totalFiles = fileUrls.length;
-
-          const downloadPromises = fileUrls.map(async (fileUrl, index) => {
-            try {
-              const downloadUrl = await fetchFileMediaLink(fileUrl);
-              const response = await axios.get(downloadUrl, { responseType: 'arraybuffer' });
-
-              const fileName = resource.fileUrls[index].fileName || `file_${index + 1}`;
-
-              folder?.file(fileName, response.data);
-
-              const progress = Math.round(((index + 1) / totalFiles) * 80);
-              setDownloadProgress(progress);
-            } catch (error) {
-              console.error(`Failed to download file ${index + 1}:`, error);
-            }
-          });
-
-          await Promise.all(downloadPromises);
-
-          setDownloadProgress(90);
-          const content = await zip.generateAsync({ type: 'blob' });
-
-          setDownloadProgress(100);
-          const url = window.URL.createObjectURL(content);
-          const link = document.createElement('a');
-          link.href = url;
-          link.download = `${resource.title}.zip`;
-          document.body.appendChild(link);
-          link.click();
-          document.body.removeChild(link);
-          window.URL.revokeObjectURL(url);
         }
 
+        const zip = new JSZip();
+        const folder = zip.folder(resource.title);
+        const totalFiles = fileUrls.length;
+
+        const downloadPromises = fileUrls.map(async (fileUrl, index) => {
+          try {
+            const downloadUrl = await fetchFileMediaLink(fileUrl);
+            const response = await axios.get(downloadUrl, { responseType: 'arraybuffer' });
+            const fileName = resource.fileUrls[index].fileName || `file_${index + 1}`;
+            folder?.file(fileName, response.data);
+            setDownloadProgress(Math.round(((index + 1) / totalFiles) * 80));
+          } catch (error) {
+            console.error(`Failed to download file ${index + 1}:`, error);
+          }
+        });
+
+        await Promise.all(downloadPromises);
+
+        setDownloadProgress(90);
+        const content = await zip.generateAsync({ type: 'blob' });
+
+        setDownloadProgress(100);
+        const url = window.URL.createObjectURL(content);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `${resource.title}.zip`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        window.URL.revokeObjectURL(url);
+
         toast.success('Resource downloaded successfully', {
-          description: `Downloaded ${fileUrls.length} file${fileUrls.length > 1 ? 's' : ''}`,
+          description: `Downloaded ${fileUrls.length} files`,
         });
       } catch (error) {
-        const { message } = getErrorMessage(
-          error as AxiosError<ErrorResponseData> | CustomError | Error
-        );
         toast.error('Failed to download resource', {
-          description: message,
-          duration: 5000,
+          description: getErrorMessage(error as ErrorType).message,
         });
       } finally {
         setIsDownloading(false);
@@ -628,54 +304,54 @@ const useResources = ({ token }: UseResourcesProps): UseResourcesReturn => {
     [trackDownload, downloadFile, fetchFileMediaLink]
   );
 
-  const clearCache = useCallback(() => {
-    requestCacheRef.current.clear();
-    activeRequestsRef.current.clear();
-    singleResourceRequestsRef.current.clear();
-  }, []);
+  const trackView = useCallback(
+    async (resourceId: string) => {
+      if (role !== 'user') return;
 
-  const refreshResources = useCallback(
-    (params: FetchResourcesParams = {}) => {
-      fetchResources({
-        page: pagination.currentPage,
-        limit: pagination.limit,
-        ...params,
-      });
-    },
-    [fetchResources, pagination.currentPage, pagination.limit]
-  );
+      const storageKey = `resource_view_${resourceId}`;
+      const lastTracked = localStorage.getItem(storageKey);
+      const now = Date.now();
 
-  const forceRefreshResources = useCallback(
-    (params: FetchResourcesParams = {}) => {
-      clearCache();
-      fetchResources({
-        page: pagination.currentPage,
-        limit: pagination.limit,
-        ...params,
-      });
+      if (lastTracked && now - parseInt(lastTracked) < 30000) return;
+
+      try {
+        await axios.post(
+          `${BASE_URL}/resources/analytics/track-view/${resourceId}`,
+          {},
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+        localStorage.setItem(storageKey, now.toString());
+      } catch (error) {
+        console.warn('Failed to track view:', getErrorMessage(error as ErrorType).message);
+      }
     },
-    [fetchResources, pagination.currentPage, pagination.limit, clearCache]
+    [token, role]
   );
 
   return {
-    isError,
-    trackView,
-    resources,
-    isLoading,
-    pagination,
-    clearCache,
-    downloadFile,
-    trackDownload,
     isDownloading,
-    fetchResources,
-    refreshResources,
-    downloadResource,
     downloadProgress,
+    downloadFile,
+    downloadResource,
+    trackView,
     fetchFileMediaLink,
-    fetchSingleResource,
-    forceRefreshResources,
-    fetchDeletedResources,
   };
+};
+
+export const invalidateResourcesCache = () => {
+  mutate((key) => Array.isArray(key) && key[0] === '/resources', undefined, { revalidate: true });
+};
+
+export const invalidateDeletedResourcesCache = () => {
+  mutate((key) => Array.isArray(key) && key[0] === '/resources/deleted', undefined, { revalidate: true });
+};
+
+export const invalidateSingleResourceCache = (resourceId?: string) => {
+  if (resourceId) {
+    mutate((key) => Array.isArray(key) && key[0] === '/resources/single' && key[2] === resourceId, undefined, { revalidate: true });
+  } else {
+    mutate((key) => Array.isArray(key) && key[0] === '/resources/single', undefined, { revalidate: true });
+  }
 };
 
 export default useResources;

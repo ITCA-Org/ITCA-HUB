@@ -37,7 +37,7 @@ const EmptyState: React.FC<EmptyStateProps> = ({
         {showUploadButton && uploadUrl && (
           <Link
             href={uploadUrl}
-            className="inline-flex items-center rounded-lg bg-gradient-to-r from-blue-700 to-blue-600 px-4 py-2 text-sm font-medium text-white hover:from-blue-800 hover:to-blue-700 focus:outline-none focus:ring-blue-500 focus:ring-offset-2 transition-all duration-300 shadow-md hover:shadow-lg"
+            className="inline-flex items-center rounded-lg bg-linear-to-r from-blue-700 to-blue-600 px-4 py-2 text-sm font-medium text-white hover:from-blue-800 hover:to-blue-700 focus:outline-none focus:ring-blue-500 focus:ring-offset-2 transition-all duration-300 shadow-md hover:shadow-lg"
           >
             <UploadIcon className="mr-2 h-4 w-4" />
             {uploadButtonText || defaultUploadButtonText}

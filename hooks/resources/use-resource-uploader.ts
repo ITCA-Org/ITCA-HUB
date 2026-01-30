@@ -10,10 +10,14 @@ import axios, { AxiosError } from 'axios';
 import { getErrorMessage } from '@/utils/error';
 import { useState, useRef, useCallback } from 'react';
 import { CustomError, ErrorResponseData } from '@/types';
-import useResourceAdmin from '@/hooks/resources/use-resource-admin';
+import { useResourceActions } from '@/hooks/resources/use-resource-admin';
 
-const useResourceUploader = ({ token, onUploadComplete, onError }: UseResourceUploaderProps) => {
-  const { uploadFile, createResource, isLoading } = useResourceAdmin({ token });
+interface UseResourceUploaderOptions extends UseResourceUploaderProps {
+  token: string;
+}
+
+const useResourceUploader = ({ token, onUploadComplete, onError }: UseResourceUploaderOptions) => {
+  const { uploadFile, createResource } = useResourceActions(token);
 
   const [academicLevel, setAcademicLevel] = useState<CreateResourcePayload['academicLevel']>('all');
   const [category, setCategory] = useState<CreateResourcePayload['category']>('lecture_note');
@@ -23,6 +27,7 @@ const useResourceUploader = ({ token, onUploadComplete, onError }: UseResourceUp
   const [title, setTitle] = useState('');
   const [department, setDepartment] =
     useState<CreateResourcePayload['department']>('computer_science');
+  const [isCreating, setIsCreating] = useState(false);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -45,6 +50,8 @@ const useResourceUploader = ({ token, onUploadComplete, onError }: UseResourceUp
 
   const checkForDuplicates = useCallback(
     async (resourceTitle: string): Promise<boolean> => {
+      if (!token) return false;
+
       try {
         const response = await axios.get(`${BASE_URL}/resources`, {
           params: {
@@ -119,7 +126,7 @@ const useResourceUploader = ({ token, onUploadComplete, onError }: UseResourceUp
     selectedFiles.length > 0 && title.trim() && description.trim() && category && department;
 
   const isUploading =
-    (uploadProgress.phase !== 'idle' && uploadProgress.phase !== 'failed') || isLoading;
+    (uploadProgress.phase !== 'idle' && uploadProgress.phase !== 'failed') || isCreating;
 
   const handleBatchUpload = useCallback(
     async (e: React.FormEvent) => {
@@ -209,6 +216,8 @@ const useResourceUploader = ({ token, onUploadComplete, onError }: UseResourceUp
           currentFileName: '',
         }));
 
+        setIsCreating(true);
+
         const resourcePayload: CreateResourcePayload = {
           title: title.trim(),
           description: description.trim(),
@@ -250,6 +259,8 @@ const useResourceUploader = ({ token, onUploadComplete, onError }: UseResourceUp
         }
 
         setUploadProgress((prev) => ({ ...prev, phase: 'failed' }));
+      } finally {
+        setIsCreating(false);
       }
     },
     [

@@ -12,7 +12,11 @@ import {
 import useResourceUploader from '@/hooks/resources/use-resource-uploader';
 import { ResourceUploaderProps, CreateResourcePayload } from '@/types/interfaces/resource';
 
-const ResourceUploader = ({ token, onUploadComplete, onError }: ResourceUploaderProps) => {
+interface ResourceUploaderComponentProps extends ResourceUploaderProps {
+  token: string;
+}
+
+const ResourceUploader = ({ token, onUploadComplete, onError }: ResourceUploaderComponentProps) => {
   const {
     title,
     category,
@@ -387,8 +391,8 @@ const ResourceUploader = ({ token, onUploadComplete, onError }: ResourceUploader
           className={`inline-flex items-center rounded-lg px-6 py-3 text-sm font-medium text-white transition-all duration-300 shadow-md hover:shadow-lg ${
             isFormValid && !isUploading
               ? uploadProgress.phase === 'failed'
-                ? 'bg-gradient-to-r from-yellow-600 to-yellow-500 hover:from-yellow-700 hover:to-yellow-600'
-                : 'bg-gradient-to-r from-blue-700 to-blue-600 hover:from-blue-800 hover:to-blue-700'
+                ? 'bg-linear-to-r from-yellow-600 to-yellow-500 hover:from-yellow-700 hover:to-yellow-600'
+                : 'bg-linear-to-r from-blue-700 to-blue-600 hover:from-blue-800 hover:to-blue-700'
               : 'bg-gray-400 cursor-not-allowed'
           }`}
         >

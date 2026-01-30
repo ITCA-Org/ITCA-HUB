@@ -140,7 +140,7 @@ const AdminHelpPage: FC<IHelpPage> = ({ userData }) => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-8">
               <div className="flex items-start space-x-3">
-                <Upload className="h-5 w-5 text-blue-500 mt-1 flex-shrink-0" />
+                <Upload className="h-5 w-5 text-blue-500 mt-1 shrink-0" />
                 <div>
                   <h3 className="font-medium text-gray-900 mb-1">Resource Management</h3>
                   <p className="text-md text-gray-600 leading-8">
@@ -151,7 +151,7 @@ const AdminHelpPage: FC<IHelpPage> = ({ userData }) => {
               </div>
 
               <div className="flex items-start space-x-3">
-                <Users className="h-5 w-5 text-blue-500 mt-1 flex-shrink-0" />
+                <Users className="h-5 w-5 text-blue-500 mt-1 shrink-0" />
                 <div>
                   <h3 className="font-medium text-gray-900 mb-1">User Administration</h3>
                   <p className="text-md text-gray-600 leading-8">
@@ -162,7 +162,7 @@ const AdminHelpPage: FC<IHelpPage> = ({ userData }) => {
               </div>
 
               <div className="flex items-start space-x-3">
-                <Calendar className="h-5 w-5 text-blue-500 mt-1 flex-shrink-0" />
+                <Calendar className="h-5 w-5 text-blue-500 mt-1 shrink-0" />
                 <div>
                   <h3 className="font-medium text-gray-900 mb-1">Event Management</h3>
                   <p className="text-md text-gray-600 leading-8">
@@ -173,7 +173,7 @@ const AdminHelpPage: FC<IHelpPage> = ({ userData }) => {
               </div>
 
               <div className="flex items-start space-x-3">
-                <Trash2 className="h-5 w-5 text-blue-500 mt-1 flex-shrink-0" />
+                <Trash2 className="h-5 w-5 text-blue-500 mt-1 shrink-0" />
                 <div>
                   <h3 className="font-medium text-gray-900 mb-1">Recycle Bin</h3>
                   <p className="text-md text-gray-600 leading-8">
@@ -186,7 +186,7 @@ const AdminHelpPage: FC<IHelpPage> = ({ userData }) => {
 
             <div className="space-y-8">
               <div className="flex items-start space-x-3">
-                <BarChart3 className="h-5 w-5 text-blue-500 mt-1 flex-shrink-0" />
+                <BarChart3 className="h-5 w-5 text-blue-500 mt-1 shrink-0" />
                 <div>
                   <h3 className="font-medium text-gray-900 mb-1">Analytics & Reports</h3>
                   <p className="text-md text-gray-600">
@@ -197,7 +197,7 @@ const AdminHelpPage: FC<IHelpPage> = ({ userData }) => {
               </div>
 
               <div className="flex items-start space-x-3">
-                <Database className="h-5 w-5 text-blue-500 mt-1 flex-shrink-0" />
+                <Database className="h-5 w-5 text-blue-500 mt-1 shrink-0" />
                 <div>
                   <h3 className="font-medium text-gray-900 mb-1">Content Organization</h3>
                   <p className="text-md text-gray-600">
@@ -208,7 +208,7 @@ const AdminHelpPage: FC<IHelpPage> = ({ userData }) => {
               </div>
 
               <div className="flex items-start space-x-3">
-                <Shield className="h-5 w-5 text-blue-500 mt-1 flex-shrink-0" />
+                <Shield className="h-5 w-5 text-blue-500 mt-1 shrink-0" />
                 <div>
                   <h3 className="font-medium text-gray-900 mb-1">Access Control</h3>
                   <p className="text-md text-gray-600">
@@ -219,7 +219,7 @@ const AdminHelpPage: FC<IHelpPage> = ({ userData }) => {
               </div>
 
               <div className="flex items-start space-x-3">
-                <GraduationCap className="h-5 w-5 text-blue-500 mt-1 flex-shrink-0" />
+                <GraduationCap className="h-5 w-5 text-blue-500 mt-1 shrink-0" />
                 <div>
                   <h3 className="font-medium text-gray-900 mb-1">Profile Management</h3>
                   <p className="text-md text-gray-600">

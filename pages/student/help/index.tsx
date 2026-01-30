@@ -138,7 +138,7 @@ const StudentHelpPage: FC<IHelpPage> = ({ userData }) => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-8">
               <div className="flex items-start space-x-3">
-                <Search className="h-5 w-5 text-blue-500 mt-1 flex-shrink-0" />
+                <Search className="h-5 w-5 text-blue-500 mt-1 shrink-0" />
                 <div>
                   <h3 className="font-medium text-gray-900 mb-1">Advanced Search</h3>
                   <p className="text-md text-gray-600 leading-8">
@@ -149,7 +149,7 @@ const StudentHelpPage: FC<IHelpPage> = ({ userData }) => {
               </div>
 
               <div className="flex items-start space-x-3">
-                <Download className="h-5 w-5 text-blue-500 mt-1 flex-shrink-0" />
+                <Download className="h-5 w-5 text-blue-500 mt-1 shrink-0" />
                 <div>
                   <h3 className="font-medium text-gray-900 mb-1">Easy Downloads</h3>
                   <p className="text-md text-gray-600 leading-8">
@@ -160,7 +160,7 @@ const StudentHelpPage: FC<IHelpPage> = ({ userData }) => {
               </div>
 
               <div className="flex items-start space-x-3">
-                <Eye className="h-5 w-5 text-blue-500 mt-1 flex-shrink-0" />
+                <Eye className="h-5 w-5 text-blue-500 mt-1 shrink-0" />
                 <div>
                   <h3 className="font-medium text-gray-900 mb-1">Resource Viewer</h3>
                   <p className="text-md text-gray-600 leading-8">
@@ -171,7 +171,7 @@ const StudentHelpPage: FC<IHelpPage> = ({ userData }) => {
               </div>
 
               <div className="flex items-start space-x-3">
-                <GraduationCap className="h-5 w-5 text-blue-500 mt-1 flex-shrink-0" />
+                <GraduationCap className="h-5 w-5 text-blue-500 mt-1 shrink-0" />
                 <div>
                   <h3 className="font-medium text-gray-900 mb-1">Event Registration</h3>
                   <p className="text-md text-gray-600 leading-8">
@@ -184,7 +184,7 @@ const StudentHelpPage: FC<IHelpPage> = ({ userData }) => {
 
             <div className="space-y-8">
               <div className="flex items-start space-x-3">
-                <User className="h-5 w-5 text-blue-500 mt-1 flex-shrink-0" />
+                <User className="h-5 w-5 text-blue-500 mt-1 shrink-0" />
                 <div>
                   <h3 className="font-medium text-gray-900 mb-1">Profile Management</h3>
                   <p className="text-md text-gray-600">
@@ -195,7 +195,7 @@ const StudentHelpPage: FC<IHelpPage> = ({ userData }) => {
               </div>
 
               <div className="flex items-start space-x-3">
-                <Search className="h-5 w-5 text-blue-500 mt-1 flex-shrink-0" />
+                <Search className="h-5 w-5 text-blue-500 mt-1 shrink-0" />
                 <div>
                   <h3 className="font-medium text-gray-900 mb-1">Smart Filtering</h3>
                   <p className="text-md text-gray-600">
@@ -206,7 +206,7 @@ const StudentHelpPage: FC<IHelpPage> = ({ userData }) => {
               </div>
 
               <div className="flex items-start space-x-3">
-                <FileText className="h-5 w-5 text-blue-500 mt-1 flex-shrink-0" />
+                <FileText className="h-5 w-5 text-blue-500 mt-1 shrink-0" />
                 <div>
                   <h3 className="font-medium text-gray-900 mb-1">Multi-Format Support</h3>
                   <p className="text-md text-gray-600">

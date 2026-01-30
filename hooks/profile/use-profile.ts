@@ -1,144 +1,37 @@
 import { toast } from 'sonner';
+import { useState } from 'react';
+import useSWR, { mutate } from 'swr';
+import { BASE_URL } from '@/utils/url';
+import axios, { AxiosError } from 'axios';
+import { backendFetcher } from '@/lib/fetcher';
+import { getErrorMessage } from '@/utils/error';
+import { CustomError, ErrorResponseData } from '@/types';
 import {
-  UseProfileProps,
   UserProfile,
   UpdateProfilePayload,
   ChangePasswordPayload,
 } from '@/types/interfaces/profile';
-import { BASE_URL } from '@/utils/url';
-import axios, { AxiosError } from 'axios';
-import { getErrorMessage } from '@/utils/error';
-import { useState, useEffect, useCallback } from 'react';
-import { CustomError, ErrorResponseData } from '@/types';
 
-const MIN_REQUEST_INTERVAL = 500;
-const CACHE_DURATION = 3600000;
+const PROFILE_KEY = '/users/profile';
 
-const sharedCache = {
-  data: null as UserProfile | null,
-  timestamp: 0,
-  activeRequest: null as Promise<UserProfile | null> | null,
-  lastRequestTime: 0,
-  subscribers: new Set<(data: UserProfile | null) => void>(),
-};
-
-const useProfile = ({ token }: UseProfileProps) => {
+const useProfile = (token: string) => {
   const [isChangingPassword, setIsChangingPassword] = useState(false);
   const [isUpdatingProfile, setIsUpdatingProfile] = useState(false);
-  const [profile, setProfile] = useState<UserProfile | null>(sharedCache.data);
   const [isUploadingImage, setIsUploadingImage] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(!sharedCache.data);
 
-  /**=================================
-   * Fetches user profile from API
-   =================================*/
-  const fetchProfile = useCallback(
-    async (abortSignal?: AbortSignal, forceRefresh = false): Promise<UserProfile | null> => {
-      const now = Date.now();
-
-      if (!forceRefresh && sharedCache.data) {
-        const age = now - sharedCache.timestamp;
-        if (age < CACHE_DURATION) {
-          setProfile(sharedCache.data);
-          setIsLoading(false);
-          setError(null);
-          return sharedCache.data;
-        }
-      }
-
-      if (sharedCache.activeRequest) {
-        try {
-          const data = await sharedCache.activeRequest;
-          if (!abortSignal?.aborted && data) {
-            setProfile(data);
-            setIsLoading(false);
-            setError(null);
-          }
-          return data;
-        } catch (err) {
-          if (axios.isCancel(err)) {
-            setIsLoading(false);
-            return null;
-          }
-          if (!abortSignal?.aborted) {
-            setIsLoading(false);
-          }
-          throw err;
-        }
-      }
-
-      const timeSinceLastRequest = now - sharedCache.lastRequestTime;
-      if (timeSinceLastRequest < MIN_REQUEST_INTERVAL) {
-        await new Promise((resolve) =>
-          setTimeout(resolve, MIN_REQUEST_INTERVAL - timeSinceLastRequest)
-        );
-      }
-
-      setIsLoading(true);
-      setError(null);
-      sharedCache.lastRequestTime = Date.now();
-
-      const requestPromise = (async (): Promise<UserProfile | null> => {
-        try {
-          const { data } = await axios.get(`${BASE_URL}/users/profile`, {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          });
-
-          const profileData = data.data;
-
-          sharedCache.data = profileData;
-          sharedCache.timestamp = Date.now();
-
-          sharedCache.subscribers.forEach((callback) => callback(profileData));
-
-          return profileData;
-        } catch (err) {
-          const { message } = getErrorMessage(
-            err as AxiosError<ErrorResponseData> | CustomError | Error
-          );
-
-          setError(message);
-          setIsLoading(false);
-
-          toast.error('Failed to load profile', {
-            description: message,
-            duration: 5000,
-          });
-
-          sharedCache.subscribers.forEach((callback) => callback(null));
-          throw err;
-        } finally {
-          sharedCache.activeRequest = null;
-        }
-      })();
-
-      sharedCache.activeRequest = requestPromise;
-
-      try {
-        const data = await requestPromise;
-        if (!abortSignal?.aborted && data) {
-          setProfile(data);
-          setError(null);
-          setIsLoading(false);
-        }
-        return data;
-      } catch (err) {
-        if (!abortSignal?.aborted) {
-          setIsLoading(false);
-        }
-        throw err;
-      }
-    },
-    [token]
+  const { data: profile, error, isLoading } = useSWR<UserProfile>(
+    token ? [PROFILE_KEY] : null,
+    () => backendFetcher<UserProfile>(PROFILE_KEY, token),
+    {
+      dedupingInterval: 5000,
+      revalidateOnFocus: false,
+      revalidateIfStale: false,
+    }
   );
 
-  /**================================
-   * Updates user profile
-   ================================*/
   const updateProfile = async (payload: UpdateProfilePayload) => {
+    if (!token) return;
+
     setIsUpdatingProfile(true);
 
     try {
@@ -161,13 +54,7 @@ const useProfile = ({ token }: UseProfileProps) => {
         },
       });
 
-      const updatedProfile = data.data;
-
-      sharedCache.data = updatedProfile;
-      sharedCache.timestamp = Date.now();
-
-      setProfile(updatedProfile);
-      sharedCache.subscribers.forEach((callback) => callback(updatedProfile));
+      mutate([PROFILE_KEY], data.data, false);
 
       toast.success('Profile updated successfully', {
         description: 'Your profile information has been updated.',
@@ -188,10 +75,9 @@ const useProfile = ({ token }: UseProfileProps) => {
     }
   };
 
-  /**=========================
-   * Changes user password
-   =========================*/
   const changePassword = async (payload: ChangePasswordPayload) => {
+    if (!token) return;
+
     setIsChangingPassword(true);
 
     try {
@@ -247,10 +133,6 @@ const useProfile = ({ token }: UseProfileProps) => {
     }
   };
 
-  /**=========================================
-   * Uploads profile image to Jeetix ONLY
-   * Does not save to database
-   =========================================*/
   const uploadImageOnly = async (file: File) => {
     setIsUploadingImage(true);
 
@@ -293,34 +175,15 @@ const useProfile = ({ token }: UseProfileProps) => {
     }
   };
 
-  /**===========================================================
-   * Fetch profile when component mounts
-   * Subscribe to shared cache updates
-   ===========================================================*/
-  useEffect(() => {
-    const updateProfile = (data: UserProfile | null) => {
-      setProfile(data);
-      setIsLoading(false);
-      if (data) {
-        setError(null);
-      }
-    };
-
-    sharedCache.subscribers.add(updateProfile);
-
-    const abortController = new AbortController();
-    fetchProfile(abortController.signal);
-
-    return () => {
-      sharedCache.subscribers.delete(updateProfile);
-      abortController.abort();
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  const refetchProfile = () => {
+    if (token) {
+      mutate([PROFILE_KEY]);
+    }
+  };
 
   return {
-    error,
-    profile,
+    profile: profile ?? null,
+    error: error ? getErrorMessage(error).message : null,
     isLoading,
     updateProfile,
     changePassword,
@@ -328,7 +191,7 @@ const useProfile = ({ token }: UseProfileProps) => {
     isUploadingImage,
     isUpdatingProfile,
     isChangingPassword,
-    refetchProfile: fetchProfile,
+    refetchProfile,
   };
 };
 

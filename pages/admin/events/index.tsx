@@ -1,11 +1,14 @@
 import { UserAuth } from '@/types';
 import { NextApiRequest } from 'next';
 import { isLoggedIn } from '@/utils/auth';
-import { AdminEventsPageProps } from '@/types/interfaces/event';
 import EventsComponent from '@/components/dashboard/shared/events/events';
 
+interface AdminEventsPageProps {
+  userData: UserAuth;
+}
+
 const AdminEventsPage = ({ userData }: AdminEventsPageProps) => {
-  return <EventsComponent role="admin" userData={userData} />;
+  return <EventsComponent role="admin" token={userData.token} userId={userData.userId} />;
 };
 
 export default AdminEventsPage;
@@ -34,8 +37,6 @@ export const getServerSideProps = async ({ req }: { req: NextApiRequest }) => {
   }
 
   return {
-    props: {
-      userData,
-    },
+    props: { userData },
   };
 };

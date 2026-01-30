@@ -8,12 +8,12 @@ import { DashboardHeaderProps } from '@/types/interfaces/dashboard';
 import ConfirmationModal from '@/components/dashboard/modals/confirmation-modal';
 import { Menu, User, LogOut, HelpCircle, Crown, Image as ImageIcon } from 'lucide-react';
 
-const DashboardHeader = ({ sidebarOpen, token, setSidebarOpen }: DashboardHeaderProps) => {
+const DashboardHeader = ({ sidebarOpen, setSidebarOpen, token }: DashboardHeaderProps) => {
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const [imageError, setImageError] = useState(false);
 
-  const { profile } = useProfile({ token: token || '' });
+  const { profile } = useProfile(token || '');
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -159,7 +159,7 @@ const DashboardHeader = ({ sidebarOpen, token, setSidebarOpen }: DashboardHeader
                     className="w-full h-full object-cover"
                   />
                 ) : (
-                  <div className="h-full w-full bg-gradient-to-br from-blue-500 via-amber-300 to-blue-500 flex items-center justify-center">
+                  <div className="h-full w-full bg-linear-to-br from-blue-500 via-amber-300 to-blue-500 flex items-center justify-center">
                     {role === 'admin' ? (
                       <Crown className="w-5 h-5 text-white/80" />
                     ) : (

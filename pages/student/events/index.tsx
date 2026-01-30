@@ -2,10 +2,13 @@ import { UserAuth } from '@/types';
 import { NextApiRequest } from 'next';
 import { isLoggedIn } from '@/utils/auth';
 import EventsComponent from '@/components/dashboard/shared/events/events';
-import { StudentEventsPageProps } from '@/types/interfaces/event';
+
+interface StudentEventsPageProps {
+  userData: UserAuth;
+}
 
 const StudentEventsPage = ({ userData }: StudentEventsPageProps) => {
-  return <EventsComponent role="student" userData={userData} />;
+  return <EventsComponent role="student" token={userData.token} userId={userData.userId} />;
 };
 
 export default StudentEventsPage;
@@ -34,8 +37,6 @@ export const getServerSideProps = async ({ req }: { req: NextApiRequest }) => {
   }
 
   return {
-    props: {
-      userData,
-    },
+    props: { userData },
   };
 };

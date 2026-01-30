@@ -1,32 +1,33 @@
 import { X, Eye, Download, Users } from 'lucide-react';
-import { useState, useEffect } from 'react';
-import useResourceAdmin from '@/hooks/resources/use-resource-admin';
+import { useState, useEffect, useCallback } from 'react';
+import { useResourceActions } from '@/hooks/resources/use-resource-admin';
 import { ResourceAnalyticsProps, ResourceAnalyticsData } from '@/types/interfaces/modal';
 
-const ResourceAnalytics = ({ token, isOpen = true, resource, onClose }: ResourceAnalyticsProps) => {
+const ResourceAnalytics = ({ isOpen = true, resource, onClose, token }: ResourceAnalyticsProps) => {
   const [activeTab, setActiveTab] = useState<'overview' | 'views' | 'downloads'>('overview');
   const [analytics, setAnalytics] = useState<ResourceAnalyticsData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const { getResourceAnalytics } = useResourceAdmin({ token });
+  const { getResourceAnalytics } = useResourceActions(token);
+
+  const fetchAnalytics = useCallback(async () => {
+    if (!resource || !isOpen) return;
+    setIsLoading(true);
+    setError(null);
+    try {
+      const data = await getResourceAnalytics(resource._id);
+      setAnalytics(data);
+    } catch {
+      setError('Unable to load detailed analytics. Showing basic stats.');
+    } finally {
+      setIsLoading(false);
+    }
+  }, [resource, isOpen, getResourceAnalytics]);
 
   useEffect(() => {
-    const fetchAnalytics = async () => {
-      if (!resource || !token || !isOpen) return;
-      setIsLoading(true);
-      setError(null);
-      try {
-        const data = await getResourceAnalytics(resource._id);
-        setAnalytics(data);
-      } catch {
-        setError('Unable to load detailed analytics. Showing basic stats.');
-      } finally {
-        setIsLoading(false);
-      }
-    };
     fetchAnalytics();
-  }, [resource, token, getResourceAnalytics, isOpen]);
+  }, [fetchAnalytics]);
 
   if (!isOpen) return null;
 
@@ -188,7 +189,7 @@ const ResourceAnalytics = ({ token, isOpen = true, resource, onClose }: Resource
                 return (
                   <div key={index} className="flex flex-col items-center flex-1">
                     <div
-                      className="bg-blue-600 w-full rounded-t-sm min-h-[2px]"
+                      className="bg-blue-600 w-full rounded-t-sm min-h-0.5"
                       style={{ height: `${Math.max(height, 2)}px` }}
                       title={`${day.count} views on ${day.date}`}
                     ></div>
@@ -221,7 +222,7 @@ const ResourceAnalytics = ({ token, isOpen = true, resource, onClose }: Resource
                 return (
                   <div key={index} className="flex flex-col items-center flex-1">
                     <div
-                      className="bg-green-600 w-full rounded-t-sm min-h-[2px]"
+                      className="bg-green-600 w-full rounded-t-sm min-h-0.5"
                       style={{ height: `${Math.max(height, 2)}px` }}
                       title={`${day.count} downloads on ${day.date}`}
                     ></div>

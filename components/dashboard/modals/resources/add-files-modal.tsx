@@ -1,7 +1,7 @@
 import { toast } from 'sonner';
 import { motion } from 'framer-motion';
 import { useState, useRef, useCallback } from 'react';
-import useResourceAdmin from '@/hooks/resources/use-resource-admin';
+import { useResourceActions } from '@/hooks/resources/use-resource-admin';
 import {
   X,
   Plus,
@@ -15,8 +15,8 @@ import {
 } from 'lucide-react';
 import { AddFilesModalProps, UploadProgress } from '@/types/interfaces/modal';
 
-const AddFilesModal = ({ isOpen, resource, token, onClose, onFilesAdded }: AddFilesModalProps) => {
-  const { uploadFile, updateResource } = useResourceAdmin({ token });
+const AddFilesModal = ({ isOpen, resource, onClose, onFilesAdded, token }: AddFilesModalProps) => {
+  const { uploadFile, updateResource } = useResourceActions(token);
 
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [uploadProgress, setUploadProgress] = useState<UploadProgress>({

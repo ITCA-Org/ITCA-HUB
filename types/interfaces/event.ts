@@ -1,5 +1,3 @@
-import { UserAuth } from '..';
-
 export interface CreateEventData {
   date: string;
   time: string;
@@ -13,21 +11,10 @@ export interface CreateEventData {
   registrationRequired: boolean;
 }
 
-export interface GetEventsParams {
-  page?: number;
-  limit?: number;
-  status?: string;
-  search?: string;
-  signal?: AbortSignal;
-}
-
-export interface UseEventsProps {
-  token: string;
-}
-
 export interface EventsComponentProps {
   role: 'admin' | 'student';
-  userData: UserAuth;
+  token: string;
+  userId: string;
 }
 
 export interface EventProps {
@@ -76,18 +63,11 @@ export interface EventCardProps {
   onUnregister?: (eventId: string) => Promise<void>;
 }
 
-export interface AdminEventsPageProps {
-  userData: UserAuth;
-}
-
-export interface StudentEventsPageProps {
-  userData: UserAuth;
-}
 
 export interface ViewEventModalProps {
-  token: string;
   isOpen: boolean;
   eventId: string;
   onClose: () => void;
   role?: 'admin' | 'student';
+  token: string;
 }

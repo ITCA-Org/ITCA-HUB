@@ -24,7 +24,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       const tokenCookie = serialize('itca_hub', JSON.stringify(cookieData), {
         httpOnly: true,
         secure: true,
-        maxAge: 60 * 60 * 24 * 30, // 30 days in seconds
+        maxAge: 60 * 60 * 24 * 30,
         sameSite: 'strict',
         path: '/',
       });
