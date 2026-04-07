@@ -1,8 +1,8 @@
-import { CustomError, ErrorResponseData } from '@/types';
-import { getErrorMessage } from '@/utils/error';
 import { AxiosError } from 'axios';
 import { serialize } from 'cookie';
+import { getErrorMessage } from '@/utils/error';
 import { NextApiRequest, NextApiResponse } from 'next';
+import { CustomError, ErrorResponseData } from '@/types';
 
 export default async function handler(_req: NextApiRequest, res: NextApiResponse) {
   try {

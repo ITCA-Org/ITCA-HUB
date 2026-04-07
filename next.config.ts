@@ -19,6 +19,11 @@ const nextConfig = {
         protocol: 'https',
         hostname: 'jeetix-file-service.onrender.com',
       },
+
+      {
+        protocol: "https",
+        hostname: "dgqkosobeyvqhgkpylki.supabase.co"
+      }
     ],
   },
 };
