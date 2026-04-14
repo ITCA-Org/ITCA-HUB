@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import {
   Edit,
   Clock,
@@ -13,6 +12,7 @@ import {
 } from 'lucide-react';
 import { toast } from 'sonner';
 import Image from 'next/image';
+import { useState } from 'react';
 import { EventCardProps } from '@/types/interfaces/event';
 import ConfirmationModal from '../../modals/confirmation-modal';
 
@@ -194,7 +194,7 @@ const EventCard = ({
             className="object-cover transition-transform duration-300 group-hover:scale-105"
           />
         ) : (
-          <div className="h-full w-full bg-gradient-to-br from-blue-500 via-amber-300 to-blue-500 flex items-center justify-center">
+          <div className="h-full w-full bg-linear-to-br from-blue-500 via-amber-300 to-blue-500 flex items-center justify-center">
             <Calendar className="h-16 w-16 text-white/80" />
           </div>
         )}
@@ -302,7 +302,7 @@ const EventCard = ({
               <button
                 disabled={isRegistering}
                 onClick={handleRegistration}
-                className="w-full inline-flex justify-center items-center rounded-lg bg-gradient-to-r from-blue-600 to-blue-500 px-4 py-2 text-sm font-medium text-white hover:from-blue-700 hover:to-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-300 shadow-md hover:shadow-lg disabled:opacity-50"
+                className="w-full inline-flex justify-center items-center rounded-lg bg-linear-to-r from-blue-600 to-blue-500 px-4 py-2 text-sm font-medium text-white hover:from-blue-700 hover:to-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-300 shadow-md hover:shadow-lg disabled:opacity-50"
               >
                 {isRegistering ? (
                   <>

@@ -1,9 +1,10 @@
-import { useState, useEffect } from 'react';
+import axios from 'axios';
+import Link from 'next/link';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
+import { BASE_URL } from '@/utils/url';
+import { useState, useEffect } from 'react';
 import { Calendar, Clock, MapPin, Users, ArrowRight, ChevronRight, EyeIcon, X } from 'lucide-react';
-import Link from 'next/link';
-import axios from 'axios';
 
 type Event = {
   _id: string;
@@ -170,7 +171,7 @@ const EventCard = ({
             className="object-cover transition-transform duration-300 group-hover:scale-105"
           />
         ) : (
-          <div className="h-full w-full bg-gradient-to-br from-blue-500 via-amber-300 to-blue-500 flex items-center justify-center">
+          <div className="h-full w-full bg-linear-to-br from-blue-500 via-amber-300 to-blue-500 flex items-center justify-center">
             <Calendar className="h-16 w-16 text-white/80" />
           </div>
         )}
@@ -235,7 +236,7 @@ const EventCard = ({
         {event.registrationRequired && (
           <div className="mt-4 pt-2">
             <Link href="/auth" className="cursor-pointer">
-              <button className="w-full inline-flex justify-center items-center rounded-lg bg-gradient-to-r from-blue-600 to-blue-500 px-4 py-2 text-sm font-medium text-white hover:from-blue-700 hover:to-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-300 shadow-md hover:shadow-lg">
+              <button className="w-full inline-flex justify-center items-center rounded-lg bg-linear-to-r from-blue-600 to-blue-500 px-4 py-2 text-sm font-medium text-white hover:from-blue-700 hover:to-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-300 shadow-md hover:shadow-lg">
                 <ArrowRight className="h-4 w-4 mr-2" />
                 Register Now
               </button>
@@ -271,9 +272,7 @@ const EventsSection = () => {
         setIsLoading(true);
         setError(null);
 
-        const response = await axios.get(
-          'https://itca-hub-backend.onrender.com/api/events/upcoming?page=1&limit=6'
-        );
+        const response = await axios.get(`${BASE_URL}/events/upcoming?page=1&limit=6`);
 
         if (response.data.status === 'success') {
           setEvents(response.data.data);
@@ -305,16 +304,16 @@ const EventsSection = () => {
   return (
     <section
       id="events"
-      className="relative py-24 overflow-hidden bg-gradient-to-b from-white to-gray-100"
+      className="relative py-24 overflow-hidden bg-linear-to-b from-white to-gray-100"
     >
       <div className="absolute inset-0 z-10 overflow-hidden opacity-20">
-        <div className="absolute top-1/4 left-0 h-[1px] w-full bg-gradient-to-r from-transparent via-amber-500/40 to-transparent"></div>
-        <div className="absolute top-2/4 left-0 h-[1px] w-full bg-gradient-to-r from-transparent via-blue-700/40 to-transparent"></div>
-        <div className="absolute top-3/4 left-0 h-[1px] w-full bg-gradient-to-r from-transparent via-amber-500/40 to-transparent"></div>
+        <div className="absolute top-1/4 left-0 h-px w-full bg-linear-to-r from-transparent via-amber-500/40 to-transparent"></div>
+        <div className="absolute top-2/4 left-0 h-px w-full bg-linear-to-r from-transparent via-blue-700/40 to-transparent"></div>
+        <div className="absolute top-3/4 left-0 h-px w-full bg-linear-to-r from-transparent via-amber-500/40 to-transparent"></div>
 
-        <div className="absolute top-0 left-1/4 h-full w-[1px] bg-gradient-to-b from-transparent via-blue-700/40 to-transparent"></div>
-        <div className="absolute top-0 left-2/4 h-full w-[1px] bg-gradient-to-b from-transparent via-amber-500/40 to-transparent"></div>
-        <div className="absolute top-0 left-3/4 h-full w-[1px] bg-gradient-to-b from-transparent via-blue-700/40 to-transparent"></div>
+        <div className="absolute top-0 left-1/4 h-full w-px bg-linear-to-b from-transparent via-blue-700/40 to-transparent"></div>
+        <div className="absolute top-0 left-2/4 h-full w-px bg-linear-to-b from-transparent via-amber-500/40 to-transparent"></div>
+        <div className="absolute top-0 left-3/4 h-full w-px bg-linear-to-b from-transparent via-blue-700/40 to-transparent"></div>
       </div>
 
       <div className="absolute inset-0 -z-10 overflow-hidden">
@@ -334,7 +333,7 @@ const EventsSection = () => {
           <h2 className="mb-4 text-4xl font-bold text-gray-900 md:text-5xl">
             Upcoming <span className="text-blue-700">Events</span>
           </h2>
-          <div className="mx-auto h-1 w-24 bg-gradient-to-r from-blue-700 via-amber-500 to-blue-700 rounded-full mb-6"></div>
+          <div className="mx-auto h-1 w-24 bg-linear-to-r from-blue-700 via-amber-500 to-blue-700 rounded-full mb-6"></div>
           <p className="mx-auto max-w-2xl text-lg text-gray-600">
             Stay updated with our latest workshops, conferences, and activities designed to enhance
             your skills and knowledge.
@@ -350,7 +349,7 @@ const EventsSection = () => {
             <div className="max-w-md mx-auto">
               {/*==================== Error Icon Container ====================*/}
               <div className="relative mb-8">
-                <div className="w-24 h-24 mx-auto rounded-full bg-gradient-to-br from-red-50 to-orange-50 flex items-center justify-center border border-red-100">
+                <div className="w-24 h-24 mx-auto rounded-full bg-linear-to-br from-red-50 to-orange-50 flex items-center justify-center border border-red-100">
                   <Calendar className="h-10 w-10 text-red-500" />
                   <div className="absolute inset-0 flex items-center justify-center">
                     <div className="w-16 h-16 border-2 border-red-200 rounded-full"></div>
@@ -404,7 +403,7 @@ const EventsSection = () => {
             <div className="max-w-md mx-auto">
               {/*==================== Icon Container ====================*/}
               <div className="relative mb-8">
-                <div className="w-24 h-24 mx-auto rounded-full bg-gradient-to-br from-blue-50 to-amber-50 flex items-center justify-center border border-blue-100">
+                <div className="w-24 h-24 mx-auto rounded-full bg-linear-to-br from-blue-50 to-amber-50 flex items-center justify-center border border-blue-100">
                   <Calendar className="h-10 w-10 text-blue-500" />
                 </div>
               </div>
@@ -470,7 +469,7 @@ const EventsSection = () => {
                         className="object-cover"
                       />
                     ) : (
-                      <div className="h-full w-full bg-gradient-to-br from-blue-500 via-amber-300 to-blue-500 flex items-center justify-center">
+                      <div className="h-full w-full bg-linear-to-br from-blue-500 via-amber-300 to-blue-500 flex items-center justify-center">
                         <Calendar className="h-16 w-16 text-white/80" />
                       </div>
                     )}
@@ -479,7 +478,9 @@ const EventsSection = () => {
 
                 {viewingEvent.description && (
                   <div className="mb-6">
-                    <h3 className="text-base md:text-lg font-medium mb-3 text-gray-900">Description</h3>
+                    <h3 className="text-base md:text-lg font-medium mb-3 text-gray-900">
+                      Description
+                    </h3>
                     <p className="text-gray-600 text-sm md:text-[1.2rem] bg-gray-50 rounded-lg p-4">
                       {viewingEvent.description}
                     </p>

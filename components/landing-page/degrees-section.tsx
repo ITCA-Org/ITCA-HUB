@@ -1,16 +1,16 @@
-import { useState, useRef, useEffect } from 'react';
 import Image from 'next/image';
+import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-  Clock,
-  BookOpen,
-  Check,
   Code,
-  Database,
   Radio,
   Users,
-  GraduationCap,
+  Check,
+  Clock,
+  BookOpen,
+  Database,
   ChevronDown,
+  GraduationCap,
 } from 'lucide-react';
 
 type Degree = {
@@ -85,23 +85,18 @@ const DegreesSection = () => {
   const [isMobileView, setIsMobileView] = useState(false);
   const [showMobileDropdown, setShowMobileDropdown] = useState(false);
 
-  // Effect to handle responsive behavior
   useEffect(() => {
     const handleResize = () => {
       setIsMobileView(window.innerWidth < 640);
     };
 
-    // Initial check
     handleResize();
 
-    // Add event listener
     window.addEventListener('resize', handleResize);
 
-    // Cleanup
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  // Initialize with first degree on component mount
   useEffect(() => {
     if (!selectedDegree && degrees.length > 0) {
       setSelectedDegree(degrees[0]);
@@ -111,18 +106,18 @@ const DegreesSection = () => {
   return (
     <section id="degrees" className="relative py-24 overflow-hidden">
       {/*==================== Dynamic Background with geometric shapes ====================*/}
-      <div className="absolute inset-0 -z-10 bg-gradient-to-br from-white to-gray-100"></div>
+      <div className="absolute inset-0 -z-10 bg-linear-to-br from-white to-gray-100"></div>
 
       {/*==================== Prominent Geometric Elements - Top Right ====================*/}
       <div className="absolute top-0 right-0 w-2/3 h-full overflow-hidden -z-5">
         <div className="absolute top-10 right-0 w-full h-full">
-          <div className="absolute top-10 right-[-200px] h-[500px] w-[500px] rounded-full border-[40px] border-amber-500/5 animate-pulse"></div>
+          <div className="absolute top-10 right-[-200px] h-[500px] w-[500px] rounded-full border-40 border-amber-500/5 animate-pulse"></div>
           <div
-            className="absolute top-40 right-[-150px] h-[400px] w-[400px] rounded-full border-[30px] border-blue-700/5 animate-pulse"
+            className="absolute top-40 right-[-150px] h-[400px] w-[400px] rounded-full border-30 border-blue-700/5 animate-pulse"
             style={{ animationDelay: '1s' }}
           ></div>
           <div
-            className="absolute top-60 right-[-100px] h-[300px] w-[300px] rounded-full border-[20px] border-amber-500/5 animate-pulse"
+            className="absolute top-60 right-[-100px] h-[300px] w-[300px] rounded-full border-20 border-amber-500/5 animate-pulse"
             style={{ animationDelay: '2s' }}
           ></div>
         </div>
@@ -141,7 +136,7 @@ const DegreesSection = () => {
           <h2 className="mb-4 text-4xl font-bold text-gray-900 md:text-5xl">
             Our <span className="text-amber-500">Undergraduate</span> Programs
           </h2>
-          <div className="mx-auto h-1 w-24 bg-gradient-to-r from-blue-700 via-amber-500 to-blue-700 rounded-full mb-6"></div>
+          <div className="mx-auto h-1 w-24 bg-linear-to-r from-blue-700 via-amber-500 to-blue-700 rounded-full mb-6"></div>
           <p className="mx-auto max-w-2xl text-lg text-gray-600">
             Explore our comprehensive undergraduate degree programs designed to prepare you for the
             rapidly evolving technology landscape.
@@ -232,7 +227,7 @@ const DegreesSection = () => {
                     width: tabRefs.current[selectedDegree.id - 1]?.offsetWidth || 0,
                   }}
                   transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-                  className="absolute top-0 left-0 h-full z-0 rounded-xl bg-gradient-to-r from-blue-700/90 to-blue-600/90 shadow-md"
+                  className="absolute top-0 left-0 h-full z-0 rounded-xl bg-linear-to-r from-blue-700/90 to-blue-600/90 shadow-md"
                 />
               )}
               {/*==================== End of Active Tab Indicator ====================*/}
@@ -306,11 +301,11 @@ const DegreesSection = () => {
                     />
 
                     {/*==================== Dark gradient overlay ====================*/}
-                    <div className="absolute inset-0 bg-gradient-to-r from-black/80 to-transparent lg:bg-gradient-to-t"></div>
+                    <div className="absolute inset-0 bg-linear-to-r from-black/80 to-transparent lg:bg-linear-to-t"></div>
 
                     {/*==================== Content overlay ====================*/}
                     <div className="absolute bottom-0 left-0 w-full p-6 z-10">
-                      <div className="mb-2 inline-block px-3 py-1.5 rounded-lg bg-gradient-to-r from-blue-700 to-blue-600 text-xs font-semibold uppercase text-white shadow-md">
+                      <div className="mb-2 inline-block px-3 py-1.5 rounded-lg bg-linear-to-r from-blue-700 to-blue-600 text-xs font-semibold uppercase text-white shadow-md">
                         {selectedDegree.level}
                       </div>
 
@@ -359,9 +354,9 @@ const DegreesSection = () => {
                           initial={{ opacity: 0, x: -10 }}
                           animate={{ opacity: 1, x: 0 }}
                           transition={{ duration: 1, delay: i * 0.1 }}
-                          className="flex items-start p-3 rounded-lg bg-gradient-to-r from-gray-50 to-white border border-gray-100"
+                          className="flex items-start p-3 rounded-lg bg-linear-to-r from-gray-50 to-white border border-gray-100"
                         >
-                          <div className="mr-3 mt-0.5 h-5 w-5 rounded-full bg-green-500/10 flex items-center justify-center flex-shrink-0">
+                          <div className="mr-3 mt-0.5 h-5 w-5 rounded-full bg-green-500/10 flex items-center justify-center shrink-0">
                             <Check className="h-3 w-3 text-green-600" />
                           </div>
                           <span className="text-gray-700 text-sm">{highlight}</span>

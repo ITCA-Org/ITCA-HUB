@@ -1,7 +1,7 @@
-import { useEffect, useRef } from 'react';
-import { motion } from 'framer-motion';
-import { Target, Eye, ChevronRight } from 'lucide-react';
 import Link from 'next/link';
+import { motion } from 'framer-motion';
+import { useEffect, useRef } from 'react';
+import { Target, Eye, ChevronRight } from 'lucide-react';
 
 const HeroSection = () => {
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -15,7 +15,7 @@ const HeroSection = () => {
   return (
     <section
       id="hero-section"
-      className="relative min-h-screen w-full overflow-hidden bg-gradient-to-b from-gray-900 to-black"
+      className="relative min-h-screen w-full overflow-hidden bg-linear-to-b from-gray-900 to-black"
     >
       {/*==================== Background Video With Overlay ====================*/}
       <div className="absolute inset-0 z-0">
@@ -29,8 +29,8 @@ const HeroSection = () => {
         >
           <source type="video/mp4" src="/videos/hero-vid.mp4" />
         </video>
-        <div className="absolute inset-0 bg-gradient-to-r from-gray-900/80 via-transparent to-gray-900/80"></div>
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent to-gray-900/40"></div>
+        <div className="absolute inset-0 bg-linear-to-r from-gray-900/80 via-transparent to-gray-900/80"></div>
+        <div className="absolute inset-0 bg-linear-to-b from-transparent to-gray-900/40"></div>
       </div>
       {/*==================== End of Background Video With Overlay ====================*/}
 
@@ -94,7 +94,7 @@ const HeroSection = () => {
           initial={{ opacity: 0, width: 0 }}
           animate={{ opacity: 1, width: '120px' }}
           transition={{ duration: 0.8, delay: 0.5 }}
-          className="h-1 bg-gradient-to-r from-blue-700 via-amber-500 to-blue-700 rounded-full mb-6 sm:mb-8"
+          className="h-1 bg-linear-to-r from-blue-700 via-amber-500 to-blue-700 rounded-full mb-6 sm:mb-8"
         ></motion.div>
         {/*==================== End of Decorative Line ====================*/}
 

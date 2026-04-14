@@ -10,23 +10,18 @@ const Header = () => {
   const [activeSection, setActiveSection] = useState('');
   const [isMobile, setIsMobile] = useState(false);
 
-  // Check if window width is below 1050px
   useEffect(() => {
     const checkMobile = () => {
       setIsMobile(window.innerWidth < 1050);
     };
 
-    // Initial check
     checkMobile();
 
-    // Add event listener
     window.addEventListener('resize', checkMobile);
 
-    // Cleanup
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
-  // Handle scroll effect and section tracking
   useEffect(() => {
     const handleScroll = () => {
       if (window.scrollY > 10) {
@@ -38,7 +33,6 @@ const Header = () => {
 
     window.addEventListener('scroll', handleScroll);
 
-    // Set up intersection observer for each section
     const sections = document.querySelectorAll('section[id]');
     const observerOptions = {
       root: null,
@@ -65,7 +59,6 @@ const Header = () => {
     };
   }, []);
 
-  // Helper function to determine if a link is active
   const isActive = (sectionId: string) => {
     return activeSection === sectionId ? 'link-active' : '';
   };
@@ -119,7 +112,7 @@ const Header = () => {
         )}
         {/*==================== End of Desktop Menu (Visible Above 1050px) ====================*/}
 
-        {/*==================== Sign In/Up buttons - Always Visible on Desktop ====================*/}
+        {/*==================== Sign In/Up buttons ====================*/}
         <div className="hidden md:flex gap-2">
           <Link
             href="/auth"
@@ -142,7 +135,7 @@ const Header = () => {
             Sign Up
           </Link>
         </div>
-        {/*==================== End of Sign In/Up buttons - Always Visible on Desktop ====================*/}
+        {/*==================== End of Sign In/Up buttons ====================*/}
 
         {/*==================== Mobile Menu Toggle Button ====================*/}
         <button

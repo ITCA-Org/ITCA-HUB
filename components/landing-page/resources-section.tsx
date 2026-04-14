@@ -75,8 +75,8 @@ const ResourcesSection = () => {
         <div className="absolute top-0 right-0 w-2/3 h-2/3 overflow-hidden">
           {/*==================== Circuit Lines ====================*/}
           <div className="absolute top-16 right-16 w-[500px] h-[500px]">
-            <div className="absolute top-0 left-[30%] w-1 h-[70%] bg-gradient-to-b from-blue-700/0 via-blue-700/90 to-blue-700/0"></div>
-            <div className="absolute top-[30%] left-0 w-[70%] h-1 bg-gradient-to-r from-blue-700/0 via-amber-500/90 to-amber-700/0"></div>
+            <div className="absolute top-0 left-[30%] w-1 h-[70%] bg-linear-to-b from-blue-700/0 via-blue-700/90 to-blue-700/0"></div>
+            <div className="absolute top-[30%] left-0 w-[70%] h-1 bg-linear-to-r from-blue-700/0 via-amber-500/90 to-amber-700/0"></div>
 
             {/*==================== Circuit Nodes ====================*/}
             <div className="absolute top-[30%] left-[30%] w-4 h-4 rounded-full border-2 border-blue-700/90 bg-white"></div>
@@ -135,7 +135,7 @@ const ResourcesSection = () => {
           <h2 className="mb-4 text-4xl font-bold text-gray-900 md:text-5xl">
             Learning <span className="text-amber-500">Resources</span>
           </h2>
-          <div className="mx-auto h-1 w-24 bg-gradient-to-r from-blue-700 via-amber-500 to-blue-700 rounded-full mb-6"></div>
+          <div className="mx-auto h-1 w-24 bg-linear-to-r from-blue-700 via-amber-500 to-blue-700 rounded-full mb-6"></div>
           <p className="mx-auto max-w-2xl text-lg text-gray-600">
             Access our comprehensive collection of learning materials, tools, and resources designed
             to enhance your journey in the ICT field.
@@ -196,7 +196,7 @@ const ResourcesSection = () => {
                       </div>
                     </div>
 
-                    <div className="absolute bottom-0 left-0 h-1 w-0 group-hover:w-full bg-gradient-to-r from-blue-700 to-amber-500 transition-all duration-300"></div>
+                    <div className="absolute bottom-0 left-0 h-1 w-0 group-hover:w-full bg-linear-to-r from-blue-700 to-amber-500 transition-all duration-300"></div>
                   </motion.div>
                 ))}
               </div>
@@ -215,7 +215,7 @@ const ResourcesSection = () => {
             whileInView={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.6, delay: 0.3 }}
           >
-            <div className="bg-gradient-to-br from-gray-900 to-gray-800 text-white rounded-2xl p-8 shadow-xl h-full flex flex-col">
+            <div className="bg-linear-to-br from-gray-900 to-gray-800 text-white rounded-2xl p-8 shadow-xl h-full flex flex-col">
               <div className="flex-1">
                 <div className="inline-block p-3 bg-amber-500/20 rounded-xl mb-6">
                   <Lock className="h-8 w-8 text-amber-500" />

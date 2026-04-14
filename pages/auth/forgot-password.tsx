@@ -115,7 +115,7 @@ const ForgotPassword = () => {
 
         {error && (
           <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 rounded-lg flex items-start">
-            <AlertCircle className="h-5 w-5 mr-2 mt-0.5 flex-shrink-0" />
+            <AlertCircle className="h-5 w-5 mr-2 mt-0.5 shrink-0" />
             <span>{error}</span>
           </div>
         )}
@@ -137,7 +137,7 @@ const ForgotPassword = () => {
             </p>
             <div className="p-4 bg-amber-50 border border-amber-100 rounded-lg mb-6">
               <div className="flex items-start">
-                <AlertCircle className="h-5 w-5 text-amber-600 mt-0.5 mr-2 flex-shrink-0" />
+                <AlertCircle className="h-5 w-5 text-amber-600 mt-0.5 mr-2 shrink-0" />
                 <p className="text-sm text-amber-800">
                   Please check all folders including spam and junk. The link is valid for 24 hours.
                 </p>

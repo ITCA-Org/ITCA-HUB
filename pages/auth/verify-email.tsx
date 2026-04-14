@@ -1,12 +1,12 @@
-import { useRouter } from 'next/router';
-import { useEffect, useState } from 'react';
-import axios, { AxiosError } from 'axios';
-import { BASE_URL } from '@/utils/url';
 import { NextApiRequest } from 'next';
-import { isLoggedIn } from '@/utils/auth';
-import { CustomError, ErrorResponseData, UserAuth } from '@/types';
-import { getErrorMessage } from '@/utils/error';
 import { motion } from 'framer-motion';
+import { BASE_URL } from '@/utils/url';
+import { useRouter } from 'next/router';
+import axios, { AxiosError } from 'axios';
+import { isLoggedIn } from '@/utils/auth';
+import { useEffect, useState } from 'react';
+import { getErrorMessage } from '@/utils/error';
+import { CustomError, ErrorResponseData, UserAuth } from '@/types';
 import { CheckCircle, Loader2, AlertCircle, Mail } from 'lucide-react';
 
 const VerifyEmail = () => {
@@ -49,13 +49,13 @@ const VerifyEmail = () => {
         {/*==================== Prominent Geometric Elements - Top Right ====================*/}
         <div className="absolute top-0 right-0 w-2/3 h-full">
           <div className="absolute top-10 right-0 w-full h-full">
-            <div className="absolute top-10 right-[-200px] h-[500px] w-[500px] rounded-full border-[40px] border-amber-500/15 animate-pulse"></div>
+            <div className="absolute top-10 right-[-200px] h-[500px] w-[500px] rounded-full border-40 border-amber-500/15 animate-pulse"></div>
             <div
-              className="absolute top-40 right-[-150px] h-[400px] w-[400px] rounded-full border-[30px] border-blue-700/15 animate-pulse"
+              className="absolute top-40 right-[-150px] h-[400px] w-[400px] rounded-full border-30 border-blue-700/15 animate-pulse"
               style={{ animationDelay: '0.5s' }}
             ></div>
             <div
-              className="absolute top-60 right-[-100px] h-[300px] w-[300px] rounded-full border-[20px] border-amber-500/15 animate-pulse"
+              className="absolute top-60 right-[-100px] h-[300px] w-[300px] rounded-full border-20 border-amber-500/15 animate-pulse"
               style={{ animationDelay: '0.8s' }}
             ></div>
           </div>
@@ -66,7 +66,7 @@ const VerifyEmail = () => {
         <div className="hidden md:block absolute bottom-0 left-0 w-2/5 h-2/5">
           <div className="absolute bottom-10 left-70 w-[200px] h-[200px] origin-center rotate-45 bg-blue-700/15 rounded-xl animate-pulse"></div>
           <div
-            className="absolute top-10 left-50 w-[160px] h-[160px] origin-center rotate-[30deg] bg-amber-500/15 rounded-xl animate-pulse"
+            className="absolute top-10 left-50 w-40 h-40 origin-center rotate-30 bg-amber-500/15 rounded-xl animate-pulse"
             style={{ animationDelay: '0.5s' }}
           ></div>
           <div
@@ -145,10 +145,10 @@ const VerifyEmail = () => {
 
             {/*==================== Status Message ====================*/}
             <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.7 }}
               className="space-y-4"
+              transition={{ delay: 0.7 }}
+              animate={{ opacity: 1, y: 0 }}
+              initial={{ opacity: 0, y: 10 }}
             >
               <p className="text-gray-800 text-xl font-semibold">{status}</p>
             </motion.div>
@@ -175,7 +175,7 @@ const VerifyEmail = () => {
               >
                 <button
                   onClick={() => router.push('/auth')}
-                  className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white py-3 px-6 rounded-xl font-medium transition-all transform hover:scale-105 shadow-lg hover:shadow-xl"
+                  className="w-full bg-linear-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white py-3 px-6 rounded-xl font-medium transition-all transform hover:scale-105 shadow-lg hover:shadow-xl"
                 >
                   Go to Sign In
                 </button>
@@ -200,7 +200,7 @@ const VerifyEmail = () => {
           >
             <p className="text-md text-gray-500">
               Powered by{' '}
-              <span className="font-semibold bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent">
+              <span className="font-semibold bg-linear-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent">
                 ITCA Hub
               </span>
             </p>

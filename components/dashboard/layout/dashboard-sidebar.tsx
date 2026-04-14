@@ -159,7 +159,7 @@ const Sidebar = ({ open, setOpen }: DashboardSidebarProps) => {
                   href={item.href}
                   className={`flex items-center px-4 py-3 text-lg font-medium  ${
                     isActive(item.href)
-                      ? 'bg-gradient-to-r from-amber-100/70 to-blue-100/70 text-blue-700 border-none rounded-lg'
+                      ? 'bg-linear-to-r from-amber-100/70 to-blue-100/70 text-blue-700 border-none rounded-lg'
                       : 'text-gray-700 hover:bg-amber-50 hover:text-blue-700'
                   }`}
                 >

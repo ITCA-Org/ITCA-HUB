@@ -28,7 +28,7 @@ const AuthLayout: React.FC<AuthLayoutProps> = ({
 
       <div className="flex flex-col md:flex-row md:min-h-screen">
         {/*==================== Left Side - Form ====================*/}
-        <div className="relative w-full md:w-1/2 min-h-screen bg-gradient-to-b from-white to-gray-100">
+        <div className="relative w-full md:w-1/2 min-h-screen bg-linear-to-b from-white to-gray-100">
           {/*==================== Background Elements ====================*/}
           <div className="absolute inset-0 overflow-hidden pointer-events-none">
             {/*==================== Glowing Dots at Intersections ====================*/}
@@ -130,7 +130,7 @@ const AuthLayout: React.FC<AuthLayoutProps> = ({
         {/*==================== End of Left Side - Form ====================*/}
 
         {/*==================== Right Side - Image/Design ====================*/}
-        <div className="hidden md:block md:w-1/2 md:min-h-screen bg-gradient-to-br from-blue-700 to-gray-900 relative overflow-hidden">
+        <div className="hidden md:block md:w-1/2 md:min-h-screen bg-linear-to-br from-blue-700 to-gray-900 relative overflow-hidden">
           {/*==================== Background Image ====================*/}
           <div className="absolute inset-0 z-0">
             <Image

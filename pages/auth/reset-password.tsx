@@ -67,7 +67,6 @@ const ResetPassword = () => {
 
       await axios.post(`${BASE_URL}/auth/reset-password`, resetPasswordData);
 
-      // Show success message
       setResetComplete(true);
       toast.success('Password has been reset successfully', {
         id: toast.loading('Resetting password...'),
@@ -136,7 +135,7 @@ const ResetPassword = () => {
 
         {error && (
           <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 rounded-lg flex items-start">
-            <AlertCircle className="h-5 w-5 mr-2 mt-0.5 flex-shrink-0" />
+            <AlertCircle className="h-5 w-5 mr-2 mt-0.5 shrink-0" />
             <span>{error}</span>
           </div>
         )}

@@ -1,6 +1,6 @@
-import React from "react";
-import { motion } from "framer-motion";
-import { Check } from "lucide-react";
+import React from 'react';
+import { motion } from 'framer-motion';
+import { Check } from 'lucide-react';
 
 interface StepIndicatorProps {
   currentStep: number;
@@ -8,11 +8,7 @@ interface StepIndicatorProps {
   labels: string[];
 }
 
-const StepIndicator = ({
-  currentStep,
-  totalSteps,
-  labels,
-}: StepIndicatorProps) => {
+const StepIndicator = ({ currentStep, totalSteps, labels }: StepIndicatorProps) => {
   return (
     <div className="mb-8">
       <div className="relative flex items-center justify-between">
@@ -23,8 +19,8 @@ const StepIndicator = ({
             animate={{
               width: `${((currentStep - 1) / (totalSteps - 1)) * 100}%`,
             }}
-            transition={{ duration: 0.5, ease: "easeInOut" }}
-            className="h-full bg-gradient-to-r from-blue-600 to-blue-700 rounded-full"
+            transition={{ duration: 0.5, ease: 'easeInOut' }}
+            className="h-full bg-linear-to-r from-blue-600 to-blue-700 rounded-full"
           />
         </div>
         {/*==================== End of Background Progress Bar ====================*/}
@@ -42,10 +38,10 @@ const StepIndicator = ({
               transition={{ delay: index * 0.2, duration: 0.3 }}
               className={`relative z-10 flex items-center justify-center w-10 h-10 rounded-full ${
                 isCompleted
-                  ? "bg-blue-700 text-white"
+                  ? 'bg-blue-700 text-white'
                   : isCurrent
-                    ? "bg-white ring-2 ring-blue-700 text-blue-700"
-                    : "bg-white ring-2 ring-gray-200 text-gray-400"
+                    ? 'bg-white ring-2 ring-blue-700 text-blue-700'
+                    : 'bg-white ring-2 ring-gray-200 text-gray-400'
               } transition-all duration-300 shadow-md`}
             >
               {isCompleted ? (
@@ -74,13 +70,9 @@ const StepIndicator = ({
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.5 + index * 0.1 }}
             className={`text-xs font-medium ${
-              index < currentStep ? "text-blue-700" : "text-gray-500"
+              index < currentStep ? 'text-blue-700' : 'text-gray-500'
             } transition-colors duration-300 text-center w-20 -ml-5 ${
-              index === labels.length - 1
-                ? "text-right -mr-5"
-                : index === 0
-                  ? "text-left"
-                  : ""
+              index === labels.length - 1 ? 'text-right -mr-5' : index === 0 ? 'text-left' : ''
             }`}
           >
             {label}

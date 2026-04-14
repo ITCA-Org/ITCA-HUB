@@ -45,7 +45,7 @@ const UserActionsModal = ({
           description: `Are you sure you want to delete ${userName}? This action cannot be undone and will permanently remove all user data.`,
           confirmText: isLoading ? 'Deleting...' : 'Delete User',
           confirmClass:
-            'bg-gradient-to-r from-red-600 to-red-500 hover:from-red-700 hover:to-red-600',
+            'bg-linear-to-r from-red-600 to-red-500 hover:from-red-700 hover:to-red-600',
         };
       case 'changeRole':
         const newRole = userRole?.toLowerCase() === 'admin' ? 'Student' : 'Admin';
@@ -56,7 +56,7 @@ const UserActionsModal = ({
           description: `Are you sure you want to change ${userName}'s role to ${newRole}?`,
           confirmText: isLoading ? 'Changing...' : `Make ${newRole}`,
           confirmClass:
-            'bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600',
+            'bg-linear-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600',
         };
       case 'toggleActivation':
         const action = isActive ? 'suspend' : 'activate';
@@ -68,7 +68,7 @@ const UserActionsModal = ({
           description: `Are you sure you want to ${action} ${userName}?`,
           confirmText: isLoading ? `${actionCapitalized}ing...` : `${actionCapitalized} User`,
           confirmClass:
-            'bg-gradient-to-r from-orange-600 to-orange-500 hover:from-orange-700 hover:to-orange-600',
+            'bg-linear-to-r from-orange-600 to-orange-500 hover:from-orange-700 hover:to-orange-600',
         };
       default:
         return {
@@ -78,7 +78,7 @@ const UserActionsModal = ({
           description: 'Are you sure you want to perform this action?',
           confirmText: isLoading ? 'Processing...' : 'Confirm',
           confirmClass:
-            'bg-gradient-to-r from-gray-600 to-gray-500 hover:from-gray-700 hover:to-gray-600',
+            'bg-linear-to-r from-gray-600 to-gray-500 hover:from-gray-700 hover:to-gray-600',
         };
     }
   };
