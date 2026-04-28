@@ -57,7 +57,7 @@ const DeleteEventModal = ({ isOpen, onClose, onConfirm }: DeleteEventModalProps)
         <div className="relative p-6">
           <div className="mb-5 flex justify-between items-center">
             <div className="flex items-center">
-              <div className="mr-3 flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-red-100">
+              <div className="mr-3 flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-red-100">
                 <AlertTriangle className="h-5 w-5 text-red-600" />
               </div>
               <h3 className="text-lg font-medium text-gray-900">Delete Event</h3>

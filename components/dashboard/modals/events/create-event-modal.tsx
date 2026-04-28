@@ -6,6 +6,7 @@ import { CreateEventData } from '@/types/interfaces/event';
 import { CreateEventModalProps } from '@/types/interfaces/modal';
 import { X, Calendar, Save, Loader, Upload } from 'lucide-react';
 import Image from 'next/image';
+import { JEETIX_BASE_URL } from '@/utils/url';
 
 const CreateEventModal = ({ isOpen, onClose, onSave }: CreateEventModalProps) => {
   const [registrationRequired, setRegistrationRequired] = useState(false);
@@ -66,7 +67,7 @@ const CreateEventModal = ({ isOpen, onClose, onSave }: CreateEventModalProps) =>
     formData.append('folder', 'events');
 
     const { data } = await axios.post(
-      'https://jeetix-file-service.onrender.com/api/storage/upload',
+      `${JEETIX_BASE_URL}/api/storage/upload`,
       formData
     );
     return data.data.fileUrl;
@@ -149,7 +150,7 @@ const CreateEventModal = ({ isOpen, onClose, onSave }: CreateEventModalProps) =>
               {/*==================== Modal Header ====================*/}
               <div className="mb-5 flex justify-between items-center">
                 <div className="flex items-center">
-                  <div className="mr-3 flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-blue-100">
+                  <div className="mr-3 flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-blue-100">
                     <Calendar className="h-5 w-5 text-blue-500" />
                   </div>
                   <h3 className="text-lg font-medium flex items-center">

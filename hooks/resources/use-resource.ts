@@ -3,7 +3,7 @@ import { useState, useCallback } from 'react';
 import useSWR, { mutate } from 'swr';
 import axios, { AxiosError } from 'axios';
 import { toast } from 'sonner';
-import { BASE_URL } from '@/utils/url';
+import { BASE_URL, JEETIX_BASE_URL } from '@/utils/url';
 import { getErrorMessage } from '@/utils/error';
 import { CustomError, ErrorResponseData } from '@/types';
 import { Resource, ResourcesResponse, SingleResourceResponse } from '@/types/interfaces/resource';
@@ -191,7 +191,7 @@ export const useResourceDownload = (token: string, role: string) => {
     if (!fileName) throw new Error('Invalid file URL');
 
     const response = await axios.get(
-      `https://jeetix-file-service.onrender.com/api/storage/file/itca-resources/${fileName}`
+      `${JEETIX_BASE_URL}/api/storage/file/itca-resources/${fileName}`
     );
 
     if (response.data.status === 'success' && response.data.data.metadata?.mediaLink) {

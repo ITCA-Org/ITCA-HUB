@@ -1,7 +1,7 @@
 import { toast } from 'sonner';
 import { useState } from 'react';
 import useSWR, { mutate } from 'swr';
-import { BASE_URL } from '@/utils/url';
+import { BASE_URL, JEETIX_BASE_URL } from '@/utils/url';
 import axios, { AxiosError } from 'axios';
 import { backendFetcher } from '@/lib/fetcher';
 import { getErrorMessage } from '@/utils/error';
@@ -150,7 +150,7 @@ const useProfile = (token: string) => {
       formData.append('folder', 'itca-profiles');
 
       const { data } = await axios.post(
-        'https://jeetix-file-service.onrender.com/api/storage/upload',
+        `${JEETIX_BASE_URL}/api/storage/upload`,
         formData
       );
 

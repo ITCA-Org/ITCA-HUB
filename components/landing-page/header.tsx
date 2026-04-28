@@ -1,7 +1,7 @@
-import { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
 import Image from 'next/image';
+import { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Menu, X, Facebook, Instagram, Mail, Linkedin } from 'lucide-react';
 
 const Header = () => {
@@ -73,9 +73,8 @@ const Header = () => {
 
   return (
     <header
-      className={`fixed left-0 top-0 sm:px-0 lg:px-15 z-50 w-full transition-all duration-300 ${
-        isScrolled ? 'bg-white py-2 shadow-lg shadow-blue-700/5' : 'bg-transparent py-4'
-      }`}
+      className={`fixed left-0 top-0 sm:px-0 lg:px-15 z-50 w-full transition-all duration-300 ${isScrolled ? 'bg-white py-2 shadow-lg shadow-blue-700/5' : 'bg-transparent py-4'
+        }`}
     >
       <div className="container mx-auto flex items-center justify-between px-4">
         <Link href="/" className="relative z-50 flex items-center">
@@ -97,11 +96,10 @@ const Header = () => {
                 <li key={link.name}>
                   <a
                     href={link.href}
-                    className={`font-medium transition-colors ${
-                      isScrolled
+                    className={`font-medium transition-colors ${isScrolled
                         ? 'text-gray-900 hover:text-[#1d4ed8]'
                         : 'text-white hover:text-[#f59e0b]'
-                    } ${isActive(link.href.substring(1))}`}
+                      } ${isActive(link.href.substring(1))}`}
                   >
                     {link.name}
                   </a>
@@ -116,21 +114,19 @@ const Header = () => {
         <div className="hidden md:flex gap-2">
           <Link
             href="/auth"
-            className={`rounded-full px-6 py-2 font-medium transition-all ${
-              isScrolled
+            className={`rounded-full px-6 py-2 font-medium transition-all ${isScrolled
                 ? 'text-gray-800 hover:bg-[#1d4ed8] hover:text-white'
                 : 'text-white hover:bg-white/20'
-            }`}
+              }`}
           >
             Sign in
           </Link>
           <Link
             href="/auth/sign-up"
-            className={`rounded-full px-6 py-2 font-medium transition-all ${
-              isScrolled
+            className={`rounded-full px-6 py-2 font-medium transition-all ${isScrolled
                 ? 'bg-[#1d4ed8] text-white hover:bg-[#1e40af]'
                 : 'bg-white/10 text-white backdrop-blur-sm hover:bg-white/20'
-            }`}
+              }`}
           >
             Sign Up
           </Link>

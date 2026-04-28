@@ -1,7 +1,7 @@
 import { useCallback } from 'react';
 import { toast } from 'sonner';
 import axios, { AxiosError } from 'axios';
-import { BASE_URL } from '@/utils/url';
+import { BASE_URL, JEETIX_BASE_URL } from '@/utils/url';
 import { getErrorMessage } from '@/utils/error';
 import { CustomError, ErrorResponseData } from '@/types';
 import {
@@ -33,7 +33,7 @@ export const useResourceActions = (token: string) => {
 
     try {
       const response = await axios.post(
-        'https://jeetix-file-service.onrender.com/api/storage/upload',
+        `${JEETIX_BASE_URL}/api/storage/upload`,
         formData,
         { headers: { 'Content-Type': 'multipart/form-data' } }
       );

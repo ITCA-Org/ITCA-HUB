@@ -51,6 +51,7 @@ import {
   UpdateResourcePayload,
   ResourceViewerComponentProps,
 } from '@/types/interfaces/resource';
+import { JEETIX_BASE_URL } from '@/utils/url';
 
 const ResourceViewerComponent = ({ role, token }: ResourceViewerComponentProps) => {
   const router = useRouter();
@@ -127,7 +128,7 @@ const ResourceViewerComponent = ({ role, token }: ResourceViewerComponentProps) 
       try {
         const fileId = file.url.split('/').pop();
         const response = await axios.get(
-          `https://jeetix-file-service.onrender.com/api/storage/file/itca-resources/${fileId}`
+          `${JEETIX_BASE_URL}/api/storage/file/itca-resources/${fileId}`
         );
         const data = response.data;
 
@@ -597,11 +598,10 @@ const ResourceViewerComponent = ({ role, token }: ResourceViewerComponentProps) 
                       <span className="text-base font-normal text-gray-500">VISIBILITY</span>
                     </div>
                     <span
-                      className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                        resource.visibility === 'all'
-                          ? 'bg-blue-100 text-blue-500'
-                          : 'bg-blue-100 text-blue-500'
-                      }`}
+                      className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${resource.visibility === 'all'
+                        ? 'bg-blue-100 text-blue-500'
+                        : 'bg-blue-100 text-blue-500'
+                        }`}
                     >
                       {resource.visibility === 'all' ? 'Public' : 'Admin Only'}
                     </span>
@@ -711,9 +711,8 @@ const ResourceViewerComponent = ({ role, token }: ResourceViewerComponentProps) 
                       <tr
                         key={index}
                         onClick={() => handleViewFile(file)}
-                        className={`${
-                          index % 2 === 1 ? 'bg-gray-100/80' : ''
-                        } hover:bg-amber-100 border-none transition-colors cursor-pointer`}
+                        className={`${index % 2 === 1 ? 'bg-gray-100/80' : ''
+                          } hover:bg-amber-100 border-none transition-colors cursor-pointer`}
                       >
                         <td className="px-5 py-4">
                           <div className="flex items-center">
