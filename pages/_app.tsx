@@ -11,8 +11,8 @@ export default function App({ Component, pageProps }: AppProps) {
         dedupingInterval: 5000,
       }}
     >
-      <Component {...pageProps} />
       <Toaster position="top-right" richColors />
+      <Component {...pageProps} />
     </SWRConfig>
   );
 }

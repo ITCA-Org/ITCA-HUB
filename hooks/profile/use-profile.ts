@@ -1,16 +1,16 @@
 import { toast } from 'sonner';
 import { useState } from 'react';
-import useSWR, { mutate } from 'swr';
-import { BASE_URL, JEETIX_BASE_URL } from '@/utils/url';
-import axios, { AxiosError } from 'axios';
-import { backendFetcher } from '@/lib/fetcher';
-import { getErrorMessage } from '@/utils/error';
-import { CustomError, ErrorResponseData } from '@/types';
 import {
   UserProfile,
   UpdateProfilePayload,
   ChangePasswordPayload,
 } from '@/types/interfaces/profile';
+import useSWR, { mutate } from 'swr';
+import axios, { AxiosError } from 'axios';
+import { backendFetcher } from '@/lib/fetcher';
+import { getErrorMessage } from '@/utils/error';
+import { BASE_URL, JEETIX_BASE_URL } from '@/utils/url';
+import { CustomError, ErrorResponseData } from '@/types';
 
 const PROFILE_KEY = '/users/profile';
 
