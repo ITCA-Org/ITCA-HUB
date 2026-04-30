@@ -55,6 +55,7 @@ const HomePage = () => {
           name="google-site-verification"
           content="cYtk4C3rxSxsbweqGDktZcyXjEQLFbmShStbGJPmq44"
         />
+        <meta name="google-site-verification" content="k0obazZNyKMyMIfrggSiYkEXUuIKzMUv5e3xLHwttDE" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/images/logo.jpg" />
         <Link rel="preconnect" href="https://fonts.googleapis.com" />
