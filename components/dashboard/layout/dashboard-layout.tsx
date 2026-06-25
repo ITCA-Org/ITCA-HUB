@@ -14,6 +14,7 @@ const DashboardLayout = ({ children, title = 'Dashboard', token }: DashboardLayo
         <title>{`ITCA Hub | ${title}`}</title>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/images/logo.jpg" />
+        <meta name="robots" content="noindex, nofollow" />
       </Head>
 
       <div className="flex h-screen overflow-hidden bg-amber-50 relative">

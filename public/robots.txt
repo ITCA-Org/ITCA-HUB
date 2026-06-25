@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /$
+Disallow: /auth
+Disallow: /admin
+Disallow: /student
+Disallow: /api
+
+Sitemap: https://itcahub.com/sitemap.xml
