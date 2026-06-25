@@ -24,6 +24,7 @@ const AuthLayout: React.FC<AuthLayoutProps> = ({
         <title>{`ITCA Hub | ${title}`}</title>
         <link rel="icon" href="/images/logo.jpg" />
         <meta name="description" content={description} />
+        <meta name="robots" content="noindex, nofollow" />
       </Head>
 
       <div className="flex flex-col md:flex-row md:min-h-screen">

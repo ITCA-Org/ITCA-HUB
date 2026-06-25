@@ -6,7 +6,7 @@ import { BASE_URL } from '@/utils/url';
 import { useState, useEffect } from 'react';
 import { Calendar, Clock, MapPin, Users, ArrowRight, ChevronRight, EyeIcon, X } from 'lucide-react';
 
-type Event = {
+export type Event = {
   _id: string;
   title: string;
   description: string;
@@ -260,13 +260,16 @@ const EventCard = ({
   );
 };
 
-const EventsSection = () => {
-  const [events, setEvents] = useState<Event[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+const EventsSection = ({ initialEvents }: { initialEvents?: Event[] }) => {
+  const hasInitialData = initialEvents !== undefined;
+  const [events, setEvents] = useState<Event[]>(initialEvents ?? []);
+  const [isLoading, setIsLoading] = useState(!hasInitialData);
   const [error, setError] = useState<string | null>(null);
   const [viewingEvent, setViewingEvent] = useState<Event | null>(null);
 
   useEffect(() => {
+    if (hasInitialData) return;
+
     const fetchEvents = async () => {
       try {
         setIsLoading(true);
@@ -287,7 +290,7 @@ const EventsSection = () => {
     };
 
     fetchEvents();
-  }, []);
+  }, [hasInitialData]);
 
   useEffect(() => {
     if (viewingEvent) {
