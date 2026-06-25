@@ -1,7 +1,7 @@
 import { CustomError, ErrorResponseData } from "@/types";
 import { AxiosError } from "axios";
 
-
+//Testing the error handling function with different error types
 export const getErrorMessage = (err: AxiosError<ErrorResponseData> | CustomError | Error) => {
   const response = (err as AxiosError<ErrorResponseData>).response;
   
