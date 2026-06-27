@@ -6,6 +6,7 @@ import {
   Calendar,
   User2Icon,
   HelpCircle,
+  Ticket,
   LayoutDashboardIcon,
 } from 'lucide-react';
 import Link from 'next/link';
@@ -37,6 +38,11 @@ const Sidebar = ({ open, setOpen }: DashboardSidebarProps) => {
       icon: <Calendar className="h-5 w-5" />,
     },
     {
+      name: 'Tickets',
+      href: '/admin/tickets',
+      icon: <Ticket className="h-5 w-5" />,
+    },
+    {
       name: 'Resources',
       href: '/admin/resources',
       icon: <FileText className="h-5 w-5" />,
@@ -63,6 +69,11 @@ const Sidebar = ({ open, setOpen }: DashboardSidebarProps) => {
       name: 'Events',
       href: '/student/events',
       icon: <Calendar className="h-5 w-5" />,
+    },
+    {
+      name: 'Tickets',
+      href: '/student/tickets',
+      icon: <Ticket className="h-5 w-5" />,
     },
     {
       name: 'Profile',

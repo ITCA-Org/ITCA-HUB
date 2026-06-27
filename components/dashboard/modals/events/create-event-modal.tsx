@@ -10,6 +10,7 @@ import { JEETIX_BASE_URL } from '@/utils/url';
 
 const CreateEventModal = ({ isOpen, onClose, onSave }: CreateEventModalProps) => {
   const [registrationRequired, setRegistrationRequired] = useState(false);
+  const [requiresTicket, setRequiresTicket] = useState(false);
   const [isUploadingImage, setIsUploadingImage] = useState(false);
   const [imagePreview, setImagePreview] = useState<string>('');
   const [image, setImage] = useState<File | null>(null);
@@ -34,6 +35,7 @@ const CreateEventModal = ({ isOpen, onClose, onSave }: CreateEventModalProps) =>
     setCapacity(50);
     setDescription('');
     setImagePreview('');
+    setRequiresTicket(false);
     setRegistrationRequired(false);
   };
 
@@ -92,6 +94,7 @@ const CreateEventModal = ({ isOpen, onClose, onSave }: CreateEventModalProps) =>
         title,
         location,
         capacity,
+        requiresTicket,
         imageUrl,
         description,
         time: eventTime,
@@ -325,7 +328,7 @@ const CreateEventModal = ({ isOpen, onClose, onSave }: CreateEventModalProps) =>
                 {/*==================== End of Location ====================*/}
 
                 {/*==================== Capacity and Registration Container ====================*/}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
                   {/*==================== Capacity ====================*/}
                   <div>
                     <label
@@ -360,6 +363,22 @@ const CreateEventModal = ({ isOpen, onClose, onSave }: CreateEventModalProps) =>
                     </label>
                   </div>
                   {/*==================== End of Registration Required Checkbox ====================*/}
+
+                  {/*==================== Requires Ticket Checkbox ====================*/}
+                  <div className="flex items-center justify-center">
+                    <label className="flex items-center space-x-2 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={requiresTicket}
+                        onChange={(e) => setRequiresTicket(e.target.checked)}
+                        className="rounded border-gray-300 text-blue-500 focus:ring-blue-500"
+                      />
+                      <span className="text-sm font-semibold text-gray-700">
+                        Requires Ticket
+                      </span>
+                    </label>
+                  </div>
+                  {/*==================== End of Requires Ticket Checkbox ====================*/}
                 </div>
                 {/*==================== End of Capacity and Registration Container ====================*/}
 

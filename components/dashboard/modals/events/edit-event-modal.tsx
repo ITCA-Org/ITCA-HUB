@@ -10,6 +10,7 @@ import { JEETIX_BASE_URL } from '@/utils/url';
 
 const EditEventModal = ({ isOpen, event, onClose, onSave }: EditEventModalProps) => {
   const [registrationRequired, setRegistrationRequired] = useState(false);
+  const [requiresTicket, setRequiresTicket] = useState(false);
   const [currentImageUrl, setCurrentImageUrl] = useState<string>('');
   const [isUploadingImage, setIsUploadingImage] = useState(false);
   const [imagePreview, setImagePreview] = useState<string>('');
@@ -55,6 +56,7 @@ const EditEventModal = ({ isOpen, event, onClose, onSave }: EditEventModalProps)
 
       setLocation(event.location);
       setCapacity(event.capacity);
+      setRequiresTicket(event.requiresTicket);
       setRegistrationRequired(event.registrationRequired);
       setCurrentImageUrl(event.imageUrl || '');
       setImagePreview('');
@@ -73,6 +75,7 @@ const EditEventModal = ({ isOpen, event, onClose, onSave }: EditEventModalProps)
     setCapacity(50);
     setDescription('');
     setImagePreview('');
+    setRequiresTicket(false);
     setCurrentImageUrl('');
     setRegistrationRequired(false);
   };
@@ -140,6 +143,7 @@ const EditEventModal = ({ isOpen, event, onClose, onSave }: EditEventModalProps)
         description,
         time: eventTime,
         date: eventDate,
+        requiresTicket,
         registrationRequired,
         ...(toDate && { toDate: new Date(toDate).toISOString() }),
         ...(toTime && { toTime: new Date(`${toDate || date}T${toTime}:00.000Z`).toISOString() }),
@@ -368,7 +372,7 @@ const EditEventModal = ({ isOpen, event, onClose, onSave }: EditEventModalProps)
                 {/*==================== End of Location ====================*/}
 
                 {/*==================== Capacity and Registration Container ====================*/}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
                   {/*==================== Capacity ====================*/}
                   <div>
                     <label
@@ -403,6 +407,22 @@ const EditEventModal = ({ isOpen, event, onClose, onSave }: EditEventModalProps)
                     </label>
                   </div>
                   {/*==================== End of Registration Required Checkbox ====================*/}
+
+                  {/*==================== Requires Ticket Checkbox ====================*/}
+                  <div className="flex items-center justify-center">
+                    <label className="flex items-center space-x-2 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={requiresTicket}
+                        onChange={(e) => setRequiresTicket(e.target.checked)}
+                        className="rounded border-gray-300 text-blue-500 focus:ring-blue-500"
+                      />
+                      <span className="text-sm font-semibold text-gray-700">
+                        Requires Ticket
+                      </span>
+                    </label>
+                  </div>
+                  {/*==================== End of Requires Ticket Checkbox ====================*/}
                 </div>
                 {/*==================== End of Capacity and Registration Container ====================*/}
 

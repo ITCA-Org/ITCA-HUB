@@ -20,6 +20,7 @@
     "cookie": "^1.0.2",
     "formidable": "^3.5.4",
     "framer-motion": "^12.5.0",
+    "html5-qrcode": "^2.3.8",
     "init": "^0.1.2",
     "jszip": "^3.10.1",
     "lucide-react": "^0.482.0",
