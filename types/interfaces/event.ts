@@ -8,6 +8,7 @@ export interface CreateEventData {
   capacity: number;
   imageUrl?: string;
   description: string;
+  requiresTicket: boolean;
   registrationRequired: boolean;
 }
 
@@ -27,6 +28,7 @@ export interface EventProps {
   location: string;
   capacity: number;
   imageUrl?: string;
+  requiresTicket: boolean;
   description: string;
   registrationRequired: boolean;
   status: 'upcoming' | 'ongoing' | 'completed';
@@ -62,7 +64,6 @@ export interface EventCardProps {
   onRegister?: (eventId: string) => Promise<void>;
   onUnregister?: (eventId: string) => Promise<void>;
 }
-
 
 export interface ViewEventModalProps {
   isOpen: boolean;
