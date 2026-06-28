@@ -35,23 +35,27 @@ const CreateTicketForm = ({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const hasTicketedEvents = Boolean(eventId) || ticketedEvents.length > 0;
 
+    
   useEffect(() => {
     if (eventId) {
-      setFormData((current) => ({ ...current, eventId }));
-      return;
+      setFormData((prev) => ({ ...prev, eventId }));
     }
+  }, [eventId]);
 
-    setFormData((current) => {
-      const selectedEventExists = ticketedEvents.some((event) => event._id === current.eventId);
+  useEffect(() => {
+    setFormData((prev) => {
+      if (!prev.eventId) return prev;
 
-      if (selectedEventExists) return current;
+      const exists = ticketedEvents.some((e) => e._id === prev.eventId);
+      if (exists) return prev;
 
       return {
-        ...current,
-        eventId: ticketedEvents[0]?._id ?? '',
+        ...prev,
+        eventId: ticketedEvents[0]?._id || '',
       };
     });
-  }, [eventId, ticketedEvents]);
+  }, [ticketedEvents]);
+
 
   const validate = () => {
     const nextErrors: Partial<Record<keyof CreateTicketData, string>> = {};
@@ -109,7 +113,7 @@ const CreateTicketForm = ({
             <option value={eventId}>Selected event</option>
           ) : isLoadingEvents ? (
             <option value="">Loading ticketed events...</option>
-          ) : ticketedEvents.length === 0 ? (
+          ) : !hasTicketedEvents ? (
             <option value="">No events require ticketing</option>
           ) : (
             <>

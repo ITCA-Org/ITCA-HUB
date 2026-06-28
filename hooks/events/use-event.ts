@@ -15,6 +15,7 @@ export interface UseEventsOptions {
   limit?: number;
   status?: string;
   search?: string;
+  requiresTicket?: boolean;
 }
 
 interface EventsResponse {
@@ -29,7 +30,8 @@ async function fetchEvents(
   page: number,
   limit: number,
   status?: string,
-  search?: string
+  search?: string,
+  requiresTicket?: boolean
 ): Promise<EventsResponse> {
   const params: Record<string, string | number> = {
     page: page + 1,
@@ -42,6 +44,10 @@ async function fetchEvents(
 
   if (search?.trim()) {
     params.search = search.trim();
+  }
+
+  if (requiresTicket !== undefined) {
+    params.requiresTicket = requiresTicket ? 'true' : 'false';
   }
 
   const { data } = await axios.get(`${BASE_URL}/events`, {
@@ -57,11 +63,16 @@ async function fetchEvents(
 }
 
 const useEvents = (options: UseEventsOptions) => {
-  const { token, page = 0, limit = 9, status, search } = options;
+  const { token, page = 0, limit = 9, status, search, requiresTicket } = options;
 
-  const { data, error, isLoading, mutate: boundMutate } = useSWR(
-    token ? ['/events', page, limit, status, search] : null,
-    () => fetchEvents('/events', token, page, limit, status, search),
+  const {
+    data,
+    error,
+    isLoading,
+    mutate: boundMutate,
+  } = useSWR(
+    token ? ['/events', page, limit, status, search, requiresTicket] : null,
+    () => fetchEvents('/events', token, page, limit, status, search, requiresTicket),
     {
       dedupingInterval: 5000,
       revalidateOnFocus: false,
@@ -86,19 +97,19 @@ const useEvents = (options: UseEventsOptions) => {
 
 export const useEventActions = (token: string) => {
   const invalidateEventsCache = useCallback(() => {
-    mutate(
-      (key) => Array.isArray(key) && key[0] === '/events',
-      undefined,
-      { revalidate: true }
-    );
+    mutate((key) => Array.isArray(key) && key[0] === '/events', undefined, { revalidate: true });
   }, []);
 
   const createEvent = useCallback(
     async (eventData: CreateEventData) => {
       if (!token) throw new Error('Not authenticated');
 
+      const normalizedData = {
+        ...eventData,
+        requiresTicket: Boolean(eventData.requiresTicket),
+      };
       try {
-        const { data } = await axios.post(`${BASE_URL}/events`, eventData, {
+        const { data } = await axios.post(`${BASE_URL}/events`, normalizedData, {
           headers: { Authorization: `Bearer ${token}` },
         });
 
@@ -122,8 +133,12 @@ export const useEventActions = (token: string) => {
     async (eventId: string, eventData: Partial<CreateEventData>) => {
       if (!token) throw new Error('Not authenticated');
 
+      const normalizedData = {
+        ...eventData,
+        requiresTicket: Boolean(eventData.requiresTicket),
+      };
       try {
-        const { data } = await axios.put(`${BASE_URL}/events/${eventId}`, eventData, {
+        const { data } = await axios.put(`${BASE_URL}/events/${eventId}`, normalizedData, {
           headers: { Authorization: `Bearer ${token}` },
         });
 
