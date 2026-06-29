@@ -1,3 +1,12 @@
+export interface TicketTier {
+  type: 'standard' | 'premium';
+  enabled: boolean;
+  label: string;
+  price: number;
+  benefits?: string;
+  quantityLimit?: number | null;
+}
+
 export interface CreateEventData {
   date: string;
   time: string;
@@ -8,11 +17,12 @@ export interface CreateEventData {
   capacity: number;
   imageUrl?: string;
   description: string;
-  registrationRequired: boolean;
+  ticketingEnabled: boolean;
+  ticketTiers?: TicketTier[];
 }
 
 export interface EventsComponentProps {
-  role: 'admin' | 'student';
+  role: 'admin';
   token: string;
   userId: string;
 }
@@ -28,14 +38,9 @@ export interface EventProps {
   capacity: number;
   imageUrl?: string;
   description: string;
-  registrationRequired: boolean;
+  ticketingEnabled: boolean;
+  ticketTiers?: TicketTier[];
   status: 'upcoming' | 'ongoing' | 'completed';
-  attendees: Array<{
-    _id: string;
-    firstName: string;
-    lastName: string;
-    schoolEmail: string;
-  }>;
   createdBy: {
     _id: string;
     firstName: string;
@@ -55,19 +60,21 @@ export interface EventProps {
 export interface EventCardProps {
   event: EventProps;
   currentUserId?: string;
-  role: 'admin' | 'student';
+  role: 'admin';
   onEdit?: (eventId: string) => void;
   onDelete?: (eventId: string) => void;
   onView?: (eventId: string) => void;
-  onRegister?: (eventId: string) => Promise<void>;
-  onUnregister?: (eventId: string) => Promise<void>;
 }
-
 
 export interface ViewEventModalProps {
   isOpen: boolean;
   eventId: string;
   onClose: () => void;
-  role?: 'admin' | 'student';
+  role?: 'admin';
   token: string;
 }
+
+export const DEFAULT_TICKET_TIERS: TicketTier[] = [
+  { type: 'standard', enabled: false, label: 'Standard', price: 0 },
+  { type: 'premium', enabled: false, label: 'Premium', price: 0, benefits: '' },
+];

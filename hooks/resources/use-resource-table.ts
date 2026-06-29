@@ -93,7 +93,7 @@ const useResourceTable = ({
       const viewPath =
         userRole === 'admin'
           ? `/admin/resources/${resource._id}`
-          : `/student/resources/${resource._id}`;
+          : `/admin/resources/${resource._id}`;
       router.push(viewPath);
     },
     [router, clearSelection, userRole]

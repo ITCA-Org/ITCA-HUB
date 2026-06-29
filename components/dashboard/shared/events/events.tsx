@@ -37,8 +37,7 @@ const EventsComponent = ({ role, token, userId }: EventsComponentProps) => {
     search: debouncedSearch,
   });
 
-  const { createEvent, updateEvent, deleteEvent, registerForEvent, unregisterFromEvent } =
-    useEventActions(token);
+  const { createEvent, updateEvent, deleteEvent } = useEventActions(token);
 
   const hasActiveFilters = status !== 'all' || searchTerm.trim() !== '';
   const startIndex = page * LIMIT;
@@ -67,20 +66,6 @@ const EventsComponent = ({ role, token, userId }: EventsComponentProps) => {
       await deleteEvent(eventToDelete);
       setShowDeleteModal(false);
       setEventToDelete(null);
-    } catch {
-    }
-  };
-
-  const handleRegister = async (eventId: string) => {
-    try {
-      await registerForEvent(eventId);
-    } catch {
-    }
-  };
-
-  const handleUnregister = async (eventId: string) => {
-    try {
-      await unregisterFromEvent(eventId);
     } catch {
     }
   };
@@ -313,9 +298,7 @@ const EventsComponent = ({ role, token, userId }: EventsComponentProps) => {
                   key={event._id}
                   onEdit={handleEditClick}
                   onView={handleViewClick}
-                  onRegister={handleRegister}
                   onDelete={handleDeleteClick}
-                  onUnregister={handleUnregister}
                   currentUserId={userId ?? undefined}
                 />
               ))}

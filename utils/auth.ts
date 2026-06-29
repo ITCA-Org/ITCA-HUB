@@ -1,6 +1,6 @@
 import { UserAuth } from '@/types';
 import { parse } from 'cookie';
-import { NextApiRequest } from 'next';
+import { GetServerSidePropsContext, NextApiRequest } from 'next';
 
 export const isLoggedIn = (req: NextApiRequest): boolean | UserAuth => {
   if (!req || !req.headers || !req.headers.cookie) {
@@ -13,3 +13,35 @@ export const isLoggedIn = (req: NextApiRequest): boolean | UserAuth => {
 
   return false;
 };
+
+export const requireAdminAuth = (req: NextApiRequest) => {
+  const userData = isLoggedIn(req);
+
+  if (userData === false) {
+    return {
+      redirect: {
+        destination: '/auth',
+        permanent: false,
+      },
+    };
+  }
+
+  const userAuth = userData as UserAuth;
+
+  if (userAuth.role !== 'admin') {
+    return {
+      redirect: {
+        destination: '/auth',
+        permanent: false,
+      },
+    };
+  }
+
+  return {
+    props: {
+      userData: userAuth,
+    },
+  };
+};
+
+export type AdminAuthContext = GetServerSidePropsContext & { req: NextApiRequest };

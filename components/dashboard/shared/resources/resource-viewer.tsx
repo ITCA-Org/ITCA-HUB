@@ -576,18 +576,6 @@ const ResourceViewerComponent = ({ role, token }: ResourceViewerComponentProps) 
                 </p>
               </div>
 
-              {role === 'student' && (
-                <div>
-                  <div className="flex items-center mb-2">
-                    <div className="bg-blue-100/70 p-2 rounded-full mr-2">
-                      <Tag className="h-4 w-4 text-blue-500" />
-                    </div>
-                    <span className="text-base font-normal text-gray-500">CATEGORY</span>
-                  </div>
-                  <p className="text-gray-500 font-normal">{formatCategory(resource.category)}</p>
-                </div>
-              )}
-
               {role === 'admin' && (
                 <>
                   <div>

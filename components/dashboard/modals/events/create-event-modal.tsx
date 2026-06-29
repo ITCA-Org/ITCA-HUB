@@ -2,14 +2,16 @@ import axios from 'axios';
 import { toast } from 'sonner';
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { CreateEventData } from '@/types/interfaces/event';
+import { CreateEventData, DEFAULT_TICKET_TIERS } from '@/types/interfaces/event';
 import { CreateEventModalProps } from '@/types/interfaces/modal';
+import TicketingConfig from '@/components/dashboard/shared/events/ticketing-config';
 import { X, Calendar, Save, Loader, Upload } from 'lucide-react';
 import Image from 'next/image';
 import { JEETIX_BASE_URL } from '@/utils/url';
 
 const CreateEventModal = ({ isOpen, onClose, onSave }: CreateEventModalProps) => {
-  const [registrationRequired, setRegistrationRequired] = useState(false);
+  const [ticketingEnabled, setTicketingEnabled] = useState(false);
+  const [ticketTiers, setTicketTiers] = useState(DEFAULT_TICKET_TIERS);
   const [isUploadingImage, setIsUploadingImage] = useState(false);
   const [imagePreview, setImagePreview] = useState<string>('');
   const [image, setImage] = useState<File | null>(null);
@@ -34,7 +36,8 @@ const CreateEventModal = ({ isOpen, onClose, onSave }: CreateEventModalProps) =>
     setCapacity(50);
     setDescription('');
     setImagePreview('');
-    setRegistrationRequired(false);
+    setTicketingEnabled(false);
+    setTicketTiers(DEFAULT_TICKET_TIERS);
   };
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -96,7 +99,8 @@ const CreateEventModal = ({ isOpen, onClose, onSave }: CreateEventModalProps) =>
         description,
         time: eventTime,
         date: eventDate,
-        registrationRequired,
+        ticketingEnabled,
+        ticketTiers: ticketingEnabled ? ticketTiers : DEFAULT_TICKET_TIERS,
         ...(toDate && { toDate: new Date(toDate).toISOString() }),
         ...(toTime && { toTime: new Date(`${toDate || date}T${toTime}:00.000Z`).toISOString() }),
       };
@@ -324,44 +328,30 @@ const CreateEventModal = ({ isOpen, onClose, onSave }: CreateEventModalProps) =>
                 </div>
                 {/*==================== End of Location ====================*/}
 
-                {/*==================== Capacity and Registration Container ====================*/}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
-                  {/*==================== Capacity ====================*/}
-                  <div>
-                    <label
-                      htmlFor="capacity"
-                      className="block text-sm font-semibold text-gray-700 mb-1"
-                    >
-                      Capacity
-                    </label>
-                    <input
-                      min="1"
-                      type="number"
-                      id="capacity"
-                      value={capacity}
-                      onChange={(e) => setCapacity(parseInt(e.target.value) || 50)}
-                      className="w-full rounded-lg border border-gray-200 p-2.5 text-sm text-gray-700 focus:border-blue-500 focus:outline-none focus:ring-blue-500"
-                    />
-                  </div>
-                  {/*==================== End of Capacity ====================*/}
-
-                  {/*==================== Registration Required Checkbox ====================*/}
-                  <div className="flex items-center justify-center">
-                    <label className="flex items-center space-x-2 cursor-pointer">
-                      <input
-                        type="checkbox"
-                        checked={registrationRequired}
-                        onChange={(e) => setRegistrationRequired(e.target.checked)}
-                        className="rounded border-gray-300 text-blue-500 focus:ring-blue-500"
-                      />
-                      <span className="text-sm font-semibold text-gray-700">
-                        Registration Required
-                      </span>
-                    </label>
-                  </div>
-                  {/*==================== End of Registration Required Checkbox ====================*/}
+                {/*==================== Capacity ====================*/}
+                <div className="mb-8">
+                  <label
+                    htmlFor="capacity"
+                    className="block text-sm font-semibold text-gray-700 mb-1"
+                  >
+                    Capacity
+                  </label>
+                  <input
+                    min="1"
+                    type="number"
+                    id="capacity"
+                    value={capacity}
+                    onChange={(e) => setCapacity(parseInt(e.target.value) || 50)}
+                    className="w-full rounded-lg border border-gray-200 p-2.5 text-sm text-gray-700 focus:border-blue-500 focus:outline-none focus:ring-blue-500"
+                  />
                 </div>
-                {/*==================== End of Capacity and Registration Container ====================*/}
+
+                <TicketingConfig
+                  ticketingEnabled={ticketingEnabled}
+                  setTicketingEnabled={setTicketingEnabled}
+                  ticketTiers={ticketTiers}
+                  setTicketTiers={setTicketTiers}
+                />
 
                 {/*==================== Image Upload ====================*/}
                 <div className="mb-4">

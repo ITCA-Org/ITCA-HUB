@@ -29,7 +29,7 @@ export interface ChangePasswordPayload {
 }
 
 export interface ProfileComponentProps {
-  role: 'admin' | 'student';
+  role: 'admin';
   token: string;
 }
 

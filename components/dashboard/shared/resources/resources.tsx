@@ -51,13 +51,12 @@ const ResourcesComponent = ({ role, token }: ResourcesComponentProps) => {
   const [downloadingResource, setDownloadingResource] = useState<Resource | null>(null);
 
   const debouncedSearch = useDebounce(filters.searchTerm, 500);
-  const userRole = role === 'admin' ? 'admin' : 'user';
+  const userRole = 'admin';
 
   const visibilityParam = useMemo(() => {
-    if (role === 'student') return undefined;
     if (filters.visibility === 'admin') return 'admin';
     return undefined;
-  }, [role, filters.visibility]);
+  }, [filters.visibility]);
 
   const { resources, total, totalPages, isLoading, isError, refresh } = useResources({
     token,
@@ -230,8 +229,6 @@ const ResourcesComponent = ({ role, token }: ResourcesComponentProps) => {
   };
 
   const getVisibilityIcon = (visibility: string) => {
-    if (userRole === 'user') return null;
-
     switch (visibility) {
       case 'all':
         return <Users className="h-4.5 w-4.5 text-blue-500 mr-1" />;
@@ -271,37 +268,25 @@ const ResourcesComponent = ({ role, token }: ResourcesComponentProps) => {
       { key: 'description', header: 'Description' },
       { key: 'department', header: 'Department' },
       { key: 'category', header: 'Category' },
+      { key: 'usage', header: 'Usage' },
+      { key: 'actions', header: 'Actions', className: 'w-32' },
     ];
 
-    if (userRole === 'admin') {
-      baseColumns.push({ key: 'usage', header: 'Usage' });
-    }
-
-    baseColumns.push({ key: 'actions', header: 'Actions', className: 'w-32' });
-
     return baseColumns;
-  }, [userRole]);
-
-  const handleStudentRowClick = (resource: Resource) => {
-    handleDoubleClick(resource);
-  };
+  }, []);
 
   const handleAdminRowDoubleClick = (resource: Resource) => {
     handleDoubleClick(resource);
   };
 
-  const selectionActions = useMemo(() => {
-    if (userRole !== 'admin') return null;
-
-    return (
-      <button
-        onClick={handleDeleteSelected}
-        className="inline-flex items-center rounded-lg bg-red-100 text-red-700 px-3 py-1.5 text-sm font-medium hover:bg-red-200 cursor-pointer"
-      >
-        Delete Selected
-      </button>
-    );
-  }, [userRole, handleDeleteSelected]);
+  const selectionActions = (
+    <button
+      onClick={handleDeleteSelected}
+      className="inline-flex items-center rounded-lg bg-red-100 text-red-700 px-3 py-1.5 text-sm font-medium hover:bg-red-200 cursor-pointer"
+    >
+      Delete Selected
+    </button>
+  );
 
   const renderResourceRow = (resource: Resource) => (
     <>
@@ -335,22 +320,19 @@ const ResourcesComponent = ({ role, token }: ResourcesComponentProps) => {
         </span>
       </td>
 
-      {userRole === 'admin' && (
-        <td className="whitespace-nowrap px-5 py-4 text-md text-gray-500">
-          <div className="flex items-center space-x-2">
-            <Download className="h-4 w-4 text-gray-400" />
-            <span>{resource.downloads}</span>
-            <span className="text-gray-300">|</span>
-            <Eye className="h-4 w-4 text-gray-400" />
-            <span>{resource.viewCount}</span>
-          </div>
-        </td>
-      )}
+      <td className="whitespace-nowrap px-5 py-4 text-md text-gray-500">
+        <div className="flex items-center space-x-2">
+          <Download className="h-4 w-4 text-gray-400" />
+          <span>{resource.downloads}</span>
+          <span className="text-gray-300">|</span>
+          <Eye className="h-4 w-4 text-gray-400" />
+          <span>{resource.viewCount}</span>
+        </div>
+      </td>
 
       <td className="whitespace-nowrap px-5 py-4 text-md font-medium">
         <div className="flex space-x-2" onClick={(e) => e.stopPropagation()}>
-          {userRole === 'admin' ? (
-            <>
+          <>
               <button
                 title="Edit Resource"
                 onClick={(e) => {
@@ -397,64 +379,44 @@ const ResourcesComponent = ({ role, token }: ResourcesComponentProps) => {
                 </button>
               )}
             </>
-          ) : (
-            <button
-              title="Download Resource"
-              onClick={(e) => handleDownload(resource, e)}
-              className="rounded-full p-1.5 text-gray-500 hover:bg-gray-100 hover:text-blue-500"
-            >
-              <Download className="h-4 w-4" />
-            </button>
-          )}
         </div>
       </td>
     </>
   );
 
   const pageConfig = {
-    admin: {
-      title: 'Resource',
-      subtitle: 'Management',
-      description: 'Upload, manage, and organize educational materials',
-      dashboardTitle: 'Resource Management',
-      actions: (
-        <div className="flex flex-col gap-4 w-full md:flex-row sm:mt-0 space-x-3">
-          <Link
-            href="/admin/resources/recycle-bin"
-            className="inline-flex items-center rounded-lg bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
-          >
-            <Trash2 className="mr-2 h-4 w-4" />
-            Recycle Bin
-          </Link>
-          <Link
-            href="/admin/resources/upload"
-            className="group inline-flex items-center rounded-lg bg-linear-to-r from-blue-700 to-blue-600 px-4 py-2 text-sm font-medium text-white hover:from-blue-800 hover:to-blue-700 focus:outline-none focus:ring-blue-500 focus:ring-offset-2 transition-all duration-300 shadow-md hover:shadow-lg"
-          >
-            <Upload className="mr-2 h-4 w-4 transition-transform group-hover:-translate-y-0.5" />
-            Upload Resource
-          </Link>
-        </div>
-      ),
-    },
-    student: {
-      title: 'Resource',
-      subtitle: 'Library',
-      description: 'Explore and access educational materials for your studies',
-      dashboardTitle: 'Resource Library',
-      actions: <div className="flex flex-col gap-4 w-full md:flex-row sm:mt-0 space-x-3"></div>,
-    },
+    title: 'Resource',
+    subtitle: 'Management',
+    description: 'Upload, manage, and organize educational materials',
+    dashboardTitle: 'Resource Management',
+    actions: (
+      <div className="flex flex-col gap-4 w-full md:flex-row sm:mt-0 space-x-3">
+        <Link
+          href="/admin/resources/recycle-bin"
+          className="inline-flex items-center rounded-lg bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+        >
+          <Trash2 className="mr-2 h-4 w-4" />
+          Recycle Bin
+        </Link>
+        <Link
+          href="/admin/resources/upload"
+          className="group inline-flex items-center rounded-lg bg-linear-to-r from-blue-700 to-blue-600 px-4 py-2 text-sm font-medium text-white hover:from-blue-800 hover:to-blue-700 focus:outline-none focus:ring-blue-500 focus:ring-offset-2 transition-all duration-300 shadow-md hover:shadow-lg"
+        >
+          <Upload className="mr-2 h-4 w-4 transition-transform group-hover:-translate-y-0.5" />
+          Upload Resource
+        </Link>
+      </div>
+    ),
   };
 
-  const config = pageConfig[role];
-
   return (
-    <DashboardLayout title={config.dashboardTitle} token={token}>
+    <DashboardLayout title={pageConfig.dashboardTitle} token={token}>
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
         <DashboardPageHeader
-          title={config.title}
-          actions={config.actions}
-          subtitle={config.subtitle}
-          description={config.description}
+          title={pageConfig.title}
+          actions={pageConfig.actions}
+          subtitle={pageConfig.subtitle}
+          description={pageConfig.description}
         />
       </div>
 
@@ -619,49 +581,42 @@ const ResourcesComponent = ({ role, token }: ResourcesComponentProps) => {
         hasActiveFilters={!!debouncedSearch || hasActiveFilters}
         onClearFilters={clearFilters}
         searchTerm={filters.searchTerm}
-        emptyDescription={
-          userRole === 'user'
-            ? "No resources exist. When the admin uploads resources, you'll see them here."
-            : 'Upload resources to the library by clicking the `Upload Resource` button.'
-        }
+        emptyDescription="Upload resources to the library by clicking the `Upload Resource` button."
         skeleton={<ResourceTableSkeleton />}
-        selectable={userRole === 'admin'}
+        selectable
         selectedItems={selectedResources}
-        onSelectItem={userRole === 'admin' ? toggleSelection : undefined}
+        onSelectItem={toggleSelection}
         onSelectAll={selectAll}
         selectedCount={selectedCount}
         onClearSelection={clearSelection}
         selectionActions={selectionActions}
-        onRowClick={userRole === 'user' ? handleStudentRowClick : undefined}
-        onRowDoubleClick={userRole === 'admin' ? handleAdminRowDoubleClick : undefined}
+        onRowDoubleClick={handleAdminRowDoubleClick}
       />
 
-      {userRole === 'admin' && (
-        <>
-          {showAnalytics && selectedResource && (
-            <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-900/50 backdrop-blur-sm">
-              <ResourceAnalytics
-                isOpen={showAnalytics}
-                resource={selectedResource}
-                onClose={() => setShowAnalytics(false)}
-                token={token}
-              />
-            </div>
-          )}
-
-          {showEditModal && selectedResource && (
-            <ResourceEditModal
-              isLoading={isEditing}
-              isOpen={showEditModal}
+      <>
+        {showAnalytics && selectedResource && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-900/50 backdrop-blur-sm">
+            <ResourceAnalytics
+              isOpen={showAnalytics}
               resource={selectedResource}
-              onSave={handleSaveResource}
-              onClose={() => setShowEditModal(false)}
+              onClose={() => setShowAnalytics(false)}
+              token={token}
             />
-          )}
-        </>
-      )}
+          </div>
+        )}
 
-      {userRole === 'admin' && showDeleteModal && (
+        {showEditModal && selectedResource && (
+          <ResourceEditModal
+            isLoading={isEditing}
+            isOpen={showEditModal}
+            resource={selectedResource}
+            onSave={handleSaveResource}
+            onClose={() => setShowEditModal(false)}
+          />
+        )}
+      </>
+
+      {showDeleteModal && (
         <DeleteResourceModal
           mode="soft"
           isLoading={isDeleting}

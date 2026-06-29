@@ -8,13 +8,10 @@ import {
   Video,
   Code,
   Download,
-  ChevronRight,
   Layers,
   Zap,
   BookMarked,
-  ArrowRight,
 } from 'lucide-react';
-import Link from 'next/link';
 
 const ResourcesSection = () => {
   const resourceCategories = [
@@ -142,13 +139,12 @@ const ResourcesSection = () => {
           </p>
         </motion.div>
 
-        <div className="grid lg:grid-cols-3 gap-8">
-          {/*==================== Left Column - Resources Categories ====================*/}
+        <div className="max-w-4xl mx-auto">
+          {/*==================== Resources Categories ====================*/}
           <motion.div
-            className="lg:col-span-2"
             viewport={{ once: true }}
-            initial={{ opacity: 0, x: -70 }}
-            whileInView={{ opacity: 1, x: 0 }}
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.1 }}
           >
             <div className="bg-transparent rounded-2xl p-8 h-full">
@@ -206,72 +202,7 @@ const ResourcesSection = () => {
               </div>
             </div>
           </motion.div>
-          {/*==================== End of Left Column - Resources Categories ====================*/}
-
-          {/*==================== Right Column - Login Card ====================*/}
-          <motion.div
-            viewport={{ once: true }}
-            initial={{ opacity: 0, x: 70 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.6, delay: 0.3 }}
-          >
-            <div className="bg-linear-to-br from-gray-900 to-gray-800 text-white rounded-2xl p-8 shadow-xl h-full flex flex-col">
-              <div className="flex-1">
-                <div className="inline-block p-3 bg-amber-500/20 rounded-xl mb-6">
-                  <Lock className="h-8 w-8 text-amber-500" />
-                </div>
-
-                <h3 className="text-2xl font-bold mb-3">Unlock Premium Resources</h3>
-
-                <p className="text-gray-300 mb-8">
-                  Sign in to your ITCA account to access our complete library of learning resources,
-                  downloadable materials, and exclusive content.
-                </p>
-
-                <div className="space-y-3 mb-8">
-                  <div className="flex items-center">
-                    <div className="mr-3 h-6 w-6 rounded-full bg-blue-700/20 flex items-center justify-center">
-                      <ChevronRight className="h-4 w-4 text-blue-500" />
-                    </div>
-                    <span className="text-gray-300">Access to all resources</span>
-                  </div>
-                  <div className="flex items-center">
-                    <div className="mr-3 h-6 w-6 rounded-full bg-blue-700/20 flex items-center justify-center">
-                      <ChevronRight className="h-4 w-4 text-blue-500" />
-                    </div>
-                    <span className="text-gray-300">Download materials for offline use</span>
-                  </div>
-                  <div className="flex items-center">
-                    <div className="mr-3 h-6 w-6 rounded-full bg-blue-700/20 flex items-center justify-center">
-                      <ChevronRight className="h-4 w-4 text-blue-500" />
-                    </div>
-                    <span className="text-gray-300">Track your learning progress</span>
-                  </div>
-                </div>
-              </div>
-
-              <Link
-                href={'/auth'}
-                className="group relative block w-full overflow-hidden rounded-lg bg-blue-700 px-6 py-3 text-center font-medium text-white transition-all hover:bg-blue-600"
-              >
-                <span className="relative z-10 flex items-center justify-center">
-                  Login to Access
-                  <ArrowRight className="ml-2 h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
-                </span>
-                <span className="absolute inset-0 -z-10 translate-y-full bg-amber-500 transition-transform duration-300 group-hover:translate-y-0"></span>
-              </Link>
-
-              <div className="mt-4 text-center">
-                <Link
-                  href="/auth/sign-up"
-                  className="text-sm text-amber-400 hover:text-amber-300 transition-colors"
-                >
-                  Not a member yet? Join ITCA today
-                </Link>
-              </div>
-            </div>
-          </motion.div>
-          {/*==================== End of Right Column - Login Card ====================*/}
+          {/*==================== End of Resources Categories ====================*/}
         </div>
       </div>
     </section>

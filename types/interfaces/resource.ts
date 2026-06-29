@@ -57,7 +57,7 @@ export interface SingleResourceResponse {
 
 export interface UseResourceTableProps {
   resources: Resource[];
-  userRole: 'admin' | 'user';
+  userRole: 'admin';
   onRefresh: () => void;
   mode?: 'default' | 'recycleBin';
   token: string;
@@ -133,7 +133,7 @@ export interface ResourceAnalyticsData {
 }
 
 export interface ResourcesComponentProps {
-  role: 'admin' | 'student';
+  role: 'admin';
   token: string;
 }
 
@@ -162,7 +162,7 @@ export interface UseResourceUploaderProps {
 }
 
 export interface ResourceViewerComponentProps {
-  role: 'admin' | 'student';
+  role: 'admin';
   token: string;
 }
 
@@ -173,6 +173,6 @@ export interface FileItem {
 }
 
 export interface ResourceFilterSkeletonProps {
-  role: 'admin' | 'student';
+  role: 'admin';
 }
 

@@ -130,28 +130,13 @@ export const getServerSideProps = async ({ req }: { req: NextApiRequest }) => {
   if (userData && typeof userData !== 'boolean') {
     const { role } = userData as UserAuth;
 
-    switch (role) {
-      case 'admin':
-        return {
-          redirect: {
-            destination: '/admin',
-            permanent: false,
-          },
-        };
-      case 'user':
-        return {
-          redirect: {
-            destination: '/student',
-            permanent: false,
-          },
-        };
-      default:
-        return {
-          redirect: {
-            destination: '/',
-            permanent: false,
-          },
-        };
+    if (role === 'admin') {
+      return {
+        redirect: {
+          destination: '/admin',
+          permanent: false,
+        },
+      };
     }
   }
 

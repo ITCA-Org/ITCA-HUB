@@ -1,10 +1,11 @@
 import axios from 'axios';
-import Link from 'next/link';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { BASE_URL } from '@/utils/url';
 import { useState, useEffect } from 'react';
-import { Calendar, Clock, MapPin, Users, ArrowRight, ChevronRight, EyeIcon, X } from 'lucide-react';
+import { Calendar, Clock, MapPin, EyeIcon, X, Ticket } from 'lucide-react';
+import Link from 'next/link';
+import { TicketTier } from '@/types/interfaces/event';
 
 export type Event = {
   _id: string;
@@ -16,7 +17,8 @@ export type Event = {
   toTime?: string;
   location: string;
   status: 'upcoming' | 'ongoing' | 'completed';
-  registrationRequired: boolean;
+  ticketingEnabled: boolean;
+  ticketTiers?: TicketTier[];
   imageUrl?: string;
   capacity: number;
   createdBy: {
@@ -25,12 +27,6 @@ export type Event = {
     lastName: string;
     schoolEmail: string;
   };
-  attendees: Array<{
-    _id: string;
-    firstName: string;
-    lastName: string;
-    schoolEmail: string;
-  }>;
   createdAt: string;
   updatedAt: string;
 };
@@ -221,39 +217,28 @@ const EventCard = ({
             <MapPin className="mr-2 h-4 w-4 text-red-500" />
             <span className="line-clamp-1 text-gray-500">{event.location}</span>
           </div>
-          {event.registrationRequired && (
+          {event.ticketingEnabled && event.ticketTiers && (
             <div className="flex items-center">
-              <Users className="mr-2 h-4 w-4 text-green-500" />
+              <Ticket className="mr-2 h-4 w-4 text-green-500" />
               <span className="text-gray-500">
-                {event.attendees.length} / {event.capacity} registered
+                {event.ticketTiers
+                  .filter((t) => t.enabled)
+                  .map((t) => `${t.label}: D${t.price}`)
+                  .join(' · ')}
               </span>
             </div>
           )}
         </div>
         {/*==================== End of Event Details ====================*/}
 
-        {/*==================== Landing Page Registration Section ====================*/}
-        {event.registrationRequired && (
+        {event.ticketingEnabled && event.ticketTiers && (
           <div className="mt-4 pt-2">
-            <Link href="/auth" className="cursor-pointer">
-              <button className="w-full inline-flex justify-center items-center rounded-lg bg-linear-to-r from-blue-600 to-blue-500 px-4 py-2 text-sm font-medium text-white hover:from-blue-700 hover:to-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-300 shadow-md hover:shadow-lg">
-                <ArrowRight className="h-4 w-4 mr-2" />
-                Register Now
-              </button>
-            </Link>
-          </div>
-        )}
-
-        {/*==================== No Registration Required ====================*/}
-        {!event.registrationRequired && (
-          <div className="mt-6 pt-4 border-t border-gray-300">
-            <div className="text-center text-sm text-green-600 font-medium">
-              <Calendar className="inline h-4 w-4 mr-1" />
-              No registration required - Join anytime!
+            <div className="w-full inline-flex justify-center items-center rounded-lg bg-blue-50 px-4 py-2 text-sm font-medium text-blue-700">
+              <Ticket className="h-4 w-4 mr-2" />
+              Tickets available
             </div>
           </div>
         )}
-        {/*==================== End of No Registration Required ====================*/}
       </div>
       {/*==================== End of Event Content ====================*/}
     </motion.div>
@@ -418,19 +403,8 @@ const EventsSection = ({ initialEvents }: { initialEvents?: Event[] }) => {
                 <p className="text-gray-600 leading-relaxed">
                   We're planning exciting events for the ITCA community.
                   <br />
-                  Check back soon or sign in to stay updated!
+                  Check back soon for updates!
                 </p>
-
-                {/*==================== CTA ====================*/}
-                <div className="pt-4">
-                  <Link href="/auth">
-                    <button className="inline-flex items-center px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200 font-medium">
-                      <Calendar className="w-4 h-4 mr-2" />
-                      Get Notified of Events
-                    </button>
-                  </Link>
-                </div>
-                {/*==================== End of CTA ====================*/}
               </div>
               {/*==================== End of Content ====================*/}
             </div>
@@ -489,27 +463,41 @@ const EventsSection = ({ initialEvents }: { initialEvents?: Event[] }) => {
                     </p>
                   </div>
                 )}
+
+                {viewingEvent.ticketingEnabled && viewingEvent.ticketTiers && (
+                  <div className="space-y-3">
+                    <h3 className="text-base md:text-lg font-medium text-gray-900">
+                      Get Tickets
+                    </h3>
+                    {viewingEvent.ticketTiers
+                      .filter((t) => t.enabled)
+                      .map((tier) => (
+                        <div
+                          key={tier.type}
+                          className="border border-gray-200 rounded-lg p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3"
+                        >
+                          <div>
+                            <p className="font-semibold text-gray-900">{tier.label}</p>
+                            <p className="text-lg font-bold text-blue-600">D{tier.price}</p>
+                            {tier.benefits && (
+                              <p className="text-sm text-gray-500 mt-1">{tier.benefits}</p>
+                            )}
+                          </div>
+                          <Link
+                            href={`/events/${viewingEvent._id}/checkout?tier=${tier.type}`}
+                            className="inline-flex justify-center items-center px-5 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium text-sm"
+                          >
+                            Buy {tier.label} — D{tier.price}
+                          </Link>
+                        </div>
+                      ))}
+                  </div>
+                )}
               </div>
             </div>
           </div>
         )}
         {/*==================== End of View Event Modal ====================*/}
-
-        <motion.div
-          viewport={{ once: true }}
-          className="mt-16 text-center"
-          initial={{ opacity: 0, y: 70 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.4 }}
-        >
-          <button className="group relative overflow-hidden rounded-full border-2 border-blue-500 bg-transparent px-6 sm:px-8 py-2.5 sm:py-3 text-sm sm:text-base text-blue-500 transition-all duration-300 hover:text-white hover:shadow-lg hover:shadow-blue-500/30">
-            <Link href="/auth" className="relative z-10 flex items-center justify-center">
-              Sign in to view all events
-              <ChevronRight className="ml-1 h-3 w-3 sm:h-4 sm:w-4 transition-transform duration-300 group-hover:translate-x-1" />
-            </Link>
-            <span className="absolute inset-0 -z-10 translate-y-full bg-blue-500 transition-transform duration-300 group-hover:translate-y-0"></span>
-          </button>
-        </motion.div>
       </div>
     </section>
   );
