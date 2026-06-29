@@ -134,7 +134,7 @@ const EditEventModal = ({ isOpen, event, onClose, onSave }: EditEventModalProps)
       }
 
       const eventDate = new Date(date).toISOString();
-      const eventTime = new Date(`${date}T${time}:00.000Z`).toISOString();
+      const eventTime = new Date(`${date}T${time}:00`).toISOString();
 
       const eventData: CreateEventData = {
         title,
@@ -147,7 +147,7 @@ const EditEventModal = ({ isOpen, event, onClose, onSave }: EditEventModalProps)
         ticketingEnabled,
         ticketTiers: ticketingEnabled ? ticketTiers : DEFAULT_TICKET_TIERS,
         ...(toDate && { toDate: new Date(toDate).toISOString() }),
-        ...(toTime && { toTime: new Date(`${toDate || date}T${toTime}:00.000Z`).toISOString() }),
+        ...(toTime && { toTime: new Date(`${toDate || date}T${toTime}:00`).toISOString() }),
       };
 
       await onSave(event._id, eventData);

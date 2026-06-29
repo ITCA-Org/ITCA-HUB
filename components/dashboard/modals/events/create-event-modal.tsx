@@ -89,7 +89,7 @@ const CreateEventModal = ({ isOpen, onClose, onSave }: CreateEventModalProps) =>
       setIsUploadingImage(false);
 
       const eventDate = new Date(date).toISOString();
-      const eventTime = new Date(`${date}T${time}:00.000Z`).toISOString();
+      const eventTime = new Date(`${date}T${time}:00`).toISOString();
 
       const newEvent: CreateEventData = {
         title,
@@ -102,7 +102,7 @@ const CreateEventModal = ({ isOpen, onClose, onSave }: CreateEventModalProps) =>
         ticketingEnabled,
         ticketTiers: ticketingEnabled ? ticketTiers : DEFAULT_TICKET_TIERS,
         ...(toDate && { toDate: new Date(toDate).toISOString() }),
-        ...(toTime && { toTime: new Date(`${toDate || date}T${toTime}:00.000Z`).toISOString() }),
+        ...(toTime && { toTime: new Date(`${toDate || date}T${toTime}:00`).toISOString() }),
       };
 
       await onSave(newEvent);
