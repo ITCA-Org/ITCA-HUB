@@ -133,6 +133,55 @@ const getStatusConfig = (status: string) => {
   }
 };
 
+const getEnabledTiers = (event: Event) =>
+  event.ticketTiers?.filter((t) => t.enabled) ?? [];
+
+const GetTicketsSection = ({
+  event,
+  className = '',
+}: {
+  event: Event;
+  className?: string;
+}) => {
+  const enabledTiers = getEnabledTiers(event);
+
+  if (!event.ticketingEnabled || !event.ticketTiers) {
+    return null;
+  }
+
+  return (
+    <div className={`space-y-3 ${className}`}>
+      <h3 className="text-base md:text-lg font-medium text-gray-900">Get Tickets</h3>
+      {enabledTiers.length > 0 ? (
+        enabledTiers.map((tier) => (
+          <div
+            key={tier.type}
+            className="border border-gray-200 rounded-lg p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3"
+          >
+            <div>
+              <p className="font-semibold text-gray-900">{tier.label}</p>
+              <p className="text-lg font-bold text-blue-600">D{tier.price}</p>
+              {tier.benefits && (
+                <p className="text-sm text-gray-500 mt-1">{tier.benefits}</p>
+              )}
+            </div>
+            <Link
+              href={`/events/${event._id}/checkout?tier=${tier.type}`}
+              className="inline-flex justify-center items-center px-5 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium text-sm"
+            >
+              Buy {tier.label} — D{tier.price}
+            </Link>
+          </div>
+        ))
+      ) : (
+        <p className="text-gray-500 text-sm bg-gray-50 rounded-lg p-4">
+          Ticket tiers are not configured yet.
+        </p>
+      )}
+    </div>
+  );
+};
+
 const EventCard = ({
   event,
   index,
@@ -144,6 +193,7 @@ const EventCard = ({
 }) => {
   const [imageError, setImageError] = useState(false);
   const statusConfig = getStatusConfig(event.status);
+  const enabledTiers = getEnabledTiers(event);
 
   return (
     <motion.div
@@ -217,26 +267,37 @@ const EventCard = ({
             <MapPin className="mr-2 h-4 w-4 text-red-500" />
             <span className="line-clamp-1 text-gray-500">{event.location}</span>
           </div>
-          {event.ticketingEnabled && event.ticketTiers && (
+          {enabledTiers.length > 0 && (
             <div className="flex items-center">
               <Ticket className="mr-2 h-4 w-4 text-green-500" />
               <span className="text-gray-500">
-                {event.ticketTiers
-                  .filter((t) => t.enabled)
-                  .map((t) => `${t.label}: D${t.price}`)
-                  .join(' · ')}
+                {enabledTiers.map((t) => `${t.label}: D${t.price}`).join(' · ')}
               </span>
             </div>
           )}
         </div>
         {/*==================== End of Event Details ====================*/}
 
-        {event.ticketingEnabled && event.ticketTiers && (
+        {enabledTiers.length > 0 && (
           <div className="mt-4 pt-2">
-            <div className="w-full inline-flex justify-center items-center rounded-lg bg-blue-50 px-4 py-2 text-sm font-medium text-blue-700">
-              <Ticket className="h-4 w-4 mr-2" />
-              Tickets available
-            </div>
+            {enabledTiers.length === 1 ? (
+              <Link
+                href={`/events/${event._id}/checkout?tier=${enabledTiers[0].type}`}
+                className="w-full inline-flex justify-center items-center rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-medium text-white hover:bg-blue-700 transition-colors"
+              >
+                <Ticket className="h-4 w-4 mr-2" />
+                Buy {enabledTiers[0].label} — D{enabledTiers[0].price}
+              </Link>
+            ) : (
+              <button
+                type="button"
+                onClick={() => onView(event)}
+                className="w-full inline-flex justify-center items-center rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-medium text-white hover:bg-blue-700 transition-colors cursor-pointer"
+              >
+                <Ticket className="h-4 w-4 mr-2" />
+                View tickets
+              </button>
+            )}
           </div>
         )}
       </div>
@@ -251,6 +312,20 @@ const EventsSection = ({ initialEvents }: { initialEvents?: Event[] }) => {
   const [isLoading, setIsLoading] = useState(!hasInitialData);
   const [error, setError] = useState<string | null>(null);
   const [viewingEvent, setViewingEvent] = useState<Event | null>(null);
+
+  const handleViewEvent = async (event: Event) => {
+    setViewingEvent(event);
+
+    try {
+      const response = await axios.get(`${BASE_URL}/events/${event._id}/public`);
+
+      if (response.data.status === 'success') {
+        setViewingEvent(response.data.data);
+      }
+    } catch {
+      // Keep cached event data if refresh fails.
+    }
+  };
 
   useEffect(() => {
     if (hasInitialData) return;
@@ -412,7 +487,7 @@ const EventsSection = ({ initialEvents }: { initialEvents?: Event[] }) => {
         ) : (
           <div className="grid gap-8 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
             {events.map((event, index) => (
-              <EventCard key={event._id} event={event} index={index} onView={setViewingEvent} />
+              <EventCard key={event._id} event={event} index={index} onView={handleViewEvent} />
             ))}
           </div>
         )}
@@ -420,7 +495,7 @@ const EventsSection = ({ initialEvents }: { initialEvents?: Event[] }) => {
         {/*==================== View Event Modal ====================*/}
         {viewingEvent && (
           <div className="fixed inset-0 bg-black/30 backdrop-blur-md bg-opacity-50 flex items-center justify-center z-40 pt-20 pb-4 px-4">
-            <div className="bg-white rounded-xl shadow-lg p-6 max-w-4xl w-full max-h-full overflow-y-auto relative hide-scrollbar">
+            <div className="bg-white rounded-xl shadow-lg p-6 max-w-4xl w-full max-h-[85vh] overflow-y-auto relative">
               <div>
                 <div className="flex items-center justify-between w-full mb-6">
                   <h2 className="text-base md:text-2xl font-bold text-gray-900">
@@ -453,6 +528,8 @@ const EventsSection = ({ initialEvents }: { initialEvents?: Event[] }) => {
                   </div>
                 </div>
 
+                <GetTicketsSection event={viewingEvent} className="mb-6" />
+
                 {viewingEvent.description && (
                   <div className="mb-6">
                     <h3 className="text-base md:text-lg font-medium mb-3 text-gray-900">
@@ -461,36 +538,6 @@ const EventsSection = ({ initialEvents }: { initialEvents?: Event[] }) => {
                     <p className="text-gray-600 text-sm md:text-[1.2rem] bg-gray-50 rounded-lg p-4">
                       {viewingEvent.description}
                     </p>
-                  </div>
-                )}
-
-                {viewingEvent.ticketingEnabled && viewingEvent.ticketTiers && (
-                  <div className="space-y-3">
-                    <h3 className="text-base md:text-lg font-medium text-gray-900">
-                      Get Tickets
-                    </h3>
-                    {viewingEvent.ticketTiers
-                      .filter((t) => t.enabled)
-                      .map((tier) => (
-                        <div
-                          key={tier.type}
-                          className="border border-gray-200 rounded-lg p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3"
-                        >
-                          <div>
-                            <p className="font-semibold text-gray-900">{tier.label}</p>
-                            <p className="text-lg font-bold text-blue-600">D{tier.price}</p>
-                            {tier.benefits && (
-                              <p className="text-sm text-gray-500 mt-1">{tier.benefits}</p>
-                            )}
-                          </div>
-                          <Link
-                            href={`/events/${viewingEvent._id}/checkout?tier=${tier.type}`}
-                            className="inline-flex justify-center items-center px-5 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium text-sm"
-                          >
-                            Buy {tier.label} — D{tier.price}
-                          </Link>
-                        </div>
-                      ))}
                   </div>
                 )}
               </div>
