@@ -9,7 +9,7 @@ import {
   GraduationCap,
 } from 'lucide-react';
 import { NextApiRequest } from 'next';
-import { isLoggedIn } from '@/utils/auth';
+import { requireAdminAuth } from '@/utils/auth';
 import useDebounce from '@/utils/debounce';
 import { UserAuth } from '@/types';
 import { useState, useCallback } from 'react';
@@ -276,29 +276,5 @@ const AdminUsersPage = ({ userData }: AdminUsersPageProps) => {
 export default AdminUsersPage;
 
 export const getServerSideProps = async ({ req }: { req: NextApiRequest }) => {
-  const userData = isLoggedIn(req);
-
-  if (userData === false) {
-    return {
-      redirect: {
-        destination: '/auth',
-        permanent: false,
-      },
-    };
-  }
-
-  const userAuth = userData as UserAuth;
-
-  if (userAuth.role === 'user') {
-    return {
-      redirect: {
-        destination: '/student',
-        permanent: false,
-      },
-    };
-  }
-
-  return {
-    props: { userData },
-  };
+  return requireAdminAuth(req);
 };

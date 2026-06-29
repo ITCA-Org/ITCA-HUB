@@ -51,13 +51,12 @@ const ResourcesComponent = ({ role, token }: ResourcesComponentProps) => {
   const [downloadingResource, setDownloadingResource] = useState<Resource | null>(null);
 
   const debouncedSearch = useDebounce(filters.searchTerm, 500);
-  const userRole = role === 'admin' ? 'admin' : 'user';
+  const userRole = 'admin';
 
   const visibilityParam = useMemo(() => {
-    if (role === 'student') return undefined;
     if (filters.visibility === 'admin') return 'admin';
     return undefined;
-  }, [role, filters.visibility]);
+  }, [filters.visibility]);
 
   const { resources, total, totalPages, isLoading, isError, refresh } = useResources({
     token,
@@ -412,49 +411,38 @@ const ResourcesComponent = ({ role, token }: ResourcesComponentProps) => {
   );
 
   const pageConfig = {
-    admin: {
-      title: 'Resource',
-      subtitle: 'Management',
-      description: 'Upload, manage, and organize educational materials',
-      dashboardTitle: 'Resource Management',
-      actions: (
-        <div className="flex flex-col gap-4 w-full md:flex-row sm:mt-0 space-x-3">
-          <Link
-            href="/admin/resources/recycle-bin"
-            className="inline-flex items-center rounded-lg bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
-          >
-            <Trash2 className="mr-2 h-4 w-4" />
-            Recycle Bin
-          </Link>
-          <Link
-            href="/admin/resources/upload"
-            className="group inline-flex items-center rounded-lg bg-linear-to-r from-blue-700 to-blue-600 px-4 py-2 text-sm font-medium text-white hover:from-blue-800 hover:to-blue-700 focus:outline-none focus:ring-blue-500 focus:ring-offset-2 transition-all duration-300 shadow-md hover:shadow-lg"
-          >
-            <Upload className="mr-2 h-4 w-4 transition-transform group-hover:-translate-y-0.5" />
-            Upload Resource
-          </Link>
-        </div>
-      ),
-    },
-    student: {
-      title: 'Resource',
-      subtitle: 'Library',
-      description: 'Explore and access educational materials for your studies',
-      dashboardTitle: 'Resource Library',
-      actions: <div className="flex flex-col gap-4 w-full md:flex-row sm:mt-0 space-x-3"></div>,
-    },
+    title: 'Resource',
+    subtitle: 'Management',
+    description: 'Upload, manage, and organize educational materials',
+    dashboardTitle: 'Resource Management',
+    actions: (
+      <div className="flex flex-col gap-4 w-full md:flex-row sm:mt-0 space-x-3">
+        <Link
+          href="/admin/resources/recycle-bin"
+          className="inline-flex items-center rounded-lg bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+        >
+          <Trash2 className="mr-2 h-4 w-4" />
+          Recycle Bin
+        </Link>
+        <Link
+          href="/admin/resources/upload"
+          className="group inline-flex items-center rounded-lg bg-linear-to-r from-blue-700 to-blue-600 px-4 py-2 text-sm font-medium text-white hover:from-blue-800 hover:to-blue-700 focus:outline-none focus:ring-blue-500 focus:ring-offset-2 transition-all duration-300 shadow-md hover:shadow-lg"
+        >
+          <Upload className="mr-2 h-4 w-4 transition-transform group-hover:-translate-y-0.5" />
+          Upload Resource
+        </Link>
+      </div>
+    ),
   };
 
-  const config = pageConfig[role];
-
   return (
-    <DashboardLayout title={config.dashboardTitle} token={token}>
+    <DashboardLayout title={pageConfig.dashboardTitle} token={token}>
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
         <DashboardPageHeader
-          title={config.title}
-          actions={config.actions}
-          subtitle={config.subtitle}
-          description={config.description}
+          title={pageConfig.title}
+          actions={pageConfig.actions}
+          subtitle={pageConfig.subtitle}
+          description={pageConfig.description}
         />
       </div>
 

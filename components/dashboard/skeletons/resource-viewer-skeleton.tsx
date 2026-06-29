@@ -54,16 +54,6 @@ const ResourceViewerSkeleton = ({ role }: ResourceFilterSkeletonProps) => {
             <div className="h-5 w-28 bg-gray-200 rounded animate-pulse" />
           </div>
 
-          {role === 'student' && (
-            <div>
-              <div className="flex items-center mb-2">
-                <div className="h-8 w-8 bg-gray-200 rounded-full animate-pulse mr-3" />
-                <div className="h-4 w-20 bg-gray-200 rounded animate-pulse" />
-              </div>
-              <div className="h-5 w-24 bg-gray-200 rounded animate-pulse" />
-            </div>
-          )}
-
           {role === 'admin' && (
             <>
               <div>

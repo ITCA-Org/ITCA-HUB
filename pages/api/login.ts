@@ -15,6 +15,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         password,
       });
 
+      if (data.data.user.role !== 'admin') {
+        res.status(403).json({ message: 'Admin access only' });
+        return;
+      }
+
       const cookieData = {
         token: data.data.accessToken,
         role: data.data.user.role,

@@ -1,7 +1,7 @@
 import { UserAuth } from '@/types';
 import { NextApiRequest } from 'next';
 import { useRouter } from 'next/router';
-import { isLoggedIn } from '@/utils/auth';
+import { requireAdminAuth } from '@/utils/auth';
 import { useState, useEffect, useRef } from 'react';
 import { ArrowLeft, AlertTriangle } from 'lucide-react';
 import DashboardLayout from '@/components/dashboard/layout/dashboard-layout';
@@ -176,29 +176,5 @@ const AdminResourceUploadPage = ({ userData }: AdminResourceUploadPageProps) => 
 export default AdminResourceUploadPage;
 
 export const getServerSideProps = async ({ req }: { req: NextApiRequest }) => {
-  const userData = isLoggedIn(req);
-
-  if (userData === false) {
-    return {
-      redirect: {
-        destination: '/auth',
-        permanent: false,
-      },
-    };
-  }
-
-  const userAuth = userData as UserAuth;
-
-  if (userAuth.role === 'user') {
-    return {
-      redirect: {
-        destination: '/student',
-        permanent: false,
-      },
-    };
-  }
-
-  return {
-    props: { userData },
-  };
+  return requireAdminAuth(req);
 };

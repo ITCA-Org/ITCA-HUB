@@ -15,7 +15,7 @@ import {
   GraduationCap,
 } from 'lucide-react';
 import { UserAuth } from '@/types';
-import { isLoggedIn } from '@/utils/auth';
+import { requireAdminAuth } from '@/utils/auth';
 import React, { FC, useState } from 'react';
 import DashboardLayout from '@/components/dashboard/layout/dashboard-layout';
 import DashboardPageHeader from '@/components/dashboard/layout/dashboard-page-header';
@@ -391,31 +391,5 @@ const AdminHelpPage: FC<IHelpPage> = ({ userData }) => {
 export default AdminHelpPage;
 
 export const getServerSideProps = async ({ req }: { req: NextApiRequest }) => {
-  const userData = isLoggedIn(req);
-
-  if (userData === false) {
-    return {
-      redirect: {
-        destination: '/auth',
-        permanent: false,
-      },
-    };
-  }
-
-  const userAuth = userData as UserAuth;
-
-  if (userAuth.role === 'student') {
-    return {
-      redirect: {
-        destination: '/student',
-        permanent: false,
-      },
-    };
-  }
-
-  return {
-    props: {
-      userData,
-    },
-  };
+  return requireAdminAuth(req);
 };

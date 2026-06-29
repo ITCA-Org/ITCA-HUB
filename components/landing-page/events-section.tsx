@@ -235,12 +235,10 @@ const EventCard = ({
         {/*==================== Landing Page Registration Section ====================*/}
         {event.registrationRequired && (
           <div className="mt-4 pt-2">
-            <Link href="/auth" className="cursor-pointer">
-              <button className="w-full inline-flex justify-center items-center rounded-lg bg-linear-to-r from-blue-600 to-blue-500 px-4 py-2 text-sm font-medium text-white hover:from-blue-700 hover:to-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-300 shadow-md hover:shadow-lg">
-                <ArrowRight className="h-4 w-4 mr-2" />
-                Register Now
-              </button>
-            </Link>
+            <div className="w-full inline-flex justify-center items-center rounded-lg bg-gray-100 px-4 py-2 text-sm font-medium text-gray-600">
+              <Users className="h-4 w-4 mr-2" />
+              Registration required
+            </div>
           </div>
         )}
 
@@ -418,19 +416,8 @@ const EventsSection = ({ initialEvents }: { initialEvents?: Event[] }) => {
                 <p className="text-gray-600 leading-relaxed">
                   We're planning exciting events for the ITCA community.
                   <br />
-                  Check back soon or sign in to stay updated!
+                  Check back soon for updates!
                 </p>
-
-                {/*==================== CTA ====================*/}
-                <div className="pt-4">
-                  <Link href="/auth">
-                    <button className="inline-flex items-center px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200 font-medium">
-                      <Calendar className="w-4 h-4 mr-2" />
-                      Get Notified of Events
-                    </button>
-                  </Link>
-                </div>
-                {/*==================== End of CTA ====================*/}
               </div>
               {/*==================== End of Content ====================*/}
             </div>
@@ -494,22 +481,6 @@ const EventsSection = ({ initialEvents }: { initialEvents?: Event[] }) => {
           </div>
         )}
         {/*==================== End of View Event Modal ====================*/}
-
-        <motion.div
-          viewport={{ once: true }}
-          className="mt-16 text-center"
-          initial={{ opacity: 0, y: 70 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.4 }}
-        >
-          <button className="group relative overflow-hidden rounded-full border-2 border-blue-500 bg-transparent px-6 sm:px-8 py-2.5 sm:py-3 text-sm sm:text-base text-blue-500 transition-all duration-300 hover:text-white hover:shadow-lg hover:shadow-blue-500/30">
-            <Link href="/auth" className="relative z-10 flex items-center justify-center">
-              Sign in to view all events
-              <ChevronRight className="ml-1 h-3 w-3 sm:h-4 sm:w-4 transition-transform duration-300 group-hover:translate-x-1" />
-            </Link>
-            <span className="absolute inset-0 -z-10 translate-y-full bg-blue-500 transition-transform duration-300 group-hover:translate-y-0"></span>
-          </button>
-        </motion.div>
       </div>
     </section>
   );

@@ -12,7 +12,7 @@ export interface CreateEventData {
 }
 
 export interface EventsComponentProps {
-  role: 'admin' | 'student';
+  role: 'admin';
   token: string;
   userId: string;
 }
@@ -55,7 +55,7 @@ export interface EventProps {
 export interface EventCardProps {
   event: EventProps;
   currentUserId?: string;
-  role: 'admin' | 'student';
+  role: 'admin';
   onEdit?: (eventId: string) => void;
   onDelete?: (eventId: string) => void;
   onView?: (eventId: string) => void;
@@ -68,6 +68,6 @@ export interface ViewEventModalProps {
   isOpen: boolean;
   eventId: string;
   onClose: () => void;
-  role?: 'admin' | 'student';
+  role?: 'admin';
   token: string;
 }

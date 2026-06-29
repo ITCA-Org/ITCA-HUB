@@ -1,6 +1,5 @@
 import { useState, FC } from 'react';
 import { NextApiRequest } from 'next';
-import { isLoggedIn } from '@/utils/auth';
 import { UserAuth } from '@/types';
 import Table from '@/components/dashboard/table/table';
 import useDashboard from '@/hooks/dashboard/use-dashboard';
@@ -10,6 +9,7 @@ import DashboardLayout from '@/components/dashboard/layout/dashboard-layout';
 import DashboardStatsCard from '@/components/dashboard/layout/dashboard-stats-card';
 import UserTableSkeleton from '@/components/dashboard/skeletons/user-table-skeleton';
 import DashboardPageHeader from '@/components/dashboard/layout/dashboard-page-header';
+import { requireAdminAuth } from '@/utils/auth';
 
 const recentUsersColumns: Column[] = [
   { key: 'user', header: 'User' },
@@ -135,31 +135,5 @@ const AdminDashboard: FC<AdminDashboardProps> = ({ userData }) => {
 export default AdminDashboard;
 
 export const getServerSideProps = async ({ req }: { req: NextApiRequest }) => {
-  const userData = isLoggedIn(req);
-
-  if (userData === false) {
-    return {
-      redirect: {
-        destination: '/auth',
-        permanent: false,
-      },
-    };
-  }
-
-  const userAuth = userData as UserAuth;
-
-  if (userAuth.role === 'user') {
-    return {
-      redirect: {
-        destination: '/student',
-        permanent: false,
-      },
-    };
-  }
-
-  return {
-    props: {
-      userData,
-    },
-  };
+  return requireAdminAuth(req);
 };

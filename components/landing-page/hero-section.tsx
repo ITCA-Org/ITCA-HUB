@@ -167,13 +167,6 @@ const HeroSection = () => {
             </Link>
             <span className="absolute inset-0 -z-10 translate-y-full bg-amber-500 transition-transform duration-300 group-hover:translate-y-0"></span>
           </button>
-          <button className="group relative overflow-hidden rounded-full border-2 border-amber-500 bg-transparent px-6 sm:px-8 py-2.5 sm:py-3 text-sm sm:text-base text-amber-500 transition-all duration-300 hover:text-white hover:shadow-lg hover:shadow-amber-500/30">
-            <Link href="/auth/sign-up" className="relative z-10 flex items-center justify-center">
-              Join ITCA
-              <ChevronRight className="ml-1 h-3 w-3 sm:h-4 sm:w-4 transition-transform duration-300 group-hover:translate-x-1" />
-            </Link>
-            <span className="absolute inset-0 -z-10 translate-y-full bg-amber-500 transition-transform duration-300 group-hover:translate-y-0"></span>
-          </button>
         </motion.div>
         {/*==================== End of Hero Section CTA ====================*/}
       </div>

@@ -10,7 +10,7 @@ import {
   ArrowLeft,
   RotateCcw,
 } from 'lucide-react';
-import { isLoggedIn } from '@/utils/auth';
+import { requireAdminAuth } from '@/utils/auth';
 import { Column } from '@/types/interfaces/table';
 import formatDepartment from '@/utils/format-department';
 import Table from '@/components/dashboard/table/table';
@@ -324,29 +324,5 @@ const RecycleBinPage = ({ userData }: RecycleBinPageProps) => {
 export default RecycleBinPage;
 
 export const getServerSideProps = async ({ req }: { req: NextApiRequest }) => {
-  const userData = isLoggedIn(req);
-
-  if (userData === false) {
-    return {
-      redirect: {
-        destination: '/auth',
-        permanent: false,
-      },
-    };
-  }
-
-  const userAuth = userData as UserAuth;
-
-  if (userAuth.role === 'user') {
-    return {
-      redirect: {
-        destination: '/student',
-        permanent: false,
-      },
-    };
-  }
-
-  return {
-    props: { userData },
-  };
+  return requireAdminAuth(req);
 };

@@ -4,17 +4,12 @@ import {
   Users,
   MapPin,
   Trash2,
-  XCircle,
   EyeIcon,
-  UserPlus,
   Calendar,
-  UserMinus,
 } from 'lucide-react';
-import { toast } from 'sonner';
 import Image from 'next/image';
 import { useState } from 'react';
 import { EventCardProps } from '@/types/interfaces/event';
-import ConfirmationModal from '../../modals/confirmation-modal';
 
 const EventCard = ({
   role,
@@ -22,12 +17,7 @@ const EventCard = ({
   onEdit,
   onView,
   onDelete,
-  onRegister,
-  onUnregister,
-  currentUserId,
 }: EventCardProps) => {
-  const [showConfirmationModal, setShowConfirmationModal] = useState(false);
-  const [isRegistering, setIsRegistering] = useState(false);
   const [imageError, setImageError] = useState(false);
 
   /**===============================
@@ -132,51 +122,6 @@ const EventCard = ({
     }
   };
 
-  /**===============================
-   * Check if user is registered
-   ===============================*/
-  const isRegistered =
-    role === 'student' && currentUserId
-      ? event.attendees.some((attendee) => attendee._id === currentUserId)
-      : false;
-
-  /**===============================
-   * Handle registration
-   ===============================*/
-  const handleRegistration = () => {
-    setShowConfirmationModal(true);
-  };
-
-  const handleConfirmRegistration = async () => {
-    if (!onRegister || !onUnregister) return;
-
-    setIsRegistering(true);
-    try {
-      if (isRegistered) {
-        await onUnregister(event._id);
-      } else {
-        await onRegister(event._id);
-      }
-      setShowConfirmationModal(false);
-    } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Registration failed';
-      toast.error('Registration Error', {
-        description: errorMessage,
-        duration: 5000,
-      });
-    } finally {
-      setIsRegistering(false);
-    }
-  };
-
-  /**====================================
-   * Check if registration is available
-   ====================================*/
-  const canRegister =
-    event.registrationRequired &&
-    event.status === 'upcoming' &&
-    event.attendees.length < event.capacity;
-
   const isFull = event.attendees.length >= event.capacity;
   const statusConfig = getStatusConfig(event.status);
 
@@ -275,63 +220,6 @@ const EventCard = ({
         </div>
         {/*==================== End of Event Details ====================*/}
 
-        {/*==================== Student Registration Section ====================*/}
-        {role === 'student' && event.registrationRequired && (
-          <div className="mt-4 pt-2">
-            {isRegistered ? (
-              <div className="space-y-3">
-                <button
-                  disabled={isRegistering}
-                  onClick={handleRegistration}
-                  className="w-full inline-flex justify-center items-center rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition-all duration-300 shadow-md hover:shadow-lg disabled:opacity-50"
-                >
-                  {isRegistering ? (
-                    <>
-                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                      Unregistering...
-                    </>
-                  ) : (
-                    <>
-                      <UserMinus className="h-4 w-4 mr-2" />
-                      Unregister
-                    </>
-                  )}
-                </button>
-              </div>
-            ) : canRegister ? (
-              <button
-                disabled={isRegistering}
-                onClick={handleRegistration}
-                className="w-full inline-flex justify-center items-center rounded-lg bg-linear-to-r from-blue-600 to-blue-500 px-4 py-2 text-sm font-medium text-white hover:from-blue-700 hover:to-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-300 shadow-md hover:shadow-lg disabled:opacity-50"
-              >
-                {isRegistering ? (
-                  <>
-                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                    Registering...
-                  </>
-                ) : (
-                  <>
-                    <UserPlus className="h-4 w-4 mr-2" />
-                    Register
-                  </>
-                )}
-              </button>
-            ) : (
-              <button
-                disabled
-                className="w-full inline-flex justify-center items-center rounded-lg bg-gray-100 px-4 py-2 text-sm font-medium text-gray-500 cursor-not-allowed"
-              >
-                <XCircle className="h-4 w-4 mr-2" />
-                {isFull
-                  ? 'Event Full'
-                  : event.status === 'completed'
-                    ? 'Event Completed'
-                    : 'Registration Closed'}
-              </button>
-            )}
-          </div>
-        )}
-
         {/*==================== Admin Registration Message ====================*/}
         {role === 'admin' && event.registrationRequired && (
           <div className="mt-6 pt-4 pb-2 border-t border-gray-300">
@@ -353,22 +241,6 @@ const EventCard = ({
         {/*==================== End of No Registration Required ====================*/}
       </div>
       {/*==================== End of Event Content ====================*/}
-
-      {/*==================== Registration Confirmation Modal ====================*/}
-      <ConfirmationModal
-        cancelText="Cancel"
-        isLoading={isRegistering}
-        isOpen={showConfirmationModal}
-        onConfirm={handleConfirmRegistration}
-        variant={isRegistered ? 'danger' : 'primary'}
-        onClose={() => setShowConfirmationModal(false)}
-        confirmText={isRegistered ? 'Unregister' : 'Register'}
-        loadingText={isRegistered ? 'Unregistering...' : 'Registering...'}
-        title={isRegistered ? 'Confirm Unregistration' : 'Confirm Registration'}
-        icon={isRegistered ? <UserMinus className="h-5 w-5" /> : <UserPlus className="h-5 w-5" />}
-        message={`Are you sure you want to ${isRegistered ? 'unregister from' : 'register for'} "${event.title}"?`}
-      />
-      {/*==================== End of Registration Confirmation Modal ====================*/}
     </div>
   );
 };
