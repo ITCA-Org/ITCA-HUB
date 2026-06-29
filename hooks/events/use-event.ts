@@ -168,58 +168,6 @@ export const useEventActions = (token: string) => {
     [token, invalidateEventsCache]
   );
 
-  const registerForEvent = useCallback(
-    async (eventId: string) => {
-      if (!token) throw new Error('Not authenticated');
-
-      try {
-        const { data } = await axios.post(
-          `${BASE_URL}/events/${eventId}/register`,
-          {},
-          { headers: { Authorization: `Bearer ${token}` } }
-        );
-
-        toast.success('Successfully registered for event!', {
-          description: 'You will receive updates about this event',
-        });
-
-        invalidateEventsCache();
-        return data.data;
-      } catch (error) {
-        toast.error('Failed to register for event', {
-          description: getErrorMessage(error as ErrorType).message,
-        });
-        throw error;
-      }
-    },
-    [token, invalidateEventsCache]
-  );
-
-  const unregisterFromEvent = useCallback(
-    async (eventId: string) => {
-      if (!token) throw new Error('Not authenticated');
-
-      try {
-        const { data } = await axios.delete(`${BASE_URL}/events/${eventId}/register`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-
-        toast.success('Successfully unregistered from event!', {
-          description: 'You will no longer receive updates about this event',
-        });
-
-        invalidateEventsCache();
-        return data.data;
-      } catch (error) {
-        toast.error('Failed to unregister from event', {
-          description: getErrorMessage(error as ErrorType).message,
-        });
-        throw error;
-      }
-    },
-    [token, invalidateEventsCache]
-  );
-
   const getEventById = useCallback(
     async (eventId: string) => {
       if (!token) throw new Error('Not authenticated');
@@ -244,8 +192,6 @@ export const useEventActions = (token: string) => {
     updateEvent,
     deleteEvent,
     getEventById,
-    registerForEvent,
-    unregisterFromEvent,
   };
 };
 

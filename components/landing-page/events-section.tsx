@@ -3,7 +3,9 @@ import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { BASE_URL } from '@/utils/url';
 import { useState, useEffect } from 'react';
-import { Calendar, Clock, MapPin, Users, EyeIcon, X } from 'lucide-react';
+import { Calendar, Clock, MapPin, EyeIcon, X, Ticket } from 'lucide-react';
+import Link from 'next/link';
+import { TicketTier } from '@/types/interfaces/event';
 
 export type Event = {
   _id: string;
@@ -15,7 +17,8 @@ export type Event = {
   toTime?: string;
   location: string;
   status: 'upcoming' | 'ongoing' | 'completed';
-  registrationRequired: boolean;
+  ticketingEnabled: boolean;
+  ticketTiers?: TicketTier[];
   imageUrl?: string;
   capacity: number;
   createdBy: {
@@ -24,12 +27,6 @@ export type Event = {
     lastName: string;
     schoolEmail: string;
   };
-  attendees: Array<{
-    _id: string;
-    firstName: string;
-    lastName: string;
-    schoolEmail: string;
-  }>;
   createdAt: string;
   updatedAt: string;
 };
@@ -220,37 +217,28 @@ const EventCard = ({
             <MapPin className="mr-2 h-4 w-4 text-red-500" />
             <span className="line-clamp-1 text-gray-500">{event.location}</span>
           </div>
-          {event.registrationRequired && (
+          {event.ticketingEnabled && event.ticketTiers && (
             <div className="flex items-center">
-              <Users className="mr-2 h-4 w-4 text-green-500" />
+              <Ticket className="mr-2 h-4 w-4 text-green-500" />
               <span className="text-gray-500">
-                {event.attendees.length} / {event.capacity} registered
+                {event.ticketTiers
+                  .filter((t) => t.enabled)
+                  .map((t) => `${t.label}: D${t.price}`)
+                  .join(' · ')}
               </span>
             </div>
           )}
         </div>
         {/*==================== End of Event Details ====================*/}
 
-        {/*==================== Landing Page Registration Section ====================*/}
-        {event.registrationRequired && (
+        {event.ticketingEnabled && event.ticketTiers && (
           <div className="mt-4 pt-2">
-            <div className="w-full inline-flex justify-center items-center rounded-lg bg-gray-100 px-4 py-2 text-sm font-medium text-gray-600">
-              <Users className="h-4 w-4 mr-2" />
-              Registration required
+            <div className="w-full inline-flex justify-center items-center rounded-lg bg-blue-50 px-4 py-2 text-sm font-medium text-blue-700">
+              <Ticket className="h-4 w-4 mr-2" />
+              Tickets available
             </div>
           </div>
         )}
-
-        {/*==================== No Registration Required ====================*/}
-        {!event.registrationRequired && (
-          <div className="mt-6 pt-4 border-t border-gray-300">
-            <div className="text-center text-sm text-green-600 font-medium">
-              <Calendar className="inline h-4 w-4 mr-1" />
-              No registration required - Join anytime!
-            </div>
-          </div>
-        )}
-        {/*==================== End of No Registration Required ====================*/}
       </div>
       {/*==================== End of Event Content ====================*/}
     </motion.div>
@@ -473,6 +461,36 @@ const EventsSection = ({ initialEvents }: { initialEvents?: Event[] }) => {
                     <p className="text-gray-600 text-sm md:text-[1.2rem] bg-gray-50 rounded-lg p-4">
                       {viewingEvent.description}
                     </p>
+                  </div>
+                )}
+
+                {viewingEvent.ticketingEnabled && viewingEvent.ticketTiers && (
+                  <div className="space-y-3">
+                    <h3 className="text-base md:text-lg font-medium text-gray-900">
+                      Get Tickets
+                    </h3>
+                    {viewingEvent.ticketTiers
+                      .filter((t) => t.enabled)
+                      .map((tier) => (
+                        <div
+                          key={tier.type}
+                          className="border border-gray-200 rounded-lg p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3"
+                        >
+                          <div>
+                            <p className="font-semibold text-gray-900">{tier.label}</p>
+                            <p className="text-lg font-bold text-blue-600">D{tier.price}</p>
+                            {tier.benefits && (
+                              <p className="text-sm text-gray-500 mt-1">{tier.benefits}</p>
+                            )}
+                          </div>
+                          <Link
+                            href={`/events/${viewingEvent._id}/checkout?tier=${tier.type}`}
+                            className="inline-flex justify-center items-center px-5 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium text-sm"
+                          >
+                            Buy {tier.label} — D{tier.price}
+                          </Link>
+                        </div>
+                      ))}
                   </div>
                 )}
               </div>
