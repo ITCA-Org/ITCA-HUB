@@ -1,10 +1,9 @@
 import axios from 'axios';
-import Link from 'next/link';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { BASE_URL } from '@/utils/url';
 import { useState, useEffect } from 'react';
-import { Calendar, Clock, MapPin, Users, ArrowRight, ChevronRight, EyeIcon, X } from 'lucide-react';
+import { Calendar, Clock, MapPin, Users, EyeIcon, X } from 'lucide-react';
 
 export type Event = {
   _id: string;

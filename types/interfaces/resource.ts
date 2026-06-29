@@ -57,7 +57,7 @@ export interface SingleResourceResponse {
 
 export interface UseResourceTableProps {
   resources: Resource[];
-  userRole: 'admin' | 'user';
+  userRole: 'admin';
   onRefresh: () => void;
   mode?: 'default' | 'recycleBin';
   token: string;

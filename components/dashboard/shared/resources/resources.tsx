@@ -229,8 +229,6 @@ const ResourcesComponent = ({ role, token }: ResourcesComponentProps) => {
   };
 
   const getVisibilityIcon = (visibility: string) => {
-    if (userRole === 'user') return null;
-
     switch (visibility) {
       case 'all':
         return <Users className="h-4.5 w-4.5 text-blue-500 mr-1" />;
@@ -270,37 +268,25 @@ const ResourcesComponent = ({ role, token }: ResourcesComponentProps) => {
       { key: 'description', header: 'Description' },
       { key: 'department', header: 'Department' },
       { key: 'category', header: 'Category' },
+      { key: 'usage', header: 'Usage' },
+      { key: 'actions', header: 'Actions', className: 'w-32' },
     ];
 
-    if (userRole === 'admin') {
-      baseColumns.push({ key: 'usage', header: 'Usage' });
-    }
-
-    baseColumns.push({ key: 'actions', header: 'Actions', className: 'w-32' });
-
     return baseColumns;
-  }, [userRole]);
-
-  const handleStudentRowClick = (resource: Resource) => {
-    handleDoubleClick(resource);
-  };
+  }, []);
 
   const handleAdminRowDoubleClick = (resource: Resource) => {
     handleDoubleClick(resource);
   };
 
-  const selectionActions = useMemo(() => {
-    if (userRole !== 'admin') return null;
-
-    return (
-      <button
-        onClick={handleDeleteSelected}
-        className="inline-flex items-center rounded-lg bg-red-100 text-red-700 px-3 py-1.5 text-sm font-medium hover:bg-red-200 cursor-pointer"
-      >
-        Delete Selected
-      </button>
-    );
-  }, [userRole, handleDeleteSelected]);
+  const selectionActions = (
+    <button
+      onClick={handleDeleteSelected}
+      className="inline-flex items-center rounded-lg bg-red-100 text-red-700 px-3 py-1.5 text-sm font-medium hover:bg-red-200 cursor-pointer"
+    >
+      Delete Selected
+    </button>
+  );
 
   const renderResourceRow = (resource: Resource) => (
     <>
@@ -334,22 +320,19 @@ const ResourcesComponent = ({ role, token }: ResourcesComponentProps) => {
         </span>
       </td>
 
-      {userRole === 'admin' && (
-        <td className="whitespace-nowrap px-5 py-4 text-md text-gray-500">
-          <div className="flex items-center space-x-2">
-            <Download className="h-4 w-4 text-gray-400" />
-            <span>{resource.downloads}</span>
-            <span className="text-gray-300">|</span>
-            <Eye className="h-4 w-4 text-gray-400" />
-            <span>{resource.viewCount}</span>
-          </div>
-        </td>
-      )}
+      <td className="whitespace-nowrap px-5 py-4 text-md text-gray-500">
+        <div className="flex items-center space-x-2">
+          <Download className="h-4 w-4 text-gray-400" />
+          <span>{resource.downloads}</span>
+          <span className="text-gray-300">|</span>
+          <Eye className="h-4 w-4 text-gray-400" />
+          <span>{resource.viewCount}</span>
+        </div>
+      </td>
 
       <td className="whitespace-nowrap px-5 py-4 text-md font-medium">
         <div className="flex space-x-2" onClick={(e) => e.stopPropagation()}>
-          {userRole === 'admin' ? (
-            <>
+          <>
               <button
                 title="Edit Resource"
                 onClick={(e) => {
@@ -396,15 +379,6 @@ const ResourcesComponent = ({ role, token }: ResourcesComponentProps) => {
                 </button>
               )}
             </>
-          ) : (
-            <button
-              title="Download Resource"
-              onClick={(e) => handleDownload(resource, e)}
-              className="rounded-full p-1.5 text-gray-500 hover:bg-gray-100 hover:text-blue-500"
-            >
-              <Download className="h-4 w-4" />
-            </button>
-          )}
         </div>
       </td>
     </>
@@ -607,49 +581,42 @@ const ResourcesComponent = ({ role, token }: ResourcesComponentProps) => {
         hasActiveFilters={!!debouncedSearch || hasActiveFilters}
         onClearFilters={clearFilters}
         searchTerm={filters.searchTerm}
-        emptyDescription={
-          userRole === 'user'
-            ? "No resources exist. When the admin uploads resources, you'll see them here."
-            : 'Upload resources to the library by clicking the `Upload Resource` button.'
-        }
+        emptyDescription="Upload resources to the library by clicking the `Upload Resource` button."
         skeleton={<ResourceTableSkeleton />}
-        selectable={userRole === 'admin'}
+        selectable
         selectedItems={selectedResources}
-        onSelectItem={userRole === 'admin' ? toggleSelection : undefined}
+        onSelectItem={toggleSelection}
         onSelectAll={selectAll}
         selectedCount={selectedCount}
         onClearSelection={clearSelection}
         selectionActions={selectionActions}
-        onRowClick={userRole === 'user' ? handleStudentRowClick : undefined}
-        onRowDoubleClick={userRole === 'admin' ? handleAdminRowDoubleClick : undefined}
+        onRowDoubleClick={handleAdminRowDoubleClick}
       />
 
-      {userRole === 'admin' && (
-        <>
-          {showAnalytics && selectedResource && (
-            <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-900/50 backdrop-blur-sm">
-              <ResourceAnalytics
-                isOpen={showAnalytics}
-                resource={selectedResource}
-                onClose={() => setShowAnalytics(false)}
-                token={token}
-              />
-            </div>
-          )}
-
-          {showEditModal && selectedResource && (
-            <ResourceEditModal
-              isLoading={isEditing}
-              isOpen={showEditModal}
+      <>
+        {showAnalytics && selectedResource && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-900/50 backdrop-blur-sm">
+            <ResourceAnalytics
+              isOpen={showAnalytics}
               resource={selectedResource}
-              onSave={handleSaveResource}
-              onClose={() => setShowEditModal(false)}
+              onClose={() => setShowAnalytics(false)}
+              token={token}
             />
-          )}
-        </>
-      )}
+          </div>
+        )}
 
-      {userRole === 'admin' && showDeleteModal && (
+        {showEditModal && selectedResource && (
+          <ResourceEditModal
+            isLoading={isEditing}
+            isOpen={showEditModal}
+            resource={selectedResource}
+            onSave={handleSaveResource}
+            onClose={() => setShowEditModal(false)}
+          />
+        )}
+      </>
+
+      {showDeleteModal && (
         <DeleteResourceModal
           mode="soft"
           isLoading={isDeleting}

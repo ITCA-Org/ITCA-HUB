@@ -122,7 +122,6 @@ const EventCard = ({
     }
   };
 
-  const isFull = event.attendees.length >= event.capacity;
   const statusConfig = getStatusConfig(event.status);
 
   return (
