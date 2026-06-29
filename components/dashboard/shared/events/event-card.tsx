@@ -1,7 +1,7 @@
 import {
   Edit,
   Clock,
-  Users,
+  Ticket,
   MapPin,
   Trash2,
   EyeIcon,
@@ -208,36 +208,25 @@ const EventCard = ({
             <MapPin className="mr-2 h-4 w-4 text-blue-500" />
             <span className="line-clamp-1 text-gray-500">{event.location}</span>
           </div>
-          {event.registrationRequired && (
+          {event.ticketingEnabled && (
             <div className="flex items-center">
-              <Users className="mr-2 h-4 w-4 text-blue-500" />
-              <span className="text-gray-500">
-                {event.attendees.length} / {event.capacity} registered
-              </span>
+              <Ticket className="mr-2 h-4 w-4 text-blue-500" />
+              <span className="text-gray-500">Ticketing enabled</span>
             </div>
           )}
         </div>
         {/*==================== End of Event Details ====================*/}
 
-        {/*==================== Admin Registration Message ====================*/}
-        {role === 'admin' && event.registrationRequired && (
+        {event.ticketingEnabled && event.ticketTiers && (
           <div className="mt-6 pt-4 pb-2 border-t border-gray-300">
-            <div className="text-center text-sm text-gray-500 font-medium">
-              Admins cannot register for events.
+            <div className="text-center text-sm text-blue-600 font-medium">
+              {event.ticketTiers
+                .filter((t) => t.enabled)
+                .map((t) => `${t.label}: D${t.price}`)
+                .join(' · ')}
             </div>
           </div>
         )}
-        {/*==================== End of Admin Registration Message ====================*/}
-
-        {/*==================== No Registration Required ====================*/}
-        {!event.registrationRequired && (
-          <div className="mt-6 pt-4 pb-2 border-t border-gray-300">
-            <div className="text-center text-sm text-green-600 font-medium">
-              No registration required - Join anytime.
-            </div>
-          </div>
-        )}
-        {/*==================== End of No Registration Required ====================*/}
       </div>
       {/*==================== End of Event Content ====================*/}
     </div>

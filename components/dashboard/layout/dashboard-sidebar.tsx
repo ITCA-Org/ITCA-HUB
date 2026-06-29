@@ -6,6 +6,7 @@ import {
   User2Icon,
   HelpCircle,
   LayoutDashboardIcon,
+  ScanLine,
 } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -29,6 +30,11 @@ const adminNavItems: NavItem[] = [
     name: 'Events',
     href: '/admin/events',
     icon: <Calendar className="h-5 w-5" />,
+  },
+  {
+    name: 'Ticket Scanner',
+    href: '/admin/ticket-scanner',
+    icon: <ScanLine className="h-5 w-5" />,
   },
   {
     name: 'Resources',
