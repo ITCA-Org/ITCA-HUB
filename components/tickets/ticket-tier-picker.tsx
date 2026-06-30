@@ -32,7 +32,7 @@ function MobileTierRow({ event, tier }: { event: EventProps; tier: TicketTier })
   return (
     <Link
       href={`/events/${event._id}/checkout?tier=${tier.type}`}
-      className="group flex items-center gap-3 rounded-2xl border-2 border-gray-100 bg-gray-50/80 p-4 transition hover:border-[#1d4ed8] hover:bg-[#eef4ff]"
+      className="group flex items-center gap-3 rounded-2xl border-2 border-gray-100 bg-gray-50/80 p-4 transition hover:border-[#1e3a8a] hover:bg-[#eef4ff]"
     >
       <div className="min-w-0 flex-1">
         <p className="font-bold text-gray-900">{tier.label}</p>
@@ -46,7 +46,7 @@ function MobileTierRow({ event, tier }: { event: EventProps; tier: TicketTier })
             D{tier.price}
           </p>
         </div>
-        <ChevronRight className="h-5 w-5 text-gray-300 transition group-hover:text-[#1d4ed8]" />
+        <ChevronRight className="h-5 w-5 text-gray-300 transition group-hover:text-[#1e3a8a]" />
       </div>
     </Link>
   );
@@ -56,7 +56,7 @@ function DesktopTierCard({ event, tier }: { event: EventProps; tier: TicketTier 
   return (
     <Link
       href={`/events/${event._id}/checkout?tier=${tier.type}`}
-      className="group flex h-full flex-col rounded-2xl border-2 border-gray-100 bg-gray-50/60 p-6 transition hover:border-[#1d4ed8] hover:bg-[#eef4ff] hover:shadow-md"
+      className="group flex h-full flex-col rounded-2xl border-2 border-gray-100 bg-gray-50/60 p-6 transition hover:border-[#1e3a8a] hover:bg-[#eef4ff] hover:shadow-md"
     >
       <div className="flex-1">
         <p className="text-xl font-bold text-gray-900">{tier.label}</p>

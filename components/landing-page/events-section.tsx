@@ -6,7 +6,11 @@ import { useState, useEffect } from 'react';
 import { Calendar, Clock, MapPin, EyeIcon, X, Ticket } from 'lucide-react';
 import Link from 'next/link';
 import { TicketTier } from '@/types/interfaces/event';
-import { TICKET_BLUE, TICKET_BUTTON_BLUE } from '@/components/tickets/ticket-flow-shell';
+import {
+  TICKET_BLUE,
+  TICKET_BUTTON_BLUE,
+  ticketFlowButtonInlineClassName,
+} from '@/components/tickets/ticket-flow-shell';
 
 export type Event = {
   _id: string;
@@ -172,7 +176,7 @@ const GetTicketsSection = ({
             </div>
             <Link
               href={`/events/${event._id}/checkout?tier=${tier.type}`}
-              className="mt-3 inline-flex w-full justify-center items-center rounded-full px-5 py-2.5 text-sm font-semibold text-white"
+              className={`mt-3 w-full ${ticketFlowButtonInlineClassName}`}
               style={{ backgroundColor: TICKET_BUTTON_BLUE }}
             >
               Buy {tier.label}
@@ -292,7 +296,7 @@ const EventCard = ({
                   ? `/events/${event._id}/checkout?tier=${enabledTiers[0].type}`
                   : `/events/${event._id}/tickets`
               }
-              className="inline-flex w-full justify-center items-center rounded-full px-4 py-2.5 text-sm font-semibold text-white transition-colors"
+              className={`w-full ${ticketFlowButtonInlineClassName}`}
               style={{ backgroundColor: TICKET_BUTTON_BLUE }}
             >
               <Ticket className="h-4 w-4 mr-2" />

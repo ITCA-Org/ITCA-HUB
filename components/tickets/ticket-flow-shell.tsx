@@ -3,13 +3,13 @@ import { ArrowLeft, Loader } from 'lucide-react';
 import { ReactNode } from 'react';
 
 export const TICKET_BLUE = '#2763eb';
-export const TICKET_BUTTON_BLUE = '#1d4ed8';
+export const TICKET_BUTTON_BLUE = '#1e3a8a';
 
 export const ticketFlowButtonClassName =
-  'flex w-full items-center justify-center gap-2 rounded-full px-6 py-4 text-[15px] font-bold text-white shadow-[0_4px_14px_rgba(29,78,216,0.4)] transition hover:brightness-110 active:scale-[0.98] disabled:opacity-50';
+  'flex w-full items-center justify-center gap-2 rounded-full px-6 py-4 text-[15px] font-bold text-white shadow-[0_4px_14px_rgba(30,58,138,0.55)] transition hover:brightness-110 active:scale-[0.98] disabled:opacity-50';
 
 export const ticketFlowButtonInlineClassName =
-  'inline-flex items-center justify-center gap-2 rounded-full px-6 py-3.5 text-sm font-bold text-white shadow-[0_4px_14px_rgba(29,78,216,0.4)] transition hover:brightness-110 active:scale-[0.98]';
+  'inline-flex items-center justify-center gap-2 rounded-full px-6 py-3.5 text-sm font-bold text-white shadow-[0_4px_14px_rgba(30,58,138,0.55)] transition hover:brightness-110 active:scale-[0.98]';
 
 interface TicketFlowShellProps {
   title: string;
