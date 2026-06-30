@@ -1,62 +1,107 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
-import { Loader, Download, CheckCircle, XCircle } from 'lucide-react';
-import QRCode from 'qrcode';
+import Head from 'next/head';
+import { Loader, XCircle, RefreshCw } from 'lucide-react';
 import { getTicketOrder, getTicketDownloadUrl } from '@/hooks/tickets/use-tickets';
-import { TicketProps } from '@/types/interfaces/ticket';
+import { EventTicketCard } from '@/components/tickets/event-ticket-card';
+import {
+  TicketFlowShell,
+  TICKET_BLUE,
+} from '@/components/tickets/ticket-flow-shell';
+import { EventProps } from '@/types/interfaces/event';
+import { TicketProps, TicketOrderSummary } from '@/types/interfaces/ticket';
+
+const POLL_INTERVAL_MS = 3000;
+const MAX_POLL_ATTEMPTS = 20;
 
 const TicketSuccessPage = () => {
   const router = useRouter();
   const { token } = router.query;
   const [isLoading, setIsLoading] = useState(true);
+  const [isRefreshing, setIsRefreshing] = useState(false);
   const [orderData, setOrderData] = useState<{
-    order: { status: string; buyerName: string; buyerEmail: string; amount: number };
-    event: { title: string; location: string; date: string };
+    order: TicketOrderSummary;
+    event: EventProps;
     tickets: TicketProps[];
   } | null>(null);
-  const [qrImages, setQrImages] = useState<Record<string, string>>({});
+
+  const loadOrder = useCallback(async (options?: { showSpinner?: boolean }) => {
+    if (!token || typeof token !== 'string') return null;
+
+    if (options?.showSpinner) {
+      setIsRefreshing(true);
+    }
+
+    try {
+      const data = await getTicketOrder(token);
+      setOrderData(data);
+      return data;
+    } catch {
+      return null;
+    } finally {
+      setIsLoading(false);
+      setIsRefreshing(false);
+    }
+  }, [token]);
 
   useEffect(() => {
-    if (!token || typeof token !== 'string') return;
+    if (!router.isReady) return;
 
-    const fetchOrder = async () => {
-      try {
-        const data = await getTicketOrder(token);
-        setOrderData(data);
+    if (!token || typeof token !== 'string') {
+      setIsLoading(false);
+      return;
+    }
 
-        const images: Record<string, string> = {};
-        for (const ticket of data.tickets) {
-          images[ticket._id] = await QRCode.toDataURL(ticket.barcodePayload, {
-            width: 200,
-            margin: 1,
-          });
-        }
-        setQrImages(images);
-      } catch {
+    let cancelled = false;
+    let attempts = 0;
+
+    const poll = async () => {
+      const data = await loadOrder();
+      if (cancelled) return;
+
+      if (!data && attempts === 0) {
         setOrderData(null);
-      } finally {
-        setIsLoading(false);
+        return;
+      }
+
+      if (data?.order.status === 'paid') {
+        return;
+      }
+
+      attempts += 1;
+      if (attempts < MAX_POLL_ATTEMPTS) {
+        setTimeout(poll, POLL_INTERVAL_MS);
       }
     };
 
-    fetchOrder();
-  }, [token]);
+    poll();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [token, loadOrder, router.isReady]);
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <Loader className="h-8 w-8 animate-spin text-blue-600" />
+      <div
+        className="flex h-dvh items-center justify-center"
+        style={{ backgroundColor: TICKET_BLUE }}
+      >
+        <Loader className="h-8 w-8 animate-spin text-white" />
       </div>
     );
   }
 
   if (!orderData) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center gap-4">
-        <XCircle className="h-12 w-12 text-red-500" />
-        <p className="text-gray-600">Order not found or payment pending.</p>
-        <Link href="/" className="text-blue-600 hover:underline">
+      <div
+        className="flex h-dvh flex-col items-center justify-center gap-4 px-4"
+        style={{ backgroundColor: TICKET_BLUE }}
+      >
+        <XCircle className="h-12 w-12 text-white" />
+        <p className="text-white/90">Order not found or payment pending.</p>
+        <Link href="/" className="text-white underline">
           Back to home
         </Link>
       </div>
@@ -67,81 +112,72 @@ const TicketSuccessPage = () => {
   const isPaid = order.status === 'paid';
 
   return (
-    <div className="min-h-screen bg-gray-50 py-12 px-4">
-      <div className="max-w-2xl mx-auto">
-        <div className="text-center mb-8">
-          {isPaid ? (
-            <>
-              <CheckCircle className="h-16 w-16 text-green-500 mx-auto mb-4" />
-              <h1 className="text-2xl font-bold text-gray-900">Payment Successful!</h1>
-              <p className="text-gray-600 mt-2">Your ticket for {event.title}</p>
-            </>
-          ) : (
-            <>
-              <Loader className="h-16 w-16 text-amber-500 mx-auto mb-4 animate-spin" />
-              <h1 className="text-2xl font-bold text-gray-900">Processing Payment...</h1>
-              <p className="text-gray-600 mt-2">
-                Your payment is being confirmed. Refresh this page in a moment.
-              </p>
-            </>
-          )}
-          {order.buyerEmail && isPaid && (
-            <p className="text-sm text-gray-500 mt-2">
-              A copy has been sent to {order.buyerEmail}
+    <>
+      <Head>
+        <style>{`
+          @media print {
+            @page { margin: 10mm; size: auto; }
+            html, body {
+              margin: 0 !important;
+              padding: 0 !important;
+              background: #ffffff !important;
+              -webkit-print-color-adjust: exact;
+              print-color-adjust: exact;
+            }
+            body * { visibility: hidden; }
+            #printable-ticket, #printable-ticket * { visibility: visible; }
+            #printable-ticket {
+              position: absolute;
+              left: 50%;
+              top: 0;
+              transform: translateX(-50%);
+              width: 380px;
+              max-width: 100%;
+              margin: 0;
+              padding: 20px;
+              background: #ffffff !important;
+              border: none !important;
+              box-shadow: none !important;
+              border-radius: 0 !important;
+            }
+          }
+        `}</style>
+      </Head>
+
+      <TicketFlowShell title="Ticket" backHref="/">
+        {!isPaid && (
+          <div className="text-center text-white">
+            <Loader className="mx-auto mb-2 h-10 w-10 animate-spin text-lime-300" />
+            <p className="text-base font-semibold">Processing Payment...</p>
+            <p className="mt-1 text-xs text-white/80">
+              Your payment is being confirmed. This usually takes a few seconds.
             </p>
-          )}
-        </div>
+            <button
+              type="button"
+              onClick={() => loadOrder({ showSpinner: true })}
+              disabled={isRefreshing}
+              className="mt-3 inline-flex items-center gap-2 rounded-full bg-white/15 px-4 py-2 text-sm font-medium text-white hover:bg-white/25 disabled:opacity-50"
+            >
+              <RefreshCw
+                className={`h-4 w-4 ${isRefreshing ? 'animate-spin' : ''}`}
+              />
+              {isRefreshing ? 'Checking...' : 'Check again'}
+            </button>
+          </div>
+        )}
 
         {isPaid &&
           tickets.map((ticket) => (
-            <div
-              key={ticket._id}
-              className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-4"
-            >
-              <div className="flex flex-col sm:flex-row gap-6">
-                <div className="flex-1">
-                  <p className="text-sm text-gray-500">Ticket Number</p>
-                  <p className="font-bold text-lg text-gray-900">{ticket.ticketNumber}</p>
-                  <p className="text-sm text-gray-500 mt-3">Tier</p>
-                  <p className="font-medium">{ticket.tierLabel}</p>
-                  <p className="text-sm text-gray-500 mt-3">Holder</p>
-                  <p className="font-medium">{ticket.holderName}</p>
-                  <p className="text-sm text-gray-500 mt-3">Event</p>
-                  <p className="font-medium">{event.title}</p>
-                  <p className="text-sm text-gray-600">{event.location}</p>
-                </div>
-
-                {qrImages[ticket._id] && (
-                  <div className="flex flex-col items-center">
-                    <img
-                      src={qrImages[ticket._id]}
-                      alt="Ticket QR Code"
-                      className="w-40 h-40 border border-gray-200 rounded-lg"
-                    />
-                    <p className="text-xs text-gray-500 mt-2 text-center">
-                      Present at entrance
-                    </p>
-                  </div>
-                )}
-              </div>
-
-              <a
-                href={getTicketDownloadUrl(ticket._id, token as string)}
-                className="mt-4 inline-flex items-center justify-center w-full py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium text-sm"
-              >
-                <Download className="h-4 w-4 mr-2" />
-                Download PDF Ticket
-              </a>
+            <div key={ticket._id} className="flex min-h-0 flex-1 flex-col">
+              <EventTicketCard
+                ticket={ticket}
+                event={event}
+                downloadUrl={getTicketDownloadUrl(ticket._id, token as string)}
+              />
             </div>
           ))}
-
-        <div className="text-center mt-6">
-          <Link href="/" className="text-blue-600 hover:underline text-sm">
-            Back to home
-          </Link>
-        </div>
-      </div>
-    </div>
+      </TicketFlowShell>
+    </>
   );
 };
 

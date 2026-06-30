@@ -28,7 +28,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
       const tokenCookie = serialize('itca_hub', JSON.stringify(cookieData), {
         httpOnly: true,
-        secure: true,
+        secure: process.env.NODE_ENV === 'production',
         maxAge: 60 * 60 * 24 * 30,
         sameSite: 'strict',
         path: '/',

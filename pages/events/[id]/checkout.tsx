@@ -2,12 +2,21 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import axios from 'axios';
 import Link from 'next/link';
-import { ArrowLeft, Loader, Ticket } from 'lucide-react';
+import { Loader } from 'lucide-react';
 import { toast } from 'sonner';
 import { BASE_URL } from '@/utils/url';
 import { checkoutTicket } from '@/hooks/tickets/use-tickets';
 import { EventProps } from '@/types/interfaces/event';
 import { getErrorMessage } from '@/utils/error';
+import {
+  TicketFlowShell,
+  TicketFlowCard,
+  TicketFlowButton,
+  TicketFlowField,
+  ticketFlowInputClassName,
+  TICKET_BLUE,
+} from '@/components/tickets/ticket-flow-shell';
+import { TicketEventSummary } from '@/components/tickets/ticket-event-summary';
 
 const CheckoutPage = () => {
   const router = useRouter();
@@ -65,100 +74,79 @@ const CheckoutPage = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <Loader className="h-8 w-8 animate-spin text-blue-600" />
+      <div
+        className="flex h-dvh items-center justify-center"
+        style={{ backgroundColor: TICKET_BLUE }}
+      >
+        <Loader className="h-8 w-8 animate-spin text-white" />
       </div>
     );
   }
 
   if (!event || !selectedTier) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center gap-4">
-        <p className="text-gray-600">Event or ticket tier not found.</p>
-        <Link href="/" className="text-blue-600 hover:underline">
-          Back to home
-        </Link>
-      </div>
+      <TicketFlowShell title="Checkout" backHref="/">
+        <TicketFlowCard>
+          <p className="text-center text-sm text-gray-600">
+            Event or ticket tier not found.
+          </p>
+          <Link
+            href={`/events/${id}/tickets`}
+            className="mt-4 block text-center text-sm font-medium"
+            style={{ color: TICKET_BLUE }}
+          >
+            Choose a ticket
+          </Link>
+        </TicketFlowCard>
+      </TicketFlowShell>
     );
   }
 
+  const backHref =
+    (event.ticketTiers?.filter((t) => t.enabled).length ?? 0) > 1
+      ? `/events/${event._id}/tickets`
+      : '/';
+
   return (
-    <div className="min-h-screen bg-gray-50 py-12 px-4">
-      <div className="max-w-lg mx-auto">
-        <Link
-          href="/"
-          className="inline-flex items-center text-sm text-gray-500 hover:text-gray-700 mb-6"
-        >
-          <ArrowLeft className="h-4 w-4 mr-1" />
-          Back to events
-        </Link>
+    <TicketFlowShell title="Checkout" backHref={backHref}>
+      <TicketFlowCard>
+        <TicketEventSummary event={event} tier={selectedTier} compact />
 
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-          <div className="flex items-center gap-2 text-blue-600 mb-4">
-            <Ticket className="h-5 w-5" />
-            <span className="font-medium">Ticket Checkout</span>
-          </div>
+        <form onSubmit={handleCheckout} className="mt-5 space-y-4">
+          <TicketFlowField label="Full Name" required>
+            <input
+              required
+              type="text"
+              value={buyerName}
+              onChange={(e) => setBuyerName(e.target.value)}
+              className={ticketFlowInputClassName}
+              placeholder="Your full name"
+            />
+          </TicketFlowField>
 
-          <h1 className="text-xl font-bold text-gray-900 mb-1">{event.title}</h1>
-          <p className="text-gray-500 text-sm mb-6">{event.location}</p>
+          <TicketFlowField
+            label="Email"
+            hint="Optional — we'll email your ticket after payment"
+          >
+            <input
+              type="email"
+              value={buyerEmail}
+              onChange={(e) => setBuyerEmail(e.target.value)}
+              className={ticketFlowInputClassName}
+              placeholder="your@email.com"
+            />
+          </TicketFlowField>
 
-          <div className="bg-blue-50 rounded-lg p-4 mb-6">
-            <p className="font-semibold text-gray-900">{selectedTier.label}</p>
-            <p className="text-2xl font-bold text-blue-600">D{selectedTier.price}</p>
-            {selectedTier.benefits && (
-              <p className="text-sm text-gray-600 mt-1">{selectedTier.benefits}</p>
-            )}
-          </div>
-
-          <form onSubmit={handleCheckout} className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Full Name <span className="text-red-500">*</span>
-              </label>
-              <input
-                required
-                type="text"
-                value={buyerName}
-                onChange={(e) => setBuyerName(e.target.value)}
-                className="w-full rounded-lg border border-gray-200 p-2.5 text-sm"
-                placeholder="Your full name"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Email (optional)
-              </label>
-              <input
-                type="email"
-                value={buyerEmail}
-                onChange={(e) => setBuyerEmail(e.target.value)}
-                className="w-full rounded-lg border border-gray-200 p-2.5 text-sm"
-                placeholder="your@email.com"
-              />
-              <p className="text-xs text-gray-500 mt-1">
-                Provide your email to receive your ticket automatically
-              </p>
-            </div>
-
-            <button
-              type="submit"
-              disabled={isSubmitting}
-              className="w-full py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 disabled:opacity-50 flex items-center justify-center"
-            >
-              {isSubmitting ? (
-                <>
-                  <Loader className="h-4 w-4 animate-spin mr-2" />
-                  Processing...
-                </>
-              ) : (
-                `Pay D${selectedTier.price} via Modem Pay`
-              )}
-            </button>
-          </form>
-        </div>
-      </div>
-    </div>
+          <TicketFlowButton
+            type="submit"
+            loading={isSubmitting}
+            loadingText="Redirecting to payment..."
+          >
+            Pay D{selectedTier.price} via Modem Pay
+          </TicketFlowButton>
+        </form>
+      </TicketFlowCard>
+    </TicketFlowShell>
   );
 };
 
