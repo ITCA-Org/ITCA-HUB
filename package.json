@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev -H 0.0.0.0",
     "build": "next build",
     "start": "next start",
     "lint": "eslint .",
@@ -22,6 +22,7 @@
     "formidable": "^3.5.4",
     "framer-motion": "^12.5.0",
     "init": "^0.1.2",
+    "jsbarcode": "^3.12.3",
     "jszip": "^3.10.1",
     "lucide-react": "^0.482.0",
     "next": "15.2.8",

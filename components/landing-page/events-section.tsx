@@ -6,6 +6,7 @@ import { useState, useEffect } from 'react';
 import { Calendar, Clock, MapPin, EyeIcon, X, Ticket } from 'lucide-react';
 import Link from 'next/link';
 import { TicketTier } from '@/types/interfaces/event';
+import { TICKET_BLUE, TICKET_BUTTON_BLUE } from '@/components/tickets/ticket-flow-shell';
 
 export type Event = {
   _id: string;
@@ -151,30 +152,35 @@ const GetTicketsSection = ({
 
   return (
     <div className={`space-y-3 ${className}`}>
-      <h3 className="text-base md:text-lg font-medium text-gray-900">Get Tickets</h3>
+      <h3 className="text-base font-semibold text-gray-900 md:text-lg">Get Tickets</h3>
       {enabledTiers.length > 0 ? (
         enabledTiers.map((tier) => (
           <div
             key={tier.type}
-            className="border border-gray-200 rounded-lg p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3"
+            className="rounded-[20px] border-2 border-dashed p-4"
+            style={{ borderColor: `${TICKET_BLUE}55`, backgroundColor: '#f8faff' }}
           >
             <div>
-              <p className="font-semibold text-gray-900">{tier.label}</p>
-              <p className="text-lg font-bold text-blue-600">D{tier.price}</p>
+              <p className="text-[10px] text-gray-400">Tier</p>
+              <p className="font-bold text-gray-900">{tier.label}</p>
+              <p className="text-xl font-bold" style={{ color: TICKET_BLUE }}>
+                D{tier.price}
+              </p>
               {tier.benefits && (
-                <p className="text-sm text-gray-500 mt-1">{tier.benefits}</p>
+                <p className="mt-1 text-sm text-gray-500">{tier.benefits}</p>
               )}
             </div>
             <Link
               href={`/events/${event._id}/checkout?tier=${tier.type}`}
-              className="inline-flex justify-center items-center px-5 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium text-sm"
+              className="mt-3 inline-flex w-full justify-center items-center rounded-full px-5 py-2.5 text-sm font-semibold text-white"
+              style={{ backgroundColor: TICKET_BUTTON_BLUE }}
             >
-              Buy {tier.label} — D{tier.price}
+              Buy {tier.label}
             </Link>
           </div>
         ))
       ) : (
-        <p className="text-gray-500 text-sm bg-gray-50 rounded-lg p-4">
+        <p className="text-gray-500 text-sm rounded-[20px] border border-dashed border-gray-200 bg-gray-50 p-4">
           Ticket tiers are not configured yet.
         </p>
       )}
@@ -280,24 +286,20 @@ const EventCard = ({
 
         {enabledTiers.length > 0 && (
           <div className="mt-4 pt-2">
-            {enabledTiers.length === 1 ? (
-              <Link
-                href={`/events/${event._id}/checkout?tier=${enabledTiers[0].type}`}
-                className="w-full inline-flex justify-center items-center rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-medium text-white hover:bg-blue-700 transition-colors"
-              >
-                <Ticket className="h-4 w-4 mr-2" />
-                Buy {enabledTiers[0].label} — D{enabledTiers[0].price}
-              </Link>
-            ) : (
-              <button
-                type="button"
-                onClick={() => onView(event)}
-                className="w-full inline-flex justify-center items-center rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-medium text-white hover:bg-blue-700 transition-colors cursor-pointer"
-              >
-                <Ticket className="h-4 w-4 mr-2" />
-                View tickets
-              </button>
-            )}
+            <Link
+              href={
+                enabledTiers.length === 1
+                  ? `/events/${event._id}/checkout?tier=${enabledTiers[0].type}`
+                  : `/events/${event._id}/tickets`
+              }
+              className="inline-flex w-full justify-center items-center rounded-full px-4 py-2.5 text-sm font-semibold text-white transition-colors"
+              style={{ backgroundColor: TICKET_BUTTON_BLUE }}
+            >
+              <Ticket className="h-4 w-4 mr-2" />
+              {enabledTiers.length === 1
+                ? `Buy ${enabledTiers[0].label} — D${enabledTiers[0].price}`
+                : 'Buy tickets'}
+            </Link>
           </div>
         )}
       </div>
