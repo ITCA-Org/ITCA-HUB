@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import axios from 'axios';
 import Link from 'next/link';
+import Head from 'next/head';
 import { Loader } from 'lucide-react';
 import { toast } from 'sonner';
 import { BASE_URL } from '@/utils/url';
@@ -27,10 +28,13 @@ const CheckoutPage = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const tierType = tier as 'standard' | 'premium';
+  const tierType = (Array.isArray(tier) ? tier[0] : tier) as
+    | 'standard'
+    | 'premium'
+    | undefined;
 
   useEffect(() => {
-    if (!id) return;
+    if (!router.isReady || !id || typeof id !== 'string') return;
 
     const fetchEvent = async () => {
       try {
@@ -44,15 +48,14 @@ const CheckoutPage = () => {
     };
 
     fetchEvent();
-  }, [id]);
+  }, [id, router.isReady]);
 
-  const selectedTier = event?.ticketTiers?.find(
-    (t) => t.type === tierType && t.enabled
-  );
+  const selectedTier =
+    tierType && event?.ticketTiers?.find((t) => t.type === tierType && t.enabled);
 
   const handleCheckout = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!event || !selectedTier) return;
+    if (!event || !selectedTier || !tierType) return;
 
     setIsSubmitting(true);
     try {
@@ -72,7 +75,7 @@ const CheckoutPage = () => {
     }
   };
 
-  if (isLoading) {
+  if (isLoading || !router.isReady) {
     return (
       <div
         className="flex h-dvh items-center justify-center"
@@ -109,6 +112,9 @@ const CheckoutPage = () => {
 
   return (
     <TicketFlowShell title="Checkout" backHref={backHref}>
+      <Head>
+        <title>Checkout | ITCA Hub</title>
+      </Head>
       <TicketFlowCard>
         <TicketEventSummary event={event} tier={selectedTier} compact />
 
