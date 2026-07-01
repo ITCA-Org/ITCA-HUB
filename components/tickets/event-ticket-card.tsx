@@ -4,7 +4,7 @@ import { Download } from 'lucide-react';
 import { EventProps } from '@/types/interfaces/event';
 import { TicketProps } from '@/types/interfaces/ticket';
 
-import { TICKET_BLUE, TICKET_BUTTON_BLUE, ticketFlowButtonClassName } from '@/components/tickets/ticket-flow-shell';
+import { TICKET_BLUE, TICKET_BUTTON_BLUE } from '@/components/tickets/ticket-flow-shell';
 
 export { TICKET_BLUE };
 
@@ -150,7 +150,7 @@ export function EventTicketCard({
       {downloadUrl && (
         <a
           href={downloadUrl}
-          className={`mt-3 shrink-0 print:hidden ${ticketFlowButtonClassName}`}
+          className="mt-3 flex w-full shrink-0 items-center justify-center gap-2.5 rounded-full px-5 py-3 text-sm font-semibold text-white print:hidden"
           style={{ backgroundColor: TICKET_BUTTON_BLUE }}
         >
           <span className="flex h-8 w-8 items-center justify-center rounded-full bg-black/25">
