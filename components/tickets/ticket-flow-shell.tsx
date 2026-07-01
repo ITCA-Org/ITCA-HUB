@@ -3,13 +3,7 @@ import { ArrowLeft, Loader } from 'lucide-react';
 import { ReactNode } from 'react';
 
 export const TICKET_BLUE = '#2763eb';
-export const TICKET_BUTTON_BLUE = '#1e3a8a';
-
-export const ticketFlowButtonClassName =
-  'flex w-full items-center justify-center gap-2 rounded-full px-6 py-4 text-[15px] font-bold text-white shadow-[0_4px_14px_rgba(30,58,138,0.55)] transition hover:brightness-110 active:scale-[0.98] disabled:opacity-50';
-
-export const ticketFlowButtonInlineClassName =
-  'inline-flex items-center justify-center gap-2 rounded-full px-6 py-3.5 text-sm font-bold text-white shadow-[0_4px_14px_rgba(30,58,138,0.55)] transition hover:brightness-110 active:scale-[0.98]';
+export const TICKET_BUTTON_BLUE = '#4f86ef';
 
 interface TicketFlowShellProps {
   title: string;
@@ -87,7 +81,7 @@ export function TicketFlowButton({
     <button
       type={type}
       disabled={disabled || loading}
-      className={`${ticketFlowButtonClassName} ${className}`}
+      className={`flex w-full items-center justify-center gap-2 rounded-full px-5 py-3 text-sm font-semibold text-white transition disabled:opacity-50 ${className}`}
       style={{ backgroundColor: TICKET_BUTTON_BLUE }}
       {...props}
     >
@@ -117,7 +111,7 @@ export function TicketFlowLinkButton({
   return (
     <Link
       href={href}
-      className={`${ticketFlowButtonClassName} ${className}`}
+      className={`flex w-full items-center justify-center gap-2 rounded-full px-5 py-3 text-sm font-semibold text-white transition ${className}`}
       style={{ backgroundColor: TICKET_BUTTON_BLUE }}
     >
       {children}
