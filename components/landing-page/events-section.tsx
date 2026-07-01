@@ -3,10 +3,13 @@ import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { BASE_URL } from '@/utils/url';
 import { useState, useEffect } from 'react';
-import { Calendar, Clock, MapPin, EyeIcon, X, Ticket } from 'lucide-react';
+import { Calendar, Clock, MapPin, Ticket } from 'lucide-react';
 import Link from 'next/link';
 import { TicketTier } from '@/types/interfaces/event';
-import { TICKET_BLUE, TICKET_BUTTON_BLUE } from '@/components/tickets/ticket-flow-shell';
+import {
+  TICKET_BUTTON_BLUE,
+  ticketFlowButtonInlineClassName,
+} from '@/components/tickets/ticket-flow-shell';
 
 export type Event = {
   _id: string;
@@ -137,65 +140,12 @@ const getStatusConfig = (status: string) => {
 const getEnabledTiers = (event: Event) =>
   event.ticketTiers?.filter((t) => t.enabled) ?? [];
 
-const GetTicketsSection = ({
-  event,
-  className = '',
-}: {
-  event: Event;
-  className?: string;
-}) => {
-  const enabledTiers = getEnabledTiers(event);
-
-  if (!event.ticketingEnabled || !event.ticketTiers) {
-    return null;
-  }
-
-  return (
-    <div className={`space-y-3 ${className}`}>
-      <h3 className="text-base font-semibold text-gray-900 md:text-lg">Get Tickets</h3>
-      {enabledTiers.length > 0 ? (
-        enabledTiers.map((tier) => (
-          <div
-            key={tier.type}
-            className="rounded-[20px] border-2 border-dashed p-4"
-            style={{ borderColor: `${TICKET_BLUE}55`, backgroundColor: '#f8faff' }}
-          >
-            <div>
-              <p className="text-[10px] text-gray-400">Tier</p>
-              <p className="font-bold text-gray-900">{tier.label}</p>
-              <p className="text-xl font-bold" style={{ color: TICKET_BLUE }}>
-                D{tier.price}
-              </p>
-              {tier.benefits && (
-                <p className="mt-1 text-sm text-gray-500">{tier.benefits}</p>
-              )}
-            </div>
-            <Link
-              href={`/events/${event._id}/checkout?tier=${tier.type}`}
-              className="mt-3 inline-flex w-full justify-center items-center rounded-full px-5 py-2.5 text-sm font-semibold text-white"
-              style={{ backgroundColor: TICKET_BUTTON_BLUE }}
-            >
-              Buy {tier.label}
-            </Link>
-          </div>
-        ))
-      ) : (
-        <p className="text-gray-500 text-sm rounded-[20px] border border-dashed border-gray-200 bg-gray-50 p-4">
-          Ticket tiers are not configured yet.
-        </p>
-      )}
-    </div>
-  );
-};
-
 const EventCard = ({
   event,
   index,
-  onView,
 }: {
   event: Event;
   index: number;
-  onView: (event: Event) => void;
 }) => {
   const [imageError, setImageError] = useState(false);
   const statusConfig = getStatusConfig(event.status);
@@ -233,25 +183,13 @@ const EventCard = ({
       {/*==================== Event Content ====================*/}
       <div className="px-6 pt-6 pb-2">
         {/*==================== Event Header ====================*/}
-        <div className="mb-4 flex items-start justify-between">
-          <div className="flex-1">
-            <h3 className="mb-2 text-lg font-semibold text-gray-900 line-clamp-2">{event.title}</h3>
-            <span
-              className={`inline-flex items-center rounded-full px-2.5 py-1 text-sm font-medium ${statusConfig.color}`}
-            >
-              {statusConfig.text}
-            </span>
-          </div>
-
-          <div className="ml-3">
-            <button
-              title="View Event"
-              onClick={() => onView(event)}
-              className="rounded-md p-1.5 text-gray-400 hover:bg-green-50 hover:text-green-400 transition-colors cursor-pointer"
-            >
-              <EyeIcon className="h-4 w-4" />
-            </button>
-          </div>
+        <div className="mb-4">
+          <h3 className="mb-2 text-lg font-semibold text-gray-900 line-clamp-2">{event.title}</h3>
+          <span
+            className={`inline-flex items-center rounded-full px-2.5 py-1 text-sm font-medium ${statusConfig.color}`}
+          >
+            {statusConfig.text}
+          </span>
         </div>
         {/*==================== End of Event Header ====================*/}
 
@@ -292,7 +230,7 @@ const EventCard = ({
                   ? `/events/${event._id}/checkout?tier=${enabledTiers[0].type}`
                   : `/events/${event._id}/tickets`
               }
-              className="inline-flex w-full justify-center items-center rounded-full px-4 py-2.5 text-sm font-semibold text-white transition-colors"
+              className={`w-full ${ticketFlowButtonInlineClassName}`}
               style={{ backgroundColor: TICKET_BUTTON_BLUE }}
             >
               <Ticket className="h-4 w-4 mr-2" />
@@ -313,21 +251,6 @@ const EventsSection = ({ initialEvents }: { initialEvents?: Event[] }) => {
   const [events, setEvents] = useState<Event[]>(initialEvents ?? []);
   const [isLoading, setIsLoading] = useState(!hasInitialData);
   const [error, setError] = useState<string | null>(null);
-  const [viewingEvent, setViewingEvent] = useState<Event | null>(null);
-
-  const handleViewEvent = async (event: Event) => {
-    setViewingEvent(event);
-
-    try {
-      const response = await axios.get(`${BASE_URL}/events/${event._id}/public`);
-
-      if (response.data.status === 'success') {
-        setViewingEvent(response.data.data);
-      }
-    } catch {
-      // Keep cached event data if refresh fails.
-    }
-  };
 
   useEffect(() => {
     if (hasInitialData) return;
@@ -353,18 +276,6 @@ const EventsSection = ({ initialEvents }: { initialEvents?: Event[] }) => {
 
     fetchEvents();
   }, [hasInitialData]);
-
-  useEffect(() => {
-    if (viewingEvent) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = '';
-    }
-
-    return () => {
-      document.body.style.overflow = '';
-    };
-  }, [viewingEvent]);
 
   return (
     <section
@@ -489,64 +400,11 @@ const EventsSection = ({ initialEvents }: { initialEvents?: Event[] }) => {
         ) : (
           <div className="grid gap-8 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
             {events.map((event, index) => (
-              <EventCard key={event._id} event={event} index={index} onView={handleViewEvent} />
+              <EventCard key={event._id} event={event} index={index} />
             ))}
           </div>
         )}
 
-        {/*==================== View Event Modal ====================*/}
-        {viewingEvent && (
-          <div className="fixed inset-0 bg-black/30 backdrop-blur-md bg-opacity-50 flex items-center justify-center z-40 pt-20 pb-4 px-4">
-            <div className="bg-white rounded-xl shadow-lg p-6 max-w-4xl w-full max-h-[85vh] overflow-y-auto relative">
-              <div>
-                <div className="flex items-center justify-between w-full mb-6">
-                  <h2 className="text-base md:text-2xl font-bold text-gray-900">
-                    {viewingEvent.title}
-                  </h2>
-                  <button
-                    title="View Event Details"
-                    onClick={() => setViewingEvent(null)}
-                    className="text-gray-400 hover:text-gray-600 cursor-pointer"
-                  >
-                    <X className="w-5 h-5" />
-                  </button>
-                </div>
-
-                <div className="mb-6">
-                  <div className="rounded-lg overflow-hidden aspect-video w-full relative">
-                    {viewingEvent.imageUrl ? (
-                      <Image
-                        fill
-                        priority
-                        alt={viewingEvent.title}
-                        src={viewingEvent.imageUrl}
-                        className="object-cover"
-                      />
-                    ) : (
-                      <div className="h-full w-full bg-linear-to-br from-blue-500 via-amber-300 to-blue-500 flex items-center justify-center">
-                        <Calendar className="h-16 w-16 text-white/80" />
-                      </div>
-                    )}
-                  </div>
-                </div>
-
-                <GetTicketsSection event={viewingEvent} className="mb-6" />
-
-                {viewingEvent.description && (
-                  <div className="mb-6">
-                    <h3 className="text-base md:text-lg font-medium mb-3 text-gray-900">
-                      Description
-                    </h3>
-                    <p className="text-gray-600 text-sm md:text-[1.2rem] bg-gray-50 rounded-lg p-4">
-                      {viewingEvent.description}
-                    </p>
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
-        )}
-        {/*==================== End of View Event Modal ====================*/}
       </div>
     </section>
   );
