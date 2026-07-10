@@ -125,7 +125,7 @@ const ViewEventModal = ({ isOpen, eventId, onClose, role, token }: ViewEventModa
 
           {activeTab === 'sales' && sales ? (
             <div className="space-y-6">
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
                 <div className="bg-blue-50 rounded-lg p-4">
                   <div className="flex items-center gap-2 text-blue-600 mb-1">
                     <DollarSign className="h-4 w-4" />
@@ -142,6 +142,12 @@ const ViewEventModal = ({ isOpen, eventId, onClose, role, token }: ViewEventModa
                   </div>
                   <p className="text-2xl font-bold text-gray-900">
                     {sales.ticketsSold} / {sales.capacity}
+                  </p>
+                </div>
+                <div className="bg-emerald-50 rounded-lg p-4">
+                  <p className="text-sm font-medium text-emerald-600 mb-1">Checked In</p>
+                  <p className="text-2xl font-bold text-gray-900">
+                    {sales.ticketsCheckedIn ?? 0}
                   </p>
                 </div>
                 <div className="bg-amber-50 rounded-lg p-4">

@@ -20,6 +20,7 @@ export interface TicketProps {
   holderName: string;
   holderEmail: string;
   status: 'active' | 'used' | 'cancelled';
+  isCheckedIn?: boolean;
   pdfUrl?: string;
   usedAt?: string;
   createdAt: string;
@@ -40,6 +41,7 @@ export interface EventSalesData {
   totalRevenue: number;
   currency: string;
   ticketsSold: number;
+  ticketsCheckedIn: number;
   capacity: number;
   remainingCapacity: number;
   tierBreakdown: Array<{
@@ -61,6 +63,7 @@ export interface EventSalesData {
 export interface VerifyTicketResult {
   valid: boolean;
   message: string;
+  isCheckedIn?: boolean;
   usedAt?: string;
   ticket?: {
     ticketNumber: string;

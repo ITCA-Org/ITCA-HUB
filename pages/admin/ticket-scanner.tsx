@@ -126,22 +126,34 @@ const TicketScannerPage = ({ userData }: TicketScannerPageProps) => {
             className={`rounded-xl border p-6 ${
               result.valid
                 ? 'bg-green-50 border-green-200'
-                : 'bg-red-50 border-red-200'
+                : result.isCheckedIn
+                  ? 'bg-amber-50 border-amber-200'
+                  : 'bg-red-50 border-red-200'
             }`}
           >
             <div className="flex items-center gap-3 mb-3">
               {result.valid ? (
                 <CheckCircle className="h-8 w-8 text-green-600" />
+              ) : result.isCheckedIn ? (
+                <CheckCircle className="h-8 w-8 text-amber-600" />
               ) : (
                 <XCircle className="h-8 w-8 text-red-600" />
               )}
               <div>
                 <p
                   className={`font-bold text-lg ${
-                    result.valid ? 'text-green-800' : 'text-red-800'
+                    result.valid
+                      ? 'text-green-800'
+                      : result.isCheckedIn
+                        ? 'text-amber-800'
+                        : 'text-red-800'
                   }`}
                 >
-                  {result.valid ? 'Valid Ticket' : result.message}
+                  {result.valid
+                    ? 'Checked In'
+                    : result.isCheckedIn
+                      ? 'Already Checked In'
+                      : result.message}
                 </p>
                 {result.ticket && (
                   <p className="text-sm text-gray-600">
