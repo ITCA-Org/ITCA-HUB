@@ -1,10 +1,10 @@
 import { useEffect, useRef } from 'react';
 import JsBarcode from 'jsbarcode';
-import { Download } from 'lucide-react';
+import { Download, CheckCircle2 } from 'lucide-react';
 import { EventProps } from '@/types/interfaces/event';
 import { TicketProps } from '@/types/interfaces/ticket';
 
-import { TICKET_BLUE, TICKET_BUTTON_BLUE } from '@/components/tickets/ticket-flow-shell';
+import { TICKET_BLUE, TICKET_BUTTON_BLUE, ticketFlowButtonClassName } from '@/components/tickets/ticket-flow-shell';
 
 export { TICKET_BLUE };
 
@@ -106,6 +106,20 @@ export function EventTicketCard({
           {event.title}
         </h2>
 
+        {ticket.isCheckedIn && (
+          <div className="mt-3 flex justify-center print:hidden">
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-3 py-1.5 text-xs font-semibold text-emerald-700 ring-1 ring-emerald-200">
+              <CheckCircle2 className="h-3.5 w-3.5" />
+              Checked in
+              {ticket.usedAt && (
+                <span className="font-normal text-emerald-600">
+                  · {new Date(ticket.usedAt).toLocaleString()}
+                </span>
+              )}
+            </span>
+          </div>
+        )}
+
         <TicketNotchDivider />
 
         <div className="grid grid-cols-2 gap-x-4 gap-y-4">
@@ -150,7 +164,7 @@ export function EventTicketCard({
       {downloadUrl && (
         <a
           href={downloadUrl}
-          className="mt-3 flex w-full shrink-0 items-center justify-center gap-2.5 rounded-full px-5 py-3 text-sm font-semibold text-white print:hidden"
+          className={`mt-3 shrink-0 print:hidden ${ticketFlowButtonClassName}`}
           style={{ backgroundColor: TICKET_BUTTON_BLUE }}
         >
           <span className="flex h-8 w-8 items-center justify-center rounded-full bg-black/25">
