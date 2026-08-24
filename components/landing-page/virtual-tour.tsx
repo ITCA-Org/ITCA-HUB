@@ -34,7 +34,7 @@ const tourLocations: TourLocation[] = [
     name: 'Summer Bootcamp',
     description:
       'Hands-on learning with peers at the UTG ITCA Summer Bootcamp—laptops open, ideas flowing.',
-    image: '/ITCA_BOOTCAMP/IMG_8789.jpg',
+    image: '/ITCA_BOOTCAMP/IMG_9041.jpg',
     type: 'image',
   },
   {
@@ -67,6 +67,78 @@ const tourLocations: TourLocation[] = [
     description:
       'Students gathering, serving food, and looking out for each other at ITCA socials and retreats.',
     image: '/ITCA_RETREAT/KG__0418.jpg',
+    type: 'image',
+  },
+  {
+    id: 7,
+    name: 'Week energy',
+    description:
+      'The buzz of ITCA Week—crowds, conversations, and School of ICT pride across campus.',
+    image: '/ITCA_WEEK/IMG_4517.jpg',
+    type: 'image',
+  },
+  {
+    id: 8,
+    name: 'In the lecture hall',
+    description:
+      'Packed sessions during ITCA Week where students learn from speakers and from each other.',
+    image: '/ITCA_WEEK/IMG_4374.jpg',
+    type: 'image',
+  },
+  {
+    id: 9,
+    name: 'Workshop focus',
+    description:
+      'Heads down on real projects—skills practice that goes beyond the classroom timetable.',
+    image: '/ITCA_WEEK/IMG_4237.jpg',
+    type: 'image',
+  },
+  {
+    id: 10,
+    name: 'Bootcamp collaboration',
+    description:
+      'Pairing up, debugging together, and shipping something by the end of the weekend.',
+    image: '/ITCA_BOOTCAMP/IMG_8761.jpg',
+    type: 'image',
+  },
+  {
+    id: 11,
+    name: 'Campus sports day',
+    description:
+      'Cheering, competing, and representing the School of ICT on the field.',
+    image: '/ITCA_SPORTS/IMG_8179.jpg',
+    type: 'image',
+  },
+  {
+    id: 12,
+    name: 'Retreat circle',
+    description:
+      'Gathering as one community—listening, laughing, and building friendships that last.',
+    image: '/ITCA_RETREAT/retreat-circle.jpg',
+    type: 'image',
+  },
+  {
+    id: 13,
+    name: 'Shared meals',
+    description:
+      'Breaking bread together at retreat—because community is built in the quiet moments too.',
+    image: '/ITCA_RETREAT/retreat-lunch.jpg',
+    type: 'image',
+  },
+  {
+    id: 14,
+    name: 'New connections',
+    description:
+      'Handshakes, hellos, and the network you find when ICT students show up for each other.',
+    image: '/ITCA_RETREAT/retreat-handshake.jpg',
+    type: 'image',
+  },
+  {
+    id: 15,
+    name: 'Campus gathering',
+    description:
+      'Faraba Banta moments—students from every ICT programme, already part of ITCA.',
+    image: '/IMG_4410.jpg',
     type: 'image',
   },
 ];

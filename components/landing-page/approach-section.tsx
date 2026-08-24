@@ -12,7 +12,7 @@ const steps = [
     kicker: 'Skills practice that sticks',
     body: 'We organise bootcamps, workshops, and hands-on sessions so ICT students can practice what they learn in class—coding, networking, design, and more—with peers who get it.',
     points: ['Bootcamps', 'Workshops', 'Peer learning', 'Project practice'],
-    image: '/ITCA_BOOTCAMP/IMG_8789.jpg',
+    image: '/ITCA_BOOTCAMP/IMG_9041.jpg',
     imageAlt: 'Students at an ITCA bootcamp skills session',
   },
   {
