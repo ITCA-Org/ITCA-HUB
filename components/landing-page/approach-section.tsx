@@ -10,10 +10,10 @@ const steps = [
     title: 'Learn',
     color: '#D4E6F2',
     kicker: 'Skills practice that sticks',
-    body: 'We organise workshops and hands-on sessions so ICT students can practice what they learn in class—coding, networking, design, and more—with peers who get it.',
-    points: ['Workshops', 'Peer learning', 'Project practice', 'Skills labs'],
+    body: 'We organise bootcamps, workshops, and hands-on sessions so ICT students can practice what they learn in class—coding, networking, design, and more—with peers who get it.',
+    points: ['Bootcamps', 'Workshops', 'Peer learning', 'Project practice'],
     image: '/ITCA_BOOTCAMP/IMG_8789.jpg',
-    imageAlt: 'School of ICT students collaborating in a hands-on session',
+    imageAlt: 'Students at an ITCA bootcamp skills session',
   },
   {
     number: '2',
@@ -51,9 +51,8 @@ const ApproachSection = () => {
           </Reveal>
           <Reveal delay={0.12}>
             <p className="landing-mono text-sm leading-relaxed text-[#0A1628]/75">
-              ITCA organises initiatives across the School of ICT—workshops, sporting events,
-              retreats, and other programmes—so studying tech at UTG feels like being part of
-              something bigger.
+              ITCA organises initiatives across the School of ICT—bootcamps, workshops, sporting
+              events, and retreats—so studying tech at UTG feels like being part of something bigger.
             </p>
           </Reveal>
         </div>

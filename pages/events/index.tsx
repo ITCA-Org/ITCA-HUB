@@ -80,7 +80,7 @@ const EventsPage = ({ initialEvents }: EventsPageProps) => {
               {
                 type: 'color',
                 tone: '#FF6A00',
-                kicker: 'Workshops',
+                kicker: 'Bootcamps',
                 title: 'Hands-on sessions that stick beyond the lecture hall.',
                 className: 'sm:col-span-2 lg:col-span-2',
                 lightText: true,

@@ -16,7 +16,7 @@ const CommunityPage = () => {
     >
       <EditorialHero
         stats={[
-          { value: 'Learn', label: 'Workshops & peer practice' },
+          { value: 'Learn', label: 'Bootcamps & peer practice' },
           { value: 'Play', label: 'Sports & campus life' },
           { value: 'Belong', label: 'Retreats & real friendships' },
         ]}

@@ -5,6 +5,7 @@ import { motion, useReducedMotion } from 'framer-motion';
 const phrases = [
   'School of ICT',
   'Every student is a member',
+  'Bootcamps',
   'Workshops',
   'Sporting events',
   'Retreats',

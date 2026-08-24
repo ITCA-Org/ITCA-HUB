@@ -42,10 +42,10 @@ const mockOrganizer = {
 /** Preview data when the API has no upcoming events */
 export const MOCK_EVENTS: Event[] = [
   {
-    _id: 'mock-web-workshop',
-    title: 'Web Dev Workshop — Build & Ship',
+    _id: 'mock-bootcamp-web',
+    title: 'Web Dev Bootcamp — Build & Ship',
     description:
-      'A hands-on weekend workshop for School of ICT students. HTML, CSS, React basics, and shipping a small project with mentors from ITCA.',
+      'A hands-on weekend bootcamp for School of ICT students. HTML, CSS, React basics, and shipping a small project with mentors from ITCA.',
     date: '2026-09-12T00:00:00.000Z',
     time: '2026-09-12T09:00:00.000Z',
     toDate: '2026-09-13T00:00:00.000Z',
@@ -386,8 +386,8 @@ const EventsSection = ({ initialEvents }: { initialEvents?: Event[] }) => {
             What&apos;s happening <span className="text-[#FF6A00]">next</span>
           </h2>
           <p className="landing-mono max-w-md text-sm text-white/70">
-            Workshops, sporting events, campus programmes, and other initiatives organised by ITCA
-            for School of ICT students.
+            Bootcamps, workshops, sporting events, and other initiatives organised by ITCA for
+            School of ICT students.
           </p>
         </motion.div>
 

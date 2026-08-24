@@ -13,7 +13,7 @@ const Footer = () => {
         >
           See what&apos;s coming up <span aria-hidden>→</span>
         </Link>
-        <p className="text-[#FF6A00]">Workshops, sports & campus life</p>
+        <p className="text-[#FF6A00]">Bootcamps, sports & campus life</p>
         <Link
           href="/community"
           className="hidden font-medium text-white underline decoration-white underline-offset-4 md:inline"

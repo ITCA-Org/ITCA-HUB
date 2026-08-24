@@ -53,7 +53,7 @@ const AboutSection = () => {
       <div className="mx-auto max-w-[1400px] px-5 py-20 sm:px-10 lg:px-16 lg:py-28">
         <Reveal>
           <p className="landing-mono mb-10 max-w-xl text-sm text-[#0A1628]/80 sm:ml-auto lg:mb-16">
-            Workshops. Sporting events. Retreats. Study sessions. Campus initiatives. ITCA is the
+            Bootcamps. Workshops. Sporting events. Retreats. Campus initiatives. ITCA is the
             student community that keeps School of ICT life moving—beyond the lecture hall.
           </p>
         </Reveal>

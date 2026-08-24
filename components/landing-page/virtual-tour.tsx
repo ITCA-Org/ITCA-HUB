@@ -31,9 +31,9 @@ const tourLocations: TourLocation[] = [
   },
   {
     id: 2,
-    name: 'Hands-on skills weekend',
+    name: 'Summer Bootcamp',
     description:
-      'Laptops open, ideas flowing—School of ICT students learning side by side in a weekend skills session.',
+      'Hands-on learning with peers at the UTG ITCA Summer Bootcamp—laptops open, ideas flowing.',
     image: '/ITCA_BOOTCAMP/IMG_8789.jpg',
     type: 'image',
   },
@@ -164,7 +164,7 @@ const VirtualTour = () => {
             Moments from ITCA life
           </h2>
           <p className="landing-mono max-w-md text-sm leading-relaxed text-[#0A1628]/70 sm:text-base">
-            ITCA Week, sports days, retreats, workshops, and the people who make the School of ICT
+            Bootcamps, ITCA Week, sports days, retreats, and the people who make the School of ICT
             community feel like home.
           </p>
         </motion.div>

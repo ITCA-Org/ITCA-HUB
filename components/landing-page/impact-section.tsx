@@ -37,7 +37,7 @@ const ImpactSection = () => {
             <CountUp to={30} suffix="+" />
           </p>
           <p className="mt-8 max-w-sm text-base font-medium leading-relaxed sm:text-lg">
-            Initiatives run each year—workshops, sports days, retreats, and campus programmes.
+            Initiatives run each year—bootcamps, workshops, sports days, and campus programmes.
           </p>
         </motion.div>
 

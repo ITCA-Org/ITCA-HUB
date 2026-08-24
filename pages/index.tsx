@@ -22,7 +22,7 @@ import IntroSplash from '../components/landing-page/intro-splash';
 
 const PAGE_TITLE = 'ITCA Hub | School of ICT Student Community';
 const PAGE_DESCRIPTION =
-  'ITCA is the student association for every School of ICT student at the University of The Gambia—organising workshops, sporting events, and campus initiatives.';
+  'ITCA is the student association for every School of ICT student at the University of The Gambia—organising bootcamps, sporting events, and campus initiatives.';
 const OG_IMAGE = `${SITE_URL}/itca-logo.png`;
 
 const organizationJsonLd = {
