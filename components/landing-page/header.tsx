@@ -11,6 +11,8 @@ const navLinks = [
   { name: 'Degrees', href: '/degrees', match: '/degrees' },
   { name: 'Community', href: '/community', match: '/community' },
   { name: 'Resources', href: '/resources', match: '/resources' },
+  { name: 'Shop', href: '/shop', match: '/shop' },
+  { name: 'Fees', href: '/fees', match: '/fees' },
 ];
 
 const desktopNavLinks = navLinks.filter((link) => link.name !== 'Home');
@@ -145,7 +147,7 @@ const Header = ({ homeHero = false }: HeaderProps) => {
                   <Link
                     key={link.name}
                     href={link.href}
-                    className={`inline-flex h-11 shrink-0 items-center justify-center whitespace-nowrap rounded-full px-9 text-lg font-semibold leading-none transition ${
+                    className={`inline-flex h-11 shrink-0 items-center justify-center whitespace-nowrap rounded-full px-6 text-base font-semibold leading-none transition lg:px-8 lg:text-lg ${
                       active
                         ? 'bg-[#FF6A00] text-white'
                         : 'bg-[#0A1628] text-[#FF6A00] hover:bg-[#FF6A00] hover:text-white'

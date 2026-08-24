@@ -18,4 +18,4 @@ export const ITCA = {
 } as const;
 
 export const darkCtaClass =
-  'inline-flex items-center justify-center gap-2 rounded-full bg-[#0A1628] px-5 py-3 text-sm font-semibold text-[#FF6A00] transition hover:brightness-110 active:scale-[0.98]';
+  'inline-flex cursor-pointer items-center justify-center gap-2 rounded-full bg-[#0A1628] px-5 py-3 text-sm font-semibold text-[#FF6A00] transition hover:brightness-110 active:scale-[0.98]';

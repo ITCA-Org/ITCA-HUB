@@ -36,15 +36,16 @@ const FeedbackModal = ({ open, onClose }: FeedbackModalProps) => {
 
     const form = event.currentTarget;
     const data = new FormData(form);
-    const firstName = String(data.get('firstName') ?? '');
-    const lastName = String(data.get('lastName') ?? '');
+    const fullName = String(data.get('fullName') ?? '').trim();
     const email = String(data.get('email') ?? '');
     const organization = String(data.get('organization') ?? '');
     const message = String(data.get('message') ?? '');
 
-    const subject = encodeURIComponent(`ITCA Hub feedback from ${firstName} ${lastName}`);
+    const subject = encodeURIComponent(
+      fullName ? `ITCA Hub feedback from ${fullName}` : 'ITCA Hub feedback'
+    );
     const body = encodeURIComponent(
-      `Name: ${firstName} ${lastName}\nEmail: ${email}\nOrganization: ${organization}\n\n${message}`
+      `Name: ${fullName || 'Not provided'}\nEmail: ${email.trim() || 'Not provided'}\nOrganization: ${organization}\n\n${message}`
     );
 
     window.location.href = `mailto:itca@utg.edu.gm?subject=${subject}&body=${body}`;
@@ -104,42 +105,28 @@ const FeedbackModal = ({ open, onClose }: FeedbackModalProps) => {
 
               <form onSubmit={handleSubmit} className="w-full space-y-4">
                 <div>
-                  <label htmlFor="firstName" className="text-sm font-medium text-[#0A1628]">
-                    First Name<span className="text-red-600">*</span>
+                  <label htmlFor="fullName" className="text-sm font-medium text-[#0A1628]">
+                    Full name
                   </label>
                   <input
-                    required
-                    id="firstName"
-                    name="firstName"
+                    id="fullName"
+                    name="fullName"
                     type="text"
-                    placeholder="Your first name..."
-                    className={fieldClass}
-                  />
-                </div>
-
-                <div>
-                  <label htmlFor="lastName" className="text-sm font-medium text-[#0A1628]">
-                    Last Name<span className="text-red-600">*</span>
-                  </label>
-                  <input
-                    required
-                    id="lastName"
-                    name="lastName"
-                    type="text"
-                    placeholder="Your last name..."
+                    autoComplete="name"
+                    placeholder="Your full name..."
                     className={fieldClass}
                   />
                 </div>
 
                 <div>
                   <label htmlFor="email" className="text-sm font-medium text-[#0A1628]">
-                    Email<span className="text-red-600">*</span>
+                    Email
                   </label>
                   <input
-                    required
                     id="email"
                     name="email"
                     type="email"
+                    autoComplete="email"
                     placeholder="Your email address..."
                     className={fieldClass}
                   />
@@ -149,14 +136,21 @@ const FeedbackModal = ({ open, onClose }: FeedbackModalProps) => {
                   <label htmlFor="organization" className="text-sm font-medium text-[#0A1628]">
                     School / Department<span className="text-red-600">*</span>
                   </label>
-                  <input
+                  <select
                     required
                     id="organization"
                     name="organization"
-                    type="text"
-                    placeholder="e.g. School of ICT..."
-                    className={fieldClass}
-                  />
+                    defaultValue=""
+                    className={`${fieldClass} cursor-pointer`}
+                  >
+                    <option value="" disabled>
+                      Select a programme...
+                    </option>
+                    <option value="Computer Science">Computer Science</option>
+                    <option value="Information System">Information System</option>
+                    <option value="Telecommunication">Telecommunication</option>
+                    <option value="Other">Other</option>
+                  </select>
                 </div>
 
                 <div>

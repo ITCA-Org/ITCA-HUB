@@ -19,6 +19,7 @@ import ApproachSection from '../components/landing-page/approach-section';
 import MarqueeBanner from '../components/landing-page/marquee-banner';
 import FloatingCta from '../components/landing-page/floating-cta';
 import IntroSplash from '../components/landing-page/intro-splash';
+import NewsletterSection from '../components/landing-page/newsletter-section';
 
 const PAGE_TITLE = 'ITCA Hub | School of ICT Student Community';
 const PAGE_DESCRIPTION =
@@ -103,6 +104,7 @@ const HomePage = ({ initialEvents }: HomePageProps) => {
               <DegreesSection />
               <VirtualTour />
               <ResourcesSection />
+              <NewsletterSection />
               <Footer />
             </div>
           </main>

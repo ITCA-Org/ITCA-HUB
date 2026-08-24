@@ -3,6 +3,7 @@ import { ReactNode } from 'react';
 import Header from './header';
 import Footer from './footer';
 import FloatingCta from './floating-cta';
+import NewsletterSection from './newsletter-section';
 import { SITE_URL } from '@/utils/site';
 
 type LandingLayoutProps = {
@@ -13,6 +14,7 @@ type LandingLayoutProps = {
   /** Transparent-over-hero nav only on the homepage */
   homeHero?: boolean;
   showFloatingCta?: boolean;
+  showNewsletter?: boolean;
 };
 
 const LandingLayout = ({
@@ -22,6 +24,7 @@ const LandingLayout = ({
   path = '/',
   homeHero = false,
   showFloatingCta = true,
+  showNewsletter = true,
 }: LandingLayoutProps) => {
   const canonical = `${SITE_URL}${path === '/' ? '/' : path}`;
   const ogImage = `${SITE_URL}/itca-logo.png`;
@@ -49,6 +52,7 @@ const LandingLayout = ({
       <div className="landing-itca">
         <Header homeHero={homeHero} />
         <main>{children}</main>
+        {showNewsletter && <NewsletterSection />}
         <Footer />
         {showFloatingCta && <FloatingCta />}
       </div>

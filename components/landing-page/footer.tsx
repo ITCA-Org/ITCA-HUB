@@ -85,6 +85,12 @@ const Footer = () => {
               <Link href="/resources" className="underline underline-offset-4">
                 Resources
               </Link>
+              <Link href="/shop" className="underline underline-offset-4">
+                Shop
+              </Link>
+              <Link href="/fees" className="underline underline-offset-4">
+                Fees
+              </Link>
               <Link href="/virtual-tour" className="underline underline-offset-4">
                 Virtual Tour
               </Link>

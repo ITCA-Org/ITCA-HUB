@@ -162,7 +162,9 @@ body {
 .landing-itca {
   color: #0a1628;
   background: #ffffff;
-  font-family: 'Space Grotesk', system-ui, sans-serif;
+  /* Matches Firefly body/UI role (Stabil Grotesk) */
+  font-family: 'Satoshi', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  font-weight: 300;
   overflow-x: clip;
   --itca-ink: #0a1628;
   --itca-blue: #005080;
@@ -171,18 +173,30 @@ body {
   --itca-orange-soft: #ffe0cc;
 }
 
+.landing-itca button,
+.landing-itca input,
+.landing-itca select,
+.landing-itca textarea {
+  font-family: inherit;
+}
+
 .landing-itca h1,
 .landing-itca h2,
 .landing-itca h3 {
+  font-family: 'Satoshi', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  font-weight: 700;
   letter-spacing: -0.03em;
 }
 
 .landing-mono {
-  font-family: 'IBM Plex Mono', ui-monospace, monospace;
+  /* Matches Firefly accent/display mono role (Monosten) */
+  font-family: 'Space Mono', ui-monospace, monospace;
+  font-weight: 400;
 }
 
 .landing-serif {
-  font-family: 'Instrument Serif', Georgia, serif;
+  /* Firefly uses Monosten for display emphasis, not a serif */
+  font-family: 'Space Mono', ui-monospace, monospace;
 }
 
 @keyframes landing-marquee {
@@ -331,5 +345,20 @@ input[type='password']::-webkit-credentials-auto-fill-button {
 
   body {
     @apply bg-background text-foreground;
+  }
+
+  button:not(:disabled),
+  [type='button']:not(:disabled),
+  [type='submit']:not(:disabled),
+  [type='reset']:not(:disabled),
+  [role='button']:not([aria-disabled='true']) {
+    cursor: pointer;
+  }
+
+  button:disabled,
+  [type='button']:disabled,
+  [type='submit']:disabled,
+  [type='reset']:disabled {
+    cursor: not-allowed;
   }
 }
