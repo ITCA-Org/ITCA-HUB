@@ -1,7 +1,6 @@
 import Head from 'next/head';
-import Link from 'next/link';
 import axios from 'axios';
-import { useEffect } from 'react';
+import { useState } from 'react';
 import { UserAuth } from '@/types';
 import { NextApiRequest } from 'next';
 import { isLoggedIn } from '@/utils/auth';
@@ -11,14 +10,20 @@ import Footer from '../components/landing-page/footer';
 import Header from '../components/landing-page/header';
 import VirtualTour from '../components/landing-page/virtual-tour';
 import HeroSection from '../components/landing-page/hero-section';
-import EventsSection, { Event } from '../components/landing-page/events-section';
+import EventsSection, { Event, MOCK_EVENTS } from '../components/landing-page/events-section';
 import DegreesSection from '../components/landing-page/degrees-section';
 import ResourcesSection from '../components/landing-page/resources-section';
+import AboutSection from '../components/landing-page/about-section';
+import ImpactSection from '../components/landing-page/impact-section';
+import ApproachSection from '../components/landing-page/approach-section';
+import MarqueeBanner from '../components/landing-page/marquee-banner';
+import FloatingCta from '../components/landing-page/floating-cta';
+import IntroSplash from '../components/landing-page/intro-splash';
 
-const PAGE_TITLE = 'ITCA Hub | Where Technology Meets Community';
+const PAGE_TITLE = 'ITCA Hub | School of ICT Student Community';
 const PAGE_DESCRIPTION =
-  'Information Technology Communication Association under the School of Information Communication and Technology';
-const OG_IMAGE = `${SITE_URL}/images/logo.jpg`;
+  'ITCA is the student association for every School of ICT student at the University of The Gambia—organising workshops, sporting events, and campus initiatives.';
+const OG_IMAGE = `${SITE_URL}/itca-logo.png`;
 
 const organizationJsonLd = {
   '@context': 'https://schema.org',
@@ -39,34 +44,8 @@ interface HomePageProps {
 }
 
 const HomePage = ({ initialEvents }: HomePageProps) => {
-  useEffect(() => {
-    const handleAnchorClick = (e: MouseEvent) => {
-      const target = e.target as HTMLElement;
-      const anchor = target.closest('a[href^="#"]');
-
-      if (anchor) {
-        e.preventDefault();
-        const targetId = anchor.getAttribute('href');
-
-        if (targetId && targetId !== '#') {
-          const targetElement = document.querySelector(targetId);
-
-          if (targetElement) {
-            window.scrollTo({
-              top: targetElement.getBoundingClientRect().top + window.scrollY - 100,
-              behavior: 'smooth',
-            });
-          }
-        }
-      }
-    };
-
-    document.addEventListener('click', handleAnchorClick);
-
-    return () => {
-      document.removeEventListener('click', handleAnchorClick);
-    };
-  }, []);
+  const [showIntro, setShowIntro] = useState(true);
+  const [pageReady, setPageReady] = useState(false);
 
   return (
     <>
@@ -80,7 +59,7 @@ const HomePage = ({ initialEvents }: HomePageProps) => {
         />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="canonical" href={`${SITE_URL}/`} />
-        <link rel="icon" href="/images/logo.jpg" />
+        <link rel="icon" href="/itca-logo.png" />
 
         <meta property="og:title" content={PAGE_TITLE} />
         <meta property="og:description" content={PAGE_DESCRIPTION} />
@@ -98,26 +77,38 @@ const HomePage = ({ initialEvents }: HomePageProps) => {
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }}
         />
-
-        <Link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" crossOrigin="anonymous" href="https://fonts.gstatic.com" />
-        <Link
-          rel="stylesheet"
-          href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
-        />
       </Head>
-      <Header />
+      <div className="landing-itca">
+        {showIntro && (
+          <IntroSplash
+            onReveal={() => setPageReady(true)}
+            onComplete={() => setShowIntro(false)}
+          />
+        )}
 
-      <main className="min-h-screen font-['Inter',sans-serif]">
-        <HeroSection />
-        <div className="sm:px-0 lg:px-20">
-          <EventsSection initialEvents={initialEvents} />
-          <DegreesSection />
-          <VirtualTour />
-          <ResourcesSection />
+        <div
+          className={`transition-opacity duration-500 ${
+            pageReady ? 'opacity-100' : 'opacity-0 pointer-events-none'
+          }`}
+        >
+          <Header homeHero />
+          <main>
+            <HeroSection />
+            <div className="relative z-20">
+              <AboutSection />
+              <MarqueeBanner />
+              <ImpactSection />
+              <EventsSection initialEvents={initialEvents} />
+              <ApproachSection />
+              <DegreesSection />
+              <VirtualTour />
+              <ResourcesSection />
+              <Footer />
+            </div>
+          </main>
+          {pageReady && <FloatingCta />}
         </div>
-        <Footer />
-      </main>
+      </div>
     </>
   );
 };
@@ -143,13 +134,17 @@ export const getServerSideProps = async ({ req }: { req: NextApiRequest }) => {
   let initialEvents: Event[] = [];
 
   try {
-    const response = await axios.get(`${BASE_URL}/events/upcoming?page=1&limit=6`);
+    const response = await axios.get(`${BASE_URL}/events/upcoming?page=1&limit=24`);
 
     if (response.data.status === 'success') {
       initialEvents = response.data.data;
     }
   } catch {
     // Events are optional for the homepage; client can retry if needed.
+  }
+
+  if (initialEvents.length === 0) {
+    initialEvents = MOCK_EVENTS;
   }
 
   return {

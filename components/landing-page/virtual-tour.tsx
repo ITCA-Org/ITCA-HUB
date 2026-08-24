@@ -1,17 +1,15 @@
 import {
-  Map,
-  Play,
-  Pause,
-  Globe,
   Camera,
-  Maximize2,
   ChevronLeft,
   ChevronRight,
   CuboidIcon as Cube,
+  Maximize2,
+  Pause,
+  Play,
 } from 'lucide-react';
 import Image from 'next/image';
 import { useState, useRef, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { AnimatePresence, motion } from 'framer-motion';
 
 type TourLocation = {
   id: number;
@@ -25,42 +23,50 @@ type TourLocation = {
 const tourLocations: TourLocation[] = [
   {
     id: 1,
-    name: 'Main ICT Building',
+    name: 'ITCA Week opening',
     description:
-      'Our state-of-the-art ICT building houses modern classrooms, labs, and collaborative spaces.',
-    image: '/images/main-building.jpeg',
+      'Speakers, panels, and project demos during UTG-ITCA Week—three days of community and innovation.',
+    image: '/ITCA_WEEK/IMG_4094.jpg',
     type: 'image',
   },
   {
     id: 2,
-    name: 'Computer Labs',
+    name: 'Hands-on skills weekend',
     description:
-      'Equipped with the latest hardware and software for hands-on learning experiences.',
-    image: '/images/main-building.jpeg',
+      'Laptops open, ideas flowing—School of ICT students learning side by side in a weekend skills session.',
+    image: '/ITCA_BOOTCAMP/IMG_8789.jpg',
     type: 'image',
   },
   {
     id: 3,
-    name: 'Innovation Hub',
+    name: 'Trials & Thrills',
     description:
-      'A dedicated space for students to work on projects and collaborate with industry partners.',
-    image: '/images/main-building.jpeg',
-    videoSrc: '/videos/hero-vid.mp4',
-    type: 'video',
+      'ITCA Football Club and sporting events that keep campus life balanced and competitive.',
+    image: '/ITCA_SPORTS/IMG_8212.jpg',
+    type: 'image',
   },
   {
     id: 4,
-    name: 'Networking Lab',
+    name: 'ITCA Retreat',
     description:
-      'Specialized lab for network configuration, security testing, and infrastructure design.',
-    image: '/images/main-building.jpeg',
-    type: '3d',
+      'Time away from lectures to connect—shared meals, conversations, and friendships that last.',
+    image: '/ITCA_RETREAT/KG__0436.jpg',
+    type: 'image',
   },
   {
     id: 5,
-    name: 'Student Lounge',
-    description: 'Relaxation and social space for students to unwind and connect between classes.',
-    image: '/images/main-building.jpeg',
+    name: 'Retreat hangouts',
+    description:
+      'Casual moments that make the School of ICT feel like a real community, not just a timetable.',
+    image: '/ITCA_RETREAT/KG__0265.jpg',
+    type: 'image',
+  },
+  {
+    id: 6,
+    name: 'Together outdoors',
+    description:
+      'Students gathering, serving food, and looking out for each other at ITCA socials and retreats.',
+    image: '/ITCA_RETREAT/KG__0418.jpg',
     type: 'image',
   },
 ];
@@ -124,11 +130,9 @@ const VirtualTour = () => {
         containerRef.current.requestFullscreen();
         setIsFullscreen(true);
       }
-    } else {
-      if (document.exitFullscreen) {
-        document.exitFullscreen();
-        setIsFullscreen(false);
-      }
+    } else if (document.exitFullscreen) {
+      document.exitFullscreen();
+      setIsFullscreen(false);
     }
   };
 
@@ -137,127 +141,45 @@ const VirtualTour = () => {
       if (isVideoPlaying) {
         videoRef.current.pause();
         setIsVideoPlaying(false);
-      } else {
-        if (isVideoLoaded) {
-          videoRef.current
-            .play()
-            .then(() => {
-              setIsVideoPlaying(true);
-            })
-            .catch((error) => {
-              console.error('Error playing video:', error);
-              setIsVideoPlaying(false);
-            });
-        }
+      } else if (isVideoLoaded) {
+        videoRef.current
+          .play()
+          .then(() => setIsVideoPlaying(true))
+          .catch(() => setIsVideoPlaying(false));
       }
     }
   };
 
-  const handleVideoLoaded = () => {
-    setIsVideoLoaded(true);
-  };
-
   return (
-    <section id="virtual-tour" className="relative py-24 overflow-hidden">
-      <div className="absolute inset-0 -z-10 bg-linear-to-b from-gray-50 to-white"></div>
-
-      <div className="absolute top-0 left-0 w-1/2 h-1/2 overflow-hidden opacity-30 -z-5">
-        <div className="absolute top-0 left-0 h-full w-full">
-          {Array.from({ length: 5 }).map((_, index) => (
-            <div
-              key={`lat-${index}`}
-              className="absolute h-px bg-blue-700/40"
-              style={{
-                top: `${20 + index * 15}%`,
-                left: '0',
-                width: '100%',
-                transform: `rotate(${index * 3 - 6}deg)`,
-                transformOrigin: 'center left',
-              }}
-            ></div>
-          ))}
-
-          {Array.from({ length: 5 }).map((_, index) => (
-            <div
-              key={`long-${index}`}
-              className="absolute w-px bg-blue-700/40"
-              style={{
-                left: `${20 + index * 15}%`,
-                top: '0',
-                height: '100%',
-                transform: `rotate(${index * 3 - 6}deg)`,
-                transformOrigin: 'top center',
-              }}
-            ></div>
-          ))}
-
-          <div className="absolute top-[15%] left-[15%] opacity-10">
-            <Globe className="w-40 h-40 text-blue-700" strokeWidth={1} />
-          </div>
-        </div>
-      </div>
-
-      <div className="absolute bottom-0 right-0 w-1/2 h-1/2 overflow-hidden opacity-30 -z-5">
-        <div className="absolute bottom-0 right-0 w-full h-full">
-          <div className="absolute bottom-20 right-20 h-64 w-64 rounded-full border border-dashed border-amber-500/30"></div>
-          <div className="absolute bottom-[25%] right-[25%] h-48 w-48 rounded-full border border-dashed border-blue-700/20"></div>
-          <div className="absolute bottom-[30%] right-[30%] h-32 w-32 rounded-full border border-dashed border-amber-500/30"></div>
-
-          <div className="absolute bottom-[25%] right-[25%] h-80 w-1 bg-linear-to-t from-transparent via-amber-500/20 to-transparent transform rotate-45"></div>
-          <div className="absolute bottom-[25%] right-[25%] h-80 w-1 bg-linear-to-t from-transparent via-blue-700/20 to-transparent transform rotate-135"></div>
-
-          <div className="absolute bottom-[15%] right-[15%] opacity-10">
-            <Map className="w-40 h-40 text-amber-500" strokeWidth={1} />
-          </div>
-        </div>
-      </div>
-
-      <div
-        className="absolute inset-0 -z-5 opacity-10"
-        style={{
-          backgroundImage:
-            'radial-gradient(circle at 1px 1px, rgba(0,0,0,0.05) 1px, transparent 0)',
-          backgroundSize: '30px 30px',
-        }}
-      ></div>
-
-      <div className="container relative z-10 mx-auto px-4">
+    <section id="virtual-tour" className="bg-white px-4 py-16 sm:px-8 sm:py-20 lg:px-12">
+      <div className="mx-auto max-w-[1400px]">
         <motion.div
-          initial={{ opacity: 0, y: 70 }}
+          className="mb-8 flex flex-col gap-3 sm:mb-10 sm:gap-4 md:flex-row md:items-end md:justify-between"
+          initial={{ opacity: 0, y: 24 }}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-          className="mb-12 text-center"
+          viewport={{ once: true, amount: 0.4 }}
+          transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1] }}
         >
-          <h2 className="mb-4 text-4xl font-bold text-gray-900 md:text-5xl">
-            Virtual <span className="text-blue-700">Tour</span>
+          <h2 className="max-w-xl text-3xl font-bold leading-tight text-[#0A1628] sm:text-4xl md:text-5xl">
+            Moments from ITCA life
           </h2>
-          <div className="mx-auto h-1 w-24 bg-linear-to-r from-blue-700 via-amber-500 to-blue-700 rounded-full mb-6"></div>
-          <p className="mx-auto max-w-2xl text-lg text-gray-600">
-            Explore our facilities and get a feel for the ITCA environment without leaving your
-            home.
+          <p className="landing-mono max-w-md text-sm leading-relaxed text-[#0A1628]/70 sm:text-base">
+            ITCA Week, sports days, retreats, workshops, and the people who make the School of ICT
+            community feel like home.
           </p>
         </motion.div>
 
-        <motion.div
-          ref={containerRef}
-          initial={{ opacity: 0, y: 70 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6, delay: 0.2 }}
-          className="relative mb-8 overflow-hidden rounded-xl bg-black shadow-xl"
-        >
-          <div className="relative aspect-video w-full">
-            {/* Always render video element if current location is video type, but hide it */}
+        <div ref={containerRef} className="overflow-hidden rounded-[1.5rem] bg-[#0A1628] sm:rounded-[2rem]">
+          <div className="relative aspect-[4/5] w-full sm:aspect-[4/3] lg:aspect-video">
             {currentLocation.type === 'video' && (
-              <div className={`absolute inset-0 z-0 ${isVideoPlaying ? 'block' : 'hidden'}`}>
+              <div className={`absolute inset-0 ${isVideoPlaying ? 'block' : 'hidden'}`}>
                 <video
                   ref={videoRef}
                   className="h-full w-full object-cover"
                   playsInline
                   controls={false}
                   preload="auto"
-                  onLoadedData={handleVideoLoaded}
+                  onLoadedData={() => setIsVideoLoaded(true)}
                 >
                   <source
                     src={currentLocation.videoSrc || '/videos/hero-vid.mp4'}
@@ -267,22 +189,23 @@ const VirtualTour = () => {
               </div>
             )}
 
-            {/* Show image when video is not playing */}
             <AnimatePresence mode="wait">
               {(!isVideoPlaying || currentLocation.type !== 'video') && (
                 <motion.div
                   key={`image-${currentIndex}`}
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  transition={{ duration: 0.5 }}
-                  className="absolute inset-0 z-0"
+                  initial={{ opacity: 0, scale: 1.04 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.98 }}
+                  transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+                  className="absolute inset-0"
                 >
                   <Image
-                    src={currentLocation.image || '/placeholder.svg'}
-                    alt={currentLocation.name}
                     fill
-                    className="object-cover"
+                    priority
+                    sizes="(max-width: 768px) 100vw, 1400px"
+                    alt={currentLocation.name}
+                    src={currentLocation.image}
+                    className="object-cover object-center"
                   />
                 </motion.div>
               )}
@@ -290,103 +213,98 @@ const VirtualTour = () => {
 
             {currentLocation.type === 'video' && (
               <button
+                type="button"
                 onClick={handleToggleVideo}
-                className="absolute left-1/2 top-1/2 flex h-16 w-16 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-blue-700/80 text-white transition-transform hover:scale-110 z-10"
+                disabled={!isVideoLoaded}
                 aria-label={isVideoPlaying ? 'Pause video' : 'Play video'}
-                disabled={currentLocation.type === 'video' && !isVideoLoaded}
+                className="absolute left-1/2 top-1/2 z-10 flex h-14 w-14 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-[#FF6A00] text-white sm:h-16 sm:w-16"
               >
-                {isVideoPlaying ? <Pause className="h-8 w-8" /> : <Play className="h-8 w-8" />}
+                {isVideoPlaying ? <Pause className="h-6 w-6 sm:h-7 sm:w-7" /> : <Play className="h-6 w-6 sm:h-7 sm:w-7" />}
               </button>
             )}
 
-            <div className="absolute bottom-0 left-0 right-0 bg-linear-to-t from-black/80 to-transparent p-6 text-white z-20">
-              <div className="flex items-center justify-between">
-                <div>
-                  <div className="mb-1 flex items-center">
-                    {currentLocation.type === 'image' && (
-                      <Camera className="mr-2 h-4 w-4 text-amber-500" />
-                    )}
-                    {currentLocation.type === 'video' && (
-                      <Play className="mr-2 h-4 w-4 text-amber-500" />
-                    )}
-                    {currentLocation.type === '3d' && (
-                      <Cube className="mr-2 h-4 w-4 text-amber-500" />
-                    )}
-                    <span className="text-sm font-medium uppercase tracking-wider text-amber-500">
-                      {currentLocation.type === 'image'
-                        ? 'Photo'
-                        : currentLocation.type === 'video'
-                          ? 'Video'
-                          : '3D Model'}
-                    </span>
-                  </div>
-                  <h3 className="text-2xl font-bold">{currentLocation.name}</h3>
-                  <p className="mt-1 text-sm text-gray-300">{currentLocation.description}</p>
+            {/* Desktop overlay caption */}
+            <div className="absolute inset-x-6 bottom-6 z-20 hidden items-end justify-between gap-4 rounded-[1.5rem] bg-[#0A1628]/80 p-5 text-white backdrop-blur-sm md:flex">
+              <div>
+                <div className="mb-1 flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-[#FF6A00]">
+                  {currentLocation.type === 'image' && <Camera className="h-4 w-4" />}
+                  {currentLocation.type === 'video' && <Play className="h-4 w-4" />}
+                  {currentLocation.type === '3d' && <Cube className="h-4 w-4" />}
+                  {currentLocation.type}
                 </div>
-
-                <button
-                  onClick={toggleFullscreen}
-                  className="rounded-full bg-white/20 p-2 text-white backdrop-blur-sm transition-colors hover:bg-white/30"
-                  aria-label="Toggle fullscreen"
-                >
-                  <Maximize2 className="h-5 w-5" />
-                </button>
+                <h3 className="text-2xl font-bold lg:text-3xl">{currentLocation.name}</h3>
+                <p className="mt-1 max-w-xl text-sm text-white/70 lg:text-base">
+                  {currentLocation.description}
+                </p>
               </div>
+              <button
+                type="button"
+                onClick={toggleFullscreen}
+                aria-label="Toggle fullscreen"
+                className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white/15"
+              >
+                <Maximize2 className="h-4 w-4" />
+              </button>
             </div>
 
             <button
+              type="button"
               onClick={goToPrevious}
-              className="absolute left-4 top-1/2 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-white/20 text-white backdrop-blur-sm transition-colors hover:bg-white/30 z-10"
               aria-label="Previous location"
+              className="absolute left-3 top-1/2 z-10 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-[#FF6A00] text-white sm:left-4 sm:h-11 sm:w-11"
             >
-              <ChevronLeft className="h-6 w-6" />
+              <ChevronLeft className="h-5 w-5" />
             </button>
-
             <button
+              type="button"
               onClick={goToNext}
-              className="absolute right-4 top-1/2 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-white/20 text-white backdrop-blur-sm transition-colors hover:bg-white/30 z-10"
               aria-label="Next location"
+              className="absolute right-3 top-1/2 z-10 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-[#FF6A00] text-white sm:right-4 sm:h-11 sm:w-11"
             >
-              <ChevronRight className="h-6 w-6" />
+              <ChevronRight className="h-5 w-5" />
             </button>
           </div>
-        </motion.div>
 
-        <motion.div
-          initial={{ opacity: 0, y: 40 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6, delay: 0.4 }}
-          className="flex flex-wrap justify-center gap-2"
-        >
-          {tourLocations.map((location, index) => (
-            <motion.button
-              key={location.id}
-              onClick={() => goToLocation(index)}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.98 }}
-              className={`relative h-16 w-24 overflow-hidden rounded-md transition-all ${
-                currentIndex === index
-                  ? 'ring-2 ring-blue-700 ring-offset-2'
-                  : 'opacity-70 hover:opacity-100'
-              }`}
-              aria-label={`View ${location.name}`}
+          {/* Mobile caption below image */}
+          <div className="flex items-start justify-between gap-3 p-4 text-white md:hidden">
+            <div className="min-w-0 flex-1">
+              <div className="mb-1 flex items-center gap-2 text-[11px] font-semibold uppercase tracking-wider text-[#FF6A00]">
+                {currentLocation.type === 'image' && <Camera className="h-3.5 w-3.5" />}
+                {currentLocation.type === 'video' && <Play className="h-3.5 w-3.5" />}
+                {currentLocation.type === '3d' && <Cube className="h-3.5 w-3.5" />}
+                {currentLocation.type}
+              </div>
+              <h3 className="text-xl font-bold leading-tight">{currentLocation.name}</h3>
+              <p className="mt-2 text-sm leading-relaxed text-white/70">
+                {currentLocation.description}
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={toggleFullscreen}
+              aria-label="Toggle fullscreen"
+              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white/15"
             >
-              <Image
-                src={location.image || '/placeholder.svg'}
-                alt={location.name}
-                fill
-                className="object-cover"
-              />
-              {location.type !== 'image' && (
-                <div className="absolute inset-0 flex items-center justify-center bg-black/30">
-                  {location.type === 'video' && <Play className="h-4 w-4 text-white" />}
-                  {location.type === '3d' && <Cube className="h-4 w-4 text-white" />}
-                </div>
-              )}
-            </motion.button>
+              <Maximize2 className="h-4 w-4" />
+            </button>
+          </div>
+        </div>
+
+        <div className="mt-4 flex gap-2 overflow-x-auto pb-2 [-ms-overflow-style:none] [scrollbar-width:none] sm:flex-wrap sm:overflow-visible [&::-webkit-scrollbar]:hidden">
+          {tourLocations.map((location, index) => (
+            <button
+              key={location.id}
+              type="button"
+              onClick={() => goToLocation(index)}
+              aria-label={`View ${location.name}`}
+              className={`relative h-16 w-24 shrink-0 overflow-hidden rounded-2xl sm:h-20 sm:w-28 ${
+                currentIndex === index ? 'ring-2 ring-[#FF6A00] ring-offset-2' : 'opacity-70'
+              }`}
+            >
+              <Image fill alt={location.name} src={location.image} className="object-cover" sizes="112px" />
+            </button>
           ))}
-        </motion.div>
+        </div>
       </div>
     </section>
   );

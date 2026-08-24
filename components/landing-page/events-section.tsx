@@ -6,10 +6,7 @@ import { useState, useEffect } from 'react';
 import { Calendar, Clock, MapPin, Ticket } from 'lucide-react';
 import Link from 'next/link';
 import { TicketTier } from '@/types/interfaces/event';
-import {
-  TICKET_BUTTON_BLUE,
-  ticketFlowButtonInlineClassName,
-} from '@/components/tickets/ticket-flow-shell';
+import { darkCtaClass } from './brand';
 
 export type Event = {
   _id: string;
@@ -35,9 +32,130 @@ export type Event = {
   updatedAt: string;
 };
 
-/**===============================
- * Format date for display
- ===============================*/
+const mockOrganizer = {
+  _id: 'mock-user',
+  firstName: 'ITCA',
+  lastName: 'Exec',
+  schoolEmail: 'itca@utg.edu.gm',
+};
+
+/** Preview data when the API has no upcoming events */
+export const MOCK_EVENTS: Event[] = [
+  {
+    _id: 'mock-web-workshop',
+    title: 'Web Dev Workshop — Build & Ship',
+    description:
+      'A hands-on weekend workshop for School of ICT students. HTML, CSS, React basics, and shipping a small project with mentors from ITCA.',
+    date: '2026-09-12T00:00:00.000Z',
+    time: '2026-09-12T09:00:00.000Z',
+    toDate: '2026-09-13T00:00:00.000Z',
+    toTime: '2026-09-13T16:00:00.000Z',
+    location: 'ICT Lab, Faraba Banta Campus',
+    status: 'upcoming',
+    ticketingEnabled: true,
+    ticketTiers: [
+      { type: 'standard', enabled: true, label: 'Student', price: 50 },
+      { type: 'premium', enabled: true, label: 'With kit', price: 150 },
+    ],
+    imageUrl: '/ITCA_WEEK/IMG_4248.jpg',
+    capacity: 60,
+    createdBy: mockOrganizer,
+    createdAt: '2026-08-01T00:00:00.000Z',
+    updatedAt: '2026-08-01T00:00:00.000Z',
+  },
+  {
+    _id: 'mock-sports-day',
+    title: 'ITCA Sports Day 2026',
+    description:
+      'Football, volleyball, and friendly competitions across School of ICT. Come play, cheer, and meet fellow students outside the lecture hall.',
+    date: '2026-09-20T00:00:00.000Z',
+    time: '2026-09-20T08:30:00.000Z',
+    toTime: '2026-09-20T17:00:00.000Z',
+    location: 'UTG Sports Ground, Faraba Banta',
+    status: 'upcoming',
+    ticketingEnabled: false,
+    ticketTiers: [],
+    imageUrl: '/ITCA_SPORTS/IMG_8212.jpg',
+    capacity: 200,
+    createdBy: mockOrganizer,
+    createdAt: '2026-08-01T00:00:00.000Z',
+    updatedAt: '2026-08-01T00:00:00.000Z',
+  },
+  {
+    _id: 'mock-retreat',
+    title: 'Leadership Retreat — Show Up',
+    description:
+      'A one-day retreat for ICT students focused on teamwork, leadership, and community. Workshops, games, and conversations that stick.',
+    date: '2026-10-04T00:00:00.000Z',
+    time: '2026-10-04T08:00:00.000Z',
+    toTime: '2026-10-04T18:00:00.000Z',
+    location: 'Senegambia Beach Hotel',
+    status: 'upcoming',
+    ticketingEnabled: true,
+    ticketTiers: [{ type: 'standard', enabled: true, label: 'Standard', price: 200 }],
+    imageUrl: '/ITCA_RETREAT/retreat-gathering.jpg',
+    capacity: 80,
+    createdBy: mockOrganizer,
+    createdAt: '2026-08-01T00:00:00.000Z',
+    updatedAt: '2026-08-01T00:00:00.000Z',
+  },
+  {
+    _id: 'mock-itca-week',
+    title: 'UTG-ITCA Week Opening Ceremony',
+    description:
+      'Kick off ITCA Week with talks, showcases, and the School of ICT community. Open to every ICT student—you’re already part of us.',
+    date: '2026-10-18T00:00:00.000Z',
+    time: '2026-10-18T10:00:00.000Z',
+    toTime: '2026-10-18T13:00:00.000Z',
+    location: 'Main Auditorium, Faraba Banta Campus',
+    status: 'upcoming',
+    ticketingEnabled: false,
+    ticketTiers: [],
+    imageUrl: '/ITCA_WEEK/IMG_4517.jpg',
+    capacity: 300,
+    createdBy: mockOrganizer,
+    createdAt: '2026-08-01T00:00:00.000Z',
+    updatedAt: '2026-08-01T00:00:00.000Z',
+  },
+  {
+    _id: 'mock-cyber-workshop',
+    title: 'Intro to Cybersecurity Workshop',
+    description:
+      'Learn the basics of digital security, phishing awareness, and safe practices. No prior experience needed—bring your laptop if you can.',
+    date: '2026-11-01T00:00:00.000Z',
+    time: '2026-11-01T14:00:00.000Z',
+    toTime: '2026-11-01T17:00:00.000Z',
+    location: 'Computer Lab B, School of ICT',
+    status: 'upcoming',
+    ticketingEnabled: true,
+    ticketTiers: [{ type: 'standard', enabled: true, label: 'Free entry', price: 0 }],
+    imageUrl: '/ITCA_WEEK/IMG_4237.jpg',
+    capacity: 40,
+    createdBy: mockOrganizer,
+    createdAt: '2026-08-01T00:00:00.000Z',
+    updatedAt: '2026-08-01T00:00:00.000Z',
+  },
+  {
+    _id: 'mock-meetup',
+    title: 'Study Circle & Career Chat',
+    description:
+      'An evening meetup for assignment help, peer study, and short talks from alumni and industry guests. Pizza after—bring your questions.',
+    date: '2026-11-15T00:00:00.000Z',
+    time: '2026-11-15T16:00:00.000Z',
+    toTime: '2026-11-15T19:00:00.000Z',
+    location: 'Student Lounge, Faraba Banta Campus',
+    status: 'upcoming',
+    ticketingEnabled: false,
+    ticketTiers: [],
+    imageUrl: '/ITCA_RETREAT/retreat-lunch.jpg',
+    capacity: 50,
+    createdBy: mockOrganizer,
+    createdAt: '2026-08-01T00:00:00.000Z',
+    updatedAt: '2026-08-01T00:00:00.000Z',
+  },
+];
+
+
 const formatDate = (dateString: string) => {
   const date = new Date(dateString);
   return date.toLocaleDateString('en-US', {
@@ -48,9 +166,6 @@ const formatDate = (dateString: string) => {
   });
 };
 
-/**===============================
- * Format time for display
- ===============================*/
 const formatTime = (timeString: string) => {
   try {
     const date = new Date(timeString);
@@ -64,9 +179,6 @@ const formatTime = (timeString: string) => {
   }
 };
 
-/**===============================
- * Format date range for display
- ===============================*/
 const formatDateRange = (event: Event) => {
   const startDate = formatDate(event.date);
 
@@ -85,9 +197,6 @@ const formatDateRange = (event: Event) => {
   return `${startDate} - ${endDate}`;
 };
 
-/**===============================
- * Format time range for display
- ===============================*/
 const formatTimeRange = (event: Event) => {
   const startTime = formatTime(event.time);
 
@@ -109,60 +218,36 @@ const formatTimeRange = (event: Event) => {
   return `${startTime} - ${endTime}`;
 };
 
-/**===============================
- * Get status color and text
- ===============================*/
 const getStatusConfig = (status: string) => {
   switch (status) {
     case 'upcoming':
-      return {
-        color: 'bg-blue-100 text-blue-800',
-        text: 'Upcoming',
-      };
+      return { color: 'bg-[#FFE0CC] text-[#0A1628]', text: 'Upcoming' };
     case 'ongoing':
-      return {
-        color: 'bg-amber-100 text-amber-800',
-        text: 'Ongoing',
-      };
+      return { color: 'bg-[#005080] text-white', text: 'Ongoing' };
     case 'completed':
-      return {
-        color: 'bg-green-100 text-green-800',
-        text: 'Completed',
-      };
+      return { color: 'bg-[#D4E6F2] text-[#0A1628]', text: 'Completed' };
     default:
-      return {
-        color: 'bg-gray-100 text-gray-800',
-        text: 'Unknown',
-      };
+      return { color: 'bg-white text-[#0A1628]', text: 'Unknown' };
   }
 };
 
-const getEnabledTiers = (event: Event) =>
-  event.ticketTiers?.filter((t) => t.enabled) ?? [];
+const getEnabledTiers = (event: Event) => event.ticketTiers?.filter((t) => t.enabled) ?? [];
 
-const EventCard = ({
-  event,
-  index,
-}: {
-  event: Event;
-  index: number;
-}) => {
+const EventCard = ({ event, index }: { event: Event; index: number }) => {
   const [imageError, setImageError] = useState(false);
   const statusConfig = getStatusConfig(event.status);
   const enabledTiers = getEnabledTiers(event);
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{
-        duration: 0.3,
-        delay: index * 0.05,
-      }}
-      className="group relative overflow-hidden rounded-xl border-none bg-white/60"
+      initial={{ opacity: 0, y: 28 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, amount: 0.2 }}
+      transition={{ duration: 0.55, delay: index * 0.08, ease: [0.22, 1, 0.36, 1] }}
+      whileHover={{ y: -6 }}
+      className="group overflow-hidden rounded-[2rem] bg-white"
     >
-      {/*==================== End of Error details (subtle) ====================*/}
-      <div className="aspect-video w-full overflow-hidden relative">
+      <div className="relative aspect-[4/3] w-full overflow-hidden">
         {event.imageUrl && !imageError ? (
           <Image
             fill
@@ -170,85 +255,84 @@ const EventCard = ({
             alt={event.title}
             src={event.imageUrl}
             onError={() => setImageError(true)}
-            className="object-cover transition-transform duration-300 group-hover:scale-105"
+            className="object-cover transition-transform duration-500 group-hover:scale-105"
           />
         ) : (
-          <div className="h-full w-full bg-linear-to-br from-blue-500 via-amber-300 to-blue-500 flex items-center justify-center">
-            <Calendar className="h-16 w-16 text-white/80" />
+          <div className="flex h-full w-full items-center justify-center bg-[#005080]">
+            <Calendar className="h-14 w-14 text-white" />
           </div>
         )}
       </div>
-      {/*==================== End of Event Image ====================*/}
 
-      {/*==================== Event Content ====================*/}
-      <div className="px-6 pt-6 pb-2">
-        {/*==================== Event Header ====================*/}
-        <div className="mb-4">
-          <h3 className="mb-2 text-lg font-semibold text-gray-900 line-clamp-2">{event.title}</h3>
+      <div className="px-6 pb-6 pt-5">
+        <div className="mb-4 flex items-start justify-between gap-3">
+          <h3 className="text-xl font-bold leading-snug text-[#0A1628]">{event.title}</h3>
           <span
-            className={`inline-flex items-center rounded-full px-2.5 py-1 text-sm font-medium ${statusConfig.color}`}
+            className={`shrink-0 rounded-full px-3 py-1 text-xs font-semibold ${statusConfig.color}`}
           >
             {statusConfig.text}
           </span>
         </div>
-        {/*==================== End of Event Header ====================*/}
 
-        {/*==================== Event Description ====================*/}
-        <p className="mb-4 text-md text-gray-600 line-clamp-2">{event.description}</p>
-        {/*==================== End of Event Description ====================*/}
+        <p className="mb-5 line-clamp-2 text-sm text-[#0A1628]/70">{event.description}</p>
 
-        {/*==================== Event Details ====================*/}
-        <div className="space-y-4 pt-2 text-sm text-gray-500">
-          <div className="flex items-center">
-            <Calendar className="mr-2 h-4 w-4 text-blue-500" />
-            <span className="text-gray-500">{formatDateRange(event)}</span>
+        <div className="space-y-2 text-sm text-[#0A1628]/70">
+          <div className="flex items-center gap-2">
+            <Calendar className="h-4 w-4" />
+            <span>{formatDateRange(event)}</span>
           </div>
-          <div className="flex items-center">
-            <Clock className="mr-2 h-4 w-4 text-amber-500" />
-            <span className="text-gray-500">{formatTimeRange(event)}</span>
+          <div className="flex items-center gap-2">
+            <Clock className="h-4 w-4" />
+            <span>{formatTimeRange(event)}</span>
           </div>
-          <div className="flex items-center">
-            <MapPin className="mr-2 h-4 w-4 text-red-500" />
-            <span className="line-clamp-1 text-gray-500">{event.location}</span>
+          <div className="flex items-center gap-2">
+            <MapPin className="h-4 w-4" />
+            <span className="line-clamp-1">{event.location}</span>
           </div>
           {enabledTiers.length > 0 && (
-            <div className="flex items-center">
-              <Ticket className="mr-2 h-4 w-4 text-green-500" />
-              <span className="text-gray-500">
-                {enabledTiers.map((t) => `${t.label}: D${t.price}`).join(' · ')}
-              </span>
+            <div className="flex items-center gap-2">
+              <Ticket className="h-4 w-4" />
+              <span>{enabledTiers.map((t) => `${t.label}: D${t.price}`).join(' · ')}</span>
             </div>
           )}
         </div>
-        {/*==================== End of Event Details ====================*/}
 
-        {enabledTiers.length > 0 && (
-          <div className="mt-4 pt-2">
+        {enabledTiers.length > 0 &&
+          (event._id.startsWith('mock-') ? (
+            <button type="button" className={`mt-5 w-full ${darkCtaClass}`}>
+              <Ticket className="h-4 w-4" />
+              {enabledTiers.length === 1
+                ? `Buy ${enabledTiers[0].label} — D${enabledTiers[0].price}`
+                : 'Buy tickets'}
+            </button>
+          ) : (
             <Link
               href={
                 enabledTiers.length === 1
                   ? `/events/${event._id}/checkout?tier=${enabledTiers[0].type}`
                   : `/events/${event._id}/tickets`
               }
-              className={`w-full ${ticketFlowButtonInlineClassName}`}
-              style={{ backgroundColor: TICKET_BUTTON_BLUE }}
+              className={`mt-5 w-full ${darkCtaClass}`}
             >
-              <Ticket className="h-4 w-4 mr-2" />
+              <Ticket className="h-4 w-4" />
               {enabledTiers.length === 1
                 ? `Buy ${enabledTiers[0].label} — D${enabledTiers[0].price}`
                 : 'Buy tickets'}
             </Link>
-          </div>
-        )}
+          ))}
       </div>
-      {/*==================== End of Event Content ====================*/}
     </motion.div>
   );
 };
 
+const PAGE_SIZE = 3;
+
 const EventsSection = ({ initialEvents }: { initialEvents?: Event[] }) => {
+  const seeded =
+    initialEvents && initialEvents.length > 0 ? initialEvents : MOCK_EVENTS;
   const hasInitialData = initialEvents !== undefined;
-  const [events, setEvents] = useState<Event[]>(initialEvents ?? []);
+  const [events, setEvents] = useState<Event[]>(seeded);
+  const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
   const [isLoading, setIsLoading] = useState(!hasInitialData);
   const [error, setError] = useState<string | null>(null);
 
@@ -260,15 +344,19 @@ const EventsSection = ({ initialEvents }: { initialEvents?: Event[] }) => {
         setIsLoading(true);
         setError(null);
 
-        const response = await axios.get(`${BASE_URL}/events/upcoming?page=1&limit=6`);
+        const response = await axios.get(`${BASE_URL}/events/upcoming?page=1&limit=24`);
 
         if (response.data.status === 'success') {
-          setEvents(response.data.data);
+          const data = response.data.data as Event[];
+          setEvents(data.length > 0 ? data : MOCK_EVENTS);
+          setVisibleCount(PAGE_SIZE);
         } else {
           throw new Error('Failed to fetch events');
         }
-      } catch (err) {
-        setError(err instanceof Error ? err.message : 'Failed to load events');
+      } catch {
+        setEvents(MOCK_EVENTS);
+        setVisibleCount(PAGE_SIZE);
+        setError(null);
       } finally {
         setIsLoading(false);
       }
@@ -277,134 +365,80 @@ const EventsSection = ({ initialEvents }: { initialEvents?: Event[] }) => {
     fetchEvents();
   }, [hasInitialData]);
 
+  const visibleEvents = events.slice(0, visibleCount);
+  const hasMore = visibleCount < events.length;
+
+  const loadMore = () => {
+    setVisibleCount((count) => Math.min(count + PAGE_SIZE, events.length));
+  };
+
   return (
-    <section
-      id="events"
-      className="relative py-24 overflow-hidden bg-linear-to-b from-white to-gray-100"
-    >
-      <div className="absolute inset-0 z-10 overflow-hidden opacity-20">
-        <div className="absolute top-1/4 left-0 h-px w-full bg-linear-to-r from-transparent via-amber-500/40 to-transparent"></div>
-        <div className="absolute top-2/4 left-0 h-px w-full bg-linear-to-r from-transparent via-blue-700/40 to-transparent"></div>
-        <div className="absolute top-3/4 left-0 h-px w-full bg-linear-to-r from-transparent via-amber-500/40 to-transparent"></div>
-
-        <div className="absolute top-0 left-1/4 h-full w-px bg-linear-to-b from-transparent via-blue-700/40 to-transparent"></div>
-        <div className="absolute top-0 left-2/4 h-full w-px bg-linear-to-b from-transparent via-amber-500/40 to-transparent"></div>
-        <div className="absolute top-0 left-3/4 h-full w-px bg-linear-to-b from-transparent via-blue-700/40 to-transparent"></div>
-      </div>
-
-      <div className="absolute inset-0 -z-10 overflow-hidden">
-        <div className="absolute -right-40 -top-40 h-80 w-80 rounded-full bg-blue-700/5"></div>
-        <div className="absolute -left-20 top-60 h-60 w-60 rounded-full bg-amber-500/5"></div>
-        <div className="absolute bottom-20 right-20 h-40 w-40 rounded-full bg-blue-700/5"></div>
-      </div>
-
-      <div className="container relative z-20 mx-auto px-4">
+    <section id="events" className="bg-[#0A1628] px-4 py-20 sm:px-8 lg:px-12">
+      <div className="mx-auto max-w-[1400px]">
         <motion.div
-          initial={{ opacity: 0, y: 70 }}
+          className="mb-8 flex flex-col gap-6 md:flex-row md:items-end md:justify-between"
+          initial={{ opacity: 0, y: 24 }}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-          className="mb-12 text-center"
+          viewport={{ once: true, amount: 0.4 }}
+          transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1] }}
         >
-          <h2 className="mb-4 text-4xl font-bold text-gray-900 md:text-5xl">
-            Upcoming <span className="text-blue-700">Events</span>
+          <h2 className="max-w-xl text-4xl font-bold text-white sm:text-5xl">
+            What&apos;s happening <span className="text-[#FF6A00]">next</span>
           </h2>
-          <div className="mx-auto h-1 w-24 bg-linear-to-r from-blue-700 via-amber-500 to-blue-700 rounded-full mb-6"></div>
-          <p className="mx-auto max-w-2xl text-lg text-gray-600">
-            Stay updated with our latest workshops, conferences, and activities designed to enhance
-            your skills and knowledge.
+          <p className="landing-mono max-w-md text-sm text-white/70">
+            Workshops, sporting events, campus programmes, and other initiatives organised by ITCA
+            for School of ICT students.
           </p>
         </motion.div>
 
         {isLoading ? (
-          <div className="flex items-center justify-center py-16">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-700"></div>
+          <div className="flex items-center justify-center py-20">
+            <div className="h-12 w-12 animate-spin rounded-full border-2 border-[#FF6A00] border-t-transparent" />
           </div>
         ) : error ? (
-          <div className="text-center py-20">
-            <div className="max-w-md mx-auto">
-              {/*==================== Error Icon Container ====================*/}
-              <div className="relative mb-8">
-                <div className="w-24 h-24 mx-auto rounded-full bg-linear-to-br from-red-50 to-orange-50 flex items-center justify-center border border-red-100">
-                  <Calendar className="h-10 w-10 text-red-500" />
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="w-16 h-16 border-2 border-red-200 rounded-full"></div>
-                    <div className="absolute w-4 h-0.5 bg-red-400 transform rotate-45"></div>
-                    <div className="absolute w-4 h-0.5 bg-red-400 transform -rotate-45"></div>
-                  </div>
-                </div>
-                {/*==================== End of Error indicator dots ====================*/}
-              </div>
-              {/*==================== End of Error Icon Container ====================*/}
-
-              {/*==================== Error Content ====================*/}
-              <div className="space-y-4">
-                <h3 className="text-2xl font-bold text-gray-800">Unable to Load Events</h3>
-                <p className="text-gray-600 leading-relaxed">
-                  We're having trouble connecting to our events service.
-                  <br />
-                  Please try refreshing the page or check back later.
-                </p>
-
-                {/*==================== Error details (subtle) ====================*/}
-                {error && (
-                  <details className="text-sm text-gray-500 mt-4">
-                    <summary className="cursor-pointer hover:text-gray-700">
-                      Technical details
-                    </summary>
-                    <p className="mt-2 p-3 bg-gray-50 rounded text-left font-mono text-xs">
-                      {error}
-                    </p>
-                  </details>
-                )}
-                {/*==================== End of Error details (subtle) ====================*/}
-
-                {/*==================== Retry CTA ====================*/}
-                <div className="pt-4">
-                  <button
-                    onClick={() => window.location.reload()}
-                    className="inline-flex items-center px-6 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors duration-200 font-medium"
-                  >
-                    <Calendar className="w-4 h-4 mr-2" />
-                    Try Again
-                  </button>
-                </div>
-                {/*==================== End of Retry CTA ====================*/}
-              </div>
-              {/*==================== End of Error Content ====================*/}
-            </div>
+          <div className="rounded-[2rem] bg-[#005080] p-10 text-white">
+            <h3 className="text-3xl font-bold">Unable to load events</h3>
+            <p className="mt-3 max-w-xl">
+              We&apos;re having trouble connecting to our events service. Refresh the page or check
+              back later.
+            </p>
+            <button
+              type="button"
+              onClick={() => window.location.reload()}
+              className="mt-6 rounded-full bg-[#0A1628] px-5 py-3 text-sm font-semibold text-[#FF6A00]"
+            >
+              Try again
+            </button>
           </div>
         ) : events.length === 0 ? (
-          <div className="text-center py-20">
-            <div className="max-w-md mx-auto">
-              {/*==================== Icon Container ====================*/}
-              <div className="relative mb-8">
-                <div className="w-24 h-24 mx-auto rounded-full bg-linear-to-br from-blue-50 to-amber-50 flex items-center justify-center border border-blue-100">
-                  <Calendar className="h-10 w-10 text-blue-500" />
-                </div>
-              </div>
-              {/*==================== End of Icon Container ====================*/}
-
-              {/*==================== Content ====================*/}
-              <div className="space-y-4">
-                <h3 className="text-2xl font-bold text-gray-800">No Upcoming Events</h3>
-                <p className="text-gray-600 leading-relaxed">
-                  We're planning exciting events for the ITCA community.
-                  <br />
-                  Check back soon for updates!
-                </p>
-              </div>
-              {/*==================== End of Content ====================*/}
-            </div>
+          <div className="rounded-[2rem] bg-[#FFE0CC] p-10 text-[#0A1628]">
+            <h3 className="text-3xl font-bold">No upcoming events yet</h3>
+            <p className="mt-3 max-w-xl">
+              The next workshop, sports day, or campus initiative is being planned. Check back
+              soon.
+            </p>
           </div>
         ) : (
-          <div className="grid gap-8 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
-            {events.map((event, index) => (
-              <EventCard key={event._id} event={event} index={index} />
-            ))}
-          </div>
-        )}
+          <>
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+              {visibleEvents.map((event, index) => (
+                <EventCard key={event._id} event={event} index={index} />
+              ))}
+            </div>
 
+            {hasMore && (
+              <div className="mt-10 flex justify-center">
+                <button
+                  type="button"
+                  onClick={loadMore}
+                  className="inline-flex h-12 items-center justify-center rounded-full bg-[#FF6A00] px-8 text-base font-semibold text-white transition hover:brightness-110"
+                >
+                  Load more
+                </button>
+              </div>
+            )}
+          </>
+        )}
       </div>
     </section>
   );

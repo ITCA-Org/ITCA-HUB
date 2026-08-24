@@ -68,7 +68,7 @@
 }
 
 ::selection {
-  background-color: #ffef79;
+  background-color: #d4e6f2;
 }
 
 @theme inline {
@@ -156,7 +156,157 @@ body {
 }
 
 .link-active {
-  color: #f59e0b;
+  color: #ff6a00;
+}
+
+.landing-itca {
+  color: #0a1628;
+  background: #ffffff;
+  font-family: 'Space Grotesk', system-ui, sans-serif;
+  overflow-x: clip;
+  --itca-ink: #0a1628;
+  --itca-blue: #005080;
+  --itca-blue-soft: #d4e6f2;
+  --itca-orange: #ff6a00;
+  --itca-orange-soft: #ffe0cc;
+}
+
+.landing-itca h1,
+.landing-itca h2,
+.landing-itca h3 {
+  letter-spacing: -0.03em;
+}
+
+.landing-mono {
+  font-family: 'IBM Plex Mono', ui-monospace, monospace;
+}
+
+.landing-serif {
+  font-family: 'Instrument Serif', Georgia, serif;
+}
+
+@keyframes landing-marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.landing-marquee-track {
+  animation: landing-marquee 28s linear infinite;
+  width: max-content;
+}
+
+.landing-marquee-track:hover {
+  animation-play-state: paused;
+}
+
+.landing-marquee-track--static {
+  animation: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .landing-marquee-track {
+    animation: none;
+  }
+
+  .footer-butterfly-path,
+  .footer-butterfly-wings {
+    animation: none !important;
+  }
+}
+
+@keyframes footer-butterfly-fly {
+  0% {
+    left: 2%;
+    top: 78%;
+    transform: rotate(-18deg);
+  }
+  12% {
+    left: 22%;
+    top: 8%;
+    transform: rotate(12deg);
+  }
+  25% {
+    left: 55%;
+    top: 68%;
+    transform: rotate(-10deg);
+  }
+  38% {
+    left: 72%;
+    top: 12%;
+    transform: rotate(16deg);
+  }
+  50% {
+    left: 72%;
+    top: 82%;
+    transform: rotate(-6deg);
+  }
+  62% {
+    left: 40%;
+    top: 18%;
+    transform: rotate(14deg);
+  }
+  75% {
+    left: 8%;
+    top: 48%;
+    transform: rotate(-12deg);
+  }
+  88% {
+    left: 60%;
+    top: 35%;
+    transform: rotate(8deg);
+  }
+  100% {
+    left: 2%;
+    top: 78%;
+    transform: rotate(-18deg);
+  }
+}
+
+@keyframes footer-butterfly-flap {
+  0%,
+  100% {
+    transform: scaleX(1);
+  }
+  50% {
+    transform: scaleX(0.65);
+  }
+}
+
+.footer-butterfly-path {
+  position: absolute;
+  width: 5rem;
+  height: 5rem;
+  margin: 0;
+  animation: footer-butterfly-fly 8s ease-in-out infinite;
+  will-change: left, top, transform;
+}
+
+.footer-butterfly-path svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.footer-butterfly-wings {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: footer-butterfly-flap 0.18s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .footer-butterfly-path,
+  .footer-butterfly-wings {
+    animation: none;
+  }
+
+  .footer-butterfly-path {
+    left: 75%;
+    top: 12%;
+  }
 }
 
 .hide-scrollbar {

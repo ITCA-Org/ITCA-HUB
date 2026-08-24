@@ -1,274 +1,207 @@
 import Link from 'next/link';
 import Image from 'next/image';
+import { useRouter } from 'next/router';
 import { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, X, Facebook, Instagram, Mail, Linkedin } from 'lucide-react';
+import { AnimatePresence, motion } from 'framer-motion';
+import HomeIcon from './home-icon';
 
-const Header = () => {
+const navLinks = [
+  { name: 'Home', href: '/', match: '/' },
+  { name: 'Events', href: '/events', match: '/events' },
+  { name: 'Degrees', href: '/degrees', match: '/degrees' },
+  { name: 'Community', href: '/community', match: '/community' },
+  { name: 'Resources', href: '/resources', match: '/resources' },
+];
+
+const desktopNavLinks = navLinks.filter((link) => link.name !== 'Home');
+
+type HeaderProps = {
+  /** When true, nav starts transparent over the hero and turns solid after scroll */
+  homeHero?: boolean;
+};
+
+const Header = ({ homeHero = false }: HeaderProps) => {
+  const router = useRouter();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isScrolled, setIsScrolled] = useState(false);
-  const [activeSection, setActiveSection] = useState('');
-  const [isMobile, setIsMobile] = useState(false);
+  const [showSolidNav, setShowSolidNav] = useState(!homeHero);
 
   useEffect(() => {
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth < 1050);
+    if (!homeHero) {
+      setShowSolidNav(true);
+      return;
+    }
+
+    const banner = document.getElementById('hero-banner');
+    if (!banner) {
+      setShowSolidNav(true);
+      return;
+    }
+
+    const updateNav = () => {
+      const { bottom } = banner.getBoundingClientRect();
+      setShowSolidNav(bottom <= 0);
     };
 
-    checkMobile();
-
-    window.addEventListener('resize', checkMobile);
-
-    return () => window.removeEventListener('resize', checkMobile);
-  }, []);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      if (window.scrollY > 10) {
-        setIsScrolled(true);
-      } else {
-        setIsScrolled(false);
-      }
-    };
-
-    window.addEventListener('scroll', handleScroll);
-
-    const sections = document.querySelectorAll('section[id]');
-    const observerOptions = {
-      root: null,
-      rootMargin: '-100px 0px -100px 0px',
-      threshold: 0.3,
-    };
-
-    const observerCallback = (entries: IntersectionObserverEntry[]) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          setActiveSection(entry.target.id);
-        }
-      });
-    };
-
-    const observer = new IntersectionObserver(observerCallback, observerOptions);
-    sections.forEach((section) => {
-      observer.observe(section);
-    });
+    updateNav();
+    window.addEventListener('scroll', updateNav, { passive: true });
+    window.addEventListener('resize', updateNav);
 
     return () => {
-      window.removeEventListener('scroll', handleScroll);
-      observer.disconnect();
+      window.removeEventListener('scroll', updateNav);
+      window.removeEventListener('resize', updateNav);
     };
-  }, []);
+  }, [homeHero]);
 
-  const isActive = (sectionId: string) => {
-    return activeSection === sectionId ? 'link-active' : '';
+  useEffect(() => {
+    document.body.style.overflow = isMenuOpen ? 'hidden' : '';
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [isMenuOpen]);
+
+  useEffect(() => {
+    const close = () => setIsMenuOpen(false);
+    router.events.on('routeChangeStart', close);
+    return () => router.events.off('routeChangeStart', close);
+  }, [router.events]);
+
+  const isActive = (match: string) => {
+    if (match === '/') return router.pathname === '/';
+    return router.pathname === match || router.pathname.startsWith(`${match}/`);
   };
 
-  const navLinks = [
-    { name: 'Home', href: '#hero-section' },
-    { name: 'Events', href: '#events' },
-    { name: 'Degrees', href: '#degrees' },
-    { name: 'Virtual Tour', href: '#virtual-tour' },
-    { name: 'Resources', href: '#resources' },
-  ];
+  const Logo = ({ className = 'h-9 w-auto object-contain md:h-14' }: { className?: string }) => (
+    <Link href="/" className="flex items-center">
+      <Image
+        priority
+        width={220}
+        height={56}
+        alt="ITCA logo"
+        src="/itca-logo.png"
+        className={className}
+      />
+    </Link>
+  );
 
   return (
-    <header
-      className={`fixed left-0 top-0 sm:px-0 lg:px-15 z-50 w-full transition-all duration-300 ${isScrolled ? 'bg-white py-2 shadow-lg shadow-blue-700/5' : 'bg-transparent py-4'
+    <header className="pointer-events-none fixed inset-x-0 top-0 z-50">
+      <div
+        className={`pointer-events-none px-4 transition-[padding] duration-300 md:hidden ${
+          isMenuOpen ? 'relative z-[60]' : ''
         }`}
-    >
-      <div className="container mx-auto flex items-center justify-between px-4">
-        <Link href="/" className="relative z-50 flex items-center">
-          <Image
-            priority
-            width={120}
-            height={40}
-            alt="ITCA Logo"
-            src="/images/logo.jpg"
-            className="h-auto w-28"
-          />
-        </Link>
+      >
+        <div
+          className={`pointer-events-auto flex h-[56px] w-full items-center justify-between transition-all duration-300 ${
+            showSolidNav && !isMenuOpen
+              ? 'rounded-b-[1.5rem] bg-white px-3 shadow-[0_8px_28px_rgba(0,0,0,0.12)]'
+              : 'bg-transparent px-0 pt-1'
+          }`}
+        >
+          <button
+            type="button"
+            aria-label={isMenuOpen ? 'Close menu' : 'Open menu'}
+            aria-expanded={isMenuOpen}
+            onClick={() => setIsMenuOpen((open) => !open)}
+            className={`rounded-full px-5 py-1.5 text-sm font-semibold tracking-tight transition ${
+              isMenuOpen ? 'bg-[#0A1628] text-white' : 'bg-[#0A1628] text-[#FF6A00]'
+            }`}
+          >
+            {isMenuOpen ? 'Close' : 'Menu'}
+          </button>
+          <Logo className="h-8 w-auto object-contain" />
+        </div>
+      </div>
 
-        {/*==================== Desktop Menu (Visible above 1050px) ====================*/}
-        {!isMobile && (
-          <nav className="hidden md:block">
-            <ul className="flex space-x-8">
-              {navLinks.map((link) => (
-                <li key={link.name}>
-                  <a
+      <div
+        className={`pointer-events-none hidden transition-[padding] duration-300 md:block ${
+          showSolidNav ? 'px-6 sm:px-10 lg:px-16' : 'px-8 sm:px-14 lg:px-24'
+        }`}
+      >
+        <div
+          className={`pointer-events-auto mx-auto flex h-[88px] w-full max-w-[1400px] items-center justify-between transition-all duration-300 ${
+            showSolidNav
+              ? 'rounded-b-[3rem] bg-white px-8 shadow-[0_8px_28px_rgba(0,0,0,0.12)]'
+              : 'bg-transparent px-0'
+          }`}
+        >
+          <div className="flex min-w-0 items-center gap-3">
+            <Link
+              href="/"
+              aria-label="Home"
+              aria-current={isActive('/') ? 'page' : undefined}
+              className={`flex h-11 w-14 shrink-0 items-center justify-center rounded-[14px] transition ${
+                isActive('/')
+                  ? 'bg-[#FF6A00] text-white'
+                  : 'bg-[#0A1628] text-[#FF6A00] hover:bg-[#FF6A00] hover:text-white'
+              }`}
+            >
+              <HomeIcon className="h-6 w-6" />
+            </Link>
+
+            <nav className="flex items-center gap-2.5">
+              {desktopNavLinks.map((link) => {
+                const active = isActive(link.match);
+                return (
+                  <Link
+                    key={link.name}
                     href={link.href}
-                    className={`font-medium transition-colors ${isScrolled
-                        ? 'text-gray-900 hover:text-[#1d4ed8]'
-                        : 'text-white hover:text-[#f59e0b]'
-                      } ${isActive(link.href.substring(1))}`}
+                    className={`inline-flex h-11 shrink-0 items-center justify-center whitespace-nowrap rounded-full px-9 text-lg font-semibold leading-none transition ${
+                      active
+                        ? 'bg-[#FF6A00] text-white'
+                        : 'bg-[#0A1628] text-[#FF6A00] hover:bg-[#FF6A00] hover:text-white'
+                    }`}
                   >
                     {link.name}
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </nav>
-        )}
-        {/*==================== End of Desktop Menu (Visible Above 1050px) ====================*/}
-
-        {/*==================== Mobile Menu Toggle Button ====================*/}
-        <button
-          onClick={() => setIsMenuOpen(!isMenuOpen)}
-          className="flex h-10 w-10 items-center justify-center rounded-full bg-white/10 backdrop-blur-sm md:hidden"
-          aria-label="Toggle menu"
-        >
-          {isMenuOpen ? (
-            <X className={`h-6 w-6 ${isScrolled ? 'text-gray-900' : 'text-white'}`} />
-          ) : (
-            <Menu className={`h-6 w-6 ${isScrolled ? 'text-gray-900' : 'text-white'}`} />
-          )}
-        </button>
-        {/*==================== End of Mobile Menu Toggle Button ====================*/}
-
-        {/*==================== Mobile Menu ====================*/}
-        {isMenuOpen && !isMobile && (
-          <div className="absolute left-0 top-full w-full bg-white py-4 shadow-lg md:hidden">
-            <nav className="container mx-auto px-4">
-              <ul className="space-y-4">
-                {navLinks.map((link) => (
-                  <li key={link.name}>
-                    <a
-                      href={link.href}
-                      className={`block font-medium text-gray-900 hover:text-[#1d4ed8] ${isActive(
-                        link.href.substring(1)
-                      )}`}
-                      onClick={() => setIsMenuOpen(false)}
-                    >
-                      {link.name}
-                    </a>
-                  </li>
-                ))}
-              </ul>
+                  </Link>
+                );
+              })}
             </nav>
           </div>
-        )}
-        {/*==================== End of Mobile Menu ====================*/}
 
-        {/*==================== Mobile Menu with Animations Oonly on Screens Below 1050px) ====================*/}
-        <AnimatePresence>
-          {isMenuOpen && isMobile && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 1 }}
-              className="fixed inset-0 bg-gray-900/95 backdrop-blur-md z-40"
-            >
-              <button
-                aria-label="Close menu"
-                onClick={() => setIsMenuOpen(false)}
-                className="absolute top-4 right-4 flex h-10 w-10 items-center justify-center rounded-full bg-gray-700/50 text-white hover:bg-gray-600/50 transition-all z-50"
-              >
-                <X className="h-6 w-6" />
-              </button>
-              <motion.nav
-                initial={{ x: '100%' }}
-                animate={{ x: 0 }}
-                exit={{ x: '100%' }}
-                transition={{
-                  type: 'spring',
-                  stiffness: 100,
-                  damping: 20,
-                }}
-                className="fixed inset-y-0 right-0 w-full max-w-sm bg-gray-800/50 backdrop-blur-xl border-l border-gray-700/50 flex flex-col justify-center"
-              >
-                <div className="px-8">
-                  <ul className="space-y-6">
-                    {navLinks.map((link) => (
-                      <motion.li
-                        key={link.name}
-                        initial={{ opacity: 0, x: 20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{
-                          delay: navLinks.indexOf(link) * 0.1,
-                          duration: 0.3,
-                        }}
-                      >
-                        <a
-                          href={link.href}
-                          className={`text-xl text-white hover:text-[#f59e0b] transition-colors duration-300 ${isActive(link.href.substring(1))}`}
-                          onClick={() => setIsMenuOpen(false)}
-                        >
-                          {link.name}
-                        </a>
-                      </motion.li>
-                    ))}
-                  </ul>
-
-                  <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: (navLinks.length + 1) * 0.1 }}
-                    className="mt-12 flex flex-col space-y-4"
-                  >
-                    <div className="flex items-center space-x-3">
-                      <div className="h-10 w-10 rounded-full bg-[#1d4ed8]/20 flex items-center justify-center">
-                        <Mail className="h-5 w-5 text-[#1d4ed8]" />
-                      </div>
-                      <span className="text-gray-300 text-sm">itca@utg.edu.gm</span>
-                    </div>
-                    <div className="flex items-center space-x-3">
-                      <div className="h-10 w-10 rounded-full bg-[#f59e0b]/20 flex items-center justify-center">
-                        <svg
-                          className="h-5 w-5 text-[#f59e0b]"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke="currentColor"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
-                          />
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
-                          />
-                        </svg>
-                      </div>
-                      <span className="text-gray-300 text-sm">Faraba Banta Campus</span>
-                    </div>
-                  </motion.div>
-
-                  <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ delay: (navLinks.length + 2) * 0.1 }}
-                    className="mt-12 flex space-x-4"
-                  >
-                    <a
-                      href="https://www.facebook.com/share/1GUd1gGihV/?mibextid=wwXIfr"
-                      className="h-10 w-10 rounded-full bg-gray-700 flex items-center justify-center text-white hover:bg-[#1d4ed8] transition-colors duration-300"
-                    >
-                      <Facebook className="h-5 w-5" />
-                    </a>
-                    <a
-                      href="https://www.instagram.com/utgitca?igsh=MTRwcTF4amRuZ2x0YQ=="
-                      className="h-10 w-10 rounded-full bg-gray-700 flex items-center justify-center text-white hover:bg-[#1d4ed8] transition-colors duration-300"
-                    >
-                      <Instagram className="h-5 w-5" />
-                    </a>
-                    <a
-                      href="https://gm.linkedin.com/company/utg-itca-information-technology-communication-association-university-of-the-gambia"
-                      className="h-10 w-10 rounded-full bg-gray-700 flex items-center justify-center text-white hover:bg-[#1d4ed8] transition-colors duration-300"
-                    >
-                      <Linkedin className="h-5 w-5" />
-                    </a>
-                  </motion.div>
-                </div>
-              </motion.nav>
-            </motion.div>
-          )}
-        </AnimatePresence>
-        {/*==================== End of Mobile Menu with Animations (Only on Screens Below 1050px) ====================*/}
+          <Logo />
+        </div>
       </div>
+
+      <AnimatePresence>
+        {isMenuOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className="pointer-events-auto fixed inset-0 z-[55] bg-[#005080] md:hidden"
+          >
+            <nav className="flex h-full flex-col justify-center gap-3 px-5 pb-16 pt-20">
+              {navLinks.map((link) => {
+                const active = isActive(link.match);
+                return (
+                  <Link
+                    key={link.name}
+                    href={link.href}
+                    onClick={() => setIsMenuOpen(false)}
+                    className={`inline-flex h-10 w-fit min-w-[10rem] items-center justify-center whitespace-nowrap rounded-full px-8 text-center text-lg font-semibold leading-none tracking-tight transition ${
+                      active ? 'bg-[#FF6A00] text-white' : 'bg-[#0A1628] text-[#FF6A00]'
+                    }`}
+                  >
+                    {link.name}
+                  </Link>
+                );
+              })}
+              <Link
+                href="/virtual-tour"
+                onClick={() => setIsMenuOpen(false)}
+                className={`inline-flex h-10 w-fit min-w-[10rem] items-center justify-center whitespace-nowrap rounded-full px-8 text-center text-lg font-semibold leading-none tracking-tight transition ${
+                  isActive('/virtual-tour')
+                    ? 'bg-[#FF6A00] text-white'
+                    : 'bg-[#0A1628] text-[#FF6A00]'
+                }`}
+              >
+                Virtual Tour
+              </Link>
+            </nav>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </header>
   );
 };

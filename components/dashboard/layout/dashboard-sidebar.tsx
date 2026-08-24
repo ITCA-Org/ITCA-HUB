@@ -87,7 +87,7 @@ const Sidebar = ({ open, setOpen }: DashboardSidebarProps) => {
                 height={40}
                 alt="ITCA Logo"
                 className="h-auto"
-                src="/images/logo.jpg"
+                src="/itca-logo.png"
               />
             </Link>
             <button
@@ -106,7 +106,7 @@ const Sidebar = ({ open, setOpen }: DashboardSidebarProps) => {
                 width={150}
                 height={150}
                 alt="ITCA Logo"
-                src="/images/logo.jpg"
+                src="/itca-logo.png"
                 className="mr-2 h-auto"
               />
             </Link>

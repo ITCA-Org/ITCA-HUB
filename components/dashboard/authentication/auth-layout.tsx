@@ -22,7 +22,7 @@ const AuthLayout: React.FC<AuthLayoutProps> = ({
     <>
       <Head>
         <title>{`ITCA Hub | ${title}`}</title>
-        <link rel="icon" href="/images/logo.jpg" />
+        <link rel="icon" href="/itca-logo.png" />
         <meta name="description" content={description} />
         <meta name="robots" content="noindex, nofollow" />
       </Head>
@@ -111,7 +111,7 @@ const AuthLayout: React.FC<AuthLayoutProps> = ({
                     width={150}
                     height={150}
                     alt="ITCA Logo"
-                    src="/images/logo.jpg"
+                    src="/itca-logo.png"
                     className="mr-2 h-auto"
                   />
                 </Link>
