@@ -9,11 +9,11 @@ import {
 } from 'react';
 import {
   cartLineKey,
-  getShopProduct,
   type ShopProduct,
 } from '@/components/landing-page/shop-data';
+import { useShopProducts } from '@/hooks/shop/use-shop';
 
-const STORAGE_KEY = 'itca-shop-cart-v2';
+const STORAGE_KEY = 'itca-shop-cart-v3';
 
 export type CartLine = {
   productId: string;
@@ -39,6 +39,8 @@ type AddItemOptions = {
 
 type ShopCartContextValue = {
   lines: CartLine[];
+  products: ShopProduct[];
+  productsLoading: boolean;
   isOpen: boolean;
   openCart: () => void;
   closeCart: () => void;
@@ -54,14 +56,6 @@ type ShopCartContextValue = {
 
 const ShopCartContext = createContext<ShopCartContextValue | null>(null);
 
-const isValidLine = (line: CartLine) => {
-  const product = getShopProduct(line.productId);
-  if (!product || line.quantity <= 0) return false;
-  const hasColor = product.colors.some((c) => c.name === line.color);
-  const hasSize = product.sizes.includes(line.size);
-  return hasColor && hasSize;
-};
-
 const readStoredLines = (): CartLine[] => {
   if (typeof window === 'undefined') return [];
   try {
@@ -75,7 +69,7 @@ const readStoredLines = (): CartLine[] => {
         typeof line?.color === 'string' &&
         typeof line?.size === 'string' &&
         typeof line?.quantity === 'number' &&
-        isValidLine(line)
+        line.quantity > 0
     );
   } catch {
     return [];
@@ -83,14 +77,37 @@ const readStoredLines = (): CartLine[] => {
 };
 
 export const ShopCartProvider = ({ children }: { children: ReactNode }) => {
+  const { products, isLoading: productsLoading } = useShopProducts();
   const [lines, setLines] = useState<CartLine[]>([]);
   const [isOpen, setIsOpen] = useState(false);
   const [hydrated, setHydrated] = useState(false);
+
+  const productMap = useMemo(() => {
+    const map = new Map<string, ShopProduct>();
+    for (const product of products) {
+      map.set(product.id, product);
+    }
+    return map;
+  }, [products]);
 
   useEffect(() => {
     setLines(readStoredLines());
     setHydrated(true);
   }, []);
+
+  useEffect(() => {
+    if (!hydrated || productsLoading) return;
+    setLines((prev) =>
+      prev.filter((line) => {
+        const product = productMap.get(line.productId);
+        if (!product) return false;
+        return (
+          product.colors.some((c) => c.name === line.color) &&
+          product.sizes.includes(line.size)
+        );
+      })
+    );
+  }, [hydrated, productsLoading, productMap]);
 
   useEffect(() => {
     if (!hydrated) return;
@@ -110,33 +127,39 @@ export const ShopCartProvider = ({ children }: { children: ReactNode }) => {
   const closeCart = useCallback(() => setIsOpen(false), []);
   const toggleCart = useCallback(() => setIsOpen((open) => !open), []);
 
-  const addItem = useCallback((productId: string, options: AddItemOptions) => {
-    const product = getShopProduct(productId);
-    if (!product) return;
+  const addItem = useCallback(
+    (productId: string, options: AddItemOptions) => {
+      const product = productMap.get(productId);
+      if (!product) return;
 
-    const color = options.color;
-    const size = options.size;
-    const quantity = options.quantity ?? 1;
+      const color = options.color;
+      const size = options.size;
+      const quantity = options.quantity ?? 1;
 
-    if (!product.colors.some((c) => c.name === color) || !product.sizes.includes(size)) {
-      return;
-    }
-
-    setLines((prev) => {
-      const key = cartLineKey(productId, color, size);
-      const existing = prev.find(
-        (line) => cartLineKey(line.productId, line.color, line.size) === key
-      );
-      if (existing) {
-        return prev.map((line) =>
-          cartLineKey(line.productId, line.color, line.size) === key
-            ? { ...line, quantity: line.quantity + quantity }
-            : line
-        );
+      if (
+        !product.colors.some((c) => c.name === color) ||
+        !product.sizes.includes(size)
+      ) {
+        return;
       }
-      return [...prev, { productId, color, size, quantity }];
-    });
-  }, []);
+
+      setLines((prev) => {
+        const key = cartLineKey(productId, color, size);
+        const existing = prev.find(
+          (line) => cartLineKey(line.productId, line.color, line.size) === key
+        );
+        if (existing) {
+          return prev.map((line) =>
+            cartLineKey(line.productId, line.color, line.size) === key
+              ? { ...line, quantity: line.quantity + quantity }
+              : line
+          );
+        }
+        return [...prev, { productId, color, size, quantity }];
+      });
+    },
+    [productMap]
+  );
 
   const removeItem = useCallback((key: string) => {
     setLines((prev) =>
@@ -166,7 +189,7 @@ export const ShopCartProvider = ({ children }: { children: ReactNode }) => {
     () =>
       lines
         .map((line) => {
-          const product = getShopProduct(line.productId);
+          const product = productMap.get(line.productId);
           if (!product) return null;
           return {
             key: cartLineKey(line.productId, line.color, line.size),
@@ -178,7 +201,7 @@ export const ShopCartProvider = ({ children }: { children: ReactNode }) => {
           };
         })
         .filter((line): line is DetailedCartLine => Boolean(line)),
-    [lines]
+    [lines, productMap]
   );
 
   const itemCount = useMemo(
@@ -194,6 +217,8 @@ export const ShopCartProvider = ({ children }: { children: ReactNode }) => {
   const value = useMemo(
     () => ({
       lines,
+      products,
+      productsLoading,
       isOpen,
       openCart,
       closeCart,
@@ -208,6 +233,8 @@ export const ShopCartProvider = ({ children }: { children: ReactNode }) => {
     }),
     [
       lines,
+      products,
+      productsLoading,
       isOpen,
       openCart,
       closeCart,

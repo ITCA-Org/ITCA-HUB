@@ -11,6 +11,9 @@ import {
   Mail,
   MessageSquare,
   BadgeCheck,
+  Package,
+  ShoppingBag,
+  QrCode,
 } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -59,6 +62,21 @@ const adminNavItems: NavItem[] = [
     name: 'Dues Scanner',
     href: '/admin/dues-scanner',
     icon: <BadgeCheck className="h-5 w-5" />,
+  },
+  {
+    name: 'Shop Products',
+    href: '/admin/shop/products',
+    icon: <Package className="h-5 w-5" />,
+  },
+  {
+    name: 'Shop Orders',
+    href: '/admin/shop/orders',
+    icon: <ShoppingBag className="h-5 w-5" />,
+  },
+  {
+    name: 'Shop Scanner',
+    href: '/admin/shop/scanner',
+    icon: <QrCode className="h-5 w-5" />,
   },
   {
     name: 'Resources',
