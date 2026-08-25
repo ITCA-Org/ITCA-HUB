@@ -32,130 +32,6 @@ export type Event = {
   updatedAt: string;
 };
 
-const mockOrganizer = {
-  _id: 'mock-user',
-  firstName: 'ITCA',
-  lastName: 'Exec',
-  schoolEmail: 'itca@utg.edu.gm',
-};
-
-/** Preview data when the API has no upcoming events */
-export const MOCK_EVENTS: Event[] = [
-  {
-    _id: 'mock-bootcamp-web',
-    title: 'Web Dev Bootcamp — Build & Ship',
-    description:
-      'A hands-on weekend bootcamp for School of ICT students. HTML, CSS, React basics, and shipping a small project with mentors from ITCA.',
-    date: '2026-09-12T00:00:00.000Z',
-    time: '2026-09-12T09:00:00.000Z',
-    toDate: '2026-09-13T00:00:00.000Z',
-    toTime: '2026-09-13T16:00:00.000Z',
-    location: 'ICT Lab, Faraba Banta Campus',
-    status: 'upcoming',
-    ticketingEnabled: true,
-    ticketTiers: [
-      { type: 'standard', enabled: true, label: 'Student', price: 50 },
-      { type: 'premium', enabled: true, label: 'With kit', price: 150 },
-    ],
-    imageUrl: '/ITCA_WEEK/IMG_4248.jpg',
-    capacity: 60,
-    createdBy: mockOrganizer,
-    createdAt: '2026-08-01T00:00:00.000Z',
-    updatedAt: '2026-08-01T00:00:00.000Z',
-  },
-  {
-    _id: 'mock-sports-day',
-    title: 'ITCA Sports Day 2026',
-    description:
-      'Football, volleyball, and friendly competitions across School of ICT. Come play, cheer, and meet fellow students outside the lecture hall.',
-    date: '2026-09-20T00:00:00.000Z',
-    time: '2026-09-20T08:30:00.000Z',
-    toTime: '2026-09-20T17:00:00.000Z',
-    location: 'UTG Sports Ground, Faraba Banta',
-    status: 'upcoming',
-    ticketingEnabled: false,
-    ticketTiers: [],
-    imageUrl: '/ITCA_SPORTS/IMG_8212.jpg',
-    capacity: 200,
-    createdBy: mockOrganizer,
-    createdAt: '2026-08-01T00:00:00.000Z',
-    updatedAt: '2026-08-01T00:00:00.000Z',
-  },
-  {
-    _id: 'mock-retreat',
-    title: 'Leadership Retreat — Show Up',
-    description:
-      'A one-day retreat for ICT students focused on teamwork, leadership, and community. Workshops, games, and conversations that stick.',
-    date: '2026-10-04T00:00:00.000Z',
-    time: '2026-10-04T08:00:00.000Z',
-    toTime: '2026-10-04T18:00:00.000Z',
-    location: 'Senegambia Beach Hotel',
-    status: 'upcoming',
-    ticketingEnabled: true,
-    ticketTiers: [{ type: 'standard', enabled: true, label: 'Standard', price: 200 }],
-    imageUrl: '/ITCA_RETREAT/retreat-gathering.jpg',
-    capacity: 80,
-    createdBy: mockOrganizer,
-    createdAt: '2026-08-01T00:00:00.000Z',
-    updatedAt: '2026-08-01T00:00:00.000Z',
-  },
-  {
-    _id: 'mock-itca-week',
-    title: 'UTG-ITCA Week Opening Ceremony',
-    description:
-      'Kick off ITCA Week with talks, showcases, and the School of ICT community. Open to every ICT student—you’re already part of us.',
-    date: '2026-10-18T00:00:00.000Z',
-    time: '2026-10-18T10:00:00.000Z',
-    toTime: '2026-10-18T13:00:00.000Z',
-    location: 'Main Auditorium, Faraba Banta Campus',
-    status: 'upcoming',
-    ticketingEnabled: false,
-    ticketTiers: [],
-    imageUrl: '/ITCA_WEEK/IMG_4517.jpg',
-    capacity: 300,
-    createdBy: mockOrganizer,
-    createdAt: '2026-08-01T00:00:00.000Z',
-    updatedAt: '2026-08-01T00:00:00.000Z',
-  },
-  {
-    _id: 'mock-cyber-workshop',
-    title: 'Intro to Cybersecurity Workshop',
-    description:
-      'Learn the basics of digital security, phishing awareness, and safe practices. No prior experience needed—bring your laptop if you can.',
-    date: '2026-11-01T00:00:00.000Z',
-    time: '2026-11-01T14:00:00.000Z',
-    toTime: '2026-11-01T17:00:00.000Z',
-    location: 'Computer Lab B, School of ICT',
-    status: 'upcoming',
-    ticketingEnabled: true,
-    ticketTiers: [{ type: 'standard', enabled: true, label: 'Free entry', price: 0 }],
-    imageUrl: '/ITCA_WEEK/IMG_4237.jpg',
-    capacity: 40,
-    createdBy: mockOrganizer,
-    createdAt: '2026-08-01T00:00:00.000Z',
-    updatedAt: '2026-08-01T00:00:00.000Z',
-  },
-  {
-    _id: 'mock-meetup',
-    title: 'Study Circle & Career Chat',
-    description:
-      'An evening meetup for assignment help, peer study, and short talks from alumni and industry guests. Pizza after—bring your questions.',
-    date: '2026-11-15T00:00:00.000Z',
-    time: '2026-11-15T16:00:00.000Z',
-    toTime: '2026-11-15T19:00:00.000Z',
-    location: 'Student Lounge, Faraba Banta Campus',
-    status: 'upcoming',
-    ticketingEnabled: false,
-    ticketTiers: [],
-    imageUrl: '/ITCA_RETREAT/retreat-lunch.jpg',
-    capacity: 50,
-    createdBy: mockOrganizer,
-    createdAt: '2026-08-01T00:00:00.000Z',
-    updatedAt: '2026-08-01T00:00:00.000Z',
-  },
-];
-
-
 const formatDate = (dateString: string) => {
   const date = new Date(dateString);
   return date.toLocaleDateString('en-US', {
@@ -297,29 +173,21 @@ const EventCard = ({ event, index }: { event: Event; index: number }) => {
           )}
         </div>
 
-        {enabledTiers.length > 0 &&
-          (event._id.startsWith('mock-') ? (
-            <button type="button" className={`mt-5 w-full ${darkCtaClass}`}>
-              <Ticket className="h-4 w-4" />
-              {enabledTiers.length === 1
-                ? `Buy ${enabledTiers[0].label} — D${enabledTiers[0].price}`
-                : 'Buy tickets'}
-            </button>
-          ) : (
-            <Link
-              href={
-                enabledTiers.length === 1
-                  ? `/events/${event._id}/checkout?tier=${enabledTiers[0].type}`
-                  : `/events/${event._id}/tickets`
-              }
-              className={`mt-5 w-full ${darkCtaClass}`}
-            >
-              <Ticket className="h-4 w-4" />
-              {enabledTiers.length === 1
-                ? `Buy ${enabledTiers[0].label} — D${enabledTiers[0].price}`
-                : 'Buy tickets'}
-            </Link>
-          ))}
+        {enabledTiers.length > 0 && (
+          <Link
+            href={
+              enabledTiers.length === 1
+                ? `/events/${event._id}/checkout?tier=${enabledTiers[0].type}`
+                : `/events/${event._id}/tickets`
+            }
+            className={`mt-5 w-full ${darkCtaClass}`}
+          >
+            <Ticket className="h-4 w-4" />
+            {enabledTiers.length === 1
+              ? `Buy ${enabledTiers[0].label} — D${enabledTiers[0].price}`
+              : 'Buy tickets'}
+          </Link>
+        )}
       </div>
     </motion.div>
   );
@@ -328,10 +196,8 @@ const EventCard = ({ event, index }: { event: Event; index: number }) => {
 const PAGE_SIZE = 3;
 
 const EventsSection = ({ initialEvents }: { initialEvents?: Event[] }) => {
-  const seeded =
-    initialEvents && initialEvents.length > 0 ? initialEvents : MOCK_EVENTS;
   const hasInitialData = initialEvents !== undefined;
-  const [events, setEvents] = useState<Event[]>(seeded);
+  const [events, setEvents] = useState<Event[]>(initialEvents ?? []);
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
   const [isLoading, setIsLoading] = useState(!hasInitialData);
   const [error, setError] = useState<string | null>(null);
@@ -347,16 +213,15 @@ const EventsSection = ({ initialEvents }: { initialEvents?: Event[] }) => {
         const response = await axios.get(`${BASE_URL}/events/upcoming?page=1&limit=24`);
 
         if (response.data.status === 'success') {
-          const data = response.data.data as Event[];
-          setEvents(data.length > 0 ? data : MOCK_EVENTS);
+          setEvents(response.data.data as Event[]);
           setVisibleCount(PAGE_SIZE);
         } else {
           throw new Error('Failed to fetch events');
         }
       } catch {
-        setEvents(MOCK_EVENTS);
+        setEvents([]);
         setVisibleCount(PAGE_SIZE);
-        setError(null);
+        setError('Unable to load events');
       } finally {
         setIsLoading(false);
       }

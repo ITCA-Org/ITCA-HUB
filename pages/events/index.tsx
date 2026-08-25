@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { BASE_URL } from '@/utils/url';
 import LandingLayout from '../../components/landing-page/landing-layout';
-import EventsSection, { Event, MOCK_EVENTS } from '../../components/landing-page/events-section';
+import EventsSection, { Event } from '../../components/landing-page/events-section';
 import {
   EditorialMosaic,
   FeaturedHeading,
@@ -105,11 +105,7 @@ export const getServerSideProps = async () => {
       initialEvents = response.data.data;
     }
   } catch {
-    // fall through to mocks
-  }
-
-  if (initialEvents.length === 0) {
-    initialEvents = MOCK_EVENTS;
+    // Pass empty list; EventsSection shows empty/error UI from client if needed.
   }
 
   return { props: { initialEvents } };
