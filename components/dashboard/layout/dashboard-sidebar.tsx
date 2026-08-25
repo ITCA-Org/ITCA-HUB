@@ -7,6 +7,14 @@ import {
   HelpCircle,
   LayoutDashboardIcon,
   ScanLine,
+  WalletCards,
+  Mail,
+  MessageSquare,
+  BadgeCheck,
+  Package,
+  ShoppingBag,
+  QrCode,
+  ScrollText,
 } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -27,6 +35,16 @@ const adminNavItems: NavItem[] = [
     icon: <Users className="h-5 w-5" />,
   },
   {
+    name: 'Newsletter',
+    href: '/admin/newsletter',
+    icon: <Mail className="h-5 w-5" />,
+  },
+  {
+    name: 'Feedback',
+    href: '/admin/feedback',
+    icon: <MessageSquare className="h-5 w-5" />,
+  },
+  {
     name: 'Events',
     href: '/admin/events',
     icon: <Calendar className="h-5 w-5" />,
@@ -35,6 +53,36 @@ const adminNavItems: NavItem[] = [
     name: 'Ticket Scanner',
     href: '/admin/ticket-scanner',
     icon: <ScanLine className="h-5 w-5" />,
+  },
+  {
+    name: 'Semester Dues',
+    href: '/admin/dues',
+    icon: <WalletCards className="h-5 w-5" />,
+  },
+  {
+    name: 'Dues Scanner',
+    href: '/admin/dues-scanner',
+    icon: <BadgeCheck className="h-5 w-5" />,
+  },
+  {
+    name: 'Shop Products',
+    href: '/admin/shop/products',
+    icon: <Package className="h-5 w-5" />,
+  },
+  {
+    name: 'Shop Orders',
+    href: '/admin/shop/orders',
+    icon: <ShoppingBag className="h-5 w-5" />,
+  },
+  {
+    name: 'Shop Scanner',
+    href: '/admin/shop/scanner',
+    icon: <QrCode className="h-5 w-5" />,
+  },
+  {
+    name: 'Past Papers',
+    href: '/admin/past-papers',
+    icon: <ScrollText className="h-5 w-5" />,
   },
   {
     name: 'Resources',
@@ -53,8 +101,24 @@ const adminNavItems: NavItem[] = [
   },
 ];
 
-const Sidebar = ({ open, setOpen }: DashboardSidebarProps) => {
+const facultyNavItems: NavItem[] = [
+  {
+    name: 'Semester Dues',
+    href: '/admin/dues',
+    icon: <WalletCards className="h-5 w-5" />,
+  },
+  {
+    name: 'Dues Scanner',
+    href: '/admin/dues-scanner',
+    icon: <BadgeCheck className="h-5 w-5" />,
+  },
+];
+
+const Sidebar = ({ open, setOpen, role }: DashboardSidebarProps) => {
   const router = useRouter();
+  const navItems =
+    role === 'faculty_officer' ? facultyNavItems : adminNavItems;
+  const homeHref = role === 'faculty_officer' ? '/admin/dues' : '/admin';
 
   const isActive = (href: string) => {
     if (href === '/admin') {
@@ -87,7 +151,7 @@ const Sidebar = ({ open, setOpen }: DashboardSidebarProps) => {
                 height={40}
                 alt="ITCA Logo"
                 className="h-auto"
-                src="/images/logo.jpg"
+                src="/itca-logo.png"
               />
             </Link>
             <button
@@ -100,13 +164,13 @@ const Sidebar = ({ open, setOpen }: DashboardSidebarProps) => {
           </div>
 
           <div className="hidden min-[968px]:flex items-center p-4 border-b border-gray-100">
-            <Link href="/admin" className="flex items-center">
+            <Link href={homeHref} className="flex items-center">
               <Image
                 priority
                 width={150}
                 height={150}
                 alt="ITCA Logo"
-                src="/images/logo.jpg"
+                src="/itca-logo.png"
                 className="mr-2 h-auto"
               />
             </Link>
@@ -114,7 +178,7 @@ const Sidebar = ({ open, setOpen }: DashboardSidebarProps) => {
 
           <div className="px-2 py-4 flex-1 overflow-y-auto">
             <div className="space-y-3">
-              {adminNavItems.map((item) => (
+              {navItems.map((item) => (
                 <Link
                   key={item.name}
                   href={item.href}

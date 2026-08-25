@@ -5,7 +5,12 @@ import Sidebar from './dashboard-sidebar';
 import DashboardHeader from './dashboard-header';
 import { DashboardLayoutProps } from '@/types/interfaces/dashboard';
 
-const DashboardLayout = ({ children, title = 'Dashboard', token }: DashboardLayoutProps) => {
+const DashboardLayout = ({
+  children,
+  title = 'Dashboard',
+  token,
+  role,
+}: DashboardLayoutProps) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
@@ -13,7 +18,7 @@ const DashboardLayout = ({ children, title = 'Dashboard', token }: DashboardLayo
       <Head>
         <title>{`ITCA Hub | ${title}`}</title>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <link rel="icon" href="/images/logo.jpg" />
+        <link rel="icon" href="/itca-logo.png" />
         <meta name="robots" content="noindex, nofollow" />
       </Head>
 
@@ -53,7 +58,7 @@ const DashboardLayout = ({ children, title = 'Dashboard', token }: DashboardLayo
         {/*==================== End of Background Elements ====================*/}
 
         {/*==================== Sidebar ====================*/}
-        <Sidebar open={sidebarOpen} setOpen={setSidebarOpen} />
+        <Sidebar open={sidebarOpen} setOpen={setSidebarOpen} role={role} />
         {/*==================== End of Sidebar ====================*/}
 
         {/*==================== Main Content ====================*/}

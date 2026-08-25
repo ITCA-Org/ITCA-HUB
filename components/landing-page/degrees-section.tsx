@@ -1,38 +1,31 @@
+'use client';
+
 import Image from 'next/image';
-import { useState, useRef, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import {
-  Code,
-  Radio,
-  Users,
-  Check,
-  Clock,
-  BookOpen,
-  Database,
-  ChevronDown,
-  GraduationCap,
-} from 'lucide-react';
+import { ArrowRight, Clock } from 'lucide-react';
+import { useState } from 'react';
+import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
+import { Reveal, easeOut } from './reveal';
 
 type Degree = {
   id: number;
   title: string;
-  level: 'Undergraduate';
   duration: string;
   description: string;
   image: string;
   highlights: string[];
-  icon: React.ReactNode;
+  color: string;
+  clientLabel: string;
 };
 
 const degrees: Degree[] = [
   {
     id: 1,
-    title: 'Computer Science',
-    level: 'Undergraduate',
+    title: 'Computer Science — build software with intent',
+    clientLabel: 'Computer Science',
     duration: '4 years',
     description:
-      "A comprehensive program covering programming, algorithms, data structures, and software engineering principles. Develop the technical skills necessary to design and build software systems that power today's digital economy.",
-    image: '/images/degree-1.jpg',
+      'A comprehensive program covering programming, algorithms, data structures, and software engineering principles. Develop the technical skills necessary to design and build software systems that power today\'s digital economy.',
+    image: '/ITCA_BOOTCAMP/IMG_8761.jpg',
     highlights: [
       'Specializations in AI, Cybersecurity, or Software Engineering',
       'Industry-partnered capstone projects',
@@ -40,16 +33,16 @@ const degrees: Degree[] = [
       'Strong foundation in computational theory and practice',
       'Advanced algorithms and data structures',
     ],
-    icon: <Code className="w-5 h-5" />,
+    color: '#FFE0CC',
   },
   {
     id: 2,
-    title: 'Information Systems',
-    level: 'Undergraduate',
+    title: 'Information Systems — bridge people and technology',
+    clientLabel: 'Information Systems',
     duration: '4 years',
     description:
       'Focus on bridging technology and business needs by designing, implementing, and managing information systems that support organizational operations. Learn to analyze business problems and develop technology solutions.',
-    image: '/images/degree-2.jpg',
+    image: '/ITCA_BOOTCAMP/IMG_8866.jpg',
     highlights: [
       'Business process modeling and analysis',
       'Database design and management',
@@ -57,16 +50,16 @@ const degrees: Degree[] = [
       'Enterprise systems integration',
       'IT service management',
     ],
-    icon: <Database className="w-5 h-5" />,
+    color: '#D4E6F2',
   },
   {
     id: 3,
-    title: 'Telecommunications',
-    level: 'Undergraduate',
+    title: 'Telecommunications — keep communities connected',
+    clientLabel: 'Telecommunications',
     duration: '4 years',
     description:
       'Master the science and technology of communication at a distance through electronic transmission of information. Focus on network design, wireless communications, signal processing, and telecommunications infrastructure.',
-    image: '/images/degree-3.jpg',
+    image: '/ITCA_WEEK/IMG_4608.jpg',
     highlights: [
       'Network architecture and protocols',
       'Wireless communications systems',
@@ -74,318 +67,116 @@ const degrees: Degree[] = [
       'Optical communication technologies',
       'Telecommunications regulations and standards',
     ],
-    icon: <Radio className="w-5 h-5" />,
+    color: '#005080',
   },
 ];
 
 const DegreesSection = () => {
-  const [selectedDegree, setSelectedDegree] = useState<Degree | null>(null);
-  const [hoveredTab, setHoveredTab] = useState<number | null>(null);
-  const tabRefs = useRef<(HTMLDivElement | null)[]>([]);
-  const [isMobileView, setIsMobileView] = useState(false);
-  const [showMobileDropdown, setShowMobileDropdown] = useState(false);
-
-  useEffect(() => {
-    const handleResize = () => {
-      setIsMobileView(window.innerWidth < 640);
-    };
-
-    handleResize();
-
-    window.addEventListener('resize', handleResize);
-
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
-
-  useEffect(() => {
-    if (!selectedDegree && degrees.length > 0) {
-      setSelectedDegree(degrees[0]);
-    }
-  }, [selectedDegree]);
+  const [openId, setOpenId] = useState<number>(1);
+  const reduce = useReducedMotion();
 
   return (
-    <section id="degrees" className="relative py-24 overflow-hidden">
-      {/*==================== Dynamic Background with geometric shapes ====================*/}
-      <div className="absolute inset-0 -z-10 bg-linear-to-br from-white to-gray-100"></div>
-
-      {/*==================== Prominent Geometric Elements - Top Right ====================*/}
-      <div className="absolute top-0 right-0 w-2/3 h-full overflow-hidden -z-5">
-        <div className="absolute top-10 right-0 w-full h-full">
-          <div className="absolute top-10 right-[-200px] h-[500px] w-[500px] rounded-full border-40 border-amber-500/5 animate-pulse"></div>
-          <div
-            className="absolute top-40 right-[-150px] h-[400px] w-[400px] rounded-full border-30 border-blue-700/5 animate-pulse"
-            style={{ animationDelay: '1s' }}
-          ></div>
-          <div
-            className="absolute top-60 right-[-100px] h-[300px] w-[300px] rounded-full border-20 border-amber-500/5 animate-pulse"
-            style={{ animationDelay: '2s' }}
-          ></div>
-        </div>
-      </div>
-      {/*==================== End of Prominent Geometric Elements - Top Right ====================*/}
-
-      <div className="container relative z-10 mx-auto px-4">
-        <motion.div
-          viewport={{ once: true }}
-          className="mb-16 text-center"
-          transition={{ duration: 0.6 }}
-          initial={{ opacity: 0, y: 70 }}
-          whileInView={{ opacity: 1, y: 0 }}
-        >
-          <span className="inline-block text-blue-700 font-semibold mb-2">ACADEMIC EXCELLENCE</span>
-          <h2 className="mb-4 text-4xl font-bold text-gray-900 md:text-5xl">
-            Our <span className="text-amber-500">Undergraduate</span> Programs
+    <section id="degrees" className="bg-white py-20">
+      <div className="mx-auto mb-12 max-w-[1400px] px-4 sm:px-8 lg:px-12">
+        <Reveal className="flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
+          <h2 className="max-w-3xl text-4xl font-bold text-[#0A1628] sm:text-5xl lg:text-6xl">
+            The programmes that make up our community
           </h2>
-          <div className="mx-auto h-1 w-24 bg-linear-to-r from-blue-700 via-amber-500 to-blue-700 rounded-full mb-6"></div>
-          <p className="mx-auto max-w-2xl text-lg text-gray-600">
-            Explore our comprehensive undergraduate degree programs designed to prepare you for the
-            rapidly evolving technology landscape.
+          <p className="landing-mono max-w-md text-base text-[#0A1628]/70 sm:text-lg">
+            Students from every School of ICT undergraduate programme are ITCA members.
           </p>
-        </motion.div>
+        </Reveal>
+      </div>
 
-        {/*==================== Tab Navigation ====================*/}
-        <motion.div
-          initial={{ opacity: 0, y: 50 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6, delay: 0.1 }}
-          className="mb-16 relative"
-        >
-          {/*==================== Mobile Dropdown Selector ====================*/}
-          {isMobileView && (
-            <div className="relative mx-auto max-w-sm mb-8">
-              <button
-                onClick={() => setShowMobileDropdown(!showMobileDropdown)}
-                className="w-full flex items-center justify-between p-4 bg-white/70 rounded-xl shadow-md shadow-blue-700/5 text-gray-800"
+      <div className="w-full space-y-5">
+        {degrees.map((degree, index) => {
+          const isOpen = openId === degree.id;
+          const imageLeft = index % 2 === 1;
+          const onBlue = degree.color === '#005080';
+          const text = onBlue ? 'text-white' : 'text-[#0A1628]';
+          const muted = onBlue ? 'text-white/80' : 'text-[#0A1628]/80';
+          const dot = onBlue ? 'bg-white' : 'bg-[#0A1628]';
+
+          return (
+            <motion.article
+              key={degree.id}
+              initial={reduce ? false : { opacity: 0, y: 32 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.2 }}
+              transition={{ duration: 0.65, delay: index * 0.08, ease: easeOut }}
+              className="grid w-full gap-0 overflow-hidden rounded-none lg:grid-cols-2 lg:transition-[border-radius] lg:duration-300 lg:[&:has(.course-info:hover)]:overflow-visible"
+            >
+              <div
+                className={`group relative min-h-[280px] overflow-hidden sm:min-h-[320px] lg:min-h-[420px] ${imageLeft ? 'lg:order-1' : 'lg:order-2'}`}
               >
-                <div className="flex items-center">
-                  {selectedDegree && (
-                    <div className="bg-blue-100 p-2 rounded-lg mr-3">{selectedDegree.icon}</div>
-                  )}
-                  <span className="font-medium">
-                    {selectedDegree ? selectedDegree.title : 'Select a program'}
-                  </span>
-                </div>
-                <ChevronDown
-                  className={`w-5 h-5 transition-transform duration-300 ${showMobileDropdown ? 'rotate-180' : ''}`}
+                <Image
+                  fill
+                  alt={degree.clientLabel}
+                  src={degree.image}
+                  className="object-cover transition duration-700 lg:group-hover:scale-105"
+                  sizes="(max-width: 1024px) 100vw, 50vw"
                 />
-              </button>
+              </div>
 
-              {/*==================== Dropdown Menu ====================*/}
-              <AnimatePresence>
-                {showMobileDropdown && (
-                  <motion.div
-                    initial={{ opacity: 0, y: -10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -10 }}
-                    className="absolute z-20 top-full left-0 right-0 mt-1 bg-white/90 rounded-xl overflow-hidden"
-                  >
-                    {degrees.map((degree) => (
-                      <div
-                        key={degree.id}
-                        onClick={() => {
-                          setSelectedDegree(degree);
-                          setShowMobileDropdown(false);
-                        }}
-                        className={`flex items-center p-4 cursor-pointer transition-colors hover:bg-blue-50 ${
-                          selectedDegree?.id === degree.id ? 'bg-blue-50' : ''
-                        }`}
-                      >
-                        <div
-                          className={`p-2 rounded-lg mr-3 ${
-                            selectedDegree?.id === degree.id ? 'bg-blue-100' : 'bg-gray-100'
-                          }`}
-                        >
-                          {degree.icon}
-                        </div>
-                        <div>
-                          <h4 className="font-medium text-gray-800">{degree.title}</h4>
-                          <div className="flex items-center text-xs text-gray-500">
-                            <Clock className="w-3 h-3 mr-1" />
-                            <span>{degree.duration}</span>
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                  </motion.div>
-                )}
-              </AnimatePresence>
-              {/*==================== End of Dropdown Menu ====================*/}
-            </div>
-          )}
-          {/*==================== End of Mobile Dropdown Selector ====================*/}
-
-          {/*==================== Desktop Tabs ====================*/}
-          {!isMobileView && (
-            <div className="relative flex justify-center mx-auto w-full backdrop-blur-sm rounded-2xl p-2 shadow-lg shadow-blue-700/5 overflow-hidden">
-              {/*==================== Active Tab Indicator ====================*/}
-              {selectedDegree && (
-                <motion.div
-                  initial={false}
-                  animate={{
-                    x: tabRefs.current[selectedDegree.id - 1]?.offsetLeft || 0,
-                    width: tabRefs.current[selectedDegree.id - 1]?.offsetWidth || 0,
-                  }}
-                  transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-                  className="absolute top-0 left-0 h-full z-0 rounded-xl bg-linear-to-r from-blue-700/90 to-blue-600/90 shadow-md"
-                />
-              )}
-              {/*==================== End of Active Tab Indicator ====================*/}
-
-              {degrees.map((degree, index) => (
-                <motion.div
-                  key={degree.id}
-                  whileTap={{ scale: 0.98 }}
-                  ref={(el) => {
-                    tabRefs.current[index] = el;
-                  }}
-                  onMouseLeave={() => setHoveredTab(null)}
-                  onClick={() => setSelectedDegree(degree)}
-                  onMouseEnter={() => setHoveredTab(degree.id)}
-                  className={`relative z-10 px-3 sm:px-4 md:px-6 lg:px-8 py-3 sm:py-4 cursor-pointer transition-all duration-300 flex-1 flex flex-col items-center rounded-xl
-                    ${selectedDegree?.id === degree.id ? 'text-white' : 'text-gray-700 hover:text-blue-700'}`}
-                >
-                  <div
-                    className={`flex items-center justify-center mb-2 transition-all duration-300 ${
-                      selectedDegree?.id === degree.id
-                        ? 'scale-110'
-                        : hoveredTab === degree.id
-                          ? 'scale-105'
-                          : ''
-                    }`}
-                  >
-                    <div
-                      className={`p-2 rounded-lg ${
-                        selectedDegree?.id === degree.id ? 'bg-white/20' : 'bg-blue-100'
-                      }`}
-                    >
-                      {degree.icon}
-                    </div>
-                  </div>
-
-                  <h3 className="font-bold text-sm sm:text-base lg:text-lg text-center">
+              <div
+                className={`course-info relative z-10 flex min-h-[280px] flex-col justify-between rounded-none p-6 transition-[border-radius] duration-300 sm:min-h-[320px] sm:p-10 lg:min-h-[420px] lg:p-12 lg:hover:rounded-[5rem] ${imageLeft ? 'lg:order-2' : 'lg:order-1'}`}
+                style={{ backgroundColor: degree.color }}
+              >
+                <div>
+                  <h3 className={`max-w-xl text-2xl font-bold leading-tight sm:text-4xl lg:text-5xl ${text}`}>
                     {degree.title}
                   </h3>
+                  <p className={`mt-4 flex flex-wrap items-center gap-2 text-sm font-medium sm:mt-5 sm:text-lg ${text}`}>
+                    <span className={`h-2.5 w-2.5 shrink-0 rounded-full ${dot}`} />
+                    {degree.clientLabel}
+                    <Clock className="ml-1 h-4 w-4 shrink-0 sm:ml-2" />
+                    {degree.duration}
+                  </p>
+                </div>
 
-                  <div className="flex items-center mt-1 text-xs opacity-80">
-                    <Clock className="w-3 h-3 mr-1" />
-                    <span className="whitespace-nowrap">{degree.duration}</span>
-                  </div>
-                </motion.div>
-              ))}
-            </div>
-          )}
-          {/*==================== End of Desktop Tabs ====================*/}
-        </motion.div>
-        {/*==================== End of Tab Navigation ====================*/}
-
-        {/*==================== Program Details ====================*/}
-        <AnimatePresence mode="wait">
-          {selectedDegree ? (
-            <motion.div
-              key={selectedDegree.id}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              transition={{ duration: 0.5 }}
-              className="bg-white rounded-2xl shadow-xl shadow-blue-700/5 overflow-hidden mx-auto max-w-7xl"
-            >
-              <div className="flex flex-col lg:flex-row">
-                <div className="lg:w-2/5 relative">
-                  <div className="h-64 lg:h-full w-full relative">
-                    <Image
-                      fill
-                      className="object-cover"
-                      alt={selectedDegree.title}
-                      src={selectedDegree.image || '/placeholder.svg'}
+                <div className="mt-8 flex items-end justify-between gap-3 sm:mt-10 sm:gap-4">
+                  <p className={`min-w-0 max-w-lg flex-1 text-sm leading-relaxed sm:text-lg ${muted}`}>
+                    {isOpen ? degree.description : degree.highlights[0]}
+                  </p>
+                  <motion.button
+                    type="button"
+                    aria-expanded={isOpen}
+                    aria-label={`Toggle ${degree.clientLabel} details`}
+                    onClick={() => setOpenId(isOpen ? 0 : degree.id)}
+                    whileHover={reduce ? undefined : { scale: 1.08 }}
+                    whileTap={reduce ? undefined : { scale: 0.95 }}
+                    className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-full transition hover:brightness-125 sm:h-14 sm:w-14 ${
+                      onBlue ? 'bg-white text-[#005080]' : 'bg-[#0A1628] text-white'
+                    }`}
+                  >
+                    <ArrowRight
+                      className={`h-6 w-6 transition ${isOpen ? 'rotate-90' : ''}`}
                     />
-
-                    {/*==================== Dark gradient overlay ====================*/}
-                    <div className="absolute inset-0 bg-linear-to-r from-black/80 to-transparent lg:bg-linear-to-t"></div>
-
-                    {/*==================== Content overlay ====================*/}
-                    <div className="absolute bottom-0 left-0 w-full p-6 z-10">
-                      <div className="mb-2 inline-block px-3 py-1.5 rounded-lg bg-linear-to-r from-blue-700 to-blue-600 text-xs font-semibold uppercase text-white shadow-md">
-                        {selectedDegree.level}
-                      </div>
-
-                      <h3 className="text-2xl sm:text-3xl font-bold text-white mb-1 drop-shadow-md">
-                        {selectedDegree.title}
-                      </h3>
-
-                      <div className="mt-3 flex flex-wrap gap-2">
-                        <div className="flex items-center px-3 py-1 bg-white/20 backdrop-blur-sm rounded-full">
-                          <Clock className="mr-2 h-4 w-4 text-amber-400" />
-                          <span className="text-white font-medium">
-                            Duration: {selectedDegree.duration}
-                          </span>
-                        </div>
-
-                        <div className="flex items-center px-3 py-1 bg-white/20 backdrop-blur-sm rounded-full">
-                          <Users className="mr-2 h-4 w-4 text-amber-400" />
-                          <span className="text-white font-medium">200+ Students</span>
-                        </div>
-                      </div>
-                    </div>
-                    {/*==================== End of Content overlay ====================*/}
-                  </div>
+                  </motion.button>
                 </div>
 
-                {/*==================== RightSide Content ====================*/}
-                <div className="lg:w-3/5 p-4 sm:p-6 md:px-8 md:py-6">
-                  <div className="mb-6">
-                    <div className="flex items-center mb-4">
-                      <GraduationCap className="w-6 h-6 text-blue-700 mr-2" />
-                      <h4 className="text-xl font-bold text-gray-900">Program Overview</h4>
-                    </div>
-                    <p className="text-gray-700 leading-relaxed">{selectedDegree.description}</p>
-                  </div>
-
-                  <div className="mb-6">
-                    <h4 className="text-xl font-bold text-gray-900 mb-4 flex items-center">
-                      <BookOpen className="w-5 h-5 text-amber-500 mr-2" />
-                      What You{"'"}ll Learn
-                    </h4>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                      {selectedDegree.highlights.map((highlight, i) => (
-                        <motion.div
-                          key={i}
-                          initial={{ opacity: 0, x: -10 }}
-                          animate={{ opacity: 1, x: 0 }}
-                          transition={{ duration: 1, delay: i * 0.1 }}
-                          className="flex items-start p-3 rounded-lg bg-linear-to-r from-gray-50 to-white border border-gray-100"
-                        >
-                          <div className="mr-3 mt-0.5 h-5 w-5 rounded-full bg-green-500/10 flex items-center justify-center shrink-0">
-                            <Check className="h-3 w-3 text-green-600" />
-                          </div>
-                          <span className="text-gray-700 text-sm">{highlight}</span>
-                        </motion.div>
+                <AnimatePresence initial={false}>
+                  {isOpen && (
+                    <motion.ul
+                      key="highlights"
+                      initial={reduce ? false : { opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: 'auto' }}
+                      exit={reduce ? undefined : { opacity: 0, height: 0 }}
+                      transition={{ duration: 0.35, ease: easeOut }}
+                      className="mt-8 space-y-3 overflow-hidden"
+                    >
+                      {degree.highlights.map((highlight) => (
+                        <li key={highlight} className={`text-base sm:text-lg ${text}`}>
+                          → {highlight}
+                        </li>
                       ))}
-                    </div>
-                  </div>
-                </div>
-                {/*==================== End of RightSide Content ====================*/}
+                    </motion.ul>
+                  )}
+                </AnimatePresence>
               </div>
-            </motion.div>
-          ) : (
-            <motion.div
-              initial={{ opacity: 0.8 }}
-              animate={{ opacity: 1 }}
-              className="bg-white/50 backdrop-blur-sm rounded-2xl border border-gray-200/50 p-8 flex flex-col items-center justify-center min-h-[300px] max-w-3xl mx-auto"
-            >
-              <BookOpen className="w-16 h-16 text-blue-700/20 mb-6" />
-              <h3 className="text-xl font-medium text-gray-400 mb-4 text-center">
-                Select a program to view details
-              </h3>
-              <p className="text-gray-400 text-center max-w-md">
-                Click on one of the program icons above to explore our undergraduate offerings and
-                discover which path is right for you.
-              </p>
-            </motion.div>
-          )}
-        </AnimatePresence>
-        {/*==================== End of Program Details ====================*/}
+            </motion.article>
+          );
+        })}
       </div>
     </section>
   );

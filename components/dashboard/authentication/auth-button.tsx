@@ -18,17 +18,11 @@ const AuthButton = ({
         type={type}
         onClick={onClick}
         disabled={disabled || isLoading}
-        className={`group relative ${
+        className={`inline-flex items-center justify-center gap-2 rounded-full bg-[#0A1628] px-5 py-3 text-sm font-semibold text-[#FF6A00] transition hover:brightness-110 active:scale-[0.98] focus:outline-none cursor-pointer disabled:opacity-70 ${
           fullWidth ? 'w-full' : ''
-        } py-3 px-4 border-0 rounded-lg text-white bg-blue-700 hover:bg-blue-700 focus:outline-none transition-colors cursor-pointer disabled:opacity-70 overflow-hidden ${className}`}
+        } ${className}`}
       >
-        {/*==================== Amber overlay that slides in ====================*/}
-        <span className="absolute inset-0 bg-amber-500 transform -translate-x-full group-hover:translate-x-0 transition-transform duration-300 rounded-lg"></span>
-
-        {/*==================== Button text ====================*/}
-        <span className="relative flex justify-center items-center z-10">
-          {isLoading ? loadingText : children}
-        </span>
+        {isLoading ? loadingText : children}
       </button>
     );
   }
@@ -38,11 +32,11 @@ const AuthButton = ({
       type={type}
       onClick={onClick}
       disabled={disabled || isLoading}
-      className={`${
+      className={`inline-flex items-center justify-center gap-2 rounded-full border border-[#0A1628]/20 bg-white px-5 py-3 text-sm font-semibold text-[#0A1628] transition hover:bg-[#0A1628]/5 focus:outline-none cursor-pointer disabled:opacity-70 ${
         fullWidth ? 'w-full' : ''
-      } py-3 px-4 border border-gray-300 rounded-lg text-gray-700 bg-white hover:bg-gray-50 focus:outline-none transition-colors cursor-pointer disabled:opacity-70 ${className}`}
+      } ${className}`}
     >
-      <span className="flex justify-center items-center">{isLoading ? loadingText : children}</span>
+      {isLoading ? loadingText : children}
     </button>
   );
 };

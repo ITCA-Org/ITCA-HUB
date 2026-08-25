@@ -4,11 +4,13 @@ export interface DashboardLayoutProps {
   children: ReactNode;
   title?: string;
   token?: string;
+  role?: string;
 }
 
 export interface DashboardSidebarProps {
   open: boolean;
   setOpen: (open: boolean) => void;
+  role?: string;
 }
 
 export interface DashboardHeaderProps {

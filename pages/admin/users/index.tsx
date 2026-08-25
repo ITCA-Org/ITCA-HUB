@@ -101,7 +101,11 @@ const AdminUsersPage = ({ userData }: AdminUsersPageProps) => {
           </div>
         </td>
         <td className="whitespace-nowrap px-8 py-4 text-base text-gray-500">
-          {user.role.toLowerCase() === 'user' ? 'Student' : 'Admin'}
+          {user.role.toLowerCase() === 'admin'
+            ? 'Admin'
+            : user.role.toLowerCase() === 'faculty_officer'
+              ? 'Faculty Officer'
+              : 'Student'}
         </td>
         <td className="whitespace-nowrap px-8 py-4">
           {user.isEmailVerified ? (
@@ -125,7 +129,13 @@ const AdminUsersPage = ({ userData }: AdminUsersPageProps) => {
                 updateUserRole(user._id!, userName, user.role);
               }}
               className="rounded-full p-2 text-gray-400 hover:bg-white cursor-pointer"
-              title={user.role.toLowerCase() === 'admin' ? 'Make Student' : 'Make Admin'}
+              title={
+                user.role.toLowerCase() === 'admin'
+                  ? 'Make Student'
+                  : user.role.toLowerCase() === 'faculty_officer'
+                    ? 'Make Admin'
+                    : 'Make Faculty Officer'
+              }
             >
               {user.role.toLowerCase() === 'admin' ? (
                 <GraduationCap className="h-4.5 w-4.5 text-gray-500 rounded-full" />
@@ -199,6 +209,7 @@ const AdminUsersPage = ({ userData }: AdminUsersPageProps) => {
             >
               <option value="all">All Roles</option>
               <option value="admin">Admin</option>
+              <option value="faculty_officer">Faculty Officer</option>
               <option value="student">Student</option>
             </select>
           </div>

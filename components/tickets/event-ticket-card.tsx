@@ -96,7 +96,7 @@ export function EventTicketCard({
             )}
           </div>
           <img
-            src="/images/Itca_logo.png"
+            src="/itca-logo.png"
             alt="ITCA"
             className="hidden h-[150px] w-full bg-white object-contain p-8 print:block sm:h-[165px]"
           />

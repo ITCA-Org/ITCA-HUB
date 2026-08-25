@@ -15,8 +15,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         password,
       });
 
-      if (data.data.user.role !== 'admin') {
-        res.status(403).json({ message: 'Admin access only' });
+      if (data.data.user.role !== 'admin' && data.data.user.role !== 'faculty_officer') {
+        res.status(403).json({ message: 'Staff access only' });
         return;
       }
 
