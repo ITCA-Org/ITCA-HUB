@@ -1,11 +1,12 @@
 'use client';
 
+import axios from 'axios';
 import { FormEvent, useState } from 'react';
 import { toast } from 'sonner';
 import { darkCtaClass } from './brand';
 import { Reveal } from './reveal';
-
-const STORAGE_KEY = 'itca-newsletter-emails';
+import { BASE_URL } from '@/utils/url';
+import { getErrorMessage } from '@/utils/error';
 
 const TOPICS = [
   'Upcoming events & bootcamps',
@@ -18,7 +19,7 @@ const NewsletterSection = () => {
   const [email, setEmail] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const trimmed = email.trim().toLowerCase();
 
@@ -30,20 +31,23 @@ const NewsletterSection = () => {
     setIsSubmitting(true);
 
     try {
-      const existing = JSON.parse(localStorage.getItem(STORAGE_KEY) ?? '[]') as string[];
-      const list = Array.isArray(existing) ? existing : [];
-      if (!list.includes(trimmed)) {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify([...list, trimmed]));
-      }
-      toast.success('Subscribed', {
-        description: 'You’ll hear from ITCA about events and campus updates.',
+      const { data } = await axios.post(
+        `${BASE_URL}/newsletter-subscribers/subscribe`,
+        { email: trimmed }
+      );
+
+      const alreadySubscribed = data?.data?.alreadySubscribed;
+      toast.success(alreadySubscribed ? 'Already subscribed' : 'Subscribed', {
+        description: alreadySubscribed
+          ? 'This email is already on the ITCA newsletter list.'
+          : 'Check your inbox for a confirmation email from ITCA.',
       });
       setEmail('');
-    } catch {
-      toast.success('Subscribed', {
-        description: 'You’ll hear from ITCA about events and campus updates.',
+    } catch (error) {
+      const { message } = getErrorMessage(error as Error);
+      toast.error('Could not subscribe', {
+        description: message,
       });
-      setEmail('');
     } finally {
       setIsSubmitting(false);
     }
@@ -106,7 +110,7 @@ const NewsletterSection = () => {
             </button>
             <p className="mt-4 text-sm leading-relaxed text-[#0A1628]/55 sm:text-base">
               By subscribing you agree to hear from ITCA about association news. Unsubscribe anytime
-              by emailing us.
+              via the link in our emails.
             </p>
           </form>
         </Reveal>

@@ -8,6 +8,7 @@ import {
   LayoutDashboardIcon,
   ScanLine,
   WalletCards,
+  Mail,
 } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -26,6 +27,11 @@ const adminNavItems: NavItem[] = [
     name: 'Users',
     href: '/admin/users',
     icon: <Users className="h-5 w-5" />,
+  },
+  {
+    name: 'Newsletter',
+    href: '/admin/newsletter',
+    icon: <Mail className="h-5 w-5" />,
   },
   {
     name: 'Events',
