@@ -9,7 +9,7 @@ import { SITE_URL } from '@/utils/site';
 import Footer from '../components/landing-page/footer';
 import Header from '../components/landing-page/header';
 import HeroSection from '../components/landing-page/hero-section';
-import EventsSection, { Event, MOCK_EVENTS } from '../components/landing-page/events-section';
+import EventsSection, { Event } from '../components/landing-page/events-section';
 import DegreesSection from '../components/landing-page/degrees-section';
 import ResourcesSection from '../components/landing-page/resources-section';
 import AboutSection from '../components/landing-page/about-section';
@@ -140,11 +140,7 @@ export const getServerSideProps = async ({ req }: { req: NextApiRequest }) => {
       initialEvents = response.data.data;
     }
   } catch {
-    // Events are optional for the homepage; client can retry if needed.
-  }
-
-  if (initialEvents.length === 0) {
-    initialEvents = MOCK_EVENTS;
+    // Events are optional for the homepage; empty list shows the empty state.
   }
 
   return {
