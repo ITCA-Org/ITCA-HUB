@@ -44,4 +44,35 @@ export const requireAdminAuth = (req: NextApiRequest) => {
   };
 };
 
+/** Admin or faculty officer — semester dues list + scanner only. */
+export const requireDuesStaffAuth = (req: NextApiRequest) => {
+  const userData = isLoggedIn(req);
+
+  if (userData === false) {
+    return {
+      redirect: {
+        destination: '/auth',
+        permanent: false,
+      },
+    };
+  }
+
+  const userAuth = userData as UserAuth;
+
+  if (userAuth.role !== 'admin' && userAuth.role !== 'faculty_officer') {
+    return {
+      redirect: {
+        destination: '/auth',
+        permanent: false,
+      },
+    };
+  }
+
+  return {
+    props: {
+      userData: userAuth,
+    },
+  };
+};
+
 export type AdminAuthContext = GetServerSidePropsContext & { req: NextApiRequest };

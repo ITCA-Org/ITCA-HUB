@@ -48,7 +48,13 @@ const UserActionsModal = ({
             'bg-linear-to-r from-red-600 to-red-500 hover:from-red-700 hover:to-red-600',
         };
       case 'changeRole':
-        const newRole = userRole?.toLowerCase() === 'admin' ? 'Student' : 'Admin';
+        const roleLabels: Record<string, string> = {
+          user: 'Faculty Officer',
+          faculty_officer: 'Admin',
+          admin: 'Student',
+        };
+        const current = userRole?.toLowerCase() || 'user';
+        const newRole = roleLabels[current] || 'Faculty Officer';
         return {
           icon: <Crown className="h-5 w-5 text-blue-500" />,
           iconBg: 'bg-blue-100',

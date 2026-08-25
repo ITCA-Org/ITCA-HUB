@@ -10,6 +10,7 @@ import {
   WalletCards,
   Mail,
   MessageSquare,
+  BadgeCheck,
 } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -55,6 +56,11 @@ const adminNavItems: NavItem[] = [
     icon: <WalletCards className="h-5 w-5" />,
   },
   {
+    name: 'Dues Scanner',
+    href: '/admin/dues-scanner',
+    icon: <BadgeCheck className="h-5 w-5" />,
+  },
+  {
     name: 'Resources',
     href: '/admin/resources',
     icon: <FileText className="h-5 w-5" />,
@@ -71,8 +77,24 @@ const adminNavItems: NavItem[] = [
   },
 ];
 
-const Sidebar = ({ open, setOpen }: DashboardSidebarProps) => {
+const facultyNavItems: NavItem[] = [
+  {
+    name: 'Semester Dues',
+    href: '/admin/dues',
+    icon: <WalletCards className="h-5 w-5" />,
+  },
+  {
+    name: 'Dues Scanner',
+    href: '/admin/dues-scanner',
+    icon: <BadgeCheck className="h-5 w-5" />,
+  },
+];
+
+const Sidebar = ({ open, setOpen, role }: DashboardSidebarProps) => {
   const router = useRouter();
+  const navItems =
+    role === 'faculty_officer' ? facultyNavItems : adminNavItems;
+  const homeHref = role === 'faculty_officer' ? '/admin/dues' : '/admin';
 
   const isActive = (href: string) => {
     if (href === '/admin') {
@@ -118,7 +140,7 @@ const Sidebar = ({ open, setOpen }: DashboardSidebarProps) => {
           </div>
 
           <div className="hidden min-[968px]:flex items-center p-4 border-b border-gray-100">
-            <Link href="/admin" className="flex items-center">
+            <Link href={homeHref} className="flex items-center">
               <Image
                 priority
                 width={150}
@@ -132,7 +154,7 @@ const Sidebar = ({ open, setOpen }: DashboardSidebarProps) => {
 
           <div className="px-2 py-4 flex-1 overflow-y-auto">
             <div className="space-y-3">
-              {adminNavItems.map((item) => (
+              {navItems.map((item) => (
                 <Link
                   key={item.name}
                   href={item.href}

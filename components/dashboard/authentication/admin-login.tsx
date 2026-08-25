@@ -35,10 +35,11 @@ const AdminLogin = () => {
     setIsLoading(true);
 
     try {
-      await axios.post('/api/login', { schoolEmail, password });
+      const { data } = await axios.post('/api/login', { schoolEmail, password });
 
       toast.success('Login successful', { description: 'You have been logged in successfully' });
-      router.replace('/admin');
+      const role = data?.role as string | undefined;
+      router.replace(role === 'faculty_officer' ? '/admin/dues' : '/admin');
     } catch (err) {
       const { message } = getErrorMessage(
         err as AxiosError<ErrorResponseData> | CustomError | Error

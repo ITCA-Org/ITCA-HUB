@@ -39,7 +39,11 @@ const fetchUsers = async (
   }
 
   if (role && role !== 'all') {
-    params.role = role === 'student' ? 'user' : role;
+    if (role === 'student') {
+      params.role = 'user';
+    } else {
+      params.role = role;
+    }
   }
 
   if (status && status !== 'all') {

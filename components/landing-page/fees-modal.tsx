@@ -7,10 +7,9 @@ import {
   FEE_TOTAL_REQUIRED,
   type FeeAmount,
   formatFeeAmount,
-  saveFeePayment,
-  totalPaidForMatric,
-  isAuditEligible,
 } from '@/utils/fees';
+import { checkoutDues } from '@/hooks/dues/use-dues';
+import { getErrorMessage } from '@/utils/error';
 
 type FeesModalProps = {
   open: boolean;
@@ -52,7 +51,7 @@ const FeesModal = ({ open, onClose }: FeesModalProps) => {
     setAmount(50);
   };
 
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     if (!fullName.trim() || !matricNumber.trim() || !email.trim() || !phone.trim()) {
@@ -67,27 +66,23 @@ const FeesModal = ({ open, onClose }: FeesModalProps) => {
 
     setIsSubmitting(true);
     try {
-      const payment = saveFeePayment({
-        fullName,
-        matricNumber,
-        email,
-        phone,
+      const result = await checkoutDues({
+        fullName: fullName.trim(),
+        matricNumber: matricNumber.trim(),
+        email: email.trim(),
+        phone: phone.trim(),
         amount,
       });
 
-      const total = totalPaidForMatric(payment.matricNumber);
-      const eligible = isAuditEligible(payment.matricNumber);
-
-      toast.success('Payment recorded', {
-        description: eligible
-          ? `${formatFeeAmount(amount)} saved. Total ${formatFeeAmount(total)} — audit form eligible.`
-          : `${formatFeeAmount(amount)} saved. Total ${formatFeeAmount(total)} of ${formatFeeAmount(FEE_TOTAL_REQUIRED)} before graduation.`,
+      toast.success('Redirecting to payment…', {
+        description: `Pay ${formatFeeAmount(amount)} securely via Modem Pay.`,
       });
-
       resetForm();
       onClose();
-    } catch {
-      toast.error('Could not save payment. Try again.');
+      window.location.href = result.paymentLink;
+    } catch (error) {
+      const { message } = getErrorMessage(error as Error);
+      toast.error('Could not start payment', { description: message });
     } finally {
       setIsSubmitting(false);
     }
@@ -134,8 +129,8 @@ const FeesModal = ({ open, onClose }: FeesModalProps) => {
                   you graduate.
                 </h2>
                 <p className="text-sm leading-relaxed text-[#0A1628]/75">
-                  Demo only for now — submissions save on this device. Bring proof to the admin
-                  office until online payment goes live.
+                  After payment you&apos;ll get a receipt email with a QR code. Present it to the
+                  faculty officer to verify your dues.
                 </p>
               </div>
 
@@ -245,7 +240,7 @@ const FeesModal = ({ open, onClose }: FeesModalProps) => {
                     disabled={isSubmitting}
                     className="rounded-md bg-white px-6 py-2.5 text-sm font-semibold text-[#0A1628] transition hover:bg-[#0A1628] hover:text-[#FF6A00] disabled:opacity-60"
                   >
-                    {isSubmitting ? 'Saving…' : `Submit ${formatFeeAmount(amount)}`}
+                    {isSubmitting ? 'Starting payment…' : `Pay ${formatFeeAmount(amount)}`}
                   </button>
                 </div>
               </form>
