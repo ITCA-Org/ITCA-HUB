@@ -1,7 +1,10 @@
 import { FormEvent, useEffect, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
+import axios from 'axios';
 import { toast } from 'sonner';
 import { CONTACT_MAIL } from './brand';
+import { BASE_URL } from '@/utils/url';
+import { getErrorMessage } from '@/utils/error';
 
 type FeedbackModalProps = {
   open: boolean;
@@ -30,29 +33,40 @@ const FeedbackModal = ({ open, onClose }: FeedbackModalProps) => {
     };
   }, [open, onClose]);
 
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setIsSubmitting(true);
 
     const form = event.currentTarget;
     const data = new FormData(form);
     const fullName = String(data.get('fullName') ?? '').trim();
-    const email = String(data.get('email') ?? '');
-    const organization = String(data.get('organization') ?? '');
-    const message = String(data.get('message') ?? '');
+    const email = String(data.get('email') ?? '').trim();
+    const organization = String(data.get('organization') ?? '').trim();
+    const message = String(data.get('message') ?? '').trim();
 
-    const subject = encodeURIComponent(
-      fullName ? `ITCA Hub feedback from ${fullName}` : 'ITCA Hub feedback'
-    );
-    const body = encodeURIComponent(
-      `Name: ${fullName || 'Not provided'}\nEmail: ${email.trim() || 'Not provided'}\nOrganization: ${organization}\n\n${message}`
-    );
+    try {
+      await axios.post(`${BASE_URL}/feedback`, {
+        fullName: fullName || undefined,
+        email: email || undefined,
+        organization,
+        message,
+      });
 
-    window.location.href = `mailto:itca@utg.edu.gm?subject=${subject}&body=${body}`;
-    toast.success('Opening your email app to send feedback.');
-    setIsSubmitting(false);
-    form.reset();
-    onClose();
+      toast.success('Feedback sent', {
+        description: email
+          ? 'Thanks — check your inbox for a confirmation email.'
+          : 'Thanks — the ITCA team has received your message.',
+      });
+      form.reset();
+      onClose();
+    } catch (error) {
+      const { message: errorMessage } = getErrorMessage(error as Error);
+      toast.error('Could not send feedback', {
+        description: errorMessage,
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -130,6 +144,9 @@ const FeedbackModal = ({ open, onClose }: FeedbackModalProps) => {
                     placeholder="Your email address..."
                     className={fieldClass}
                   />
+                  <p className="mt-1.5 text-xs text-[#0A1628]/55">
+                    Optional — add it to receive a confirmation email.
+                  </p>
                 </div>
 
                 <div>
