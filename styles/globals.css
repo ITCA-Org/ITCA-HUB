@@ -162,9 +162,7 @@ body {
 .landing-itca {
   color: #0a1628;
   background: #ffffff;
-  /* Matches Firefly body/UI role (Stabil Grotesk) */
-  font-family: 'Satoshi', system-ui, -apple-system, 'Segoe UI', sans-serif;
-  font-weight: 300;
+  font-family: 'Space Grotesk', system-ui, sans-serif;
   overflow-x: clip;
   --itca-ink: #0a1628;
   --itca-blue: #005080;
@@ -183,20 +181,16 @@ body {
 .landing-itca h1,
 .landing-itca h2,
 .landing-itca h3 {
-  font-family: 'Satoshi', system-ui, -apple-system, 'Segoe UI', sans-serif;
-  font-weight: 700;
+  font-family: 'Space Grotesk', system-ui, sans-serif;
   letter-spacing: -0.03em;
 }
 
 .landing-mono {
-  /* Matches Firefly accent/display mono role (Monosten) */
-  font-family: 'Space Mono', ui-monospace, monospace;
-  font-weight: 400;
+  font-family: 'IBM Plex Mono', ui-monospace, monospace;
 }
 
 .landing-serif {
-  /* Firefly uses Monosten for display emphasis, not a serif */
-  font-family: 'Space Mono', ui-monospace, monospace;
+  font-family: 'Instrument Serif', Georgia, serif;
 }
 
 @keyframes landing-marquee {

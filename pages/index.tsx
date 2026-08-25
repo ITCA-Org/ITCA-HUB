@@ -8,7 +8,6 @@ import { BASE_URL } from '@/utils/url';
 import { SITE_URL } from '@/utils/site';
 import Footer from '../components/landing-page/footer';
 import Header from '../components/landing-page/header';
-import VirtualTour from '../components/landing-page/virtual-tour';
 import HeroSection from '../components/landing-page/hero-section';
 import EventsSection, { Event, MOCK_EVENTS } from '../components/landing-page/events-section';
 import DegreesSection from '../components/landing-page/degrees-section';
@@ -102,7 +101,6 @@ const HomePage = ({ initialEvents }: HomePageProps) => {
               <EventsSection initialEvents={initialEvents} />
               <ApproachSection />
               <DegreesSection />
-              <VirtualTour />
               <ResourcesSection />
               <NewsletterSection />
               <Footer />

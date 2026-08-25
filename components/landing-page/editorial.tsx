@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { ReactNode, useRef } from 'react';
 import { motion, useReducedMotion, useScroll, useTransform } from 'framer-motion';
 import { Reveal, easeOut, stagger, fadeUp } from './reveal';
+import { darkCtaClass } from './brand';
 
 type Stat = {
   value: string;
@@ -54,6 +55,84 @@ export const EditorialHero = ({ children, stats }: EditorialHeroProps) => {
             ))}
           </motion.div>
         )}
+      </div>
+    </section>
+  );
+};
+
+type SplitHeroProps = {
+  image: string;
+  alt: string;
+  objectPosition?: string;
+  tone: string;
+  headline: ReactNode;
+  body: string;
+  ctaHref: string;
+  ctaLabel: string;
+  /** White text on dark/blue panels */
+  lightText?: boolean;
+};
+
+/**
+ * Firefly About–style opening: photo left, color panel right with rounded top-left.
+ * Use id="hero-banner" so homeHero overlay nav turns solid after this fold.
+ */
+export const SplitHero = ({
+  image,
+  alt,
+  objectPosition = 'object-center',
+  tone,
+  headline,
+  body,
+  ctaHref,
+  ctaLabel,
+  lightText = false,
+}: SplitHeroProps) => {
+  const reduce = useReducedMotion();
+  const text = lightText ? 'text-white' : 'text-[#0A1628]';
+  const muted = lightText ? 'text-white/75' : 'text-[#0A1628]/75';
+
+  return (
+    <section id="hero-banner" className="relative w-full">
+      <div className="grid min-h-[100svh] w-full lg:grid-cols-[minmax(0,1.15fr)_minmax(0,0.85fr)]">
+        <motion.div
+          className="relative min-h-[42svh] w-full sm:min-h-[48svh] lg:min-h-full"
+          initial={reduce ? false : { opacity: 0.6, scale: 1.04 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 1.1, ease: easeOut }}
+        >
+          <Image
+            fill
+            priority
+            alt={alt}
+            src={image}
+            className={`object-cover ${objectPosition}`}
+            sizes="(max-width: 1024px) 100vw, 58vw"
+          />
+        </motion.div>
+
+        <motion.div
+          className="relative z-10 flex min-h-[52svh] flex-col justify-between rounded-tl-[2.5rem] px-6 pb-10 pt-24 sm:rounded-tl-[3.5rem] sm:px-10 sm:pb-12 sm:pt-28 lg:-ml-8 lg:min-h-full lg:rounded-tl-[5rem] lg:px-12 lg:pb-14 lg:pt-32 xl:px-16"
+          style={{ backgroundColor: tone }}
+          initial={reduce ? false : { opacity: 0, x: 28 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.75, delay: 0.12, ease: easeOut }}
+        >
+          <div>
+            <h1
+              className={`max-w-xl text-3xl font-bold leading-[1.1] tracking-tight sm:text-4xl md:text-5xl lg:text-[2.75rem] xl:text-5xl ${text}`}
+            >
+              {headline}
+            </h1>
+            <p className={`mt-6 max-w-md text-base leading-relaxed sm:text-lg ${muted}`}>{body}</p>
+          </div>
+
+          <div className="mt-12 flex justify-end sm:mt-16">
+            <Link href={ctaHref} className={darkCtaClass}>
+              {ctaLabel}
+            </Link>
+          </div>
+        </motion.div>
       </div>
     </section>
   );

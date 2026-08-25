@@ -3,11 +3,10 @@ import { BASE_URL } from '@/utils/url';
 import LandingLayout from '../../components/landing-page/landing-layout';
 import EventsSection, { Event, MOCK_EVENTS } from '../../components/landing-page/events-section';
 import {
-  EditorialHero,
   EditorialMosaic,
   FeaturedHeading,
-  ImmersiveImage,
   SpotlightCard,
+  SplitHero,
 } from '../../components/landing-page/editorial';
 
 type EventsPageProps = {
@@ -20,24 +19,18 @@ const EventsPage = ({ initialEvents }: EventsPageProps) => {
       path="/events"
       title="Events | ITCA Hub"
       description="Upcoming workshops, sporting events, and campus initiatives organised by ITCA for School of ICT students."
+      homeHero
     >
-      <EditorialHero
-        stats={[
-          { value: '30+', label: 'Initiatives each year' },
-          { value: 'All ICT', label: 'Students are already members' },
-          { value: '1', label: 'Community for the whole School of ICT' },
-        ]}
-      >
-        Campus life moves when we{' '}
-        <span className="underline decoration-2 underline-offset-8">show up</span>. We organise the
-        moments that make School of ICT feel like{' '}
-        <span className="underline decoration-2 underline-offset-8">home</span>.
-      </EditorialHero>
-
-      <ImmersiveImage
-        src="/ITCA_WEEK/IMG_4517.jpg"
+      <SplitHero
+        image="/ITCA_WEEK/IMG_4517.jpg"
         alt="ITCA students together at a campus gathering"
         objectPosition="object-[center_30%]"
+        tone="#005080"
+        lightText
+        headline="Campus life moves when we show up."
+        body="Bootcamps, sporting events, workshops, and other initiatives organised by ITCA—so School of ICT feels like home."
+        ctaHref="#upcoming"
+        ctaLabel="See what's coming up"
       />
 
       <section className="bg-white px-5 py-20 sm:px-10 lg:px-16 lg:py-28">

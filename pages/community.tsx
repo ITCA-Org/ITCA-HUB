@@ -1,10 +1,9 @@
 import LandingLayout from '../components/landing-page/landing-layout';
 import ApproachSection from '../components/landing-page/approach-section';
 import {
-  EditorialHero,
-  ImmersiveImage,
   FeaturedHeading,
   SpotlightCard,
+  SplitHero,
 } from '../components/landing-page/editorial';
 
 const CommunityPage = () => {
@@ -13,24 +12,17 @@ const CommunityPage = () => {
       path="/community"
       title="Community | ITCA Hub"
       description="Learn, play, and belong—workshops, sporting events, retreats, and the School of ICT student community at UTG."
+      homeHero
     >
-      <EditorialHero
-        stats={[
-          { value: 'Learn', label: 'Bootcamps & peer practice' },
-          { value: 'Play', label: 'Sports & campus life' },
-          { value: 'Belong', label: 'Retreats & real friendships' },
-        ]}
-      >
-        Studying ICT is better when you{' '}
-        <span className="underline decoration-2 underline-offset-8">learn</span>,{' '}
-        <span className="underline decoration-2 underline-offset-8">play</span>, and{' '}
-        <span className="underline decoration-2 underline-offset-8">belong</span> together.
-      </EditorialHero>
-
-      <ImmersiveImage
-        src="/ITCA_RETREAT/KG__0436.jpg"
+      <SplitHero
+        image="/ITCA_RETREAT/KG__0436.jpg"
         alt="ITCA students sharing a meal at the retreat"
         objectPosition="object-[center_40%]"
+        tone="#FF6A00"
+        headline="Where School of ICT students learn, play, and belong."
+        body="ITCA is the shared home beyond the lecture hall—bootcamps, sports days, retreats, and friendships that make campus feel like ours."
+        ctaHref="#learn-play-belong"
+        ctaLabel="See Learn, Play, Belong"
       />
 
       <section className="bg-white px-5 py-20 sm:px-10 lg:px-16 lg:py-28">

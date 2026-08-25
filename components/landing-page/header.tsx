@@ -8,8 +8,6 @@ import HomeIcon from './home-icon';
 const navLinks = [
   { name: 'Home', href: '/', match: '/' },
   { name: 'Events', href: '/events', match: '/events' },
-  { name: 'Degrees', href: '/degrees', match: '/degrees' },
-  { name: 'Community', href: '/community', match: '/community' },
   { name: 'Resources', href: '/resources', match: '/resources' },
   { name: 'Shop', href: '/shop', match: '/shop' },
   { name: 'Fees', href: '/fees', match: '/fees' },
@@ -189,17 +187,6 @@ const Header = ({ homeHero = false }: HeaderProps) => {
                   </Link>
                 );
               })}
-              <Link
-                href="/virtual-tour"
-                onClick={() => setIsMenuOpen(false)}
-                className={`inline-flex h-10 w-fit min-w-[10rem] items-center justify-center whitespace-nowrap rounded-full px-8 text-center text-lg font-semibold leading-none tracking-tight transition ${
-                  isActive('/virtual-tour')
-                    ? 'bg-[#FF6A00] text-white'
-                    : 'bg-[#0A1628] text-[#FF6A00]'
-                }`}
-              >
-                Virtual Tour
-              </Link>
             </nav>
           </motion.div>
         )}

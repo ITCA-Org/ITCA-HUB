@@ -1,209 +1,199 @@
-import { FormEvent, useState } from 'react';
-import { toast } from 'sonner';
-import { darkCtaClass } from './brand';
-import { Reveal } from './reveal';
-import {
-  FEE_TOTAL_REQUIRED,
-  type FeeAmount,
-  formatFeeAmount,
-  saveFeePayment,
-  totalPaidForMatric,
-  isAuditEligible,
-} from '@/utils/fees';
+'use client';
 
-const fieldClass =
-  'mt-1.5 w-full min-h-12 rounded-2xl border border-[#0A1628]/15 bg-white px-4 py-3.5 text-base text-[#0A1628] placeholder:text-[#0A1628]/35 focus:border-[#005080] focus:outline-none focus:ring-2 focus:ring-[#005080]/20 sm:py-3';
+import Image from 'next/image';
+import { useState } from 'react';
+import { motion, useReducedMotion } from 'framer-motion';
+import FeesModal from './fees-modal';
+import { Reveal, easeOut, fadeUp, stagger } from './reveal';
+import { FEE_TOTAL_REQUIRED, formatFeeAmount } from '@/utils/fees';
+
+const steps = [
+  {
+    number: '1',
+    title: 'Install',
+    color: '#D4E6F2',
+    kicker: 'D50 each semester',
+    body: 'ITCA semester dues keep bootcamps, sports days, retreats, and student initiatives running. Paying D50 each term spreads the load so the community stays funded without a last-minute scramble.',
+    points: ['D50 per semester', 'Supports events & bootcamps', 'Pay as you go', 'Keep your record current'],
+    image: '/fees/install.jpg',
+    imageAlt: 'Paying fees on a phone — semester installment',
+  },
+  {
+    number: '2',
+    title: 'Settle',
+    color: '#FFE0CC',
+    kicker: `${formatFeeAmount(FEE_TOTAL_REQUIRED)} before you graduate`,
+    body: `Before graduation you must have paid a total of ${formatFeeAmount(FEE_TOTAL_REQUIRED)}. You can clear it semester by semester, or settle the full amount in one go if you prefer to finish early.`,
+    points: [
+      `${formatFeeAmount(FEE_TOTAL_REQUIRED)} total due`,
+      'Pay in full anytime',
+      'Track what you have paid',
+      'No surprises at the end',
+    ],
+    image: '/fees/money.jpeg',
+    imageAlt: 'Money — settling the full fee balance',
+  },
+  {
+    number: '3',
+    title: 'Graduate',
+    color: '#FF6A00',
+    kicker: 'Audit form requires cleared dues',
+    body: 'Students who have not cleared their ITCA dues cannot collect their audit form from the admin office. Stay current so graduation paperwork is not held up when you need it most.',
+    points: ['Clear dues first', 'Collect your audit form', 'Admin office verification', 'Graduate without delays'],
+    image: '/fees/graduate.jpg',
+    imageAlt: 'Graduate in cap and gown holding a diploma',
+  },
+];
 
 const FeesSection = () => {
-  const [amount, setAmount] = useState<FeeAmount>(50);
-  const [fullName, setFullName] = useState('');
-  const [matricNumber, setMatricNumber] = useState('');
-  const [email, setEmail] = useState('');
-  const [phone, setPhone] = useState('');
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-
-    if (!fullName.trim() || !matricNumber.trim() || !email.trim() || !phone.trim()) {
-      toast.error('Please fill in all fields');
-      return;
-    }
-
-    if (!email.includes('@')) {
-      toast.error('Enter a valid email address');
-      return;
-    }
-
-    setIsSubmitting(true);
-    try {
-      const payment = saveFeePayment({
-        fullName,
-        matricNumber,
-        email,
-        phone,
-        amount,
-      });
-
-      const total = totalPaidForMatric(payment.matricNumber);
-      const eligible = isAuditEligible(payment.matricNumber);
-
-      toast.success('Payment recorded', {
-        description: eligible
-          ? `${formatFeeAmount(amount)} saved. Total ${formatFeeAmount(total)} — audit form eligible.`
-          : `${formatFeeAmount(amount)} saved. Total ${formatFeeAmount(total)} of ${formatFeeAmount(FEE_TOTAL_REQUIRED)} before graduation.`,
-      });
-
-      setFullName('');
-      setMatricNumber('');
-      setEmail('');
-      setPhone('');
-      setAmount(50);
-    } catch {
-      toast.error('Could not save payment. Try again.');
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
+  const [open, setOpen] = useState(false);
+  const reduce = useReducedMotion();
 
   return (
-    <section id="pay" className="bg-white px-4 pb-14 pt-6 sm:px-10 sm:py-20 md:pt-14 lg:px-16 lg:py-28">
-      <div className="mx-auto max-w-[1400px]">
-        <Reveal className="mb-8 hidden max-w-3xl md:mb-14 md:block">
-          <p className="landing-mono mb-4 text-sm text-[#FF6A00]">Semester fees</p>
-          <h2 className="text-3xl font-bold leading-tight text-[#0A1628] sm:text-4xl lg:text-5xl">
-            Pay D50 per semester, or D400 in full
-          </h2>
-          <p className="mt-4 max-w-2xl text-base text-[#0A1628]/70 sm:text-lg">
-            Before you graduate you must have paid a total of{' '}
-            <strong className="font-semibold text-[#0A1628]">
-              {formatFeeAmount(FEE_TOTAL_REQUIRED)}
-            </strong>
-            . Students who have not cleared their dues cannot collect their audit form from the
-            admin office.
-          </p>
-        </Reveal>
+    <>
+      <section id="why-fees" className="bg-white">
+        <div className="mx-auto max-w-[1400px] px-5 pb-12 pt-6 sm:px-10 sm:pb-16 sm:pt-8 lg:px-16">
+          <div className="mb-4 grid gap-8 lg:grid-cols-[1.1fr_0.9fr] lg:items-end lg:gap-10">
+            <Reveal>
+              <h2 className="text-4xl font-bold leading-[1.1] text-[#0A1628] sm:text-5xl md:text-6xl">
+                Why fees matter—and how to stay clear before graduation.
+              </h2>
+            </Reveal>
+            <Reveal delay={0.12}>
+              <p className="landing-mono text-sm leading-relaxed text-[#0A1628]/75">
+                Your dues fund the community you rely on. Install D50 a semester, settle{' '}
+                {formatFeeAmount(FEE_TOTAL_REQUIRED)} in full, and keep your audit form within reach.
+              </p>
+            </Reveal>
+          </div>
 
-        <Reveal>
-          <form
-            onSubmit={handleSubmit}
-            className="mx-auto w-full max-w-xl rounded-[1.25rem] bg-[#D4E6F2] p-4 sm:rounded-[2rem] sm:p-8"
-          >
-            <p className="text-sm font-semibold text-[#0A1628]">Choose amount</p>
-            <div className="mt-3 grid grid-cols-2 gap-2" role="group" aria-label="Fee amount">
-              {(
-                [
-                  { value: 50 as FeeAmount, label: 'D50', hint: 'One semester' },
-                  { value: 400 as FeeAmount, label: 'D400', hint: 'Pay in full' },
-                ] as const
-              ).map((option) => {
-                const active = amount === option.value;
-                return (
-                  <button
-                    key={option.value}
-                    type="button"
-                    onClick={() => setAmount(option.value)}
-                    aria-pressed={active}
-                    className={`min-h-[4.5rem] rounded-2xl px-3 py-3 text-left transition sm:px-4 sm:py-4 ${
-                      active
-                        ? 'bg-[#0A1628] text-[#FF6A00]'
-                        : 'bg-white text-[#0A1628] hover:bg-white/80'
-                    }`}
-                  >
-                    <span className="block text-lg font-bold sm:text-xl">{option.label}</span>
-                    <span
-                      className={`mt-1 block text-[11px] leading-snug sm:text-xs ${
-                        active ? 'text-[#FF6A00]/80' : 'text-[#0A1628]/60'
-                      }`}
-                    >
-                      {option.hint}
-                    </span>
-                  </button>
-                );
-              })}
-            </div>
-
-            <div className="mt-5 space-y-3.5 sm:mt-6 sm:space-y-4">
-              <div>
-                <label htmlFor="fee-full-name" className="text-sm font-medium text-[#0A1628]">
-                  Full name
-                </label>
-                <input
-                  id="fee-full-name"
-                  required
-                  autoComplete="name"
-                  value={fullName}
-                  onChange={(e) => setFullName(e.target.value)}
-                  placeholder="As on your student ID"
-                  className={fieldClass}
-                />
-              </div>
-
-              <div>
-                <label htmlFor="fee-matric" className="text-sm font-medium text-[#0A1628]">
-                  Matric number
-                </label>
-                <input
-                  id="fee-matric"
-                  required
-                  value={matricNumber}
-                  onChange={(e) => setMatricNumber(e.target.value)}
-                  placeholder="UTG/ICT/2023/001"
-                  className={fieldClass}
-                />
-              </div>
-
-              <div>
-                <label htmlFor="fee-email" className="text-sm font-medium text-[#0A1628]">
-                  Email
-                </label>
-                <input
-                  id="fee-email"
-                  type="email"
-                  required
-                  autoComplete="email"
-                  inputMode="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="your.email@utg.edu.gm"
-                  className={fieldClass}
-                />
-              </div>
-
-              <div>
-                <label htmlFor="fee-phone" className="text-sm font-medium text-[#0A1628]">
-                  Telephone number
-                </label>
-                <input
-                  id="fee-phone"
-                  type="tel"
-                  required
-                  autoComplete="tel"
-                  inputMode="tel"
-                  value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
-                  placeholder="+220 …"
-                  className={fieldClass}
-                />
-              </div>
-            </div>
-
+          <Reveal delay={0.18}>
             <button
-              type="submit"
-              disabled={isSubmitting}
-              className={`${darkCtaClass} mt-5 min-h-12 w-full disabled:opacity-70 sm:mt-6`}
+              type="button"
+              onClick={() => setOpen(true)}
+              className="mt-2 rounded-full bg-[#0A1628] px-7 py-3.5 text-sm font-semibold text-[#FF6A00] transition hover:brightness-110 sm:text-base"
             >
-              {isSubmitting ? 'Saving…' : `Submit ${formatFeeAmount(amount)}`}
+              Ready to pay?{' '}
+              <span className="underline decoration-[#FF6A00] underline-offset-4">Open form</span>
             </button>
+          </Reveal>
+        </div>
 
-            <p className="mt-3 text-xs leading-relaxed text-[#0A1628]/55">
-              UI demo only — payments are saved on this device for now. Bring proof to the admin
-              office until online payment goes live.
-            </p>
-          </form>
-        </Reveal>
-      </div>
-    </section>
+        <div className="relative">
+          {steps.map((step, index) => (
+            <article
+              key={step.number}
+              className={`sticky top-[5rem] rounded-t-[2.5rem] px-5 pt-14 sm:rounded-t-[4rem] sm:px-10 sm:pt-16 lg:px-16 lg:pt-20 ${
+                index < 2 ? 'pb-20 sm:pb-24 lg:pb-28' : 'pb-12 sm:pb-14 lg:pb-16'
+              } ${index > 0 ? '-mt-[2.5rem] sm:-mt-[4rem]' : ''}`}
+              style={{
+                backgroundColor: step.color,
+                zIndex: index + 1,
+              }}
+            >
+              <div className="mx-auto grid max-w-[1400px] gap-12 lg:grid-cols-[1.2fr_0.8fr] lg:gap-16">
+                <div>
+                  <div className="mb-10 flex items-start justify-between gap-4">
+                    <div>
+                      <p className="landing-mono mb-4 text-base sm:text-lg">{step.kicker}</p>
+                      <motion.h3
+                        className="text-5xl font-bold tracking-tight text-[#0A1628] sm:text-7xl lg:text-8xl"
+                        initial={reduce ? false : { opacity: 0, x: -24 }}
+                        whileInView={{ opacity: 1, x: 0 }}
+                        viewport={{ once: true, amount: 0.4 }}
+                        transition={{ duration: 0.7, ease: easeOut }}
+                      >
+                        {step.title}
+                      </motion.h3>
+                    </div>
+                    <motion.span
+                      className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-[#0A1628] text-base font-bold text-white sm:h-14 sm:w-14 sm:text-lg"
+                      initial={reduce ? false : { scale: 0.6, opacity: 0 }}
+                      whileInView={{ scale: 1, opacity: 1 }}
+                      viewport={{ once: true }}
+                      transition={{ duration: 0.45, delay: 0.15, ease: easeOut }}
+                    >
+                      {step.number}
+                    </motion.span>
+                  </div>
+
+                  <div className="grid gap-8 md:grid-cols-[0.95fr_1.05fr] md:items-start md:gap-10">
+                    <motion.div
+                      className="relative h-56 overflow-hidden rounded-[1.75rem] sm:h-64 md:h-72 lg:h-80"
+                      initial={reduce ? false : { opacity: 0, scale: 0.96 }}
+                      whileInView={{ opacity: 1, scale: 1 }}
+                      viewport={{ once: true, amount: 0.3 }}
+                      transition={{ duration: 0.7, ease: easeOut }}
+                    >
+                      <Image
+                        fill
+                        alt={step.imageAlt}
+                        src={step.image}
+                        className="object-cover object-center transition duration-700 hover:scale-105"
+                      />
+                    </motion.div>
+                    <motion.p
+                      className="max-w-2xl text-lg leading-relaxed text-[#0A1628] sm:text-xl lg:text-2xl lg:leading-snug"
+                      initial={reduce ? false : { opacity: 0, y: 16 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      viewport={{ once: true, amount: 0.3 }}
+                      transition={{ duration: 0.65, delay: 0.1, ease: easeOut }}
+                    >
+                      {step.body}
+                    </motion.p>
+                  </div>
+                </div>
+
+                <motion.ul
+                  className="space-y-4 self-end"
+                  variants={reduce ? undefined : stagger}
+                  initial={reduce ? false : 'hidden'}
+                  whileInView={reduce ? undefined : 'show'}
+                  viewport={{ once: true, amount: 0.3 }}
+                >
+                  {step.points.map((point) => (
+                    <motion.li
+                      key={point}
+                      variants={reduce ? undefined : fadeUp}
+                      transition={{ duration: 0.5, ease: easeOut }}
+                      whileHover={reduce ? undefined : { x: 6, scale: 1.02 }}
+                      className="rounded-full bg-[#0A1628] px-6 py-3.5 text-base font-semibold text-white sm:px-7 sm:py-4 sm:text-lg"
+                    >
+                      {point}
+                    </motion.li>
+                  ))}
+                </motion.ul>
+              </div>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <motion.button
+        type="button"
+        onClick={() => setOpen(true)}
+        initial={reduce ? false : { opacity: 0, y: 24 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, delay: 0.5, ease: easeOut }}
+        whileHover={reduce ? undefined : { scale: 1.04, y: -2 }}
+        whileTap={reduce ? undefined : { scale: 0.98 }}
+        className="fixed bottom-5 right-4 z-40 max-w-[min(100%,calc(100vw-2rem))] rounded-full bg-[#0A1628] px-5 py-2.5 text-left text-sm font-semibold text-[#FF6A00] shadow-[0_10px_30px_rgba(0,0,0,0.25)] sm:bottom-6 sm:right-6 sm:min-w-[260px] sm:px-9 sm:py-3 sm:text-lg"
+      >
+        {!reduce && (
+          <motion.span
+            className="pointer-events-none absolute inset-0 rounded-full ring-2 ring-[#FF6A00]/40"
+            animate={{ opacity: [0.55, 0, 0.55], scale: [1, 1.08, 1] }}
+            transition={{ duration: 2.8, repeat: Infinity, ease: 'easeInOut' }}
+          />
+        )}
+        <span className="relative">
+          Pay your fees?{' '}
+          <span className="underline decoration-[#FF6A00] underline-offset-4">Open form</span>
+        </span>
+      </motion.button>
+
+      <FeesModal open={open} onClose={() => setOpen(false)} />
+    </>
   );
 };
 

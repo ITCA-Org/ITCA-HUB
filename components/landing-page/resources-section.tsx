@@ -47,9 +47,9 @@ const ResourcesSection = () => {
   const reduce = useReducedMotion();
 
   return (
-    <section id="resources" className="bg-white px-4 pb-24 pt-8 sm:px-8 lg:px-12">
-      <div className="mx-auto max-w-[1400px]">
-        <Reveal className="mb-8 rounded-[2rem] bg-[#0A1628] p-8 text-white sm:p-10">
+    <section id="resources" className="bg-white pb-24 pt-8">
+      <div className="mx-auto mb-8 max-w-[1400px] px-4 sm:px-8 lg:px-12">
+        <Reveal className="rounded-[2rem] bg-[#0A1628] p-8 text-white sm:p-10">
           <p className="landing-mono mb-4 text-sm text-[#FF6A00]">For School of ICT students</p>
           <h2 className="max-w-2xl text-4xl font-bold sm:text-5xl">
             Shared resources for the community
@@ -59,43 +59,51 @@ const ResourcesSection = () => {
             members across the School of ICT.
           </p>
         </Reveal>
-
-        <motion.div
-          className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3"
-          variants={reduce ? undefined : stagger}
-          initial={reduce ? false : 'hidden'}
-          whileInView={reduce ? undefined : 'show'}
-          viewport={{ once: true, amount: 0.15 }}
-        >
-          {resourceCategories.map((category) => {
-            const Icon = category.icon;
-            const onAccent = category.color === '#FF6A00' || category.color === '#005080';
-            return (
-              <motion.div
-                key={category.name}
-                variants={reduce ? undefined : fadeUp}
-                transition={{ duration: 0.55, ease: easeOut }}
-                whileHover={reduce ? undefined : { y: -6, scale: 1.01 }}
-                className="flex min-h-[180px] flex-col justify-between rounded-[2rem] p-6"
-                style={{ backgroundColor: category.color }}
-              >
-                <div className="flex items-start justify-between">
-                  <Icon className={`h-6 w-6 ${onAccent ? 'text-white' : 'text-[#0A1628]'}`} />
-                  <Lock className={`h-4 w-4 ${onAccent ? 'text-white/70' : 'text-[#0A1628]/60'}`} />
-                </div>
-                <div>
-                  <p className={`text-4xl font-extrabold ${onAccent ? 'text-white' : 'text-[#0A1628]'}`}>
-                    {category.count}+
-                  </p>
-                  <h3 className={`mt-2 text-lg font-bold ${onAccent ? 'text-white' : 'text-[#0A1628]'}`}>
-                    {category.name}
-                  </h3>
-                </div>
-              </motion.div>
-            );
-          })}
-        </motion.div>
       </div>
+
+      <motion.div
+        className="grid w-full grid-cols-1 sm:grid-cols-2 lg:grid-cols-3"
+        variants={reduce ? undefined : stagger}
+        initial={reduce ? false : 'hidden'}
+        whileInView={reduce ? undefined : 'show'}
+        viewport={{ once: true, amount: 0.15 }}
+      >
+        {resourceCategories.map((category) => {
+          const Icon = category.icon;
+          const onAccent = category.color === '#FF6A00' || category.color === '#005080';
+          return (
+            <motion.div
+              key={category.name}
+              variants={reduce ? undefined : fadeUp}
+              transition={{ duration: 0.55, ease: easeOut }}
+              whileHover={reduce ? undefined : { y: -2 }}
+              className="flex min-h-[240px] flex-col justify-between p-8 sm:min-h-[280px] sm:p-10 lg:min-h-[320px] lg:p-12"
+              style={{ backgroundColor: category.color }}
+            >
+              <div className="flex items-start justify-between">
+                <Icon className={`h-8 w-8 ${onAccent ? 'text-white' : 'text-[#0A1628]'}`} />
+                <Lock className={`h-4 w-4 ${onAccent ? 'text-white/70' : 'text-[#0A1628]/60'}`} />
+              </div>
+              <div>
+                <p
+                  className={`text-6xl font-extrabold leading-none sm:text-7xl ${
+                    onAccent ? 'text-white' : 'text-[#0A1628]'
+                  }`}
+                >
+                  {category.count}+
+                </p>
+                <h3
+                  className={`mt-3 text-xl font-bold sm:text-2xl ${
+                    onAccent ? 'text-white' : 'text-[#0A1628]'
+                  }`}
+                >
+                  {category.name}
+                </h3>
+              </div>
+            </motion.div>
+          );
+        })}
+      </motion.div>
     </section>
   );
 };

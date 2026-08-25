@@ -9,7 +9,7 @@ const LINE_ONE = ["You're", 'in', 'the', 'School', 'of', 'ICT.'];
 const LINE_TWO = ["You're", 'already', 'ITCA.'];
 const ALL_WORDS = [...LINE_ONE, ...LINE_TWO];
 
-const NAV_PREVIEW = ['Events', 'Degrees', 'Community', 'Resources'];
+const NAV_PREVIEW = ['Events', 'Resources', 'Shop', 'Fees'];
 
 type IntroSplashProps = {
   /** Fired when splash starts exiting so the page can fade in underneath */

@@ -91,9 +91,6 @@ const Footer = () => {
               <Link href="/fees" className="underline underline-offset-4">
                 Fees
               </Link>
-              <Link href="/virtual-tour" className="underline underline-offset-4">
-                Virtual Tour
-              </Link>
               <a href={SOCIAL_LINKS.instagram} className="underline underline-offset-4">
                 Instagram
               </a>
