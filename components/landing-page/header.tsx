@@ -67,6 +67,14 @@ const Header = ({ homeHero = false }: HeaderProps) => {
 
   const isActive = (match: string) => {
     if (match === '/') return router.pathname === '/';
+    if (match === '/resources') {
+      return (
+        router.pathname === '/resources' ||
+        router.pathname.startsWith('/resources/') ||
+        router.pathname === '/past-papers' ||
+        router.pathname.startsWith('/past-papers/')
+      );
+    }
     return router.pathname === match || router.pathname.startsWith(`${match}/`);
   };
 

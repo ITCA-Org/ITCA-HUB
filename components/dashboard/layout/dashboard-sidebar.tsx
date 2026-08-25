@@ -14,6 +14,7 @@ import {
   Package,
   ShoppingBag,
   QrCode,
+  ScrollText,
 } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -77,6 +78,11 @@ const adminNavItems: NavItem[] = [
     name: 'Shop Scanner',
     href: '/admin/shop/scanner',
     icon: <QrCode className="h-5 w-5" />,
+  },
+  {
+    name: 'Past Papers',
+    href: '/admin/past-papers',
+    icon: <ScrollText className="h-5 w-5" />,
   },
   {
     name: 'Resources',
