@@ -7,7 +7,7 @@ import {
   createPastPaper,
   PastPaper,
   PastPaperDepartment,
-  PastPaperUpdateInput,
+  PastPaperInput,
   updatePastPaper,
 } from '@/hooks/past-papers/use-past-papers';
 import RichTextEditor, {
@@ -125,7 +125,7 @@ const PastPaperFormModal = ({
         finalName = pdfFile.name;
       }
 
-      const payload: PastPaperUpdateInput = {
+      const payload: PastPaperInput = {
         title: title.trim(),
         course: course.trim(),
         lecturer: lecturer.trim(),
