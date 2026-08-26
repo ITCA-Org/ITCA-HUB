@@ -2,7 +2,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { Download, FileText, Search } from 'lucide-react';
 import LandingLayout from '@/components/landing-page/landing-layout';
-import { darkCtaClass } from '@/components/landing-page/brand';
+import ListPagination from '@/components/landing-page/list-pagination';
 import useDebounce from '@/utils/debounce';
 import formatDepartment from '@/utils/format-department';
 import { usePastPapers } from '@/hooks/past-papers/use-past-papers';
@@ -25,6 +25,11 @@ const PastPapersPage = () => {
       department,
       course: debouncedCourse,
     });
+
+  const handlePageChange = (nextPage: number) => {
+    setPage(nextPage);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
   return (
     <LandingLayout
@@ -132,28 +137,15 @@ const PastPapersPage = () => {
             ))}
           </ul>
 
-          {totalPages > 1 && (
-            <div className="mt-10 flex items-center justify-center gap-3">
-              <button
-                type="button"
-                disabled={page <= 0}
-                onClick={() => setPage((p) => Math.max(0, p - 1))}
-                className={`${darkCtaClass} disabled:opacity-40`}
-              >
-                Previous
-              </button>
-              <span className="text-sm text-[#0A1628]/60">
-                Page {page + 1} of {totalPages}
-              </span>
-              <button
-                type="button"
-                disabled={page + 1 >= totalPages}
-                onClick={() => setPage((p) => p + 1)}
-                className={`${darkCtaClass} disabled:opacity-40`}
-              >
-                Next
-              </button>
-            </div>
+          {!isLoading && !isError && (
+            <ListPagination
+              page={page}
+              totalPages={totalPages}
+              total={total}
+              limit={limit}
+              onPageChange={handlePageChange}
+              itemLabel={`paper${total === 1 ? '' : 's'}`}
+            />
           )}
         </div>
       </section>
