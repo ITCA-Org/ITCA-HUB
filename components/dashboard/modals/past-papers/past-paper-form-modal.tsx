@@ -134,10 +134,6 @@ const PastPaperFormModal = ({
       toast.error('Title, course, and lecturer are required');
       return;
     }
-    if (!pdfFile && !fileUrl) {
-      toast.error('Please upload a PDF');
-      return;
-    }
 
     setIsSaving(true);
     try {
@@ -156,18 +152,25 @@ const PastPaperFormModal = ({
         semester,
         paperType,
         department,
-        fileUrl: finalUrl,
-        fileName: finalName,
         displayText,
         isPublished,
       };
+
+      if (finalUrl && finalName) {
+        payload.fileUrl = finalUrl;
+        payload.fileName = finalName;
+      }
 
       if (isEdit && paper) {
         await updatePastPaper(paper._id, payload, token);
         toast.success('Past paper updated');
       } else {
         await createPastPaper(payload, token);
-        toast.success('Past paper created — text extracted from PDF');
+        toast.success(
+          pdfFile || fileUrl
+            ? 'Past paper created — text extracted from PDF'
+            : 'Past paper created'
+        );
       }
       onSaved();
       onClose();
@@ -349,12 +352,15 @@ const PastPaperFormModal = ({
 
                 <div>
                   <span className="mb-2 block text-sm font-medium text-gray-700">
-                    PDF file
+                    PDF file{' '}
+                    <span className="font-normal text-gray-500">(optional)</span>
                   </span>
                   <label className="flex cursor-pointer flex-col items-center justify-center rounded-xl border border-dashed border-gray-300 bg-gray-50 px-4 py-6 hover:bg-gray-100">
                     <Upload className="mb-2 h-8 w-8 text-gray-400" />
                     <span className="text-sm text-gray-600">
-                      {pdfFile?.name || fileName || 'Upload past paper PDF'}
+                      {pdfFile?.name ||
+                        fileName ||
+                        'Upload past paper PDF (optional)'}
                     </span>
                     <input
                       type="file"
@@ -386,8 +392,8 @@ const PastPaperFormModal = ({
                     placeholder="Curate the text students see. Format headings, lists, and emphasis as needed."
                   />
                   <p className="mt-1 text-xs text-gray-500">
-                    Full extracted text is kept for search. Only this formatted
-                    field is shown on the public page.
+                    Full extracted text is kept for search when a PDF is uploaded.
+                    You can also publish using only the display text below.
                   </p>
                 </div>
 

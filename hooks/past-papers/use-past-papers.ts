@@ -45,8 +45,8 @@ export interface PastPaperInput {
   semester: PastPaperSemester;
   paperType: PastPaperType;
   department?: PastPaperDepartment;
-  fileUrl: string;
-  fileName: string;
+  fileUrl?: string;
+  fileName?: string;
   displayText?: string;
   isPublished?: boolean;
 }
