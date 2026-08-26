@@ -7,11 +7,7 @@ import {
   createPastPaper,
   PastPaper,
   PastPaperDepartment,
-  PastPaperInput,
-  PastPaperSemester,
-  PastPaperType,
-  PAST_PAPER_SEMESTERS,
-  PAST_PAPER_TYPES,
+  PastPaperUpdateInput,
   updatePastPaper,
 } from '@/hooks/past-papers/use-past-papers';
 import RichTextEditor, {
@@ -19,12 +15,6 @@ import RichTextEditor, {
 } from '@/components/dashboard/shared/rich-text-editor';
 import { getErrorMessage } from '@/utils/error';
 import { JEETIX_BASE_URL } from '@/utils/url';
-import {
-  formatAcademicYear,
-  getAcademicYearOptions,
-  getCurrentAcademicYear,
-} from '@/utils/academic-year';
-import { formatPastPaperSemester } from '@/utils/past-paper-document';
 
 const inputClass =
   'w-full rounded-lg border border-gray-200 px-3 py-2.5 text-sm text-gray-800 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100';
@@ -48,9 +38,6 @@ const PastPaperFormModal = ({
   const [title, setTitle] = useState('');
   const [course, setCourse] = useState('');
   const [lecturer, setLecturer] = useState('');
-  const [year, setYear] = useState(getCurrentAcademicYear());
-  const [semester, setSemester] = useState<PastPaperSemester>('First');
-  const [paperType, setPaperType] = useState<PastPaperType>('Exam');
   const [department, setDepartment] =
     useState<PastPaperDepartment>('computer_science');
   const [displayText, setDisplayText] = useState('');
@@ -66,9 +53,6 @@ const PastPaperFormModal = ({
       setTitle(paper.title);
       setCourse(paper.course);
       setLecturer(paper.lecturer);
-      setYear(formatAcademicYear(paper.year));
-      setSemester(paper.semester);
-      setPaperType(paper.paperType);
       setDepartment(paper.department);
       setDisplayText(plainTextToHtml(paper.displayText || ''));
       setIsPublished(paper.isPublished);
@@ -79,9 +63,6 @@ const PastPaperFormModal = ({
       setTitle('');
       setCourse('');
       setLecturer('');
-      setYear(getCurrentAcademicYear());
-      setSemester('First');
-      setPaperType('Exam');
       setDepartment('computer_science');
       setDisplayText('');
       setIsPublished(true);
@@ -144,13 +125,10 @@ const PastPaperFormModal = ({
         finalName = pdfFile.name;
       }
 
-      const payload: PastPaperInput = {
+      const payload: PastPaperUpdateInput = {
         title: title.trim(),
         course: course.trim(),
         lecturer: lecturer.trim(),
-        year,
-        semester,
-        paperType,
         department,
         displayText,
         isPublished,
@@ -268,87 +246,27 @@ const PastPaperFormModal = ({
                   </label>
                 </div>
 
-                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-                  <label className="block">
-                    <span className="mb-1 block text-sm font-medium text-gray-700">
-                      Academic year
-                    </span>
-                    <select
-                      required
-                      value={year}
-                      onChange={(e) => setYear(e.target.value)}
-                      className={inputClass}
-                    >
-                      {[
-                        ...new Set([
-                          year,
-                          ...getAcademicYearOptions(20),
-                        ]),
-                      ].map((y) => (
-                        <option key={y} value={y}>
-                          {y}
-                        </option>
-                      ))}
-                    </select>
-                  </label>
-                  <label className="block">
-                    <span className="mb-1 block text-sm font-medium text-gray-700">
-                      Semester
-                    </span>
-                    <select
-                      value={semester}
-                      onChange={(e) =>
-                        setSemester(e.target.value as PastPaperSemester)
-                      }
-                      className={inputClass}
-                    >
-                      {PAST_PAPER_SEMESTERS.map((s) => (
-                        <option key={s} value={s}>
-                          {formatPastPaperSemester(s)}
-                        </option>
-                      ))}
-                    </select>
-                  </label>
-                  <label className="block">
-                    <span className="mb-1 block text-sm font-medium text-gray-700">
-                      Type
-                    </span>
-                    <select
-                      value={paperType}
-                      onChange={(e) =>
-                        setPaperType(e.target.value as PastPaperType)
-                      }
-                      className={inputClass}
-                    >
-                      {PAST_PAPER_TYPES.map((t) => (
-                        <option key={t} value={t}>
-                          {t}
-                        </option>
-                      ))}
-                    </select>
-                  </label>
-                  <label className="block">
-                    <span className="mb-1 block text-sm font-medium text-gray-700">
-                      Department
-                    </span>
-                    <select
-                      value={department}
-                      onChange={(e) =>
-                        setDepartment(e.target.value as PastPaperDepartment)
-                      }
-                      className={inputClass}
-                    >
-                      <option value="computer_science">Computer Science</option>
-                      <option value="information_systems">
-                        Information Systems
-                      </option>
-                      <option value="telecommunications">
-                        Telecommunications
-                      </option>
-                      <option value="all">All</option>
-                    </select>
-                  </label>
-                </div>
+                <label className="block">
+                  <span className="mb-1 block text-sm font-medium text-gray-700">
+                    Department
+                  </span>
+                  <select
+                    value={department}
+                    onChange={(e) =>
+                      setDepartment(e.target.value as PastPaperDepartment)
+                    }
+                    className={inputClass}
+                  >
+                    <option value="computer_science">Computer Science</option>
+                    <option value="information_systems">
+                      Information Systems
+                    </option>
+                    <option value="telecommunications">
+                      Telecommunications
+                    </option>
+                    <option value="all">All</option>
+                  </select>
+                </label>
 
                 <div>
                   <span className="mb-2 block text-sm font-medium text-gray-700">

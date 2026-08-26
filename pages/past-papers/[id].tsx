@@ -6,10 +6,8 @@ import { toast } from 'sonner';
 import LandingLayout from '@/components/landing-page/landing-layout';
 import { darkCtaClass } from '@/components/landing-page/brand';
 import formatDepartment from '@/utils/format-department';
-import { formatAcademicYear } from '@/utils/academic-year';
 import {
   downloadPastPaperDocument,
-  formatPastPaperSemester,
   normalizePastPaperHtml,
 } from '@/utils/past-paper-document';
 import { getPastPaper, PastPaper } from '@/hooks/past-papers/use-past-papers';
@@ -61,9 +59,6 @@ const PastPaperDetailPage = () => {
           title: paper.title,
           course: paper.course,
           lecturer: paper.lecturer,
-          year: formatAcademicYear(paper.year),
-          semester: paper.semester,
-          paperType: paper.paperType,
           department: paper.department,
           displayText: paper.displayText,
         },
@@ -89,7 +84,7 @@ const PastPaperDetailPage = () => {
       }
       description={
         paper
-          ? `${paper.course} ${paper.paperType} ${formatAcademicYear(paper.year)} — preview and download`
+          ? `${paper.course} — preview and download`
           : 'Preview and download ITCA past papers'
       }
       showFloatingCta={false}
@@ -129,11 +124,7 @@ const PastPaperDetailPage = () => {
             <>
               <div className="mt-8 flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
                 <div className="max-w-3xl">
-                  <p className="landing-mono text-sm text-[#FF6A00]">
-                    {paper.paperType} · {formatAcademicYear(paper.year)} ·{' '}
-                    {formatPastPaperSemester(paper.semester)}
-                  </p>
-                  <h1 className="mt-2 text-3xl font-bold text-[#0A1628] sm:text-4xl">
+                  <h1 className="text-3xl font-bold text-[#0A1628] sm:text-4xl">
                     {paper.title}
                   </h1>
                   <dl className="mt-6 grid grid-cols-1 gap-3 text-sm text-[#0A1628]/75 sm:grid-cols-2">
@@ -171,11 +162,7 @@ const PastPaperDetailPage = () => {
                 <h2 className="mb-4 text-lg font-bold text-[#0A1628]">Preview</h2>
                 <div className="overflow-hidden rounded-[1.25rem] border border-[#0A1628]/10 bg-[#F5F7FA] p-3 sm:p-6">
                   <article className="mx-auto flex min-h-[28rem] max-w-[800px] flex-col bg-white px-6 py-8 shadow-sm sm:px-10 sm:py-12">
-                    <p className="landing-mono text-xs text-[#FF6A00] sm:text-sm">
-                      {paper.paperType} · {formatAcademicYear(paper.year)} ·{' '}
-                      {formatPastPaperSemester(paper.semester)}
-                    </p>
-                    <h3 className="mt-2 text-2xl font-bold text-[#0A1628] sm:text-3xl">
+                    <h3 className="text-2xl font-bold text-[#0A1628] sm:text-3xl">
                       {paper.title}
                     </h3>
                     <dl className="mt-5 space-y-1 border-b border-[#0A1628]/15 pb-5 text-sm text-[#0A1628]/75">
@@ -197,14 +184,6 @@ const PastPaperDetailPage = () => {
                         </dt>
                         <dd className="ml-2 inline">
                           {formatDepartment(paper.department)}
-                        </dd>
-                      </div>
-                      <div>
-                        <dt className="inline font-semibold text-[#0A1628]">
-                          Semester
-                        </dt>
-                        <dd className="ml-2 inline">
-                          {formatPastPaperSemester(paper.semester)}
                         </dd>
                       </div>
                     </dl>

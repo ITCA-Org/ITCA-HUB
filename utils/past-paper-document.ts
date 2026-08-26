@@ -1,12 +1,7 @@
-import { formatAcademicYear } from '@/utils/academic-year';
-
 export type PastPaperDocumentMeta = {
   title: string;
   course: string;
   lecturer: string;
-  year: number | string;
-  semester: string;
-  paperType: string;
   department: string;
   displayText: string;
 };
@@ -119,19 +114,6 @@ function escapeHtml(value: string) {
     .replace(/"/g, '&quot;');
 }
 
-/** Formats stored semester values (First/Second) for display on the document. */
-export function formatPastPaperSemester(semester: string) {
-  const normalized = semester.trim().toLowerCase();
-  if (normalized === 'first' || normalized === 'first semester') {
-    return 'First Semester';
-  }
-  if (normalized === 'second' || normalized === 'second semester') {
-    return 'Second Semester';
-  }
-  if (!semester.trim()) return semester;
-  return /semester/i.test(semester) ? semester : `${semester} Semester`;
-}
-
 /**
  * Cleans TipTap inline-code chips so adjacent fragments read as one code run,
  * and promotes code-only paragraphs to proper code blocks.
@@ -200,13 +182,11 @@ export function buildPastPaperDocumentHtml(
 
   return `
     <article class="sheet">
-      <p class="meta">${escapeHtml(paper.paperType)} · ${escapeHtml(formatAcademicYear(paper.year))} · ${escapeHtml(formatPastPaperSemester(paper.semester))}</p>
       <h1>${title}</h1>
       <dl class="details">
         <div><dt>Course</dt><dd>${escapeHtml(paper.course)}</dd></div>
         <div><dt>Lecturer</dt><dd>${escapeHtml(paper.lecturer)}</dd></div>
         <div><dt>Department</dt><dd>${escapeHtml(departmentLabel)}</dd></div>
-        <div><dt>Semester</dt><dd>${escapeHtml(formatPastPaperSemester(paper.semester))}</dd></div>
       </dl>
       <div class="body">${body}</div>
       <footer class="doc-footer">University of The Gambia, Information Technology Communication Association</footer>
@@ -265,7 +245,7 @@ export async function downloadPastPaperDocument(
   try {
     await waitForImages(sheet);
 
-    const filename = `${sanitizeFilename(paper.title)}-${sanitizeFilename(formatAcademicYear(paper.year))}.pdf`;
+    const filename = `${sanitizeFilename(paper.title)}.pdf`;
 
     await html2pdf()
       .set({

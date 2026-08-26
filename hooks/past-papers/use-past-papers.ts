@@ -4,8 +4,6 @@ import { toast } from 'sonner';
 import { BASE_URL } from '@/utils/url';
 import { getErrorMessage } from '@/utils/error';
 
-export type PastPaperSemester = 'First' | 'Second';
-export type PastPaperType = 'Exam' | 'Test' | 'Make-up Test' | 'Quiz';
 export type PastPaperDepartment =
   | 'computer_science'
   | 'information_systems'
@@ -22,9 +20,6 @@ export interface PastPaper {
   title: string;
   course: string;
   lecturer: string;
-  year: string;
-  semester: PastPaperSemester;
-  paperType: PastPaperType;
   department: PastPaperDepartment;
   fileUrl: string;
   fileName: string;
@@ -41,9 +36,6 @@ export interface PastPaperInput {
   title: string;
   course: string;
   lecturer: string;
-  year: string;
-  semester: PastPaperSemester;
-  paperType: PastPaperType;
   department?: PastPaperDepartment;
   fileUrl?: string;
   fileName?: string;
@@ -54,14 +46,6 @@ export interface PastPaperInput {
 export interface PastPaperUpdateInput extends Partial<PastPaperInput> {
   resetDisplayFromExtract?: boolean;
 }
-
-export const PAST_PAPER_SEMESTERS: PastPaperSemester[] = ['First', 'Second'];
-export const PAST_PAPER_TYPES: PastPaperType[] = [
-  'Exam',
-  'Test',
-  'Make-up Test',
-  'Quiz',
-];
 
 export async function createPastPaper(
   input: PastPaperInput,
@@ -107,32 +91,17 @@ export interface UsePastPapersOptions {
   page?: number;
   limit?: number;
   search?: string;
-  year?: string;
-  semester?: string;
-  paperType?: string;
   department?: string;
   course?: string;
 }
 
 const fetchPublicList = async (options: UsePastPapersOptions) => {
-  const {
-    page = 0,
-    limit = 15,
-    search,
-    year,
-    semester,
-    paperType,
-    department,
-    course,
-  } = options;
+  const { page = 0, limit = 15, search, department, course } = options;
   const params: Record<string, string | number> = {
     page: page + 1,
     limit,
   };
   if (search?.trim()) params.search = search.trim();
-  if (year) params.year = year;
-  if (semester) params.semester = semester;
-  if (paperType) params.paperType = paperType;
   if (department && department !== 'all') params.department = department;
   if (course?.trim()) params.course = course.trim();
 
@@ -145,21 +114,10 @@ const fetchPublicList = async (options: UsePastPapersOptions) => {
 };
 
 export const usePastPapers = (options: UsePastPapersOptions = {}) => {
-  const { page = 0, limit = 15, search, year, semester, paperType, department, course } =
-    options;
+  const { page = 0, limit = 15, search, department, course } = options;
 
   const { data, error, isLoading, mutate } = useSWR(
-    [
-      '/past-papers',
-      page,
-      limit,
-      search,
-      year,
-      semester,
-      paperType,
-      department,
-      course,
-    ],
+    ['/past-papers', page, limit, search, department, course],
     () => fetchPublicList(options),
     {
       dedupingInterval: 5000,
@@ -186,9 +144,6 @@ export interface UseAdminPastPapersOptions {
   page?: number;
   limit?: number;
   search?: string;
-  year?: string;
-  semester?: string;
-  paperType?: string;
   department?: string;
   published?: string;
   status?: string;
@@ -200,9 +155,6 @@ const fetchAdminList = async (options: UseAdminPastPapersOptions) => {
     page = 0,
     limit = 15,
     search,
-    year,
-    semester,
-    paperType,
     department,
     published,
     status,
@@ -212,9 +164,6 @@ const fetchAdminList = async (options: UseAdminPastPapersOptions) => {
     limit,
   };
   if (search?.trim()) params.search = search.trim();
-  if (year) params.year = year;
-  if (semester) params.semester = semester;
-  if (paperType) params.paperType = paperType;
   if (department && department !== 'all') params.department = department;
   if (published && published !== 'all') params.published = published;
   if (status) params.status = status;
@@ -232,18 +181,8 @@ const fetchAdminList = async (options: UseAdminPastPapersOptions) => {
 };
 
 export const useAdminPastPapers = (options: UseAdminPastPapersOptions) => {
-  const {
-    token,
-    page = 0,
-    limit = 15,
-    search,
-    year,
-    semester,
-    paperType,
-    department,
-    published,
-    status,
-  } = options;
+  const { token, page = 0, limit = 15, search, department, published, status } =
+    options;
 
   const { data, error, isLoading, mutate } = useSWR(
     token
@@ -252,9 +191,6 @@ export const useAdminPastPapers = (options: UseAdminPastPapersOptions) => {
           page,
           limit,
           search,
-          year,
-          semester,
-          paperType,
           department,
           published,
           status,

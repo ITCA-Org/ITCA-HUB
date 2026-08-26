@@ -5,22 +5,10 @@ import LandingLayout from '@/components/landing-page/landing-layout';
 import { darkCtaClass } from '@/components/landing-page/brand';
 import useDebounce from '@/utils/debounce';
 import formatDepartment from '@/utils/format-department';
-import {
-  formatAcademicYear,
-  getAcademicYearOptions,
-} from '@/utils/academic-year';
-import { formatPastPaperSemester } from '@/utils/past-paper-document';
-import {
-  PAST_PAPER_SEMESTERS,
-  PAST_PAPER_TYPES,
-  usePastPapers,
-} from '@/hooks/past-papers/use-past-papers';
+import { usePastPapers } from '@/hooks/past-papers/use-past-papers';
 
 const PastPapersPage = () => {
   const [searchTerm, setSearchTerm] = useState('');
-  const [year, setYear] = useState('');
-  const [semester, setSemester] = useState('');
-  const [paperType, setPaperType] = useState('');
   const [department, setDepartment] = useState('all');
   const [course, setCourse] = useState('');
   const [page, setPage] = useState(0);
@@ -34,14 +22,9 @@ const PastPapersPage = () => {
       page,
       limit,
       search: debouncedSearch,
-      year,
-      semester,
-      paperType,
       department,
       course: debouncedCourse,
     });
-
-  const years = getAcademicYearOptions(15);
 
   return (
     <LandingLayout
@@ -57,7 +40,7 @@ const PastPapersPage = () => {
             Exams, tests, and quizzes — preview or download.
           </h1>
           <p className="mt-4 max-w-2xl text-base text-[#0A1628]/70 sm:text-lg">
-            Filter by course, year, semester, and paper type. No login required.
+            Filter by course and department. No login required.
           </p>
 
           <div className="mt-10 space-y-4 rounded-[1.75rem] bg-[#F7F7F7] p-4 sm:p-6">
@@ -75,7 +58,7 @@ const PastPapersPage = () => {
               />
             </div>
 
-            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-5">
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
               <input
                 value={course}
                 onChange={(e) => {
@@ -85,51 +68,6 @@ const PastPapersPage = () => {
                 placeholder="Course code"
                 className="rounded-full border border-[#0A1628]/10 bg-white px-4 py-3 text-sm"
               />
-              <select
-                value={year}
-                onChange={(e) => {
-                  setYear(e.target.value);
-                  setPage(0);
-                }}
-                className="rounded-full border border-[#0A1628]/10 bg-white px-4 py-3 text-sm"
-              >
-                <option value="">All years</option>
-                {years.map((y) => (
-                  <option key={y} value={y}>
-                    {y}
-                  </option>
-                ))}
-              </select>
-              <select
-                value={semester}
-                onChange={(e) => {
-                  setSemester(e.target.value);
-                  setPage(0);
-                }}
-                className="rounded-full border border-[#0A1628]/10 bg-white px-4 py-3 text-sm"
-              >
-                <option value="">All semesters</option>
-                {PAST_PAPER_SEMESTERS.map((s) => (
-                  <option key={s} value={s}>
-                    {formatPastPaperSemester(s)}
-                  </option>
-                ))}
-              </select>
-              <select
-                value={paperType}
-                onChange={(e) => {
-                  setPaperType(e.target.value);
-                  setPage(0);
-                }}
-                className="rounded-full border border-[#0A1628]/10 bg-white px-4 py-3 text-sm"
-              >
-                <option value="">All types</option>
-                {PAST_PAPER_TYPES.map((t) => (
-                  <option key={t} value={t}>
-                    {t}
-                  </option>
-                ))}
-              </select>
               <select
                 value={department}
                 onChange={(e) => {
@@ -176,11 +114,7 @@ const PastPapersPage = () => {
                   href={`/past-papers/${paper._id}`}
                   className="block rounded-[1.5rem] border border-[#0A1628]/08 bg-white p-6 transition hover:border-[#005080]/30 hover:shadow-sm"
                 >
-                  <p className="landing-mono text-xs text-[#FF6A00]">
-                    {paper.paperType} · {formatAcademicYear(paper.year)} ·{' '}
-                    {formatPastPaperSemester(paper.semester)}
-                  </p>
-                  <h2 className="mt-2 text-xl font-bold text-[#0A1628]">
+                  <h2 className="text-xl font-bold text-[#0A1628]">
                     {paper.title}
                   </h2>
                   <p className="mt-2 text-sm text-[#0A1628]/70">

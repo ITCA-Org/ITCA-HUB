@@ -12,12 +12,9 @@ import DashboardLayout from '@/components/dashboard/layout/dashboard-layout';
 import DashboardPageHeader from '@/components/dashboard/layout/dashboard-page-header';
 import PastPaperFormModal from '@/components/dashboard/modals/past-papers/past-paper-form-modal';
 import formatDepartment from '@/utils/format-department';
-import { formatAcademicYear } from '@/utils/academic-year';
-import { formatPastPaperSemester } from '@/utils/past-paper-document';
 import {
   deletePastPaper,
   PastPaper,
-  PAST_PAPER_TYPES,
   useAdminPastPapers,
 } from '@/hooks/past-papers/use-past-papers';
 import { getErrorMessage } from '@/utils/error';
@@ -25,7 +22,6 @@ import { getErrorMessage } from '@/utils/error';
 const columns: Column[] = [
   { key: 'paper', header: 'Paper' },
   { key: 'meta', header: 'Details' },
-  { key: 'type', header: 'Type' },
   { key: 'extract', header: 'Extract' },
   { key: 'status', header: 'Status' },
   { key: 'actions', header: 'Actions', className: 'text-right' },
@@ -37,7 +33,6 @@ interface AdminPastPapersPageProps {
 
 const AdminPastPapersPage = ({ userData }: AdminPastPapersPageProps) => {
   const [searchTerm, setSearchTerm] = useState('');
-  const [paperType, setPaperType] = useState('');
   const [published, setPublished] = useState('all');
   const [page, setPage] = useState(0);
   const [limit] = useState(15);
@@ -46,7 +41,7 @@ const AdminPastPapersPage = ({ userData }: AdminPastPapersPageProps) => {
   const [busyId, setBusyId] = useState('');
 
   const debouncedSearch = useDebounce(searchTerm, 500);
-  const hasActiveFilters = !!paperType || published !== 'all';
+  const hasActiveFilters = published !== 'all';
 
   const { papers, total, totalPages, isLoading, isError, refresh } =
     useAdminPastPapers({
@@ -54,12 +49,10 @@ const AdminPastPapersPage = ({ userData }: AdminPastPapersPageProps) => {
       page,
       limit,
       search: debouncedSearch,
-      paperType,
       published,
     });
 
   const resetFilters = useCallback(() => {
-    setPaperType('');
     setPublished('all');
     setPage(0);
   }, []);
@@ -96,17 +89,10 @@ const AdminPastPapersPage = ({ userData }: AdminPastPapersPageProps) => {
         <div className="text-sm text-gray-500">{paper.course}</div>
       </td>
       <td className="whitespace-nowrap px-8 py-4 text-base text-gray-700">
-        <div>
-          {formatAcademicYear(paper.year)} ·{' '}
-          {formatPastPaperSemester(paper.semester)}
-        </div>
-        <div className="text-sm text-gray-500">{paper.lecturer}</div>
+        <div>{paper.lecturer}</div>
         <div className="text-sm text-gray-400">
           {formatDepartment(paper.department)}
         </div>
-      </td>
-      <td className="whitespace-nowrap px-8 py-4 text-base text-gray-700">
-        {paper.paperType}
       </td>
       <td className="whitespace-nowrap px-8 py-4">
         <span
@@ -198,22 +184,7 @@ const AdminPastPapersPage = ({ userData }: AdminPastPapersPageProps) => {
             />
           </div>
         </div>
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-          <select
-            value={paperType}
-            onChange={(e) => {
-              setPaperType(e.target.value);
-              setPage(0);
-            }}
-            className="rounded-lg border-none bg-white py-2.5 px-3 text-sm"
-          >
-            <option value="">All types</option>
-            {PAST_PAPER_TYPES.map((t) => (
-              <option key={t} value={t}>
-                {t}
-              </option>
-            ))}
-          </select>
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <select
             value={published}
             onChange={(e) => {
@@ -263,7 +234,7 @@ const AdminPastPapersPage = ({ userData }: AdminPastPapersPageProps) => {
           }}
           searchTerm={debouncedSearch}
           emptyTitle="No past papers yet"
-          emptyDescription="Upload a PDF with year, semester, course, and paper type."
+          emptyDescription="Upload a PDF with course and lecturer details."
           emptyIcon={FileText}
           skeleton={<UserTableSkeleton />}
         />
