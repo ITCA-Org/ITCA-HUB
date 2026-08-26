@@ -1,5 +1,6 @@
-import { useEffect, useRef } from 'react';
-import JsBarcode from 'jsbarcode';
+import { useEffect, useState } from 'react';
+import Image from 'next/image';
+import QRCode from 'qrcode';
 import { Download, CheckCircle2 } from 'lucide-react';
 import { EventProps } from '@/types/interfaces/event';
 import { TicketProps } from '@/types/interfaces/ticket';
@@ -59,20 +60,32 @@ export function EventTicketCard({
   downloadUrl,
   printableId = 'printable-ticket',
 }: EventTicketCardProps) {
-  const barcodeRef = useRef<SVGSVGElement>(null);
+  const [qrDataUrl, setQrDataUrl] = useState('');
 
   useEffect(() => {
-    if (!barcodeRef.current || !ticket.ticketNumber) return;
+    const payload = ticket.barcodePayload || ticket.ticketNumber;
+    if (!payload) {
+      setQrDataUrl('');
+      return;
+    }
 
-    JsBarcode(barcodeRef.current, ticket.ticketNumber, {
-      format: 'CODE128',
-      displayValue: false,
-      margin: 0,
-      height: 88,
-      width: 2.4,
-      lineColor: '#000000',
-    });
-  }, [ticket.ticketNumber]);
+    let cancelled = false;
+    QRCode.toDataURL(payload, {
+      width: 280,
+      margin: 1,
+      errorCorrectionLevel: 'M',
+    })
+      .then((url) => {
+        if (!cancelled) setQrDataUrl(url);
+      })
+      .catch(() => {
+        if (!cancelled) setQrDataUrl('');
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [ticket.barcodePayload, ticket.ticketNumber]);
 
   return (
     <div className="mx-auto flex h-full w-full max-w-[380px] flex-col">
@@ -152,11 +165,22 @@ export function EventTicketCard({
         <TicketNotchDivider />
 
         <div className="flex flex-1 flex-col justify-end">
-          <p className="mb-1 text-center font-mono text-xs tracking-wide text-gray-400 print:mb-4">
+          <p className="mb-3 text-center font-mono text-xs tracking-wide text-gray-400 print:mb-4">
             {ticket.ticketNumber}
           </p>
           <div className="flex justify-center">
-            <svg ref={barcodeRef} className="h-[88px] w-full max-w-[300px] print:mt-0" />
+            {qrDataUrl ? (
+              <Image
+                src={qrDataUrl}
+                alt="Ticket QR code"
+                width={160}
+                height={160}
+                unoptimized
+                className="rounded-lg bg-white"
+              />
+            ) : (
+              <div className="h-40 w-40 rounded-lg bg-gray-100" />
+            )}
           </div>
         </div>
       </div>

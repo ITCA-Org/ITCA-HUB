@@ -103,7 +103,7 @@ const TicketScannerPage = ({ userData }: TicketScannerPageProps) => {
                 type="text"
                 value={manualCode}
                 onChange={(e) => setManualCode(e.target.value)}
-                placeholder="Paste ticket barcode payload"
+                placeholder="Paste QR payload or ticket number"
                 className="flex-1 rounded-lg border border-gray-200 p-2.5 text-sm"
               />
               <button

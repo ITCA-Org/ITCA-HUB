@@ -4,7 +4,9 @@ import { CheckCircle, XCircle, ScanLine, Keyboard } from 'lucide-react';
 import DashboardLayout from '@/components/dashboard/layout/dashboard-layout';
 import DashboardPageHeader from '@/components/dashboard/layout/dashboard-page-header';
 import {
+  checkDuesStatus,
   verifyDuesReceipt,
+  DuesStatusResult,
   VerifyDuesResult,
 } from '@/hooks/dues/use-dues';
 import { formatFeeAmount } from '@/utils/fees';
@@ -20,7 +22,11 @@ const DuesScannerPage = ({ userData }: DuesScannerPageProps) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [scanning, setScanning] = useState(false);
   const [manualCode, setManualCode] = useState('');
+  const [matricNumber, setMatricNumber] = useState('');
   const [result, setResult] = useState<VerifyDuesResult | null>(null);
+  const [statusResult, setStatusResult] = useState<DuesStatusResult | null>(
+    null
+  );
   const [isVerifying, setIsVerifying] = useState(false);
   const controlsRef = useRef<{ stop: () => void } | null>(null);
   const lastScannedRef = useRef('');
@@ -32,11 +38,30 @@ const DuesScannerPage = ({ userData }: DuesScannerPageProps) => {
     lastScannedRef.current = qrPayload.trim();
     setIsVerifying(true);
     setResult(null);
+    setStatusResult(null);
     try {
       const data = await verifyDuesReceipt(qrPayload.trim(), userData.token);
       setResult(data);
     } catch {
       setResult({ valid: false, message: 'Verification failed' });
+    } finally {
+      setIsVerifying(false);
+    }
+  };
+
+  const handleMatricCheck = async () => {
+    if (!matricNumber.trim() || isVerifying) return;
+    setIsVerifying(true);
+    setResult(null);
+    setStatusResult(null);
+    try {
+      const data = await checkDuesStatus({
+        matricNumber: matricNumber.trim(),
+      });
+      setStatusResult(data);
+    } catch {
+      setStatusResult(null);
+      setResult({ valid: false, message: 'No dues record for that matric' });
     } finally {
       setIsVerifying(false);
     }
@@ -82,6 +107,7 @@ const DuesScannerPage = ({ userData }: DuesScannerPageProps) => {
               onClick={() => {
                 setScanning(!scanning);
                 setResult(null);
+                setStatusResult(null);
                 lastScannedRef.current = '';
               }}
               className={`inline-flex flex-1 items-center justify-center gap-2 rounded-lg py-3 text-sm font-medium ${
@@ -126,10 +152,82 @@ const DuesScannerPage = ({ userData }: DuesScannerPageProps) => {
               </button>
             </div>
           </div>
+
+          <div className="border-t border-gray-200 pt-4">
+            <label className="mb-2 block text-sm font-medium text-gray-700">
+              Check by matric number
+            </label>
+            <div className="flex gap-2">
+              <input
+                type="text"
+                value={matricNumber}
+                onChange={(e) => setMatricNumber(e.target.value)}
+                placeholder="Matric number"
+                className="flex-1 rounded-lg border border-gray-200 p-2.5 text-sm"
+                autoComplete="off"
+              />
+              <button
+                onClick={() => void handleMatricCheck()}
+                disabled={isVerifying}
+                className="rounded-lg bg-[#005080] px-4 py-2.5 text-sm font-medium text-white hover:brightness-110 disabled:opacity-50"
+              >
+                Check
+              </button>
+            </div>
+          </div>
         </div>
 
         {isVerifying && (
-          <div className="py-4 text-center text-gray-500">Verifying receipt…</div>
+          <div className="py-4 text-center text-gray-500">Checking…</div>
+        )}
+
+        {statusResult && (
+          <div
+            className={`rounded-xl border p-6 ${
+              statusResult.auditEligible
+                ? 'border-green-200 bg-green-50'
+                : 'border-amber-200 bg-amber-50'
+            }`}
+          >
+            <p className="text-lg font-bold text-gray-900">
+              {statusResult.matricNumber}
+            </p>
+            <div className="mt-3 space-y-1 text-sm text-gray-700">
+              <p>
+                <strong>Total paid:</strong>{' '}
+                {formatFeeAmount(statusResult.totalPaid)} /{' '}
+                {formatFeeAmount(statusResult.feeTotalRequired)}
+              </p>
+              <p>
+                <strong>Balance:</strong>{' '}
+                <span
+                  className={
+                    statusResult.balanceRemaining <= 0
+                      ? 'font-semibold text-green-700'
+                      : 'font-semibold text-amber-700'
+                  }
+                >
+                  {statusResult.balanceRemaining <= 0
+                    ? 'Full fee met'
+                    : formatFeeAmount(statusResult.balanceRemaining)}
+                </span>
+              </p>
+              <p>
+                <strong>Eligibility:</strong>{' '}
+                <span
+                  className={
+                    statusResult.auditEligible
+                      ? 'font-semibold text-green-700'
+                      : 'font-semibold text-amber-700'
+                  }
+                >
+                  {statusResult.auditEligible
+                    ? 'Audit eligible'
+                    : 'Not yet eligible'}
+                </span>
+              </p>
+            </div>
+          </div>
         )}
 
         {result && (

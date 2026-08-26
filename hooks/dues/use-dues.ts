@@ -83,7 +83,6 @@ export interface VerifyDuesResult {
 
 export interface DuesStatusResult {
   matricNumber: string;
-  email: string;
   totalPaid: number;
   feeTotalRequired: number;
   balanceRemaining: number;
@@ -124,14 +123,11 @@ export async function verifyDuesReceipt(
   return data.data;
 }
 
-export async function checkDuesStatus(
-  matricNumber: string,
-  email: string
-): Promise<DuesStatusResult> {
-  const { data } = await axios.post(`${BASE_URL}/dues/status`, {
-    matricNumber,
-    email,
-  });
+export async function checkDuesStatus(input: {
+  matricNumber?: string;
+  qrPayload?: string;
+}): Promise<DuesStatusResult> {
+  const { data } = await axios.post(`${BASE_URL}/dues/status`, input);
   return data.data;
 }
 

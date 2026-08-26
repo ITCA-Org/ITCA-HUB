@@ -19,22 +19,24 @@ const inputClass =
 
 const FeesStatusCheck = () => {
   const [matricNumber, setMatricNumber] = useState('');
-  const [email, setEmail] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [result, setResult] = useState<DuesStatusResult | null>(null);
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    if (!matricNumber.trim() || !email.trim()) {
-      toast.error('Enter both matric number and email');
+    if (!matricNumber.trim()) {
+      toast.error('Enter your matric number');
       return;
     }
 
     setIsLoading(true);
     setResult(null);
     try {
-      const data = await checkDuesStatus(matricNumber.trim(), email.trim());
+      const data = await checkDuesStatus({
+        matricNumber: matricNumber.trim(),
+      });
       setResult(data);
+      setMatricNumber(data.matricNumber);
     } catch (err: unknown) {
       const { message } = getErrorMessage(err as Error);
       toast.error('Could not find dues record', { description: message });
@@ -57,9 +59,8 @@ const FeesStatusCheck = () => {
           Check your fee status
         </h2>
         <p className="mt-2 text-sm text-[#0A1628]/70">
-          Enter the matric number and email used for your dues payments to see
-          how much you have paid and any balance remaining toward{' '}
-          {formatFeeAmount(FEE_TOTAL_REQUIRED)}.
+          Enter your matric number to see how much you have paid and any balance
+          remaining toward {formatFeeAmount(FEE_TOTAL_REQUIRED)}.
         </p>
 
         <form onSubmit={handleSubmit} className="mt-6 space-y-3">
@@ -69,14 +70,6 @@ const FeesStatusCheck = () => {
             placeholder="Matric number"
             className={inputClass}
             autoComplete="off"
-          />
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="Email"
-            className={inputClass}
-            autoComplete="email"
           />
           <button
             type="submit"
