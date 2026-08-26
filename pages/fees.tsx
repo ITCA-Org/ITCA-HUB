@@ -1,5 +1,6 @@
 import LandingLayout from '../components/landing-page/landing-layout';
 import FeesSection from '../components/landing-page/fees-section';
+import FeesStatusCheck from '../components/landing-page/fees-status-check';
 import { FEE_TOTAL_REQUIRED, formatFeeAmount } from '@/utils/fees';
 
 const FeesPage = () => {
@@ -25,6 +26,7 @@ const FeesPage = () => {
       </div>
 
       <FeesSection />
+      <FeesStatusCheck />
     </LandingLayout>
   );
 };

@@ -62,7 +62,25 @@ const AdminDuesPage = ({ userData }: AdminDuesPageProps) => {
         {formatFeeAmount(payment.amount)}
       </td>
       <td className="whitespace-nowrap px-8 py-4 text-base text-gray-700">
-        {formatFeeAmount(payment.totalPaid)} / {formatFeeAmount(feeTotalRequired)}
+        <div>
+          {formatFeeAmount(payment.totalPaid)} / {formatFeeAmount(feeTotalRequired)}
+        </div>
+        <div
+          className={`text-sm ${
+            (payment.balanceRemaining ??
+              Math.max(0, feeTotalRequired - payment.totalPaid)) <= 0
+              ? 'text-green-700'
+              : 'text-amber-700'
+          }`}
+        >
+          {(payment.balanceRemaining ??
+            Math.max(0, feeTotalRequired - payment.totalPaid)) <= 0
+            ? 'Full fee met'
+            : `Balance ${formatFeeAmount(
+                payment.balanceRemaining ??
+                  Math.max(0, feeTotalRequired - payment.totalPaid)
+              )}`}
+        </div>
       </td>
       <td className="whitespace-nowrap px-8 py-4">
         {payment.auditEligible ? (

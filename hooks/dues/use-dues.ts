@@ -40,6 +40,7 @@ export interface DuesOrderSummary {
 export interface DuesOrderResponse {
   order: DuesOrderSummary;
   totalPaid: number;
+  balanceRemaining?: number;
   auditEligible: boolean;
   feeTotalRequired: number;
 }
@@ -56,6 +57,7 @@ export interface DuesPaymentRow {
   paidAt?: string | null;
   createdAt: string;
   totalPaid: number;
+  balanceRemaining?: number;
   auditEligible: boolean;
   verifiedAt?: string | null;
 }
@@ -73,9 +75,25 @@ export interface VerifyDuesResult {
     paidAt?: string | null;
   };
   totalPaid?: number;
+  balanceRemaining?: number;
   auditEligible?: boolean;
   feeTotalRequired?: number;
   verifiedAt?: string | null;
+}
+
+export interface DuesStatusResult {
+  matricNumber: string;
+  email: string;
+  totalPaid: number;
+  feeTotalRequired: number;
+  balanceRemaining: number;
+  auditEligible: boolean;
+  payments: {
+    amount: number;
+    receiptNumber?: string;
+    paidAt?: string | null;
+    status: string;
+  }[];
 }
 
 export async function checkoutDues(
@@ -103,6 +121,17 @@ export async function verifyDuesReceipt(
     { qrPayload },
     { headers: { Authorization: `Bearer ${token}` } }
   );
+  return data.data;
+}
+
+export async function checkDuesStatus(
+  matricNumber: string,
+  email: string
+): Promise<DuesStatusResult> {
+  const { data } = await axios.post(`${BASE_URL}/dues/status`, {
+    matricNumber,
+    email,
+  });
   return data.data;
 }
 

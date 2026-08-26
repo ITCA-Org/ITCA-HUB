@@ -8,7 +8,7 @@ import { CheckCircle, Loader, RefreshCw } from 'lucide-react';
 import LandingLayout from '@/components/landing-page/landing-layout';
 import { darkCtaClass } from '@/components/landing-page/brand';
 import { DuesOrderResponse, getDuesOrder } from '@/hooks/dues/use-dues';
-import { FEE_TOTAL_REQUIRED, formatFeeAmount } from '@/utils/fees';
+import { FEE_TOTAL_REQUIRED, formatFeeAmount, getFeeBalanceRemaining } from '@/utils/fees';
 
 const POLL_INTERVAL_MS = 3000;
 const MAX_POLL_ATTEMPTS = 20;
@@ -216,7 +216,37 @@ const FeesSuccessPage = () => {
                     <dt>Total for matric</dt>
                     <dd className="font-medium text-[#0A1628]">
                       {formatFeeAmount(orderData.totalPaid)} /{' '}
-                      {formatFeeAmount(orderData.feeTotalRequired || FEE_TOTAL_REQUIRED)}
+                      {formatFeeAmount(
+                        orderData.feeTotalRequired || FEE_TOTAL_REQUIRED
+                      )}
+                    </dd>
+                  </div>
+                  <div className="flex justify-between gap-4">
+                    <dt>Balance</dt>
+                    <dd
+                      className={`font-semibold ${
+                        (orderData.balanceRemaining ??
+                          getFeeBalanceRemaining(
+                            orderData.totalPaid,
+                            orderData.feeTotalRequired || FEE_TOTAL_REQUIRED
+                          )) <= 0
+                          ? 'text-green-700'
+                          : 'text-amber-700'
+                      }`}
+                    >
+                      {(orderData.balanceRemaining ??
+                        getFeeBalanceRemaining(
+                          orderData.totalPaid,
+                          orderData.feeTotalRequired || FEE_TOTAL_REQUIRED
+                        )) <= 0
+                        ? 'Full fee met'
+                        : formatFeeAmount(
+                            orderData.balanceRemaining ??
+                              getFeeBalanceRemaining(
+                                orderData.totalPaid,
+                                orderData.feeTotalRequired || FEE_TOTAL_REQUIRED
+                              )
+                          )}
                     </dd>
                   </div>
                   <div className="flex justify-between gap-4">
@@ -245,7 +275,7 @@ const FeesSuccessPage = () => {
                       className="rounded-xl bg-white p-2"
                     />
                     <p className="mt-3 text-center text-xs text-[#0A1628]/55">
-                      The same QR was emailed to {orderData.order.email}
+                      A PDF receipt was emailed to {orderData.order.email}
                     </p>
                   </div>
                 )}

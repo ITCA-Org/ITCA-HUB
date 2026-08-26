@@ -177,6 +177,35 @@ const DuesScannerPage = ({ userData }: DuesScannerPageProps) => {
                   {formatFeeAmount(result.feeTotalRequired ?? 400)}
                 </p>
                 <p>
+                  <strong>Balance:</strong>{' '}
+                  <span
+                    className={
+                      (result.balanceRemaining ??
+                        Math.max(
+                          0,
+                          (result.feeTotalRequired ?? 400) - (result.totalPaid ?? 0)
+                        )) <= 0
+                        ? 'font-semibold text-green-700'
+                        : 'font-semibold text-amber-700'
+                    }
+                  >
+                    {(result.balanceRemaining ??
+                      Math.max(
+                        0,
+                        (result.feeTotalRequired ?? 400) - (result.totalPaid ?? 0)
+                      )) <= 0
+                      ? 'Full fee met'
+                      : formatFeeAmount(
+                          result.balanceRemaining ??
+                            Math.max(
+                              0,
+                              (result.feeTotalRequired ?? 400) -
+                                (result.totalPaid ?? 0)
+                            )
+                        )}
+                  </span>
+                </p>
+                <p>
                   <strong>Eligibility:</strong>{' '}
                   <span
                     className={
