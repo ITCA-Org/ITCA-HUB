@@ -3,9 +3,9 @@
 import Link from 'next/link';
 import {
   BookOpen,
-  Code,
   Download,
   FileText,
+  Github,
   Layers,
   Lock,
   ScrollText,
@@ -41,10 +41,11 @@ const resourceCategories = [
     color: '#FFE0CC',
   },
   {
-    name: 'Code Samples',
-    icon: Code,
-    count: 230,
+    name: 'GitHub Student Developer Pack',
+    icon: Github,
+    description: 'Free dev tools for UTG students — step-by-step',
     color: '#D4E6F2',
+    href: '/resources/github-student-pack',
   },
   {
     name: 'Software Tools',
