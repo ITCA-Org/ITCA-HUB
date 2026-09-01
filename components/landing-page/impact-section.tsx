@@ -85,7 +85,7 @@ const ImpactSection = () => {
           variants={reduce ? undefined : fadeUp}
           transition={{ duration: 0.65, ease: easeOut }}
           whileHover={reduce ? undefined : { y: -6 }}
-          className="relative flex min-h-[300px] flex-col justify-between overflow-hidden rounded-[2rem] bg-[#D4E6F2] p-8 text-[#0A1628] sm:p-10 lg:min-h-[360px]"
+          className="flex min-h-[300px] flex-col justify-between rounded-[2rem] bg-[#D4E6F2] p-8 text-[#0A1628] sm:p-10 lg:min-h-[360px]"
         >
           <p className="text-7xl font-extrabold leading-none sm:text-8xl">
             <CountUp to={1} />
@@ -94,20 +94,6 @@ const ImpactSection = () => {
             Student community for the whole School of ICT—learning, sports, retreats, and life on
             campus.
           </p>
-          <motion.div
-            className="absolute bottom-4 right-4 h-28 w-28 overflow-hidden rounded-full border-[6px] border-[#D4E6F2] sm:h-32 sm:w-32"
-            initial={reduce ? false : { scale: 0.8, opacity: 0 }}
-            whileInView={{ scale: 1, opacity: 1 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.55, delay: 0.25, ease: easeOut }}
-          >
-            <Image
-              fill
-              alt="ITCA retreat gathering"
-              src="/ITCA_RETREAT/KG__0414.jpg"
-              className="object-cover object-center"
-            />
-          </motion.div>
         </motion.div>
       </motion.div>
     </section>
