@@ -81,7 +81,7 @@ const IntroSplash = ({ onReveal, onComplete }: IntroSplashProps) => {
       {!exiting ? (
         <motion.div
           key="intro"
-          className="fixed inset-0 z-[100] flex flex-col bg-[#005080] px-5 pt-6 sm:px-10 lg:px-16"
+          className="fixed inset-0 z-[100] flex flex-col bg-white px-5 pt-6 sm:px-10 lg:px-16"
           initial={{ opacity: 1 }}
           exit={{ opacity: 0, y: '-8%' }}
           transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
@@ -129,7 +129,7 @@ const IntroSplash = ({ onReveal, onComplete }: IntroSplashProps) => {
           </div>
 
           <div className="flex flex-1 items-center pb-16">
-            <h1 className="max-w-5xl text-4xl font-bold leading-[1.08] text-white sm:text-5xl md:text-6xl lg:text-7xl">
+            <h1 className="max-w-5xl text-4xl font-bold leading-[1.08] text-[#005080] sm:text-5xl md:text-6xl lg:text-7xl">
               <span className="block">
                 {LINE_ONE.map((word, index) => {
                   const isVisible = index < visibleWords;
@@ -155,7 +155,7 @@ const IntroSplash = ({ onReveal, onComplete }: IntroSplashProps) => {
                     <motion.span
                       key={`l2-${word}-${index}`}
                       className={`mr-[0.28em] inline-block ${
-                        underline ? 'underline decoration-2 underline-offset-8' : ''
+                        underline ? 'underline decoration-[#005080] decoration-2 underline-offset-8' : ''
                       }`}
                       initial={{ opacity: 0, y: 14 }}
                       animate={isVisible ? { opacity: 1, y: 0 } : { opacity: 0, y: 14 }}

@@ -35,16 +35,18 @@ const HeroSection = () => {
       <div className="relative z-10 -mt-[100svh]">
         <div
           id="hero-banner"
-          className="flex min-h-[48svh] w-full items-end rounded-b-[3rem] bg-[#005080] px-5 pb-12 pt-28 sm:rounded-b-[5rem] sm:px-10 sm:pb-16 lg:min-h-[52svh] lg:rounded-b-[7rem] lg:px-16"
+          className="flex min-h-[48svh] w-full items-end rounded-b-[3rem] bg-white px-5 pb-12 pt-28 sm:rounded-b-[5rem] sm:px-10 sm:pb-16 lg:min-h-[52svh] lg:rounded-b-[7rem] lg:px-16"
         >
           <motion.h1
-            className="max-w-5xl text-4xl font-bold leading-[1.08] text-white sm:text-5xl md:text-6xl lg:text-7xl"
+            className="max-w-5xl text-4xl font-bold leading-[1.08] text-[#005080] sm:text-5xl md:text-6xl lg:text-7xl"
             initial={reduce ? false : { opacity: 0, y: 32 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.85, delay: 0.15, ease: easeOut }}
           >
             You&apos;re in the School of ICT.{' '}
-            <span className="underline decoration-2 underline-offset-8">You&apos;re already ITCA.</span>
+            <span className="underline decoration-[#005080] decoration-2 underline-offset-8">
+              You&apos;re already ITCA.
+            </span>
           </motion.h1>
         </div>
         <div className="h-[90svh]" aria-hidden="true" />

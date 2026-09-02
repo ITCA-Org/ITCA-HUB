@@ -90,10 +90,26 @@ const ImpactSection = () => {
           <p className="text-7xl font-extrabold leading-none sm:text-8xl">
             <CountUp to={1} />
           </p>
-          <p className="mt-8 max-w-[18rem] text-base font-medium leading-relaxed sm:text-lg">
-            Student community for the whole School of ICT—learning, sports, retreats, and life on
-            campus.
-          </p>
+          <div className="mt-8 flex items-end justify-between gap-4 sm:gap-6">
+            <p className="min-w-0 flex-1 text-base font-medium leading-relaxed sm:text-lg">
+              Student community for the whole School of ICT—learning, sports, retreats, and life on
+              campus.
+            </p>
+            <motion.div
+              className="relative h-24 w-24 shrink-0 overflow-hidden rounded-full border-[5px] border-[#D4E6F2] sm:h-32 sm:w-32 sm:border-[6px]"
+              initial={reduce ? false : { scale: 0.8, opacity: 0 }}
+              whileInView={{ scale: 1, opacity: 1 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.55, delay: 0.25, ease: easeOut }}
+            >
+              <Image
+                fill
+                alt="ITCA retreat gathering"
+                src="/ITCA_RETREAT/KG__0414.jpg"
+                className="object-cover object-center"
+              />
+            </motion.div>
+          </div>
         </motion.div>
       </motion.div>
     </section>
