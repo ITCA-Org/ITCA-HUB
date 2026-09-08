@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { Download, FileText } from 'lucide-react';
 import LandingLayout from '@/components/landing-page/landing-layout';
-import { COURSE_OUTLINES, totalCreditHours } from '@/content/course-outlines';
+import { COURSE_OUTLINES, outlineMetaLabel } from '@/content/course-outlines';
 
 const CourseOutlinesPage = () => {
   return (
@@ -43,7 +43,7 @@ const CourseOutlinesPage = () => {
                     <h2 className="text-xl font-bold text-[#0A1628]">{outline.title}</h2>
                     <p className="mt-2 text-sm text-[#0A1628]/70">{outline.programme}</p>
                     <p className="mt-1 text-xs text-[#0A1628]/45">
-                      {outline.courses.length} courses · {totalCreditHours(outline)} credit hrs listed
+                      {outlineMetaLabel(outline)}
                     </p>
                     <span className="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-[#005080]">
                       Preview & download

@@ -1,11 +1,16 @@
-import { useState } from 'react';
+import { useState, Fragment } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { ArrowLeft, Download, FileText, Loader } from 'lucide-react';
 import { toast } from 'sonner';
 import LandingLayout from '@/components/landing-page/landing-layout';
 import { darkCtaClass } from '@/components/landing-page/brand';
-import { getCourseOutline, totalCreditHours } from '@/content/course-outlines';
+import {
+  getCourseOutline,
+  groupCoursesByTerm,
+  outlineHasPrerequisites,
+  totalCreditHours,
+} from '@/content/course-outlines';
 import { downloadCourseOutlineDocument } from '@/utils/course-outline-document';
 
 const CourseOutlineDetailPage = () => {
@@ -29,6 +34,10 @@ const CourseOutlineDetailPage = () => {
       setIsDownloading(false);
     }
   };
+
+  const showPrereq = outline ? outlineHasPrerequisites(outline) : false;
+  const termGroups = outline ? groupCoursesByTerm(outline.courses) : [];
+  const hasTerms = termGroups.some((group) => Boolean(group.term));
 
   return (
     <LandingLayout
@@ -127,7 +136,7 @@ const CourseOutlineDetailPage = () => {
                     </h4>
 
                     <div className="mt-4 overflow-x-auto">
-                      <table className="w-full min-w-[36rem] border-collapse text-left text-sm">
+                      <table className="w-full min-w-[40rem] border-collapse text-left text-sm">
                         <thead>
                           <tr className="border-b border-[#0A1628]/15 bg-[#F3F6F9]">
                             <th className="px-3 py-2.5 font-semibold text-[#0A1628]">S/N</th>
@@ -140,45 +149,128 @@ const CourseOutlineDetailPage = () => {
                             <th className="px-3 py-2.5 text-center font-semibold text-[#0A1628]">
                               Credit Hrs.
                             </th>
-                            <th className="px-3 py-2.5 font-semibold text-[#0A1628]">Section</th>
+                            {showPrereq && (
+                              <th className="px-3 py-2.5 font-semibold text-[#0A1628]">
+                                Prerequisite
+                              </th>
+                            )}
+                            <th className="px-3 py-2.5 font-semibold text-[#0A1628]">Fulfills</th>
                           </tr>
                         </thead>
                         <tbody>
-                          {outline.courses.map((course) => (
-                            <tr
-                              key={`${course.code}-${course.sn}`}
-                              className="border-b border-[#0A1628]/08"
-                            >
-                              <td className="px-3 py-2.5 text-[#0A1628]/70">{course.sn}</td>
-                              <td className="px-3 py-2.5 font-medium text-[#0A1628]">
-                                {course.code}
-                              </td>
-                              <td className="px-3 py-2.5 text-[#0A1628]">{course.title}</td>
-                              <td className="px-3 py-2.5 text-center text-[#0A1628]/70">
-                                {course.creditHours}
-                              </td>
-                              <td className="px-3 py-2.5 text-[#0A1628]/70">{course.section}</td>
-                            </tr>
+                          {termGroups.map((group) => (
+                            <Fragment key={group.term ?? `ungrouped-${group.courses[0]?.sn}`}>
+                              {hasTerms && group.term && (
+                                <tr className="bg-[#EEF4F8]">
+                                  <td
+                                    colSpan={showPrereq ? 6 : 5}
+                                    className="px-3 py-2.5 text-xs font-bold uppercase tracking-wide text-[#005080]"
+                                  >
+                                    {group.term}
+                                    <span className="ml-2 font-medium normal-case tracking-normal text-[#0A1628]/55">
+                                      (
+                                      {group.courses.reduce((sum, c) => sum + c.creditHours, 0)}{' '}
+                                      credits)
+                                    </span>
+                                  </td>
+                                </tr>
+                              )}
+                              {group.courses.map((course) => (
+                                <tr
+                                  key={`${course.code}-${course.sn}`}
+                                  className="border-b border-[#0A1628]/08"
+                                >
+                                  <td className="px-3 py-2.5 text-[#0A1628]/70">{course.sn}</td>
+                                  <td className="px-3 py-2.5 font-medium text-[#0A1628]">
+                                    {course.code}
+                                  </td>
+                                  <td className="px-3 py-2.5 text-[#0A1628]">{course.title}</td>
+                                  <td className="px-3 py-2.5 text-center text-[#0A1628]/70">
+                                    {course.creditHours}
+                                  </td>
+                                  {showPrereq && (
+                                    <td className="px-3 py-2.5 text-[#0A1628]/70">
+                                      {course.prerequisite ?? '—'}
+                                    </td>
+                                  )}
+                                  <td className="px-3 py-2.5 text-[#0A1628]/70">
+                                    {course.section}
+                                  </td>
+                                </tr>
+                              ))}
+                            </Fragment>
                           ))}
                         </tbody>
                         <tfoot>
                           <tr className="bg-[#F8FAFC]">
-                            <td
-                              colSpan={3}
-                              className="px-3 py-2.5 font-semibold text-[#0A1628]"
-                            >
-                              Listed core courses
+                            <td colSpan={3} className="px-3 py-2.5 font-semibold text-[#0A1628]">
+                              Study plan total
                             </td>
                             <td className="px-3 py-2.5 text-center font-semibold text-[#0A1628]">
                               {totalCreditHours(outline)}
                             </td>
-                            <td className="px-3 py-2.5 font-semibold text-[#0A1628]">
+                            <td
+                              colSpan={showPrereq ? 2 : 1}
+                              className="px-3 py-2.5 font-semibold text-[#0A1628]"
+                            >
                               {outline.courses.length} courses
                             </td>
                           </tr>
-                        </tfoot>
+                      </tfoot>
                       </table>
                     </div>
+
+                    {outline.electives && outline.electives.length > 0 && (
+                      <div className="mt-10">
+                        <h4 className="text-base font-bold text-[#0A1628]">Elective Courses</h4>
+                        <div className="mt-4 overflow-x-auto">
+                          <table className="w-full min-w-[28rem] border-collapse text-left text-sm">
+                            <thead>
+                              <tr className="border-b border-[#0A1628]/15 bg-[#F3F6F9]">
+                                <th className="px-3 py-2.5 font-semibold text-[#0A1628]">S/N</th>
+                                <th className="px-3 py-2.5 font-semibold text-[#0A1628]">Code</th>
+                                <th className="px-3 py-2.5 font-semibold text-[#0A1628]">
+                                  Course Title
+                                </th>
+                                <th className="px-3 py-2.5 text-center font-semibold text-[#0A1628]">
+                                  Hrs
+                                </th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {outline.electives.map((elective) => (
+                                <tr
+                                  key={elective.code}
+                                  className="border-b border-[#0A1628]/08"
+                                >
+                                  <td className="px-3 py-2.5 text-[#0A1628]/70">{elective.sn}</td>
+                                  <td className="px-3 py-2.5 font-medium text-[#0A1628]">
+                                    {elective.code}
+                                  </td>
+                                  <td className="px-3 py-2.5 text-[#0A1628]">{elective.title}</td>
+                                  <td className="px-3 py-2.5 text-center text-[#0A1628]/70">
+                                    {elective.creditHours ?? '—'}
+                                  </td>
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
+                        </div>
+                      </div>
+                    )}
+
+                    {outline.notes && outline.notes.length > 0 && (
+                      <div className="mt-10">
+                        <h4 className="text-base font-bold text-[#0A1628]">
+                          General Education Requirements
+                        </h4>
+                        <ul className="mt-4 list-disc space-y-2 pl-5 text-sm leading-relaxed text-[#0A1628]/75">
+                          {outline.notes.map((note) => (
+                            <li key={note}>{note}</li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
 
                     <footer className="mt-10 border-t border-[#0A1628]/15 pt-4 text-center text-xs font-bold leading-snug tracking-[0.04em] text-[#0A1628] sm:text-sm">
                       University of The Gambia, Information Technology Communication

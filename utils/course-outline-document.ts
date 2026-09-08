@@ -1,5 +1,9 @@
 import type { CourseOutline } from '@/content/course-outlines';
-import { totalCreditHours } from '@/content/course-outlines';
+import {
+  groupCoursesByTerm,
+  outlineHasPrerequisites,
+  totalCreditHours,
+} from '@/content/course-outlines';
 
 const DOCUMENT_STYLES = `
   * { box-sizing: border-box; }
@@ -41,18 +45,19 @@ const DOCUMENT_STYLES = `
     color: rgba(10, 22, 40, 0.8);
   }
   .sheet h2 {
-    margin: 0 0 12px;
+    margin: 1.25rem 0 0.55rem;
     font-size: 13pt;
     font-weight: 700;
   }
   table {
     width: 100%;
     border-collapse: collapse;
-    font-size: 9.5pt;
+    font-size: 9pt;
+    margin-bottom: 0.75rem;
   }
   th, td {
     border: 1px solid rgba(10, 22, 40, 0.18);
-    padding: 8px 10px;
+    padding: 7px 8px;
     text-align: left;
     vertical-align: top;
   }
@@ -60,18 +65,28 @@ const DOCUMENT_STYLES = `
     background: #f3f6f9;
     font-weight: 700;
   }
-  td.num, th.num {
+  td.num, th.num, td.hrs, th.hrs {
     text-align: center;
-    width: 2.5rem;
   }
-  td.hrs, th.hrs {
-    text-align: center;
-    width: 4.5rem;
+  tr.term td {
+    background: #eef4f8;
+    font-weight: 700;
+    font-size: 8.5pt;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: #005080;
   }
   tfoot td {
     font-weight: 700;
     background: #f8fafc;
   }
+  .notes {
+    margin: 1rem 0 0;
+    padding-left: 1.1rem;
+    font-size: 9.5pt;
+    color: rgba(10, 22, 40, 0.8);
+  }
+  .notes li { margin: 0.35rem 0; }
   .doc-footer {
     margin-top: 36px;
     padding-top: 14px;
@@ -105,20 +120,76 @@ function sanitizeFilename(name: string) {
 }
 
 export function buildCourseOutlineDocumentHtml(outline: CourseOutline) {
-  const rows = outline.courses
-    .map(
-      (course) => `
-      <tr>
-        <td class="num">${course.sn}</td>
-        <td>${escapeHtml(course.code)}</td>
-        <td>${escapeHtml(course.title)}</td>
-        <td class="hrs">${course.creditHours}</td>
-        <td>${escapeHtml(course.section)}</td>
-      </tr>`
-    )
+  const showPrereq = outlineHasPrerequisites(outline);
+  const termGroups = groupCoursesByTerm(outline.courses);
+  const hasTerms = termGroups.some((group) => Boolean(group.term));
+  const colSpan = showPrereq ? 6 : 5;
+
+  const bodyRows = termGroups
+    .map((group) => {
+      const termRow =
+        hasTerms && group.term
+          ? `<tr class="term"><td colspan="${colSpan}">${escapeHtml(group.term)} (${group.courses.reduce(
+              (sum, c) => sum + c.creditHours,
+              0
+            )} credits)</td></tr>`
+          : '';
+
+      const courseRows = group.courses
+        .map(
+          (course) => `
+        <tr>
+          <td class="num">${course.sn}</td>
+          <td>${escapeHtml(course.code)}</td>
+          <td>${escapeHtml(course.title)}</td>
+          <td class="hrs">${course.creditHours}</td>
+          ${showPrereq ? `<td>${escapeHtml(course.prerequisite ?? '—')}</td>` : ''}
+          <td>${escapeHtml(course.section)}</td>
+        </tr>`
+        )
+        .join('');
+
+      return `${termRow}${courseRows}`;
+    })
     .join('');
 
-  const listedCredits = totalCreditHours(outline);
+  const electivesHtml =
+    outline.electives && outline.electives.length > 0
+      ? `
+    <h2>Elective Courses</h2>
+    <table>
+      <thead>
+        <tr>
+          <th class="num">S/N</th>
+          <th>Code</th>
+          <th>Course Title</th>
+          <th class="hrs">Hrs</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${outline.electives
+          .map(
+            (elective) => `
+          <tr>
+            <td class="num">${elective.sn}</td>
+            <td>${escapeHtml(elective.code)}</td>
+            <td>${escapeHtml(elective.title)}</td>
+            <td class="hrs">${elective.creditHours ?? '—'}</td>
+          </tr>`
+          )
+          .join('')}
+      </tbody>
+    </table>`
+      : '';
+
+  const notesHtml =
+    outline.notes && outline.notes.length > 0
+      ? `
+    <h2>General Education Requirements</h2>
+    <ul class="notes">
+      ${outline.notes.map((note) => `<li>${escapeHtml(note)}</li>`).join('')}
+    </ul>`
+      : '';
 
   return `
     <article class="sheet">
@@ -134,18 +205,21 @@ export function buildCourseOutlineDocumentHtml(outline: CourseOutline) {
             <th>Course Code</th>
             <th>Course Title</th>
             <th class="hrs">Credit Hrs.</th>
-            <th>Section</th>
+            ${showPrereq ? '<th>Prerequisite</th>' : ''}
+            <th>Fulfills</th>
           </tr>
         </thead>
-        <tbody>${rows}</tbody>
+        <tbody>${bodyRows}</tbody>
         <tfoot>
           <tr>
-            <td colspan="3">Listed core courses</td>
-            <td class="hrs">${listedCredits}</td>
-            <td>${outline.courses.length} courses</td>
+            <td colspan="3">Study plan total</td>
+            <td class="hrs">${totalCreditHours(outline)}</td>
+            <td colspan="${showPrereq ? 2 : 1}">${outline.courses.length} courses</td>
           </tr>
         </tfoot>
       </table>
+      ${electivesHtml}
+      ${notesHtml}
       <footer class="doc-footer">University of The Gambia, Information Technology Communication Association</footer>
     </article>
   `;
