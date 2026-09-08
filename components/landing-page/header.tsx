@@ -72,7 +72,9 @@ const Header = ({ homeHero = false }: HeaderProps) => {
         router.pathname === '/resources' ||
         router.pathname.startsWith('/resources/') ||
         router.pathname === '/past-papers' ||
-        router.pathname.startsWith('/past-papers/')
+        router.pathname.startsWith('/past-papers/') ||
+        router.pathname === '/course-outlines' ||
+        router.pathname.startsWith('/course-outlines/')
       );
     }
     return router.pathname === match || router.pathname.startsWith(`${match}/`);

@@ -216,7 +216,7 @@ export async function downloadPastPaperDocument(
   paper: PastPaperDocumentMeta,
   departmentLabel: string
 ) {
-  const html2pdf = (await import('html2pdf.js')).default;
+  const { downloadElementAsPdf } = await import('./download-html-pdf');
   const host = document.createElement('div');
   host.setAttribute('aria-hidden', 'true');
   host.style.position = 'fixed';
@@ -244,28 +244,7 @@ export async function downloadPastPaperDocument(
 
   try {
     await waitForImages(sheet);
-
-    const filename = `${sanitizeFilename(paper.title)}.pdf`;
-
-    await html2pdf()
-      .set({
-        margin: [12, 12, 14, 12] as [number, number, number, number],
-        filename,
-        image: { type: 'jpeg', quality: 0.95 },
-        html2canvas: {
-          scale: 2,
-          useCORS: true,
-          allowTaint: true,
-          backgroundColor: '#ffffff',
-          logging: false,
-          scrollX: 0,
-          scrollY: 0,
-        },
-        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
-        pagebreak: { mode: ['css', 'legacy'] },
-      } as never)
-      .from(sheet)
-      .save();
+    await downloadElementAsPdf(sheet, `${sanitizeFilename(paper.title)}.pdf`);
   } finally {
     host.remove();
   }

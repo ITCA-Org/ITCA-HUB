@@ -3,9 +3,9 @@
 import Link from 'next/link';
 import {
   BookOpen,
-  Download,
   FileText,
   Github,
+  GraduationCap,
   Layers,
   Lock,
   ScrollText,
@@ -48,10 +48,11 @@ const resourceCategories = [
     href: '/resources/github-student-pack',
   },
   {
-    name: 'Software Tools',
-    icon: Download,
-    count: 46,
+    name: 'Course Outlines',
+    icon: GraduationCap,
+    description: 'Programme requirements — preview & download PDF',
     color: '#FF6A00',
+    href: '/course-outlines',
   },
   {
     name: 'Practice Projects',
