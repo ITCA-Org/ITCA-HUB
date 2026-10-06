@@ -1,7 +1,8 @@
 'use client';
 
+import usePublicReducedMotion from '@/hooks/use-public-reduced-motion';
 import Image from 'next/image';
-import { motion, useReducedMotion } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { Reveal, easeOut, fadeUp, stagger } from './reveal';
 
 const steps = [
@@ -38,7 +39,7 @@ const steps = [
 ];
 
 const ApproachSection = () => {
-  const reduce = useReducedMotion();
+  const reduce = usePublicReducedMotion();
 
   return (
     <section id="community" className="bg-white">
@@ -52,7 +53,8 @@ const ApproachSection = () => {
           <Reveal delay={0.12}>
             <p className="landing-mono text-sm leading-relaxed text-[#0A1628]/75">
               ITCA organises initiatives across the School of ICT—bootcamps, workshops, sporting
-              events, and retreats—so studying tech at UTG feels like being part of something bigger.
+              events, and retreats—so studying tech at UTG feels like being part of something
+              bigger.
             </p>
           </Reveal>
         </div>
@@ -62,9 +64,9 @@ const ApproachSection = () => {
         {steps.map((step, index) => (
           <article
             key={step.number}
-            className={`sticky top-[5rem] rounded-t-[2.5rem] px-5 pt-14 sm:rounded-t-[4rem] sm:px-10 sm:pt-16 lg:px-16 lg:pt-20 ${
+            className={`relative lg:sticky lg:top-[6rem] rounded-t-[2.5rem] px-5 pt-14 sm:rounded-t-[4rem] sm:px-10 sm:pt-16 lg:px-16 lg:pt-20 ${
               index < 2 ? 'pb-20 sm:pb-24 lg:pb-28' : 'pb-12 sm:pb-14 lg:pb-16'
-            } ${index > 0 ? '-mt-[2.5rem] sm:-mt-[4rem]' : ''}`}
+            } ${index > 0 ? 'lg:-mt-[4rem]' : ''}`}
             style={{
               backgroundColor: step.color,
               zIndex: index + 1,

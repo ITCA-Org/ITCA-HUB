@@ -34,7 +34,7 @@ const LandingLayout = ({
       <Head>
         <title>{title}</title>
         <meta name="description" content={description} />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
         <link rel="canonical" href={canonical} />
         <link rel="icon" href="/itca-logo.png" />
         <meta property="og:title" content={title} />

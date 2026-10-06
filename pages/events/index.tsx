@@ -1,4 +1,5 @@
 import axios from 'axios';
+import Link from 'next/link';
 import { BASE_URL } from '@/utils/url';
 import LandingLayout from '../../components/landing-page/landing-layout';
 import EventsSection, { Event } from '../../components/landing-page/events-section';
@@ -35,6 +36,7 @@ const EventsPage = ({ initialEvents }: EventsPageProps) => {
 
       <section className="bg-white px-5 py-20 sm:px-10 lg:px-16 lg:py-28">
         <div className="mx-auto max-w-[1400px]">
+          <Link href="/hackathon" className="mb-12 block rounded-2xl bg-[#0A1628] p-8 text-white"><p className="text-orange-400">Hackathon & Seminar 2026</p><h2 className="mt-3 text-3xl font-bold">Build something that matters.</h2><p className="mt-3">Explore the event and apply with your team →</p></Link>
           <FeaturedHeading>Featured moments</FeaturedHeading>
           <SpotlightCard
             image="/ITCA_WEEK/IMG_4248.jpg"

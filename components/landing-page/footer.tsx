@@ -22,7 +22,7 @@ const Footer = () => {
         </Link>
       </div>
 
-      <div className="relative overflow-hidden bg-[#005080] px-5 py-16 text-white sm:px-10 lg:px-16 lg:py-24">
+      <div className="relative overflow-hidden bg-[#005080] px-5 pt-16 pb-[max(4rem,env(safe-area-inset-bottom))] text-white sm:px-10 lg:px-16 lg:py-24">
         <FlyingButterfly />
 
         <div className="relative z-10 mx-auto max-w-[1400px]">

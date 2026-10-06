@@ -31,10 +31,9 @@ const NewsletterSection = () => {
     setIsSubmitting(true);
 
     try {
-      const { data } = await axios.post(
-        `${BASE_URL}/newsletter-subscribers/subscribe`,
-        { email: trimmed }
-      );
+      const { data } = await axios.post(`${BASE_URL}/newsletter-subscribers/subscribe`, {
+        email: trimmed,
+      });
 
       const alreadySubscribed = data?.data?.alreadySubscribed;
       toast.success(alreadySubscribed ? 'Already subscribed' : 'Subscribed', {
@@ -81,7 +80,7 @@ const NewsletterSection = () => {
         <Reveal delay={0.1}>
           <form
             onSubmit={handleSubmit}
-            className="rounded-[1.75rem] bg-[#D4E6F2] p-7 sm:rounded-[2.25rem] sm:p-10 lg:p-12"
+            className="rounded-[1.75rem] bg-[#D4E6F2] p-5 sm:rounded-[2.25rem] sm:p-10 lg:p-12"
           >
             <label
               htmlFor="newsletter-email"

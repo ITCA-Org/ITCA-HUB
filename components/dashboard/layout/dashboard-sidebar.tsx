@@ -24,6 +24,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { DashboardSidebarProps } from '@/types/interfaces/dashboard';
 
 const adminNavItems: NavItem[] = [
+  { name: 'Hackathon', href: '/admin/hackathon', icon: <Calendar className="h-5 w-5" /> },
   {
     name: 'Overview',
     href: '/admin',
@@ -116,8 +117,7 @@ const facultyNavItems: NavItem[] = [
 
 const Sidebar = ({ open, setOpen, role }: DashboardSidebarProps) => {
   const router = useRouter();
-  const navItems =
-    role === 'faculty_officer' ? facultyNavItems : adminNavItems;
+  const navItems = role === 'faculty_officer' ? facultyNavItems : adminNavItems;
   const homeHref = role === 'faculty_officer' ? '/admin/dues' : '/admin';
 
   const isActive = (href: string) => {

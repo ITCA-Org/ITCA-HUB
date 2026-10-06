@@ -1,9 +1,10 @@
 'use client';
 
+import usePublicReducedMotion from '@/hooks/use-public-reduced-motion';
 import Image from 'next/image';
 import { ArrowRight, Clock } from 'lucide-react';
 import { useState } from 'react';
-import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
+import { AnimatePresence, motion } from 'framer-motion';
 import { Reveal, easeOut } from './reveal';
 
 type Degree = {
@@ -24,7 +25,7 @@ const degrees: Degree[] = [
     clientLabel: 'Computer Science',
     duration: '4 years',
     description:
-      'A comprehensive program covering programming, algorithms, data structures, and software engineering principles. Develop the technical skills necessary to design and build software systems that power today\'s digital economy.',
+      "A comprehensive program covering programming, algorithms, data structures, and software engineering principles. Develop the technical skills necessary to design and build software systems that power today's digital economy.",
     image: '/ITCA_BOOTCAMP/IMG_8761.jpg',
     highlights: [
       'Specializations in AI, Cybersecurity, or Software Engineering',
@@ -73,7 +74,7 @@ const degrees: Degree[] = [
 
 const DegreesSection = () => {
   const [openId, setOpenId] = useState<number>(1);
-  const reduce = useReducedMotion();
+  const reduce = usePublicReducedMotion();
 
   return (
     <section id="degrees" className="bg-white py-20">
@@ -123,10 +124,14 @@ const DegreesSection = () => {
                 style={{ backgroundColor: degree.color }}
               >
                 <div>
-                  <h3 className={`max-w-xl text-2xl font-bold leading-tight sm:text-4xl lg:text-5xl ${text}`}>
+                  <h3
+                    className={`max-w-xl text-2xl font-bold leading-tight sm:text-4xl lg:text-5xl ${text}`}
+                  >
                     {degree.title}
                   </h3>
-                  <p className={`mt-4 flex flex-wrap items-center gap-2 text-sm font-medium sm:mt-5 sm:text-lg ${text}`}>
+                  <p
+                    className={`mt-4 flex flex-wrap items-center gap-2 text-sm font-medium sm:mt-5 sm:text-lg ${text}`}
+                  >
                     <span className={`h-2.5 w-2.5 shrink-0 rounded-full ${dot}`} />
                     {degree.clientLabel}
                     <Clock className="ml-1 h-4 w-4 shrink-0 sm:ml-2" />
@@ -135,7 +140,9 @@ const DegreesSection = () => {
                 </div>
 
                 <div className="mt-8 flex items-end justify-between gap-3 sm:mt-10 sm:gap-4">
-                  <p className={`min-w-0 max-w-lg flex-1 text-sm leading-relaxed sm:text-lg ${muted}`}>
+                  <p
+                    className={`min-w-0 max-w-lg flex-1 text-sm leading-relaxed sm:text-lg ${muted}`}
+                  >
                     {isOpen ? degree.description : degree.highlights[0]}
                   </p>
                   <motion.button
@@ -149,9 +156,7 @@ const DegreesSection = () => {
                       onBlue ? 'bg-white text-[#005080]' : 'bg-[#0A1628] text-white'
                     }`}
                   >
-                    <ArrowRight
-                      className={`h-6 w-6 transition ${isOpen ? 'rotate-90' : ''}`}
-                    />
+                    <ArrowRight className={`h-6 w-6 transition ${isOpen ? 'rotate-90' : ''}`} />
                   </motion.button>
                 </div>
 

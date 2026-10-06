@@ -100,19 +100,13 @@ export async function fetchPublicShopProducts(): Promise<ShopProduct[]> {
   return (data.data as ShopProductApi[]).map(mapShopProduct);
 }
 
-export async function checkoutShop(
-  input: ShopCheckoutInput
-): Promise<ShopCheckoutResult> {
+export async function checkoutShop(input: ShopCheckoutInput): Promise<ShopCheckoutResult> {
   const { data } = await axios.post(`${BASE_URL}/shop/checkout`, input);
   return data.data;
 }
 
-export async function getShopOrder(
-  accessToken: string
-): Promise<ShopOrderResponse> {
-  const { data } = await axios.get(
-    `${BASE_URL}/shop/order/${encodeURIComponent(accessToken)}`
-  );
+export async function getShopOrder(accessToken: string): Promise<ShopOrderResponse> {
+  const { data } = await axios.get(`${BASE_URL}/shop/order/${encodeURIComponent(accessToken)}`);
   return data.data;
 }
 
@@ -140,22 +134,17 @@ export async function markShopOrderDelivered(
   return data.data;
 }
 
+const EMPTY_PRODUCTS: ShopProduct[] = [];
+
 export const useShopProducts = () => {
-  const { data, error, isLoading, mutate } = useSWR(
-    '/shop/products',
-    fetchPublicShopProducts,
-    {
-      dedupingInterval: 10000,
-      revalidateOnFocus: false,
-      onError: (err) => {
-        const { message } = getErrorMessage(err);
-        toast.error('Failed to load shop products', { description: message });
-      },
-    }
-  );
+  const { data, error, isLoading, mutate } = useSWR('/shop/products', fetchPublicShopProducts, {
+    dedupingInterval: 10000,
+    revalidateOnFocus: false,
+  });
 
   return {
-    products: data ?? [],
+    products: data ?? EMPTY_PRODUCTS,
+    hasLoaded: data !== undefined,
     isLoading,
     isError: !!error,
     refresh: () => mutate(),
@@ -285,10 +274,7 @@ export async function updateShopProduct(
   return data.data;
 }
 
-export async function deactivateShopProduct(
-  id: string,
-  token: string
-): Promise<ShopProductApi> {
+export async function deactivateShopProduct(id: string, token: string): Promise<ShopProductApi> {
   const { data } = await axios.delete(`${BASE_URL}/shop/products/${id}`, {
     headers: { Authorization: `Bearer ${token}` },
   });

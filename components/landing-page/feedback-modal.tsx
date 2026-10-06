@@ -88,19 +88,19 @@ const FeedbackModal = ({ open, onClose }: FeedbackModalProps) => {
             exit={{ y: '100%' }}
             transition={{ type: 'spring', stiffness: 280, damping: 32 }}
             onClick={(event) => event.stopPropagation()}
-            className="relative flex max-h-[calc(100svh-4rem)] w-full flex-col overflow-hidden rounded-t-[2.5rem] bg-[#FFE0CC] sm:max-h-[calc(100svh-5rem)] sm:rounded-t-[3.5rem]"
+            className="relative flex max-h-[calc(100dvh-4rem)] w-full flex-col overflow-hidden rounded-t-[2.5rem] bg-[#FFE0CC] sm:max-h-[calc(100dvh-5rem)] sm:rounded-t-[3.5rem]"
           >
-            <div className="flex justify-end px-5 pt-4 sm:px-8 sm:pt-5 lg:px-12">
+            <div className="flex justify-end shrink-0 px-5 pt-4 sm:px-8 sm:pt-5 lg:px-12">
               <button
                 type="button"
                 onClick={onClose}
-                className="rounded-full bg-[#0A1628] px-5 py-2 text-sm font-semibold text-[#FF6A00] transition hover:brightness-110"
+                className="rounded-full bg-[#0A1628] min-h-11 px-5 py-2 text-sm font-semibold text-[#FF6A00] transition hover:brightness-110"
               >
                 Close
               </button>
             </div>
 
-            <div className="grid w-full flex-1 gap-8 overflow-y-auto px-5 pb-8 pt-2 sm:px-8 lg:grid-cols-2 lg:gap-12 lg:px-12 lg:pb-12">
+            <div className="grid w-full min-h-0 flex-1 gap-8 overflow-y-auto overscroll-contain px-5 pb-8 pt-2 sm:px-8 lg:grid-cols-2 lg:gap-12 lg:px-12 lg:pb-12">
               <div className="flex flex-col justify-between gap-6">
                 <h2
                   id="feedback-title"

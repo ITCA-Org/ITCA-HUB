@@ -1,11 +1,12 @@
 'use client';
 
+import usePublicReducedMotion from '@/hooks/use-public-reduced-motion';
 import Image from 'next/image';
-import { motion, useReducedMotion } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { easeOut } from './reveal';
 
 const HeroSection = () => {
-  const reduce = useReducedMotion();
+  const reduce = usePublicReducedMotion();
 
   return (
     <section id="hero-section" className="relative">
@@ -17,7 +18,13 @@ const HeroSection = () => {
           transition={
             reduce
               ? { duration: 0 }
-              : { duration: 18, times: [0, 0.15, 1], ease: ['easeOut', 'linear'], repeat: Infinity, repeatType: 'mirror' }
+              : {
+                  duration: 18,
+                  times: [0, 0.15, 1],
+                  ease: ['easeOut', 'linear'],
+                  repeat: Infinity,
+                  repeatType: 'mirror',
+                }
           }
         >
           <Image

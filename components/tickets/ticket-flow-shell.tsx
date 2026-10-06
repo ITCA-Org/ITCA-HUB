@@ -25,25 +25,22 @@ export function TicketFlowShell({
   centerContent = true,
 }: TicketFlowShellProps) {
   return (
-    <div
-      className="flex h-dvh flex-col overflow-hidden"
-      style={{ backgroundColor: TICKET_BLUE }}
-    >
+    <div className="flex min-h-dvh flex-col" style={{ backgroundColor: TICKET_BLUE }}>
       <header className="flex shrink-0 items-center justify-between px-3 py-2 text-white">
         <Link
           href={backHref}
-          className="flex h-9 w-9 items-center justify-center rounded-full hover:bg-white/10"
+          className="flex h-11 w-11 items-center justify-center rounded-full hover:bg-white/10"
           aria-label="Go back"
         >
           <ArrowLeft className="h-5 w-5" />
         </Link>
         <h1 className="text-base font-semibold">{title}</h1>
-        <div className="h-9 w-9" />
+        <div className="h-11 w-11" />
       </header>
 
       <div
-        className={`flex min-h-0 flex-1 flex-col px-4 pb-4 pt-1 ${
-          centerContent ? 'items-stretch justify-center' : 'justify-start'
+        className={`flex min-h-0 flex-1 flex-col px-4 pb-[max(1rem,env(safe-area-inset-bottom))] pt-1 ${
+          centerContent ? 'items-stretch justify-start sm:justify-center' : 'justify-start'
         }`}
       >
         {children}
@@ -68,8 +65,7 @@ export function TicketFlowCard({ children, className = '' }: TicketFlowCardProps
   );
 }
 
-interface TicketFlowButtonProps
-  extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+interface TicketFlowButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   loading?: boolean;
   loadingText?: string;
 }
@@ -132,12 +128,7 @@ interface TicketFlowFieldProps {
   children: ReactNode;
 }
 
-export function TicketFlowField({
-  label,
-  required,
-  hint,
-  children,
-}: TicketFlowFieldProps) {
+export function TicketFlowField({ label, required, hint, children }: TicketFlowFieldProps) {
   return (
     <div>
       <label className="mb-1 block text-xs font-medium text-gray-500">
@@ -151,7 +142,7 @@ export function TicketFlowField({
 }
 
 export const ticketFlowInputClassName =
-  'w-full rounded-xl border border-gray-200 bg-gray-50 px-3 py-2.5 text-sm text-black outline-none focus:border-[#2763eb] focus:ring-1 focus:ring-[#2763eb]';
+  'w-full rounded-xl border border-gray-200 bg-gray-50 px-3 py-2.5 text-base text-black outline-none focus:border-[#2763eb] focus:ring-1 focus:ring-[#2763eb]';
 
 export function formatTicketEventDate(date: string): string {
   return new Date(date).toLocaleDateString('en-US', {

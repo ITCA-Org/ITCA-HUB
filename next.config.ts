@@ -1,6 +1,11 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
+  async rewrites() {
+    if (process.env.NODE_ENV !== 'development') return [];
+    const apiUrl = (process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:5000/api').replace(/\/$/, '');
+    return [{ source: '/backend-api/:path*', destination: `${apiUrl}/:path*` }];
+  },
   images: {
     qualities: [75, 92],
     deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],

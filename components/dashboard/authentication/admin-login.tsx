@@ -1,8 +1,9 @@
+import usePublicReducedMotion from '@/hooks/use-public-reduced-motion';
 import Head from 'next/head';
 import Image from 'next/image';
 import { toast } from 'sonner';
 import { useState } from 'react';
-import { motion, useReducedMotion } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { useRouter } from 'next/router';
 import axios, { AxiosError } from 'axios';
 import { getErrorMessage } from '@/utils/error';
@@ -19,7 +20,7 @@ const AdminLogin = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [password, setPassword] = useState('');
   const [error, setError] = useTimedError();
-  const reduce = useReducedMotion();
+  const reduce = usePublicReducedMotion();
 
   const router = useRouter();
 
@@ -95,10 +96,7 @@ const AdminLogin = () => {
 
               <form onSubmit={handleSubmit} className="mt-6 space-y-4 sm:mt-8 sm:space-y-5">
                 <div>
-                  <label
-                    htmlFor="email"
-                    className="mb-2 block text-sm font-medium text-[#0A1628]"
-                  >
+                  <label htmlFor="email" className="mb-2 block text-sm font-medium text-[#0A1628]">
                     Email Address
                   </label>
                   <div className="relative">

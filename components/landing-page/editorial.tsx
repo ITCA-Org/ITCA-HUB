@@ -1,9 +1,10 @@
 'use client';
 
+import usePublicReducedMotion from '@/hooks/use-public-reduced-motion';
 import Image from 'next/image';
 import Link from 'next/link';
 import { ReactNode, useRef } from 'react';
-import { motion, useReducedMotion, useScroll, useTransform } from 'framer-motion';
+import { motion, useScroll, useTransform } from 'framer-motion';
 import { Reveal, easeOut, stagger, fadeUp } from './reveal';
 import { darkCtaClass } from './brand';
 
@@ -19,7 +20,7 @@ type EditorialHeroProps = {
 
 /** Spacious statement + optional stats — Firefly Projects style */
 export const EditorialHero = ({ children, stats }: EditorialHeroProps) => {
-  const reduce = useReducedMotion();
+  const reduce = usePublicReducedMotion();
 
   return (
     <section className="bg-white px-5 pb-16 pt-28 sm:px-10 lg:px-16 lg:pb-24 lg:pt-36">
@@ -88,12 +89,12 @@ export const SplitHero = ({
   ctaLabel,
   lightText = false,
 }: SplitHeroProps) => {
-  const reduce = useReducedMotion();
+  const reduce = usePublicReducedMotion();
   const text = lightText ? 'text-white' : 'text-[#0A1628]';
   const muted = lightText ? 'text-white/75' : 'text-[#0A1628]/75';
 
   return (
-    <section id="hero-banner" className="relative w-full">
+    <section id="hero-banner" className="relative w-full overflow-x-clip">
       <div className="grid min-h-[100svh] w-full lg:grid-cols-[minmax(0,1.15fr)_minmax(0,0.85fr)]">
         <motion.div
           className="relative min-h-[42svh] w-full sm:min-h-[48svh] lg:min-h-full"
@@ -151,7 +152,7 @@ export const ImmersiveImage = ({
   objectPosition = 'object-center',
 }: ImmersiveImageProps) => {
   const ref = useRef<HTMLElement>(null);
-  const reduce = useReducedMotion();
+  const reduce = usePublicReducedMotion();
   const { scrollYProgress } = useScroll({
     target: ref,
     offset: ['start end', 'end start'],
@@ -160,7 +161,7 @@ export const ImmersiveImage = ({
   const y = useTransform(scrollYProgress, [0, 1], reduce ? [0, 0] : [-28, 28]);
 
   return (
-    <section ref={ref} className="relative w-full">
+    <section ref={ref} className="relative w-full overflow-x-clip">
       <div className="relative min-h-[58svh] w-full overflow-hidden sm:min-h-[70svh] lg:min-h-[78svh]">
         <motion.div className="absolute inset-0" style={{ scale, y }}>
           <Image
@@ -179,7 +180,7 @@ export const ImmersiveImage = ({
 
 /** Small loop arrow beside a section title */
 export const FeaturedHeading = ({ children }: { children: ReactNode }) => {
-  const reduce = useReducedMotion();
+  const reduce = usePublicReducedMotion();
 
   return (
     <Reveal className="mb-10 flex flex-col gap-6 sm:mb-14 sm:flex-row sm:items-end sm:gap-10">
@@ -249,7 +250,7 @@ export const SpotlightCard = ({
   ctaHref = '/community',
   ctaLabel = 'Explore the community',
 }: SpotlightProps) => {
-  const reduce = useReducedMotion();
+  const reduce = usePublicReducedMotion();
 
   return (
     <motion.article
@@ -317,7 +318,7 @@ export const EditorialMosaic = ({
   tiles: MosaicTile[];
   fullBleed?: boolean;
 }) => {
-  const reduce = useReducedMotion();
+  const reduce = usePublicReducedMotion();
 
   return (
     <motion.div
@@ -373,7 +374,9 @@ export const EditorialMosaic = ({
                 {tile.kicker}
               </p>
             )}
-            <h3 className={`max-w-md text-2xl font-bold leading-snug sm:text-3xl lg:text-4xl ${text}`}>
+            <h3
+              className={`max-w-md text-2xl font-bold leading-snug sm:text-3xl lg:text-4xl ${text}`}
+            >
               {tile.title}
             </h3>
           </motion.div>

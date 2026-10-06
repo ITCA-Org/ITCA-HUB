@@ -1,11 +1,12 @@
 'use client';
 
+import usePublicReducedMotion from '@/hooks/use-public-reduced-motion';
 import Image from 'next/image';
-import { motion, useReducedMotion } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { CountUp, easeOut, fadeUp, stagger } from './reveal';
 
 const ImpactSection = () => {
-  const reduce = useReducedMotion();
+  const reduce = usePublicReducedMotion();
 
   return (
     <section id="impact" className="bg-white px-4 py-16 sm:px-8 lg:px-12">

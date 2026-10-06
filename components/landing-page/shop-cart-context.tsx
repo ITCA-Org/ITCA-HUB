@@ -7,10 +7,7 @@ import {
   useState,
   type ReactNode,
 } from 'react';
-import {
-  cartLineKey,
-  type ShopProduct,
-} from '@/components/landing-page/shop-data';
+import { cartLineKey, type ShopProduct } from '@/components/landing-page/shop-data';
 import { useShopProducts } from '@/hooks/shop/use-shop';
 
 const STORAGE_KEY = 'itca-shop-cart-v3';
@@ -77,7 +74,7 @@ const readStoredLines = (): CartLine[] => {
 };
 
 export const ShopCartProvider = ({ children }: { children: ReactNode }) => {
-  const { products, isLoading: productsLoading } = useShopProducts();
+  const { products, isLoading: productsLoading, hasLoaded } = useShopProducts();
   const [lines, setLines] = useState<CartLine[]>([]);
   const [isOpen, setIsOpen] = useState(false);
   const [hydrated, setHydrated] = useState(false);
@@ -96,18 +93,18 @@ export const ShopCartProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   useEffect(() => {
-    if (!hydrated || productsLoading) return;
-    setLines((prev) =>
-      prev.filter((line) => {
+    if (!hydrated || productsLoading || !hasLoaded) return;
+    setLines((prev) => {
+      const validLines = prev.filter((line) => {
         const product = productMap.get(line.productId);
         if (!product) return false;
         return (
-          product.colors.some((c) => c.name === line.color) &&
-          product.sizes.includes(line.size)
+          product.colors.some((c) => c.name === line.color) && product.sizes.includes(line.size)
         );
-      })
-    );
-  }, [hydrated, productsLoading, productMap]);
+      });
+      return validLines.length === prev.length ? prev : validLines;
+    });
+  }, [hydrated, productsLoading, hasLoaded, productMap]);
 
   useEffect(() => {
     if (!hydrated) return;
@@ -136,10 +133,7 @@ export const ShopCartProvider = ({ children }: { children: ReactNode }) => {
       const size = options.size;
       const quantity = options.quantity ?? 1;
 
-      if (
-        !product.colors.some((c) => c.name === color) ||
-        !product.sizes.includes(size)
-      ) {
+      if (!product.colors.some((c) => c.name === color) || !product.sizes.includes(size)) {
         return;
       }
 
@@ -176,9 +170,7 @@ export const ShopCartProvider = ({ children }: { children: ReactNode }) => {
     }
     setLines((prev) =>
       prev.map((line) =>
-        cartLineKey(line.productId, line.color, line.size) === key
-          ? { ...line, quantity }
-          : line
+        cartLineKey(line.productId, line.color, line.size) === key ? { ...line, quantity } : line
       )
     );
   }, []);

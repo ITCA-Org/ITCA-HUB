@@ -53,9 +53,10 @@ const Header = ({ homeHero = false }: HeaderProps) => {
   }, [homeHero]);
 
   useEffect(() => {
-    document.body.style.overflow = isMenuOpen ? 'hidden' : '';
+    const previousOverflow = document.body.style.overflow;
+    if (isMenuOpen) document.body.style.overflow = 'hidden';
     return () => {
-      document.body.style.overflow = '';
+      document.body.style.overflow = previousOverflow;
     };
   }, [isMenuOpen]);
 
@@ -64,6 +65,15 @@ const Header = ({ homeHero = false }: HeaderProps) => {
     router.events.on('routeChangeStart', close);
     return () => router.events.off('routeChangeStart', close);
   }, [router.events]);
+
+  useEffect(() => {
+    const desktop = window.matchMedia('(min-width: 1024px)');
+    const closeOnDesktop = () => {
+      if (desktop.matches) setIsMenuOpen(false);
+    };
+    desktop.addEventListener('change', closeOnDesktop);
+    return () => desktop.removeEventListener('change', closeOnDesktop);
+  }, []);
 
   const isActive = (match: string) => {
     if (match === '/') return router.pathname === '/';
@@ -80,7 +90,7 @@ const Header = ({ homeHero = false }: HeaderProps) => {
     return router.pathname === match || router.pathname.startsWith(`${match}/`);
   };
 
-  const Logo = ({ className = 'h-9 w-auto object-contain md:h-14' }: { className?: string }) => (
+  const Logo = ({ className = 'h-9 w-auto object-contain lg:h-14' }: { className?: string }) => (
     <Link href="/" className="flex items-center">
       <Image
         priority
@@ -96,12 +106,12 @@ const Header = ({ homeHero = false }: HeaderProps) => {
   return (
     <header className="pointer-events-none fixed inset-x-0 top-0 z-50">
       <div
-        className={`pointer-events-none px-4 transition-[padding] duration-300 md:hidden ${
+        className={`pointer-events-none px-4 pt-[env(safe-area-inset-top)] transition-[padding] duration-300 lg:hidden ${
           isMenuOpen ? 'relative z-[60]' : ''
         }`}
       >
         <div
-          className={`pointer-events-auto flex h-[56px] w-full items-center justify-between transition-all duration-300 ${
+          className={`pointer-events-auto flex h-[64px] w-full items-center justify-between transition-all duration-300 ${
             showSolidNav && !isMenuOpen
               ? 'rounded-b-[1.5rem] bg-white px-3 shadow-[0_8px_28px_rgba(0,0,0,0.12)]'
               : 'bg-transparent px-0 pt-1'
@@ -112,7 +122,7 @@ const Header = ({ homeHero = false }: HeaderProps) => {
             aria-label={isMenuOpen ? 'Close menu' : 'Open menu'}
             aria-expanded={isMenuOpen}
             onClick={() => setIsMenuOpen((open) => !open)}
-            className={`rounded-full px-5 py-1.5 text-sm font-semibold tracking-tight transition ${
+            className={`min-h-11 rounded-full px-5 py-2 text-sm font-semibold tracking-tight transition ${
               isMenuOpen ? 'bg-[#0A1628] text-white' : 'bg-[#0A1628] text-[#FF6A00]'
             }`}
           >
@@ -123,7 +133,7 @@ const Header = ({ homeHero = false }: HeaderProps) => {
       </div>
 
       <div
-        className={`pointer-events-none hidden transition-[padding] duration-300 md:block ${
+        className={`pointer-events-none hidden transition-[padding] duration-300 lg:block ${
           showSolidNav ? 'px-6 sm:px-10 lg:px-16' : 'px-8 sm:px-14 lg:px-24'
         }`}
       >
@@ -179,9 +189,9 @@ const Header = ({ homeHero = false }: HeaderProps) => {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
-            className="pointer-events-auto fixed inset-0 z-[55] bg-[#005080] md:hidden"
+            className="pointer-events-auto fixed inset-0 z-[55] bg-[#005080] lg:hidden"
           >
-            <nav className="flex h-full flex-col justify-center gap-3 px-5 pb-16 pt-20">
+            <nav className="flex h-full flex-col gap-3 overflow-y-auto overscroll-contain px-5 pb-[max(2rem,env(safe-area-inset-bottom))] pt-24">
               {navLinks.map((link) => {
                 const active = isActive(link.match);
                 return (
@@ -189,7 +199,7 @@ const Header = ({ homeHero = false }: HeaderProps) => {
                     key={link.name}
                     href={link.href}
                     onClick={() => setIsMenuOpen(false)}
-                    className={`inline-flex h-10 w-fit min-w-[10rem] items-center justify-center whitespace-nowrap rounded-full px-8 text-center text-lg font-semibold leading-none tracking-tight transition ${
+                    className={`inline-flex min-h-12 w-fit min-w-[10rem] items-center justify-center whitespace-nowrap rounded-full px-8 text-center text-lg font-semibold leading-none tracking-tight transition ${
                       active ? 'bg-[#FF6A00] text-white' : 'bg-[#0A1628] text-[#FF6A00]'
                     }`}
                   >

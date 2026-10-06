@@ -27,9 +27,7 @@ const CourseOutlineDetailPage = () => {
       await downloadCourseOutlineDocument(outline);
       toast.success('Download started');
     } catch (err) {
-      toast.error(
-        err instanceof Error ? err.message : 'Could not download this outline.'
-      );
+      toast.error(err instanceof Error ? err.message : 'Could not download this outline.');
     } finally {
       setIsDownloading(false);
     }
@@ -43,9 +41,7 @@ const CourseOutlineDetailPage = () => {
     <LandingLayout
       path={typeof slug === 'string' ? `/course-outlines/${slug}` : '/course-outlines'}
       title={
-        outline
-          ? `${outline.title} | Course Outlines | ITCA Hub`
-          : 'Course Outline | ITCA Hub'
+        outline ? `${outline.title} | Course Outlines | ITCA Hub` : 'Course Outline | ITCA Hub'
       }
       description={
         outline
@@ -76,9 +72,7 @@ const CourseOutlineDetailPage = () => {
             <div className="mt-12">
               <FileText className="mb-3 h-10 w-10 text-[#0A1628]/25" />
               <h1 className="text-3xl font-bold text-[#0A1628]">Not found</h1>
-              <p className="mt-3 text-[#0A1628]/70">
-                This course outline is unavailable.
-              </p>
+              <p className="mt-3 text-[#0A1628]/70">This course outline is unavailable.</p>
               <Link href="/course-outlines" className={`${darkCtaClass} mt-8 inline-flex`}>
                 Back to course outlines
               </Link>
@@ -93,9 +87,7 @@ const CourseOutlineDetailPage = () => {
                   <h1 className="mt-2 text-3xl font-bold text-[#0A1628] sm:text-4xl">
                     {outline.title}
                   </h1>
-                  <p className="mt-3 text-sm text-[#0A1628]/70 sm:text-base">
-                    {outline.school}
-                  </p>
+                  <p className="mt-3 text-sm text-[#0A1628]/70 sm:text-base">{outline.school}</p>
                   <p className="mt-5 text-base leading-relaxed text-[#0A1628]/75">
                     {outline.summary}
                   </p>
@@ -135,7 +127,15 @@ const CourseOutlineDetailPage = () => {
                       {outline.tableHeading}
                     </h4>
 
-                    <div className="mt-4 overflow-x-auto">
+                    <p className="mt-3 text-xs text-[#005080] sm:hidden">
+                      Swipe the table to see all columns →
+                    </p>
+                    <div
+                      className="mt-4 overflow-x-auto overscroll-x-contain"
+                      role="region"
+                      aria-label="Course table, scroll horizontally to see all columns"
+                      tabIndex={0}
+                    >
                       <table className="w-full min-w-[40rem] border-collapse text-left text-sm">
                         <thead>
                           <tr className="border-b border-[#0A1628]/15 bg-[#F3F6F9]">
@@ -168,8 +168,7 @@ const CourseOutlineDetailPage = () => {
                                   >
                                     {group.term}
                                     <span className="ml-2 font-medium normal-case tracking-normal text-[#0A1628]/55">
-                                      (
-                                      {group.courses.reduce((sum, c) => sum + c.creditHours, 0)}{' '}
+                                      ({group.courses.reduce((sum, c) => sum + c.creditHours, 0)}{' '}
                                       credits)
                                     </span>
                                   </td>
@@ -216,14 +215,22 @@ const CourseOutlineDetailPage = () => {
                               {outline.courses.length} courses
                             </td>
                           </tr>
-                      </tfoot>
+                        </tfoot>
                       </table>
                     </div>
 
                     {outline.electives && outline.electives.length > 0 && (
                       <div className="mt-10">
                         <h4 className="text-base font-bold text-[#0A1628]">Elective Courses</h4>
-                        <div className="mt-4 overflow-x-auto">
+                        <p className="mt-3 text-xs text-[#005080] sm:hidden">
+                          Swipe the table to see all columns →
+                        </p>
+                        <div
+                          className="mt-4 overflow-x-auto overscroll-x-contain"
+                          role="region"
+                          aria-label="Elective table, scroll horizontally to see all columns"
+                          tabIndex={0}
+                        >
                           <table className="w-full min-w-[28rem] border-collapse text-left text-sm">
                             <thead>
                               <tr className="border-b border-[#0A1628]/15 bg-[#F3F6F9]">
@@ -239,10 +246,7 @@ const CourseOutlineDetailPage = () => {
                             </thead>
                             <tbody>
                               {outline.electives.map((elective) => (
-                                <tr
-                                  key={elective.code}
-                                  className="border-b border-[#0A1628]/08"
-                                >
+                                <tr key={elective.code} className="border-b border-[#0A1628]/08">
                                   <td className="px-3 py-2.5 text-[#0A1628]/70">{elective.sn}</td>
                                   <td className="px-3 py-2.5 font-medium text-[#0A1628]">
                                     {elective.code}
@@ -273,8 +277,7 @@ const CourseOutlineDetailPage = () => {
                     )}
 
                     <footer className="mt-10 border-t border-[#0A1628]/15 pt-4 text-center text-xs font-bold leading-snug tracking-[0.04em] text-[#0A1628] sm:text-sm">
-                      University of The Gambia, Information Technology Communication
-                      Association
+                      University of The Gambia, Information Technology Communication Association
                     </footer>
                   </article>
                 </div>

@@ -1,6 +1,7 @@
 'use client';
 
-import { motion, useReducedMotion } from 'framer-motion';
+import usePublicReducedMotion from '@/hooks/use-public-reduced-motion';
+import { motion } from 'framer-motion';
 
 const phrases = [
   'School of ICT',
@@ -14,7 +15,7 @@ const phrases = [
 ];
 
 const MarqueeBanner = () => {
-  const reduce = useReducedMotion();
+  const reduce = usePublicReducedMotion();
   const loop = [...phrases, ...phrases, ...phrases, ...phrases];
 
   return (

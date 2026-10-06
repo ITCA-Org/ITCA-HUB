@@ -1,8 +1,9 @@
 'use client';
 
+import usePublicReducedMotion from '@/hooks/use-public-reduced-motion';
 import Image from 'next/image';
 import { useState } from 'react';
-import { motion, useReducedMotion } from 'framer-motion';
+import { motion } from 'framer-motion';
 import FeesModal from './fees-modal';
 import { Reveal, easeOut, fadeUp, stagger } from './reveal';
 import { FEE_TOTAL_REQUIRED, formatFeeAmount } from '@/utils/fees';
@@ -14,7 +15,12 @@ const steps = [
     color: '#D4E6F2',
     kicker: 'D50 each semester',
     body: 'ITCA semester dues keep bootcamps, sports days, retreats, and student initiatives running. Paying D50 each term spreads the load so the community stays funded without a last-minute scramble.',
-    points: ['D50 per semester', 'Supports events & bootcamps', 'Pay as you go', 'Keep your record current'],
+    points: [
+      'D50 per semester',
+      'Supports events & bootcamps',
+      'Pay as you go',
+      'Keep your record current',
+    ],
     image: '/fees/install.jpg',
     imageAlt: 'Paying fees on a phone — semester installment',
   },
@@ -39,7 +45,12 @@ const steps = [
     color: '#FF6A00',
     kicker: 'Audit form requires cleared dues',
     body: 'Students who have not cleared their ITCA dues cannot collect their audit form from the admin office. Stay current so graduation paperwork is not held up when you need it most.',
-    points: ['Clear dues first', 'Collect your audit form', 'Admin office verification', 'Graduate without delays'],
+    points: [
+      'Clear dues first',
+      'Collect your audit form',
+      'Admin office verification',
+      'Graduate without delays',
+    ],
     image: '/fees/graduate.jpg',
     imageAlt: 'Graduate in cap and gown holding a diploma',
   },
@@ -47,7 +58,7 @@ const steps = [
 
 const FeesSection = () => {
   const [open, setOpen] = useState(false);
-  const reduce = useReducedMotion();
+  const reduce = usePublicReducedMotion();
 
   return (
     <>
@@ -62,7 +73,8 @@ const FeesSection = () => {
             <Reveal delay={0.12}>
               <p className="landing-mono text-sm leading-relaxed text-[#0A1628]/75">
                 Your dues fund the community you rely on. Install D50 a semester, settle{' '}
-                {formatFeeAmount(FEE_TOTAL_REQUIRED)} in full, and keep your audit form within reach.
+                {formatFeeAmount(FEE_TOTAL_REQUIRED)} in full, and keep your audit form within
+                reach.
               </p>
             </Reveal>
           </div>
@@ -83,9 +95,9 @@ const FeesSection = () => {
           {steps.map((step, index) => (
             <article
               key={step.number}
-              className={`sticky top-[5rem] rounded-t-[2.5rem] px-5 pt-14 sm:rounded-t-[4rem] sm:px-10 sm:pt-16 lg:px-16 lg:pt-20 ${
+              className={`relative lg:sticky lg:top-[6rem] rounded-t-[2.5rem] px-5 pt-14 sm:rounded-t-[4rem] sm:px-10 sm:pt-16 lg:px-16 lg:pt-20 ${
                 index < 2 ? 'pb-20 sm:pb-24 lg:pb-28' : 'pb-12 sm:pb-14 lg:pb-16'
-              } ${index > 0 ? '-mt-[2.5rem] sm:-mt-[4rem]' : ''}`}
+              } ${index > 0 ? 'lg:-mt-[4rem]' : ''}`}
               style={{
                 backgroundColor: step.color,
                 zIndex: index + 1,
@@ -177,7 +189,7 @@ const FeesSection = () => {
         transition={{ duration: 0.6, delay: 0.5, ease: easeOut }}
         whileHover={reduce ? undefined : { scale: 1.04, y: -2 }}
         whileTap={reduce ? undefined : { scale: 0.98 }}
-        className="fixed bottom-5 right-4 z-40 max-w-[min(100%,calc(100vw-2rem))] rounded-full bg-[#0A1628] px-5 py-2.5 text-left text-sm font-semibold text-[#FF6A00] shadow-[0_10px_30px_rgba(0,0,0,0.25)] sm:bottom-6 sm:right-6 sm:min-w-[260px] sm:px-9 sm:py-3 sm:text-lg"
+        className="fixed bottom-[max(1.25rem,env(safe-area-inset-bottom))] right-4 z-40 max-w-[min(100%,calc(100vw-2rem))] rounded-full bg-[#0A1628] px-5 py-2.5 text-left text-sm font-semibold text-[#FF6A00] shadow-[0_10px_30px_rgba(0,0,0,0.25)] sm:bottom-6 sm:right-6 sm:min-w-[260px] sm:px-9 sm:py-3 sm:text-lg"
       >
         {!reduce && (
           <motion.span

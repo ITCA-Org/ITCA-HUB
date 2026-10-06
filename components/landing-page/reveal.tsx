@@ -1,6 +1,7 @@
 'use client';
 
-import { animate, motion, useInView, useReducedMotion, type HTMLMotionProps } from 'framer-motion';
+import usePublicReducedMotion from '@/hooks/use-public-reduced-motion';
+import { animate, motion, useInView, type HTMLMotionProps } from 'framer-motion';
 import { ReactNode, useEffect, useRef } from 'react';
 
 export const easeOut = [0.22, 1, 0.36, 1] as const;
@@ -45,7 +46,7 @@ export const Reveal = ({
   amount = 0.25,
   ...rest
 }: RevealProps) => {
-  const reduce = useReducedMotion();
+  const reduce = usePublicReducedMotion();
 
   if (reduce) {
     return <div className={className}>{children}</div>;
@@ -74,7 +75,7 @@ type CountUpProps = {
 
 /** Animates a number when it scrolls into view */
 export const CountUp = ({ to, suffix = '', className, duration = 1.4 }: CountUpProps) => {
-  const reduce = useReducedMotion();
+  const reduce = usePublicReducedMotion();
   const ref = useRef<HTMLSpanElement>(null);
   const inView = useInView(ref, { once: true, amount: 0.4 });
 

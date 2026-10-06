@@ -185,6 +185,29 @@ body {
   letter-spacing: -0.03em;
 }
 
+@media (max-width: 1023px) {
+  .landing-itca input:not([type='checkbox']):not([type='radio']),
+  .landing-itca select,
+  .landing-itca textarea {
+    font-size: 16px;
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  .landing-itca h1,
+  .landing-itca h2,
+  .landing-itca h3,
+  .landing-itca a,
+  .landing-itca dd {
+    overflow-wrap: anywhere;
+  }
+
+  .landing-itca button,
+  .landing-itca input[type='submit'] {
+    min-height: 44px;
+  }
+}
+
 .landing-mono {
   font-family: 'IBM Plex Mono', ui-monospace, monospace;
 }

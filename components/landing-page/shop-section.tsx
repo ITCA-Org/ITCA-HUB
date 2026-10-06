@@ -1,17 +1,13 @@
+import usePublicReducedMotion from '@/hooks/use-public-reduced-motion';
 import { useMemo, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { ChevronDown, ShoppingBag } from 'lucide-react';
-import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
 import { darkCtaClass } from './brand';
 import { Reveal, easeOut } from './reveal';
-import {
-  SHOP_CATEGORIES,
-  formatDalasi,
-  type ShopCategory,
-  type ShopProduct,
-} from './shop-data';
+import { SHOP_CATEGORIES, formatDalasi, type ShopCategory, type ShopProduct } from './shop-data';
 import { useShopCart } from './shop-cart-context';
 
 type SortOption = 'featured' | 'price-asc' | 'price-desc' | 'name';
@@ -30,8 +26,7 @@ const ShopProductCard = ({
   const [size, setSize] = useState(product.sizes[0] ?? '');
   const [openOptions, setOpenOptions] = useState(false);
 
-  const selectedColor =
-    product.colors.find((c) => c.name === color) ?? product.colors[0];
+  const selectedColor = product.colors.find((c) => c.name === color) ?? product.colors[0];
 
   const handleAdd = () => {
     if (!color || !size) {
@@ -77,15 +72,10 @@ const ShopProductCard = ({
           {product.name}
         </h3>
         <p className="mt-2 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-[#0A1628]/75 sm:text-base">
-          <span
-            className="inline-block h-2 w-2 shrink-0 rounded-full bg-[#0A1628]"
-            aria-hidden
-          />
+          <span className="inline-block h-2 w-2 shrink-0 rounded-full bg-[#0A1628]" aria-hidden />
           <span>{product.category}</span>
           <span className="text-[#0A1628]/35">·</span>
-          <span className="font-semibold text-[#0A1628]">
-            {formatDalasi(product.price)}
-          </span>
+          <span className="font-semibold text-[#0A1628]">{formatDalasi(product.price)}</span>
         </p>
 
         <AnimatePresence initial={false}>
@@ -98,9 +88,7 @@ const ShopProductCard = ({
               className="overflow-hidden"
             >
               <div className="mt-5 space-y-4 border-t border-[#0A1628]/10 pt-5">
-                <p className="text-sm leading-relaxed text-[#0A1628]/70">
-                  {product.blurb}
-                </p>
+                <p className="text-sm leading-relaxed text-[#0A1628]/70">{product.blurb}</p>
 
                 <div>
                   <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-[#0A1628]/55">
@@ -125,10 +113,8 @@ const ShopProductCard = ({
                           aria-label={option.name}
                           aria-pressed={active}
                           onClick={() => setColor(option.name)}
-                          className={`h-8 w-8 rounded-full border-2 transition ${
-                            active
-                              ? 'scale-110 border-[#0A1628]'
-                              : 'border-transparent'
+                          className={`h-11 w-11 rounded-full border-2 transition ${
+                            active ? 'scale-110 border-[#0A1628]' : 'border-transparent'
                           } ${isLight ? 'ring-1 ring-[#0A1628]/20' : ''}`}
                           style={{ backgroundColor: option.hex }}
                         />
@@ -184,7 +170,7 @@ const ShopProductCard = ({
 };
 
 const ShopSection = () => {
-  const reduce = useReducedMotion();
+  const reduce = usePublicReducedMotion();
   const { openCart, itemCount, products, productsLoading } = useShopCart();
   const [query, setQuery] = useState('');
   const [category, setCategory] = useState<'All' | ShopCategory>('All');
@@ -192,16 +178,13 @@ const ShopSection = () => {
   const [filtersOpen, setFiltersOpen] = useState(false);
 
   const activeFilterCount =
-    (category !== 'All' ? 1 : 0) +
-    (query.trim() ? 1 : 0) +
-    (sort !== 'featured' ? 1 : 0);
+    (category !== 'All' ? 1 : 0) + (query.trim() ? 1 : 0) + (sort !== 'featured' ? 1 : 0);
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
 
     let list = products.filter((product) => {
-      const matchesCategory =
-        category === 'All' || product.category === category;
+      const matchesCategory = category === 'All' || product.category === category;
       const matchesQuery =
         !q ||
         product.name.toLowerCase().includes(q) ||
@@ -235,11 +218,7 @@ const ShopSection = () => {
               Browse the catalogue and add items to your cart.
             </h2>
           </div>
-          <button
-            type="button"
-            onClick={openCart}
-            className={`${darkCtaClass} relative shrink-0`}
-          >
+          <button type="button" onClick={openCart} className={`${darkCtaClass} relative shrink-0`}>
             <ShoppingBag className="h-4 w-4" />
             View cart
             {itemCount > 0 && (
@@ -262,10 +241,7 @@ const ShopSection = () => {
             </span>
 
             <span className="flex shrink-0 items-center gap-2.5 text-[15px] font-medium tracking-tight text-[#0A1628] sm:gap-3 sm:text-base">
-              <span
-                className="inline-block h-2.5 w-2.5 rounded-full bg-[#0A1628]"
-                aria-hidden
-              />
+              <span className="inline-block h-2.5 w-2.5 rounded-full bg-[#0A1628]" aria-hidden />
               {filtered.length} {filtered.length === 1 ? 'product' : 'products'}
               <ChevronDown
                 className={`ml-0.5 h-[18px] w-[18px] text-[#0A1628] transition ${
@@ -351,9 +327,7 @@ const ShopSection = () => {
 
       {productsLoading ? (
         <div className="mx-auto max-w-[1400px] px-4 sm:px-10 lg:px-16">
-          <p className="py-16 text-center text-[#0A1628]/60">
-            Loading catalogue…
-          </p>
+          <p className="py-16 text-center text-[#0A1628]/60">Loading catalogue…</p>
         </div>
       ) : filtered.length === 0 ? (
         <div className="mx-auto max-w-[1400px] px-4 sm:px-10 lg:px-16">
@@ -384,12 +358,7 @@ const ShopSection = () => {
       ) : (
         <div className="grid w-full grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
           {filtered.map((product, index) => (
-            <ShopProductCard
-              key={product.id}
-              product={product}
-              index={index}
-              reduce={reduce}
-            />
+            <ShopProductCard key={product.id} product={product} index={index} reduce={reduce} />
           ))}
         </div>
       )}
@@ -399,10 +368,7 @@ const ShopSection = () => {
           <p className="max-w-md text-sm text-[#0A1628]/70 sm:text-base">
             Looking for something custom for a cohort or event? We can help.
           </p>
-          <Link
-            href="/events"
-            className={`${darkCtaClass} w-full justify-center sm:w-auto`}
-          >
+          <Link href="/events" className={`${darkCtaClass} w-full justify-center sm:w-auto`}>
             See upcoming events
           </Link>
         </Reveal>

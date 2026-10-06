@@ -1,6 +1,7 @@
+import usePublicReducedMotion from '@/hooks/use-public-reduced-motion';
 import Image from 'next/image';
 import Link from 'next/link';
-import { motion, useReducedMotion } from 'framer-motion';
+import { motion } from 'framer-motion';
 import LandingLayout from '@/components/landing-page/landing-layout';
 import { CONTACT_MAIL, darkCtaClass } from '@/components/landing-page/brand';
 import { easeOut } from '@/components/landing-page/reveal';
@@ -27,7 +28,7 @@ const highlights = [
 ];
 
 const NotFoundPage = () => {
-  const reduce = useReducedMotion();
+  const reduce = usePublicReducedMotion();
 
   return (
     <LandingLayout
