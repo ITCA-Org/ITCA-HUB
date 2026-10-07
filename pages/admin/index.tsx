@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { ArrowUpRight } from 'lucide-react';
 import { useState, FC } from 'react';
 import { NextApiRequest } from 'next';
 import { UserAuth } from '@/types';
@@ -125,13 +126,15 @@ const AdminDashboard: FC<AdminDashboardProps> = ({ userData }) => {
             href="/admin/events"
             className="inline-flex min-h-11 items-center rounded-full bg-[#0A1628] px-5 py-3 text-sm font-semibold text-[#FF6A00] hover:brightness-125"
           >
-            Manage events &nearr;
+            Manage events{' '}
+            <ArrowUpRight aria-hidden="true" className="ml-2 inline-block h-4 w-4 shrink-0" />
           </Link>
           <Link
             href="/admin/resources/upload"
             className="inline-flex min-h-11 items-center rounded-full border border-[#0A1628]/20 px-5 py-3 text-sm font-medium text-[#0A1628] hover:bg-white/50"
           >
-            Upload resources &nearr;
+            Upload resources{' '}
+            <ArrowUpRight aria-hidden="true" className="ml-2 inline-block h-4 w-4 shrink-0" />
           </Link>
         </div>
       </section>

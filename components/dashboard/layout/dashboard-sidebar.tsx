@@ -17,6 +17,7 @@ import {
   ScrollText,
 } from 'lucide-react';
 import Link from 'next/link';
+import { ArrowUpRight } from 'lucide-react';
 import Image from 'next/image';
 import { NavItem } from '@/types';
 import { useRouter } from 'next/router';
@@ -240,7 +241,7 @@ const Sidebar = ({ open, setOpen, role }: DashboardSidebarProps) => {
             href="/"
             className="flex justify-between rounded-xl bg-[#D4E6F2]/40 px-4 py-3 text-sm font-medium text-[#005080]"
           >
-            View public website <span aria-hidden="true">&nearr;</span>
+            View public website <ArrowUpRight aria-hidden="true" className="h-4 w-4 shrink-0" />
           </Link>
         </div>
       </aside>

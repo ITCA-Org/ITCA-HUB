@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { ArrowUpRight } from 'lucide-react';
 import Image from 'next/image';
 import router from 'next/router';
 import { motion } from 'framer-motion';
@@ -74,7 +75,8 @@ const DashboardHeader = ({ sidebarOpen, setSidebarOpen, token }: DashboardHeader
           href="/"
           className="hidden rounded-full border border-[#0A1628]/15 px-4 py-2 text-xs font-medium text-[#005080] hover:bg-[#D4E6F2]/50 sm:inline-flex"
         >
-          View website &nearr;
+          View website{' '}
+          <ArrowUpRight aria-hidden="true" className="ml-2 inline-block h-4 w-4 shrink-0" />
         </Link>
 
         {profile && (
