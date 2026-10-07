@@ -61,7 +61,7 @@ function Table<T>({
   }
 
   return (
-    <div className="rounded-2xl bg-white">
+    <div className="overflow-hidden rounded-2xl border border-[#0A1628]/10 bg-white">
       <div className="px-5 py-4 border-b border-gray-200 flex flex-col sm:flex-row sm:items-center sm:justify-between">
         <h3 className="text-lg font-medium text-gray-900">{title}</h3>
         <div className="flex items-center mt-2 sm:mt-0">
@@ -105,13 +105,13 @@ function Table<T>({
 
       <div className="overflow-x-auto hide-scrollbar">
         <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50">
+          <thead className="bg-[#D4E6F2]/30">
             <tr>
               {columns.map((column) => (
                 <th
                   key={column.key}
                   scope="col"
-                  className={`px-6 py-3 text-left text-sm font-normal uppercase tracking-wider text-gray-500 ${column.className || ''}`}
+                  className={`px-6 py-3 text-left landing-mono text-[10px] font-medium uppercase tracking-wider text-[#005080] ${column.className || ''}`}
                 >
                   {column.header}
                 </th>
@@ -135,8 +135,8 @@ function Table<T>({
                   }}
                   onDoubleClick={onRowDoubleClick ? (e) => onRowDoubleClick(item, e) : undefined}
                   className={`${
-                    isSelected ? 'bg-amber-100' : index % 2 === 1 ? 'bg-gray-100/80' : ''
-                  } hover:bg-amber-100/70 border-none transition-colors ${selectable || onRowClick ? 'cursor-pointer' : ''}`}
+                    isSelected ? 'bg-[#D4E6F2]' : index % 2 === 1 ? 'bg-[#F5F8FA]/60' : ''
+                  } hover:bg-[#D4E6F2]/40 border-b border-[#0A1628]/5 transition-colors ${selectable || onRowClick ? 'cursor-pointer' : ''}`}
                 >
                   {renderRow(item, index)}
                 </tr>
@@ -157,6 +157,7 @@ function Table<T>({
 
             <div className="flex items-center space-x-2">
               <button
+                aria-label="Previous page"
                 onClick={() => setPage(Math.max(0, page - 1))}
                 disabled={page === 0}
                 className="p-2 text-gray-400 hover:bg-gray-100 rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
@@ -193,7 +194,7 @@ function Table<T>({
                         onClick={() => setPage(pageNumber)}
                         className={`px-3 py-1 text-sm font-semibold rounded-md ${
                           page === pageNumber
-                            ? 'bg-blue-600 text-white'
+                            ? 'bg-[#0A1628] text-white'
                             : 'text-gray-700 hover:bg-gray-100'
                         }`}
                       >
@@ -207,6 +208,7 @@ function Table<T>({
               </div>
 
               <button
+                aria-label="Next page"
                 onClick={() => setPage(Math.min(totalPages - 1, page + 1))}
                 disabled={page === totalPages - 1}
                 className="p-2 text-gray-400 hover:bg-gray-100 rounded-md disabled:opacity-50 disabled:cursor-not-allowed"

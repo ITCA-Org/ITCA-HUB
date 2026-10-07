@@ -1,31 +1,29 @@
 import { DashboardStatsCardProps } from '@/types/interfaces/dashboard';
-
 const DashboardStatsCard = ({
   icon,
   title,
   value,
   isLoading = false,
-  valueClassName = 'text-gray-900',
-}: DashboardStatsCardProps) => {
-  return (
-    <div className="rounded-2xl bg-white/70 shadow-2xl shadow-blue-100 hover:shadow-md p-5 z-1 transition-all duration-500">
-      <div className="flex justify-between">
-        <div>
-          <h3 className="text-md font-normal text-gray-500">{title}</h3>
-
-          {isLoading ? (
-            <div className="mt-2 h-8 w-20 animate-pulse rounded bg-gray-200"></div>
-          ) : (
-            <p className={`mt-2 text-2xl font-bold ${valueClassName}`}>{value}</p>
-          )}
-        </div>
-
-        <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-blue-50">
-          {icon}
-        </div>
+  valueClassName = 'text-[#0A1628]',
+}: DashboardStatsCardProps) => (
+  <div className="rounded-2xl border border-[#0A1628]/10 bg-white p-6">
+    <div className="mb-6 flex items-center justify-between gap-3">
+      <h3 className="text-sm font-medium text-[#0A1628]/60">{title}</h3>
+      <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#D4E6F2]/60 text-[#005080] [&_svg]:text-current">
+        {icon}
       </div>
     </div>
-  );
-};
-
+    {isLoading ? (
+      <div
+        role="status"
+        aria-label={`Loading ${title}`}
+        className="h-11 w-24 animate-pulse rounded bg-[#D4E6F2]"
+      />
+    ) : (
+      <p className={`text-4xl font-semibold tracking-tight ${valueClassName}`}>
+        {typeof value === 'number' ? value.toLocaleString() : value}
+      </p>
+    )}
+  </div>
+);
 export default DashboardStatsCard;

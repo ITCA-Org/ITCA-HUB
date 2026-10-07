@@ -1,18 +1,11 @@
 import Head from 'next/head';
 import { useState } from 'react';
-import { motion } from 'framer-motion';
 import Sidebar from './dashboard-sidebar';
 import DashboardHeader from './dashboard-header';
 import { DashboardLayoutProps } from '@/types/interfaces/dashboard';
 
-const DashboardLayout = ({
-  children,
-  title = 'Dashboard',
-  token,
-  role,
-}: DashboardLayoutProps) => {
+const DashboardLayout = ({ children, title = 'Dashboard', token, role }: DashboardLayoutProps) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
-
   return (
     <>
       <Head>
@@ -21,68 +14,30 @@ const DashboardLayout = ({
         <link rel="icon" href="/itca-logo.png" />
         <meta name="robots" content="noindex, nofollow" />
       </Head>
-
-      <div className="flex h-screen overflow-hidden bg-amber-50 relative">
-        {/*==================== Background Elements ====================*/}
-        <div className="absolute inset-0 pointer-events-none z-0">
-          {/*==================== Prominent Geometric Elements - Top Right ====================*/}
-          <div className="absolute top-0 right-0 w-2/3 h-full">
-            <div className="absolute top-10 right-0 w-full h-full">
-              <div className="absolute top-10 right-[-200px] h-[500px] w-[500px] rounded-full border-40 border-amber-500/15 animate-pulse"></div>
-              <div
-                className="absolute top-40 right-[-150px] h-[400px] w-[400px] rounded-full border-30 border-blue-700/15 animate-pulse"
-                style={{ animationDelay: '0.5s' }}
-              ></div>
-              <div
-                className="absolute top-60 right-[-100px] h-[300px] w-[300px] rounded-full border-20 border-amber-500/15 animate-pulse"
-                style={{ animationDelay: '0.8s' }}
-              ></div>
-            </div>
-          </div>
-          {/*==================== End of Prominent Geometric Elements - Top Right ====================*/}
-
-          {/*==================== Angular Elements - Bottom Left ====================*/}
-          <div className="hidden md:block absolute bottom-0 left-15 w-2/5 h-2/5">
-            <div className="absolute bottom-10 left-70 w-[200px] h-[200px] origin-center rotate-45 bg-blue-700/15 rounded-xl animate-pulse"></div>
-            <div
-              className="absolute top-10 left-50 w-40 h-40 origin-center rotate-30 bg-amber-500/15 rounded-xl animate-pulse"
-              style={{ animationDelay: '0.5s' }}
-            ></div>
-            <div
-              className="absolute top-40 left-100 w-[120px] h-[120px] origin-center rotate-20 bg-amber-700/15 rounded-xl animate-pulse"
-              style={{ animationDelay: '0.8s' }}
-            ></div>
-          </div>
-          {/*==================== End of Angular Elements - Bottom Left ====================*/}
-        </div>
-        {/*==================== End of Background Elements ====================*/}
-
-        {/*==================== Sidebar ====================*/}
+      <div className="admin-itca relative flex h-dvh overflow-hidden bg-[#F5F8FA] text-[#0A1628]">
+        <a
+          href="#dashboard-content"
+          className="sr-only z-[60] rounded-full bg-[#0A1628] px-5 py-3 text-white focus:not-sr-only focus:absolute focus:left-4 focus:top-4"
+        >
+          Skip to content
+        </a>
         <Sidebar open={sidebarOpen} setOpen={setSidebarOpen} role={role} />
-        {/*==================== End of Sidebar ====================*/}
-
-        {/*==================== Main Content ====================*/}
-        <div className="flex flex-1 flex-col overflow-hidden">
+        <div className="flex min-w-0 flex-1 flex-col overflow-hidden">
           <DashboardHeader
             token={token}
             sidebarOpen={sidebarOpen}
             setSidebarOpen={setSidebarOpen}
           />
-
-          <main className="flex-1 overflow-y-auto w-full overflow-x-hidden px-4 py-12 min-[968px]:px-9 min-[968px]:pr-7 min-[968px]:py-9">
-            <motion.div
-              transition={{ duration: 0.2 }}
-              animate={{ opacity: 1, y: 0 }}
-              initial={{ opacity: 0, y: 10 }}
-            >
-              {children}
-            </motion.div>
+          <main
+            id="dashboard-content"
+            tabIndex={-1}
+            className="flex-1 overflow-y-auto px-4 py-6 sm:px-6 min-[968px]:p-8 xl:p-10"
+          >
+            <div className="mx-auto w-full max-w-[1500px]">{children}</div>
           </main>
         </div>
-        {/*==================== End of Main Content ====================*/}
       </div>
     </>
   );
 };
-
 export default DashboardLayout;

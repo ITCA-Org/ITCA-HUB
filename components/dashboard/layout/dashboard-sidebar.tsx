@@ -20,7 +20,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { NavItem } from '@/types';
 import { useRouter } from 'next/router';
-import { motion, AnimatePresence } from 'framer-motion';
+import { useEffect } from 'react';
 import { DashboardSidebarProps } from '@/types/interfaces/dashboard';
 
 const adminNavItems: NavItem[] = [
@@ -127,98 +127,124 @@ const Sidebar = ({ open, setOpen, role }: DashboardSidebarProps) => {
     return router.pathname === href || router.pathname.startsWith(`${href}/`);
   };
 
+  useEffect(() => {
+    const close = () => setOpen(false);
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') close();
+    };
+    if (open) document.addEventListener('keydown', onKey);
+    router.events.on('routeChangeStart', close);
+    return () => {
+      document.removeEventListener('keydown', onKey);
+      router.events.off('routeChangeStart', close);
+    };
+  }, [open, setOpen, router.events]);
+  const groups =
+    role === 'faculty_officer'
+      ? [{ label: 'Finance', items: navItems }]
+      : [
+          {
+            label: 'Workspace',
+            items: navItems.filter((i) =>
+              ['Overview', 'Users', 'Newsletter', 'Feedback'].includes(i.name)
+            ),
+          },
+          {
+            label: 'Content & community',
+            items: navItems.filter((i) =>
+              ['Events', 'Hackathon', 'Resources', 'Past Papers'].includes(i.name)
+            ),
+          },
+          {
+            label: 'Payments & check-in',
+            items: navItems.filter((i) =>
+              [
+                'Semester Dues',
+                'Dues Scanner',
+                'Ticket Scanner',
+                'Shop Products',
+                'Shop Orders',
+                'Shop Scanner',
+              ].includes(i.name)
+            ),
+          },
+          { label: 'Account', items: navItems.filter((i) => ['Profile', 'Help'].includes(i.name)) },
+        ];
   return (
     <>
-      <div
-        className={`fixed inset-y-0 z-50 w-60 transform overflow-hidden max-[968px]:bg-white lg:bg-white transition-transform ease-in-out duration-700 
-                    ${open ? 'translate-x-0' : '-translate-x-full'} 
-                    min-[968px]:translate-x-0 min-[968px]:static min-[968px]:z-0`}
+      {open && (
+        <button
+          aria-label="Close navigation"
+          onClick={() => setOpen(false)}
+          className="fixed inset-0 z-40 bg-[#0A1628]/45 backdrop-blur-sm min-[968px]:hidden"
+        />
+      )}
+      <aside
+        id="admin-navigation"
+        aria-label="Dashboard navigation"
+        className={`fixed inset-y-0 left-0 z-50 flex w-[272px] shrink-0 flex-col border-r border-[#0A1628]/10 bg-white transition-transform duration-200 min-[968px]:static min-[968px]:translate-x-0 ${open ? 'translate-x-0' : '-translate-x-full max-[967px]:invisible'}`}
       >
-        <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute top-5 right-5">
-            <div className="w-8 h-8 rounded-sm bg-blue-500/25"></div>
-            <div className="absolute top-4 right-4 w-6 h-6 rounded-sm bg-amber-500/25"></div>
-            <div className="absolute top-8 right-7 w-4 h-4 rounded-xs bg-blue-500/20"></div>
-          </div>
-        </div>
-
-        <div className="relative h-full z-10 flex flex-col">
-          <div className="justify-between items-center p-4 max-[967px]:flex hidden">
-            <Link href="/" className="flex items-center">
-              <Image
-                priority
-                width={120}
-                height={40}
-                alt="ITCA Logo"
-                className="h-auto"
-                src="/itca-logo.png"
-              />
-            </Link>
-            <button
-              title="button"
-              onClick={() => setOpen(false)}
-              className="p-2 rounded-md text-gray-500 hover:bg-amber-50 hover:text-amber-500 transition-colors"
-            >
-              <X className="h-5 w-5" />
-            </button>
-          </div>
-
-          <div className="hidden min-[968px]:flex items-center p-4 border-b border-gray-100">
-            <Link href={homeHref} className="flex items-center">
-              <Image
-                priority
-                width={150}
-                height={150}
-                alt="ITCA Logo"
-                src="/itca-logo.png"
-                className="mr-2 h-auto"
-              />
-            </Link>
-          </div>
-
-          <div className="px-2 py-4 flex-1 overflow-y-auto">
-            <div className="space-y-3">
-              {navItems.map((item) => (
-                <Link
-                  key={item.name}
-                  href={item.href}
-                  className={`flex items-center px-4 py-3 text-lg font-medium  ${
-                    isActive(item.href)
-                      ? 'bg-linear-to-r from-amber-100/70 to-blue-100/70 text-blue-700 border-none rounded-lg'
-                      : 'text-gray-700 hover:bg-amber-50 hover:text-blue-700'
-                  }`}
-                >
-                  <span
-                    className={`mr-3 ${isActive(item.href) ? 'text-amber-500' : 'text-gray-500'}`}
-                  >
-                    {item.icon}
-                  </span>
-                  <span className={`${isActive(item.href) ? 'font-bold' : 'font-normal'}`}>
-                    {item.name}
-                  </span>
-                  {isActive(item.href) && (
-                    <span className="ml-auto w-2 h-2 rounded-full bg-amber-500"></span>
-                  )}
-                </Link>
-              ))}
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <AnimatePresence>
-        {open && (
-          <motion.div
-            exit={{ opacity: 0 }}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
+        <div className="flex h-24 shrink-0 items-center justify-between px-6">
+          <Link href={homeHref} aria-label="ITCA dashboard home">
+            <Image
+              priority
+              width={156}
+              height={50}
+              alt="ITCA"
+              src="/itca-logo.png"
+              className="h-auto w-[156px]"
+            />
+          </Link>
+          <button
+            aria-label="Close navigation"
             onClick={() => setOpen(false)}
-            className="fixed inset-0 z-40 bg-gray-600/30 backdrop-blur-sm bg-opacity-75 max-[967px]:block hidden"
-          />
-        )}
-      </AnimatePresence>
+            className="rounded-full p-2 hover:bg-[#D4E6F2] min-[968px]:hidden"
+          >
+            <X className="h-5 w-5" />
+          </button>
+        </div>
+        <div className="landing-mono mx-6 mb-4 flex items-center gap-2 border-b border-[#0A1628]/10 pb-5 text-[10px] uppercase tracking-[0.16em]">
+          <span className="h-1.5 w-1.5 rounded-full bg-[#FF6A00]" />
+          {role === 'faculty_officer' ? 'Faculty workspace' : 'Admin workspace'}
+        </div>
+        <nav className="min-h-0 flex-1 space-y-6 overflow-y-auto px-4 pb-6">
+          {groups.map((group) => (
+            <div key={group.label}>
+              <p className="landing-mono mb-2 px-3 text-[10px] uppercase tracking-[0.12em] text-[#005080]">
+                {group.label}
+              </p>
+              <div className="space-y-1">
+                {group.items.map((item) => (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    onClick={() => setOpen(false)}
+                    aria-current={isActive(item.href) ? 'page' : undefined}
+                    className={`flex min-h-11 items-center gap-3 rounded-xl px-3 py-2.5 text-sm transition-colors ${isActive(item.href) ? 'bg-[#0A1628] font-semibold text-white' : 'text-[#0A1628]/70 hover:bg-[#D4E6F2]/50 hover:text-[#005080]'}`}
+                  >
+                    <span className={isActive(item.href) ? 'text-[#FF6A00]' : 'text-[#005080]'}>
+                      {item.icon}
+                    </span>
+                    {item.name}
+                    {isActive(item.href) && (
+                      <span className="ml-auto h-1.5 w-1.5 rounded-full bg-[#FF6A00]" />
+                    )}
+                  </Link>
+                ))}
+              </div>
+            </div>
+          ))}
+        </nav>
+        <div className="shrink-0 border-t border-[#0A1628]/10 p-4">
+          <Link
+            href="/"
+            className="flex justify-between rounded-xl bg-[#D4E6F2]/40 px-4 py-3 text-sm font-medium text-[#005080]"
+          >
+            View public website <span aria-hidden="true">&nearr;</span>
+          </Link>
+        </div>
+      </aside>
     </>
   );
 };
-
 export default Sidebar;

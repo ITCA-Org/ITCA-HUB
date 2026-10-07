@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { useState, FC } from 'react';
 import { NextApiRequest } from 'next';
 import { UserAuth } from '@/types';
@@ -37,30 +38,30 @@ const AdminDashboard: FC<AdminDashboardProps> = ({ userData }) => {
       <>
         <td className="whitespace-nowrap px-8 py-4">
           <div className="flex items-center">
-            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-100 text-blue-700 shadow-lg shadow-blue-200">
+            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#D4E6F2] text-[#005080]">
               <User className="h-5 w-5" />
             </div>
             <div className="ml-4">
-              <div className="text-base font-normal text-gray-900">{userName}</div>
-              <div className="text-base text-gray-500">{user.schoolEmail}</div>
+              <div className="text-sm font-normal text-gray-900">{userName}</div>
+              <div className="text-sm text-gray-500">{user.schoolEmail}</div>
             </div>
           </div>
         </td>
-        <td className="whitespace-nowrap px-8 py-4 text-base text-gray-500">
+        <td className="whitespace-nowrap px-8 py-4 text-sm text-gray-500">
           {user.role.toLowerCase() === 'user' ? 'Student' : 'Admin'}
         </td>
         <td className="whitespace-nowrap px-8 py-4">
           {user.isEmailVerified ? (
-            <span className="inline-flex px-2 py-2 text-base font-medium rounded-md bg-green-100 text-green-600">
+            <span className="inline-flex px-2 py-2 text-sm font-medium rounded-md bg-green-100 text-green-600">
               Verified
             </span>
           ) : (
-            <span className="inline-flex px-2 py-2 text-base font-medium rounded-md bg-red-100/70 text-red-600">
+            <span className="inline-flex px-2 py-2 text-sm font-medium rounded-md bg-red-100/70 text-red-600">
               Unverified
             </span>
           )}
         </td>
-        <td className="whitespace-nowrap px-8 py-4 text-base text-gray-500">
+        <td className="whitespace-nowrap px-8 py-4 text-sm text-gray-500">
           {new Date(user.joinedDate || user.createdAt).toLocaleDateString()}
         </td>
       </>
@@ -71,13 +72,13 @@ const AdminDashboard: FC<AdminDashboardProps> = ({ userData }) => {
     <DashboardLayout title="Admin Dashboard" token={userData.token}>
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
         <DashboardPageHeader
-          title="Dashboard"
+          title="Workspace"
           subtitle="Overview"
-          description="Welcome to the ITCA Hub admin dashboard"
+          description="A little oversight. A lot of possibility. Here is what is happening across your community."
         />
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 md:gap-6 mb-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         <DashboardStatsCard
           title="Total Users"
           isLoading={isLoading}
@@ -104,9 +105,38 @@ const AdminDashboard: FC<AdminDashboardProps> = ({ userData }) => {
         />
       </div>
 
-      <div className="grid grid-cols-1 gap-6 pt-8">
+      <section
+        aria-label="Quick actions"
+        className="mb-8 grid gap-6 overflow-hidden rounded-3xl bg-[#D4E6F2] p-6 sm:p-8 lg:grid-cols-[1fr_auto] lg:items-center"
+      >
+        <div>
+          <p className="landing-mono mb-3 text-[10px] uppercase tracking-[0.16em] text-[#005080]">
+            Keep the community moving
+          </p>
+          <h2 className="text-2xl font-semibold tracking-tight text-[#0A1628]">
+            Make room for <span className="landing-serif font-normal italic">what is next.</span>
+          </h2>
+          <p className="mt-2 max-w-lg text-sm leading-relaxed text-[#0A1628]/65">
+            Plan the next event, share learning materials, or check in on your members.
+          </p>
+        </div>
+        <div className="flex flex-wrap gap-3">
+          <Link
+            href="/admin/events"
+            className="inline-flex min-h-11 items-center rounded-full bg-[#0A1628] px-5 py-3 text-sm font-semibold text-[#FF6A00] hover:brightness-125"
+          >
+            Manage events &nearr;
+          </Link>
+          <Link
+            href="/admin/resources/upload"
+            className="inline-flex min-h-11 items-center rounded-full border border-[#0A1628]/20 px-5 py-3 text-sm font-medium text-[#0A1628] hover:bg-white/50"
+          >
+            Upload resources &nearr;
+          </Link>
+        </div>
+      </section>
+      <div className="grid grid-cols-1 gap-6">
         <div className="lg:col-span-2">
-          <h2 className="text-lg md:text-xl font-semibold mb-4">Recent Registrations</h2>
           <Table<UserData>
             page={page}
             limit={limit}

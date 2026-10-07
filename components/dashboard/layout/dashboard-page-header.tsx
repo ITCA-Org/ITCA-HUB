@@ -1,60 +1,38 @@
 import { DashboardPageHeaderProps } from '@/types/interfaces/dashboard';
-
 const DashboardPageHeader = ({
   title,
-  actions,
   subtitle,
+  actions,
   description,
   leftActions,
-  showPulse = true,
-  titleColors = {
-    primary: 'text-blue-700',
-    secondary: 'text-amber-500',
-  },
-}: DashboardPageHeaderProps) => {
-  const renderTitle = () => {
-    if (subtitle) {
-      return (
-        <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2 flex items-center">
-          <span className={`${titleColors.primary} mr-2`}>{title}</span>
-          <span className={`${titleColors.secondary}`}>{subtitle}</span>
-          {showPulse && (
-            <span className="ml-3 relative">
-              <span className="absolute -top-1 -right-1 flex h-3 w-3">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-3 w-3 bg-amber-500"></span>
-              </span>
-            </span>
+}: DashboardPageHeaderProps) => (
+  <div className="mb-8 flex w-full flex-col justify-between gap-5 border-b border-[#0A1628]/10 pb-7 sm:flex-row sm:items-end">
+    <div className="flex min-w-0 items-center gap-4">
+      {leftActions && (
+        <div className="shrink-0 rounded-full border border-[#0A1628]/10 bg-white p-3">
+          {leftActions}
+        </div>
+      )}
+      <div>
+        <p className="landing-mono mb-3 flex items-center gap-2 text-[10px] uppercase tracking-[0.16em] text-[#005080]">
+          <span className="h-1.5 w-1.5 rounded-full bg-[#FF6A00]" />
+          ITCA / Administration
+        </p>
+        <h1 className="text-3xl font-semibold leading-tight tracking-tight text-[#0A1628] lg:text-4xl">
+          {title}
+          {subtitle && (
+            <>
+              {' '}
+              <span className="landing-serif font-normal italic text-[#005080]">{subtitle}</span>
+            </>
           )}
         </h1>
-      );
-    }
-  };
-
-  return (
-    <div className="mb-8 w-full">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between w-full gap-4">
-        {/*==================== Left Actions ====================*/}
-        {leftActions && (
-          <div className="flex-shrink-0 flex items-start bg-white rounded-full p-3">
-            {leftActions}
-          </div>
+        {description && (
+          <p className="mt-3 max-w-2xl text-sm leading-relaxed text-[#0A1628]/60">{description}</p>
         )}
-        {/*==================== End of Left Actions ====================*/}
-
-        {/*==================== Title and Description ====================*/}
-        <div className="flex-1">
-          {renderTitle()}
-          {description && <p className="text-gray-600 sm:text-md md:text-lg">{description}</p>}
-        </div>
-        {/*==================== End of Title and Description ====================*/}
-
-        {/*==================== Right Actions ====================*/}
-        {actions && <div className="flex-shrink-0 mt-4 sm:mt-0 flex space-x-3">{actions}</div>}
-        {/*==================== End of Right Actions ====================*/}
       </div>
     </div>
-  );
-};
-
+    {actions && <div className="flex shrink-0 flex-wrap items-center gap-3">{actions}</div>}
+  </div>
+);
 export default DashboardPageHeader;

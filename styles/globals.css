@@ -466,3 +466,58 @@ input[type='password']::-webkit-credentials-auto-fill-button {
   height: 0;
   pointer-events: none;
 }
+
+/* Shared public-app typography and palette for the admin workspace. */
+.admin-itca {
+  font-family: 'Space Grotesk', system-ui, sans-serif;
+  --primary: #0a1628;
+  --primary-foreground: #ffffff;
+  --ring: #005080;
+  --border: #dde5ea;
+}
+.admin-itca :is(button, input, select, textarea) {
+  font-family: inherit;
+}
+.admin-itca :is(h1, h2, h3) {
+  letter-spacing: -0.03em;
+}
+.admin-itca :is(a, button, input, select, textarea):focus-visible {
+  outline: 2px solid #005080;
+  outline-offset: 3px;
+}
+.admin-itca :is(input, select, textarea) {
+  accent-color: #005080;
+}
+@media (max-width: 967px) {
+  .admin-itca :is(input:not([type='checkbox']):not([type='radio']), select, textarea) {
+    font-size: 16px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .admin-itca *,
+  .admin-itca *::before,
+  .admin-itca *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Keep existing management forms consistent with the shared brand palette. */
+.admin-itca :is(.text-blue-500, .text-blue-600, .text-blue-700, .text-blue-800) {
+  color: #005080;
+}
+.admin-itca :is(.text-amber-500, .text-amber-600) {
+  color: #c45100;
+}
+.admin-itca :is(.bg-blue-50, .bg-blue-100) {
+  background-color: #d4e6f2;
+}
+.admin-itca .bg-amber-50 {
+  background-color: #fff4ec;
+}
+.admin-itca :is(.bg-blue-600, .bg-blue-700) {
+  background-color: #005080;
+}
+.admin-itca :is(.hover\:bg-blue-700, .hover\:bg-blue-800):hover {
+  background-color: #0a1628;
+}
