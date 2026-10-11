@@ -247,7 +247,7 @@ export default function HackathonAdmin({ userData }: { userData: UserAuth }) {
       setNotice({ text: res.data.rejectionEmail === 'queued'
         ? 'Review saved. Rejection email with your reason queued for the team leader.'
         : res.data.rejectionEmail === 'already_queued'
-          ? 'Review saved. A rejection email was already queued; no additional email was sent.'
+          ? 'Review saved. An email for this rejection reason was already queued.'
           : res.data.rejectionEmail === 'queue_failed'
             ? 'Review saved, but the rejection email could not be queued. Save the rejected review again to retry.'
             : res.data.acceptanceEmail === 'queued'
@@ -905,7 +905,7 @@ export default function HackathonAdmin({ userData }: { userData: UserAuth }) {
                         placeholder="Explain why the team was not selected."
                       />
                       <span className="mt-1 block text-xs font-normal text-slate-500">
-                        The first rejection queues one email. Later edits do not send another email.
+                        Changing the rejection reason queues a new email to the team leader.
                       </span>
                     </label>
                   )}
