@@ -909,11 +909,6 @@ export default function HackathonAdmin({ userData }: { userData: UserAuth }) {
                       </span>
                     </label>
                   )}
-                  <p className="text-xs text-slate-500">
-                    Notes stay private. Accepting a team queues an email to its leader with
-                    Mamadou Bah’s WhatsApp contact: +220 3281914. Rejecting a team queues an
-                    email with the rejection reason. Pending and waitlisted decisions do not send emails.
-                  </p>
                   {selected.reviewedAt && (
                     <p className="text-xs text-slate-500">
                       Last reviewed {dateLabel(selected.reviewedAt)}
