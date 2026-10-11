@@ -6,10 +6,7 @@ import { ArrowLeft, ArrowRight, Check, CheckCircle2 } from 'lucide-react';
 import { darkCtaClass } from '@/components/landing-page/brand';
 import { BASE_URL } from '@/utils/url';
 
-export type HackathonSettings = {
-  applicationsOpen: boolean;
-  problems: { title: string; description: string }[];
-};
+import type { HackathonSettings } from '@/types/interfaces/hackathon';
 const inputClass =
   'mt-2 w-full rounded-xl border border-[#0A1628]/15 bg-white px-4 py-3.5 text-base text-[#0A1628] transition placeholder:text-[#0A1628]/35 focus:border-[#005080] focus:outline-none focus:ring-2 focus:ring-[#005080]/15 disabled:opacity-60';
 
