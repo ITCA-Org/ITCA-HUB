@@ -102,13 +102,14 @@ export default function HackathonAdmin({ userData }: { userData: UserAuth }) {
   const [selected, setSelected] = useState<Application | null>(null);
   const [reviewStatus, setReviewStatus] = useState<ApplicationStatus>('pending');
   const [notes, setNotes] = useState('');
+  const [rejectionReason, setRejectionReason] = useState('');
   const [reviewError, setReviewError] = useState('');
   const dialog = useRef<HTMLDivElement>(null);
   const headers = useMemo(() => ({ Authorization: `Bearer ${userData.token}` }), [userData.token]);
   const dirty = !!settings && JSON.stringify(settings) !== JSON.stringify(savedSettings);
   const reviewDirty =
     !!selected &&
-    (reviewStatus !== (selected.status ?? 'pending') || notes !== (selected.adminNotes ?? ''));
+    (reviewStatus !== (selected.status ?? 'pending') || notes !== (selected.adminNotes ?? '') || rejectionReason !== (selected.rejectionReason ?? ''));
   const load = useCallback(async () => {
     setLoading(true);
     setLoadError('');
@@ -225,6 +226,7 @@ export default function HackathonAdmin({ userData }: { userData: UserAuth }) {
     setSelected(team);
     setReviewStatus(team.status ?? 'pending');
     setNotes(team.adminNotes ?? '');
+    setRejectionReason(team.rejectionReason ?? '');
     setReviewError('');
   }
   async function saveReview(event: FormEvent) {
@@ -235,14 +237,26 @@ export default function HackathonAdmin({ userData }: { userData: UserAuth }) {
     try {
       const res = await axios.patch(
         `${BASE_URL}/hackathon/applications/${selected._id}`,
-        { status: reviewStatus, adminNotes: notes },
+        { status: reviewStatus, adminNotes: notes, rejectionReason },
         { headers }
       );
       setApplications((previous) =>
         previous.map((team) => (team._id === selected._id ? res.data.data : team))
       );
       setSelected(null);
-      setNotice({ text: 'Application review saved. No email has been sent to the team.' });
+      setNotice({ text: res.data.rejectionEmail === 'queued'
+        ? 'Review saved. Rejection email with your reason queued for the team leader.'
+        : res.data.rejectionEmail === 'already_queued'
+          ? 'Review saved. A rejection email was already queued; no additional email was sent.'
+          : res.data.rejectionEmail === 'queue_failed'
+            ? 'Review saved, but the rejection email could not be queued. Save the rejected review again to retry.'
+            : res.data.acceptanceEmail === 'queued'
+        ? 'Review saved. Acceptance email queued for the team leader.'
+        : res.data.acceptanceEmail === 'already_queued'
+          ? 'Review saved. An acceptance email was already queued for this team.'
+          : res.data.acceptanceEmail === 'queue_failed'
+            ? 'Review saved, but the acceptance email could not be queued. Save the accepted review again to retry.'
+            : 'Application review saved.' });
     } catch (error) {
       setReviewError(messageFor(error));
     } finally {
@@ -878,8 +892,27 @@ export default function HackathonAdmin({ userData }: { userData: UserAuth }) {
                       placeholder="Record review context, support arrangements, or follow-up actions."
                     />
                   </label>
+                  {reviewStatus === 'rejected' && (
+                    <label className="block text-sm font-semibold text-[#002d45]">
+                      Rejection reason (emailed to the team leader)
+                      <textarea
+                        value={rejectionReason}
+                        onChange={(event) => setRejectionReason(event.target.value)}
+                        required
+                        maxLength={2000}
+                        rows={4}
+                        className={`${field} mt-2`}
+                        placeholder="Explain why the team was not selected."
+                      />
+                      <span className="mt-1 block text-xs font-normal text-slate-500">
+                        The first rejection queues one email. Later edits do not send another email.
+                      </span>
+                    </label>
+                  )}
                   <p className="text-xs text-slate-500">
-                    Notes and decisions are private. Saving does not send an email.
+                    Notes stay private. Accepting a team queues an email to its leader with
+                    Mamadou Bah’s WhatsApp contact: +220 3281914. Rejecting a team queues an
+                    email with the rejection reason. Pending and waitlisted decisions do not send emails.
                   </p>
                   {selected.reviewedAt && (
                     <p className="text-xs text-slate-500">

@@ -22,6 +22,7 @@ export type HackathonApplication = {
   members: { name: string; role: string; matricNumber?: string }[];
   status?: ApplicationStatus;
   adminNotes?: string;
+  rejectionReason?: string;
   createdAt?: string;
   reviewedAt?: string;
 };
