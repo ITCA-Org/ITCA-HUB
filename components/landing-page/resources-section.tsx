@@ -13,7 +13,7 @@ import {
   Video,
 } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { Reveal, easeOut, fadeUp, stagger } from './reveal';
+import { easeOut, fadeUp, stagger } from './reveal';
 
 const resourceCategories = [
   {
@@ -68,19 +68,6 @@ const ResourcesSection = () => {
 
   return (
     <section id="resources" className="bg-white pb-24 pt-8">
-      <div className="mx-auto mb-8 max-w-[1400px] px-4 sm:px-8 lg:px-12">
-        <Reveal className="rounded-[2rem] bg-[#0A1628] p-8 text-white sm:p-10">
-          <p className="landing-mono mb-4 text-sm text-[#FF6A00]">For School of ICT students</p>
-          <h2 className="max-w-2xl text-4xl font-bold sm:text-5xl">
-            Shared resources for the community
-          </h2>
-          <p className="mt-4 max-w-xl text-white/70">
-            Notes, tools, past papers, and practice materials to support your semester—put together
-            for ITCA members across the School of ICT.
-          </p>
-        </Reveal>
-      </div>
-
       <motion.div
         className="grid w-full grid-cols-1 sm:grid-cols-2 lg:grid-cols-3"
         variants={reduce ? undefined : stagger}
