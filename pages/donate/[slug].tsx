@@ -1,4 +1,4 @@
-import { FormEvent, useState } from 'react';
+import { FormEvent, useEffect, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
@@ -33,6 +33,16 @@ const DonateCampaignPage = () => {
   const [message, setMessage] = useState('');
   const [isAnonymous, setIsAnonymous] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // After redirecting to Modem Pay, pressing Back can restore this page from the
+  // browser's back/forward cache with the button still in its loading state.
+  useEffect(() => {
+    const resetOnReturn = (e: PageTransitionEvent) => {
+      if (e.persisted) setIsSubmitting(false);
+    };
+    window.addEventListener('pageshow', resetOnReturn);
+    return () => window.removeEventListener('pageshow', resetOnReturn);
+  }, []);
   const [showFullDescription, setShowFullDescription] = useState(false);
 
   const handleSubmit = async (e: FormEvent) => {
