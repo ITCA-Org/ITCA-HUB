@@ -15,6 +15,7 @@ import {
   ShoppingBag,
   QrCode,
   ScrollText,
+  HeartHandshake,
 } from 'lucide-react';
 import Link from 'next/link';
 import { ArrowUpRight } from 'lucide-react';
@@ -80,6 +81,11 @@ const adminNavItems: NavItem[] = [
     name: 'Shop Scanner',
     href: '/admin/shop/scanner',
     icon: <QrCode className="h-5 w-5" />,
+  },
+  {
+    name: 'Donations',
+    href: '/admin/donations',
+    icon: <HeartHandshake className="h-5 w-5" />,
   },
   {
     name: 'Past Papers',
@@ -166,6 +172,7 @@ const Sidebar = ({ open, setOpen, role }: DashboardSidebarProps) => {
                 'Shop Products',
                 'Shop Orders',
                 'Shop Scanner',
+                'Donations',
               ].includes(i.name)
             ),
           },
