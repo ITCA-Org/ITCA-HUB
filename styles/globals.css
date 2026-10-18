@@ -521,3 +521,41 @@ input[type='password']::-webkit-credentials-auto-fill-button {
 .admin-itca :is(.hover\:bg-blue-700, .hover\:bg-blue-800):hover {
   background-color: #0a1628;
 }
+
+/* Past paper preview: question structure added by normalizePastPaperHtml */
+.past-paper-content p {
+  line-height: 1.75;
+}
+
+.past-paper-content .pp-question {
+  margin: 2rem 0 0.75rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid rgba(10, 22, 40, 0.1);
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: #005080;
+  scroll-margin-top: 12rem;
+}
+
+.past-paper-content .pp-question:first-child {
+  margin-top: 0;
+  padding-top: 0;
+  border-top: 0;
+}
+
+.past-paper-content .pp-part {
+  margin-right: 0.2rem;
+  font-weight: 700;
+  color: #0a1628;
+}
+
+.past-paper-content .pp-marks {
+  white-space: nowrap;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: #b45309;
+}
+
+.past-paper-content code {
+  overflow-wrap: anywhere;
+}

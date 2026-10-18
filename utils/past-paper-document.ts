@@ -50,6 +50,24 @@ const DOCUMENT_STYLES = `
   }
   .details div { margin: 0.2rem 0; }
   .body h2 { margin: 0.9rem 0 0.45rem; font-size: 14pt; }
+  .body .pp-question {
+    margin: 1.4rem 0 0.5rem;
+    padding-top: 0.9rem;
+    border-top: 1px solid rgba(10, 22, 40, 0.12);
+    font-family: ui-sans-serif, system-ui, sans-serif;
+    font-size: 13pt;
+    font-weight: 700;
+    color: #005080;
+  }
+  .body .pp-question:first-child { margin-top: 0; padding-top: 0; border-top: 0; }
+  .body .pp-part { font-weight: 700; color: #0a1628; margin-right: 0.15rem; }
+  .body .pp-marks {
+    white-space: nowrap;
+    font-family: ui-sans-serif, system-ui, sans-serif;
+    font-size: 9pt;
+    font-weight: 600;
+    color: #b45309;
+  }
   .body p { margin: 0.45rem 0; }
   .body ul { margin: 0.45rem 0; padding-left: 1.25rem; list-style: disc; }
   .body ol { margin: 0.45rem 0; padding-left: 1.25rem; list-style: decimal; }
@@ -147,16 +165,46 @@ export function normalizePastPaperHtml(html: string) {
         .replace(/<br\s*\/?>/gi, '\n')
         .replace(/&nbsp;/gi, ' ');
       const looksLikeBlock =
-        /\n/.test(text) ||
-        /;\s*$/.test(text.trim()) ||
-        text.length > 80 ||
-        /[=(){}[\]]/.test(text);
+        /\n/.test(text) || /;\s*$/.test(text.trim()) || text.length > 80 || /[=(){}[\]]/.test(text);
       if (!looksLikeBlock) {
         return `<p><code>${inner}</code></p>`;
       }
       return `<pre><code>${text.replace(/^\n+|\n+$/g, '')}</code></pre>`;
     }
   );
+
+  return structureQuestions(out);
+}
+
+/**
+ * Papers are usually pasted as one paragraph per question with <br> line breaks
+ * ("1. <br>(a) … <br>(b) …"). Turn the bare question numbers into headings,
+ * label sub-parts and marks, and drop the empty paragraphs left behind.
+ */
+function structureQuestions(html: string) {
+  let out = html;
+
+  // "1." / "Question 1" on its own line → heading, splitting the surrounding paragraph
+  out = out.replace(
+    /(<p(?:\s[^>]*)?>|<br\s*\/?>)\s*(?:<strong>)?\s*(?:Question\s+(\d{1,2})\s*[.):]?|(\d{1,2})\s*[.)])\s*(?:<\/strong>)?\s*(?=<br\s*\/?>|<\/p>)/gi,
+    (_m, before: string, named?: string, bare?: string) =>
+      `${before.toLowerCase().startsWith('<p') ? '' : '</p>'}<h3 class="pp-question">Question ${named || bare}</h3><p>`
+  );
+
+  // Sub-parts at the start of a line: "(a) …" or "a. …"
+  out = out.replace(
+    /(<p(?:\s[^>]*)?>|<br\s*\/?>)\s*(\([a-z]\)|\([ivx]+\)|[a-h]\.)(?=\s)/gi,
+    '$1<strong class="pp-part">$2</strong>'
+  );
+
+  // "[4 marks]" / "(5 marks)"
+  out = out.replace(/[[(]\s*(\d+)\s*marks?\s*[\])]/gi, '<span class="pp-marks">[$1 marks]</span>');
+
+  // Clean up line breaks and empty paragraphs left by the splits
+  out = out
+    .replace(/<p>(\s|<br\s*\/?>)+/gi, '<p>')
+    .replace(/(\s|<br\s*\/?>)+<\/p>/gi, '</p>')
+    .replace(/<p(?:\s[^>]*)?>\s*<\/p>/gi, '');
 
   return out;
 }
@@ -171,10 +219,7 @@ function sanitizeFilename(name: string) {
   );
 }
 
-export function buildPastPaperDocumentHtml(
-  paper: PastPaperDocumentMeta,
-  departmentLabel: string
-) {
+export function buildPastPaperDocumentHtml(paper: PastPaperDocumentMeta, departmentLabel: string) {
   const title = escapeHtml(paper.title);
   const body =
     normalizePastPaperHtml(paper.displayText?.trim() || '') ||
@@ -230,10 +275,7 @@ export async function downloadPastPaperDocument(
   const style = document.createElement('style');
   style.textContent = DOCUMENT_STYLES;
   host.appendChild(style);
-  host.insertAdjacentHTML(
-    'beforeend',
-    buildPastPaperDocumentHtml(paper, departmentLabel)
-  );
+  host.insertAdjacentHTML('beforeend', buildPastPaperDocumentHtml(paper, departmentLabel));
   document.body.appendChild(host);
 
   const sheet = host.querySelector('.sheet') as HTMLElement | null;
