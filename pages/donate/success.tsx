@@ -132,12 +132,13 @@ const DonateSuccessPage = () => {
               <div className="mb-4 flex items-center gap-3 text-green-700">
                 <CheckCircle className="h-8 w-8" />
                 <h1 className="text-3xl font-bold text-[#0A1628]">
-                  {donation.isAnonymous ? 'Thank you!' : `Thank you, ${donation.donorName.split(' ')[0]}!`}
+                  {donation.isAnonymous
+                    ? 'Thank you!'
+                    : `Thank you, ${donation.donorName.split(' ')[0]}!`}
                 </h1>
               </div>
               <p className="text-lg text-[#0A1628]/70">
-                Your donation to <strong>{donation.campaignTitle}</strong> was received. A receipt
-                has been emailed to {donation.email}.
+                Your donation to <strong>{donation.campaignTitle}</strong> was received.
               </p>
 
               <div className="mt-8 rounded-[1.75rem] bg-[#D4E6F2] p-8">
