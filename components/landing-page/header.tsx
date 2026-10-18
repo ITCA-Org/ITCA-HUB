@@ -10,6 +10,7 @@ const navLinks = [
   { name: 'Events', href: '/events', match: '/events' },
   { name: 'Resources', href: '/resources', match: '/resources' },
   { name: 'Shop', href: '/shop', match: '/shop' },
+  { name: 'Donate', href: '/donate', match: '/donate' },
   { name: 'Fees', href: '/fees', match: '/fees' },
 ];
 
