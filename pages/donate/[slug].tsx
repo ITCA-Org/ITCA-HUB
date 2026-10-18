@@ -17,6 +17,9 @@ import { getErrorMessage } from '@/utils/error';
 
 const MIN_DONATION = 10;
 
+// Roughly more than four lines of text at the description's width.
+const isLongDescription = (text: string) => text.length > 280 || text.split('\n').length > 4;
+
 const inputClass =
   'w-full rounded-xl border border-[#0A1628]/15 bg-white px-4 py-3 text-base text-[#0A1628] focus:border-[#005080] focus:outline-none focus:ring-2 focus:ring-[#D4E6F2]';
 
@@ -30,6 +33,7 @@ const DonateCampaignPage = () => {
   const [message, setMessage] = useState('');
   const [isAnonymous, setIsAnonymous] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showFullDescription, setShowFullDescription] = useState(false);
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -120,8 +124,24 @@ const DonateCampaignPage = () => {
                 </div>
 
                 {campaign.description && (
-                  <div className="mt-8 whitespace-pre-line text-base leading-relaxed text-[#0A1628]/80">
-                    {campaign.description}
+                  <div className="mt-8">
+                    <p
+                      className={`whitespace-pre-line break-words text-base leading-relaxed text-[#0A1628]/80 ${
+                        showFullDescription ? '' : 'line-clamp-4'
+                      }`}
+                    >
+                      {campaign.description}
+                    </p>
+                    {isLongDescription(campaign.description) && (
+                      <button
+                        type="button"
+                        onClick={() => setShowFullDescription((v) => !v)}
+                        aria-expanded={showFullDescription}
+                        className="mt-2 text-sm font-semibold text-[#005080] hover:underline"
+                      >
+                        {showFullDescription ? 'Show less' : 'Read more'}
+                      </button>
+                    )}
                   </div>
                 )}
 
