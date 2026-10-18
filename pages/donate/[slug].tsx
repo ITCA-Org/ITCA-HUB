@@ -1,4 +1,4 @@
-import { FormEvent, useEffect, useState } from 'react';
+import { FormEvent, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
@@ -32,14 +32,6 @@ const DonateCampaignPage = () => {
   const [message, setMessage] = useState('');
   const [isAnonymous, setIsAnonymous] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-
-  useEffect(() => {
-    if (campaign && !amount && campaign.suggestedAmounts.length > 0) {
-      setAmount(
-        String(campaign.suggestedAmounts[Math.min(1, campaign.suggestedAmounts.length - 1)])
-      );
-    }
-  }, [campaign, amount]);
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -170,26 +162,7 @@ const DonateCampaignPage = () => {
                   <h2 className="text-2xl font-bold">Make a donation</h2>
                 </div>
 
-                {campaign.suggestedAmounts.length > 0 && (
-                  <div className="mt-6 grid grid-cols-2 gap-2 sm:grid-cols-4">
-                    {campaign.suggestedAmounts.map((value) => (
-                      <button
-                        key={value}
-                        type="button"
-                        onClick={() => setAmount(String(value))}
-                        className={`rounded-xl px-3 py-3 text-sm font-semibold transition ${
-                          Number(amount) === value
-                            ? 'bg-[#0A1628] text-[#FF6A00]'
-                            : 'bg-white text-[#0A1628] hover:bg-[#0A1628]/5'
-                        }`}
-                      >
-                        {formatDalasi(value)}
-                      </button>
-                    ))}
-                  </div>
-                )}
-
-                <label className="mt-4 block">
+                <label className="mt-6 block">
                   <span className="mb-1 block text-sm font-medium text-[#0A1628]">
                     Amount (GMD)
                   </span>
@@ -199,6 +172,7 @@ const DonateCampaignPage = () => {
                     min={MIN_DONATION}
                     step={1}
                     required
+                    placeholder={`Enter any amount (min ${formatDalasi(MIN_DONATION)})`}
                     value={amount}
                     onChange={(e) => setAmount(e.target.value)}
                     className={inputClass}

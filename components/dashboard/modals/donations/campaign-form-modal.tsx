@@ -18,8 +18,6 @@ import { JEETIX_BASE_URL } from '@/utils/url';
 const inputClass =
   'w-full rounded-lg border border-gray-200 px-3 py-2.5 text-sm text-gray-800 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100';
 
-const DEFAULT_SUGGESTED = '100, 250, 500, 1000';
-
 const toDateInput = (value?: string | null) => (value ? value.slice(0, 10) : '');
 
 type CampaignFormModalProps = {
@@ -43,7 +41,6 @@ const CampaignFormModal = ({
   const [description, setDescription] = useState('');
   const [category, setCategory] = useState<DonationCampaignCategory>('hackathon');
   const [goalAmount, setGoalAmount] = useState('');
-  const [suggested, setSuggested] = useState(DEFAULT_SUGGESTED);
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
   const [imageUrl, setImageUrl] = useState('');
@@ -59,7 +56,6 @@ const CampaignFormModal = ({
     setDescription(campaign?.description ?? '');
     setCategory(campaign?.category ?? 'hackathon');
     setGoalAmount(campaign?.goalAmount ? String(campaign.goalAmount) : '');
-    setSuggested(campaign ? campaign.suggestedAmounts.join(', ') : DEFAULT_SUGGESTED);
     setStartDate(toDateInput(campaign?.startDate));
     setEndDate(toDateInput(campaign?.endDate));
     setImageUrl(campaign?.imageUrl ?? '');
@@ -106,11 +102,6 @@ const CampaignFormModal = ({
       return;
     }
 
-    const suggestedAmounts = suggested
-      .split(',')
-      .map((v) => Math.round(Number(v.trim())))
-      .filter((v) => Number.isFinite(v) && v >= 10);
-
     setIsSaving(true);
     try {
       let finalImageUrl = imageUrl;
@@ -125,7 +116,6 @@ const CampaignFormModal = ({
         category,
         imageUrl: finalImageUrl,
         goalAmount: Number(goalAmount) || 0,
-        suggestedAmounts,
         startDate: startDate || null,
         endDate: endDate ? `${endDate}T23:59:59` : null,
         isActive,
@@ -245,17 +235,6 @@ const CampaignFormModal = ({
                     maxLength={5000}
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
-                    className={inputClass}
-                  />
-                </label>
-
-                <label className="block">
-                  <span className="mb-1 block text-sm font-medium text-gray-700">
-                    Suggested amounts (comma separated)
-                  </span>
-                  <input
-                    value={suggested}
-                    onChange={(e) => setSuggested(e.target.value)}
                     className={inputClass}
                   />
                 </label>
