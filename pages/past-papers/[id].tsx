@@ -6,10 +6,7 @@ import { toast } from 'sonner';
 import LandingLayout from '@/components/landing-page/landing-layout';
 import { darkCtaClass } from '@/components/landing-page/brand';
 import formatDepartment from '@/utils/format-department';
-import {
-  downloadPastPaperDocument,
-  normalizePastPaperHtml,
-} from '@/utils/past-paper-document';
+import { downloadPastPaperDocument, normalizePastPaperHtml } from '@/utils/past-paper-document';
 import { getPastPaper, PastPaper } from '@/hooks/past-papers/use-past-papers';
 
 const PastPaperDetailPage = () => {
@@ -66,9 +63,7 @@ const PastPaperDetailPage = () => {
       );
       toast.success('Download started');
     } catch (err) {
-      toast.error(
-        err instanceof Error ? err.message : 'Could not download this paper.'
-      );
+      toast.error(err instanceof Error ? err.message : 'Could not download this paper.');
     } finally {
       setIsDownloading(false);
     }
@@ -77,15 +72,9 @@ const PastPaperDetailPage = () => {
   return (
     <LandingLayout
       path={typeof id === 'string' ? `/past-papers/${id}` : '/past-papers'}
-      title={
-        paper
-          ? `${paper.title} | Past Papers | ITCA Hub`
-          : 'Past Paper | ITCA Hub'
-      }
+      title={paper ? `${paper.title} | Past Papers | ITCA Hub` : 'Past Paper | ITCA Hub'}
       description={
-        paper
-          ? `${paper.course} — preview and download`
-          : 'Preview and download ITCA past papers'
+        paper ? `${paper.course} — preview and download` : 'Preview and download ITCA past papers'
       }
       showFloatingCta={false}
       showNewsletter={false}
@@ -111,9 +100,7 @@ const PastPaperDetailPage = () => {
             <div className="mt-12">
               <FileText className="mb-3 h-10 w-10 text-[#0A1628]/25" />
               <h1 className="text-3xl font-bold text-[#0A1628]">Not found</h1>
-              <p className="mt-3 text-[#0A1628]/70">
-                {error || 'This past paper is unavailable.'}
-              </p>
+              <p className="mt-3 text-[#0A1628]/70">{error || 'This past paper is unavailable.'}</p>
               <Link href="/past-papers" className={`${darkCtaClass} mt-8 inline-flex`}>
                 Back to past papers
               </Link>
@@ -122,25 +109,24 @@ const PastPaperDetailPage = () => {
 
           {!isLoading && paper && (
             <>
-              <div className="mt-8 flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
-                <div className="max-w-3xl">
-                  <h1 className="text-3xl font-bold text-[#0A1628] sm:text-4xl">
+              <div className="sticky top-24 z-20 mt-6 flex flex-col gap-4 rounded-2xl border border-[#0A1628]/10 bg-white/95 p-4 shadow-sm backdrop-blur sm:flex-row sm:items-center sm:justify-between sm:p-5">
+                <div className="min-w-0">
+                  <h1 className="truncate text-xl font-bold text-[#0A1628] sm:text-2xl">
                     {paper.title}
                   </h1>
-                  <dl className="mt-6 grid grid-cols-1 gap-3 text-sm text-[#0A1628]/75 sm:grid-cols-2">
-                    <div>
-                      <dt className="font-semibold text-[#0A1628]">Course</dt>
-                      <dd>{paper.course}</dd>
-                    </div>
-                    <div>
-                      <dt className="font-semibold text-[#0A1628]">Lecturer</dt>
-                      <dd>{paper.lecturer}</dd>
-                    </div>
-                    <div>
-                      <dt className="font-semibold text-[#0A1628]">Department</dt>
-                      <dd>{formatDepartment(paper.department)}</dd>
-                    </div>
-                  </dl>
+                  <div className="mt-2 flex flex-wrap gap-2 text-xs font-medium text-[#0A1628]/75">
+                    {paper.course && (
+                      <span className="rounded-full bg-[#D4E6F2] px-3 py-1">{paper.course}</span>
+                    )}
+                    {paper.lecturer && (
+                      <span className="rounded-full bg-[#0A1628]/5 px-3 py-1">
+                        {paper.lecturer}
+                      </span>
+                    )}
+                    <span className="rounded-full bg-[#0A1628]/5 px-3 py-1">
+                      {formatDepartment(paper.department)}
+                    </span>
+                  </div>
                 </div>
 
                 <button
@@ -154,59 +140,41 @@ const PastPaperDetailPage = () => {
                   ) : (
                     <Download className="h-4 w-4" />
                   )}
-                  {isDownloading ? 'Preparing…' : 'Download'}
+                  {isDownloading ? 'Preparing PDF…' : 'Download PDF'}
                 </button>
               </div>
 
-              <div className="mt-10">
-                <h2 className="mb-4 text-lg font-bold text-[#0A1628]">Preview</h2>
-                <div className="overflow-hidden rounded-[1.25rem] border border-[#0A1628]/10 bg-[#F5F7FA] p-3 sm:p-6">
-                  <article className="mx-auto flex min-h-[28rem] max-w-[800px] flex-col bg-white px-6 py-8 shadow-sm sm:px-10 sm:py-12">
-                    <h3 className="text-2xl font-bold text-[#0A1628] sm:text-3xl">
+              <div className="mt-6 rounded-[1.5rem] bg-[#F5F7FA] p-2 sm:p-8">
+                <article className="mx-auto flex min-h-[28rem] max-w-[820px] flex-col rounded-xl bg-white px-5 py-8 shadow-[0_1px_3px_rgba(10,22,40,0.08),0_12px_32px_rgba(10,22,40,0.06)] sm:px-14 sm:py-14">
+                  <header className="border-b border-[#0A1628]/15 pb-6 text-center">
+                    <p className="landing-mono text-xs uppercase tracking-[0.14em] text-[#FF6A00]">
+                      Past paper
+                    </p>
+                    <h2 className="mt-3 text-2xl font-bold leading-tight text-[#0A1628] sm:text-3xl">
                       {paper.title}
-                    </h3>
-                    <dl className="mt-5 space-y-1 border-b border-[#0A1628]/15 pb-5 text-sm text-[#0A1628]/75">
-                      <div>
-                        <dt className="inline font-semibold text-[#0A1628]">
-                          Course
-                        </dt>
-                        <dd className="ml-2 inline">{paper.course}</dd>
-                      </div>
-                      <div>
-                        <dt className="inline font-semibold text-[#0A1628]">
-                          Lecturer
-                        </dt>
-                        <dd className="ml-2 inline">{paper.lecturer}</dd>
-                      </div>
-                      <div>
-                        <dt className="inline font-semibold text-[#0A1628]">
-                          Department
-                        </dt>
-                        <dd className="ml-2 inline">
-                          {formatDepartment(paper.department)}
-                        </dd>
-                      </div>
-                    </dl>
+                    </h2>
+                    <p className="mt-3 text-sm text-[#0A1628]/65">
+                      {[paper.course, paper.lecturer].filter(Boolean).join(' · ')}
+                    </p>
+                  </header>
 
-                    {paper.displayText?.trim() ? (
-                      <div
-                        className="rich-text-content mt-6 flex-1 text-[#0A1628]/85"
-                        dangerouslySetInnerHTML={{
-                          __html: normalizePastPaperHtml(paper.displayText),
-                        }}
-                      />
-                    ) : (
-                      <p className="mt-6 flex-1 text-sm italic text-[#0A1628]/50">
-                        No curated paper text is available for this entry yet.
-                      </p>
-                    )}
+                  {paper.displayText?.trim() ? (
+                    <div
+                      className="rich-text-content past-paper-content mt-8 flex-1 text-[15px] text-[#0A1628] sm:text-base"
+                      dangerouslySetInnerHTML={{
+                        __html: normalizePastPaperHtml(paper.displayText),
+                      }}
+                    />
+                  ) : (
+                    <p className="mt-8 flex-1 text-sm italic text-[#0A1628]/50">
+                      No curated paper text is available for this entry yet.
+                    </p>
+                  )}
 
-                    <footer className="mt-10 border-t border-[#0A1628]/15 pt-4 text-center text-xs font-bold leading-snug tracking-[0.04em] text-[#0A1628] sm:text-sm">
-                      University of The Gambia, Information Technology
-                      Communication Association
-                    </footer>
-                  </article>
-                </div>
+                  <footer className="mt-12 border-t border-[#0A1628]/15 pt-4 text-center text-xs font-bold leading-snug tracking-[0.04em] text-[#0A1628]/80 sm:text-sm">
+                    University of The Gambia, Information Technology Communication Association
+                  </footer>
+                </article>
               </div>
             </>
           )}
