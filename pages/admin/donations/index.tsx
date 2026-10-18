@@ -1,7 +1,7 @@
 import { NextApiRequest } from 'next';
 import Link from 'next/link';
 import { useCallback, useState } from 'react';
-import { HandCoins, HeartHandshake, Megaphone, Search, TrendingUp, Users } from 'lucide-react';
+import { Calculator, HandCoins, HeartHandshake, Megaphone, Search, TrendingUp } from 'lucide-react';
 import { requireAdminAuth } from '@/utils/auth';
 import useDebounce from '@/utils/debounce';
 import { UserAuth } from '@/types';
@@ -98,8 +98,6 @@ const AdminDonationsPage = ({ userData }: AdminDonationsPageProps) => {
             </span>
           )}
         </div>
-        <div className="text-sm text-gray-500">{donation.email}</div>
-        {donation.phone && <div className="text-sm text-gray-400">{donation.phone}</div>}
       </td>
       <td className="max-w-xs px-8 py-4 text-base text-gray-700">
         <span className="line-clamp-1">{donation.campaignTitle}</span>
@@ -156,9 +154,9 @@ const AdminDonationsPage = ({ userData }: AdminDonationsPageProps) => {
           isLoading={statsLoading}
         />
         <DashboardStatsCard
-          title="Unique donors"
-          icon={<Users className="h-5 w-5" />}
-          value={stats?.uniqueDonors ?? 0}
+          title="Average donation"
+          icon={<Calculator className="h-5 w-5" />}
+          value={formatDalasi(stats?.averageDonation ?? 0)}
           isLoading={statsLoading}
         />
       </div>
@@ -168,8 +166,7 @@ const AdminDonationsPage = ({ userData }: AdminDonationsPageProps) => {
           <div className="mb-4 flex items-center justify-between">
             <h3 className="text-base font-semibold text-[#0A1628]">By campaign</h3>
             <span className="text-sm text-[#0A1628]/60">
-              Avg. donation {formatDalasi(stats?.averageDonation ?? 0)} · Largest{' '}
-              {formatDalasi(stats?.largestDonation ?? 0)}
+              Largest donation {formatDalasi(stats?.largestDonation ?? 0)}
             </span>
           </div>
           <ul className="divide-y divide-gray-100">
@@ -232,7 +229,7 @@ const AdminDonationsPage = ({ userData }: AdminDonationsPageProps) => {
           <input
             type="search"
             value={searchTerm}
-            placeholder="Search by name, email, receipt…"
+            placeholder="Search by name or receipt…"
             onChange={(e) => {
               setSearchTerm(e.target.value);
               setPage(0);

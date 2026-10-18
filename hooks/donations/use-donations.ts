@@ -65,8 +65,6 @@ export interface RecentDonor {
 export interface DonationCheckoutInput {
   campaignId: string;
   donorName: string;
-  email: string;
-  phone?: string;
   message?: string;
   isAnonymous?: boolean;
   amount: number;
@@ -85,8 +83,6 @@ export interface DonationSummary {
   campaignId: string;
   campaignTitle: string;
   donorName: string;
-  email: string;
-  phone: string;
   message: string;
   isAnonymous: boolean;
   amount: number;
@@ -102,7 +98,6 @@ export interface DonationStats {
   donationCount: number;
   averageDonation: number;
   largestDonation: number;
-  uniqueDonors: number;
   raisedThisMonth: number;
   activeCampaigns: number;
   campaigns: DonationCampaign[];

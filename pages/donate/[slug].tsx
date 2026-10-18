@@ -27,8 +27,6 @@ const DonateCampaignPage = () => {
 
   const [amount, setAmount] = useState('');
   const [donorName, setDonorName] = useState('');
-  const [email, setEmail] = useState('');
-  const [phone, setPhone] = useState('');
   const [message, setMessage] = useState('');
   const [isAnonymous, setIsAnonymous] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -46,18 +44,12 @@ const DonateCampaignPage = () => {
       toast.error('Please enter your name, or choose to donate anonymously');
       return;
     }
-    if (!email.trim()) {
-      toast.error('Please enter your email so we can send your receipt');
-      return;
-    }
 
     setIsSubmitting(true);
     try {
       const result = await checkoutDonation({
         campaignId: campaign._id,
         donorName: isAnonymous ? '' : donorName.trim(),
-        email: email.trim(),
-        phone: phone.trim() || undefined,
         message: message.trim() || undefined,
         isAnonymous,
         amount: value,
@@ -201,32 +193,6 @@ const DonateCampaignPage = () => {
                     />
                   </label>
                 )}
-
-                <label className="mt-4 block">
-                  <span className="mb-1 block text-sm font-medium text-[#0A1628]">
-                    Email <span className="font-normal text-[#0A1628]/50">(for your receipt)</span>
-                  </span>
-                  <input
-                    type="email"
-                    required
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    className={inputClass}
-                  />
-                </label>
-
-                <label className="mt-4 block">
-                  <span className="mb-1 block text-sm font-medium text-[#0A1628]">
-                    Phone <span className="font-normal text-[#0A1628]/50">(optional)</span>
-                  </span>
-                  <input
-                    type="tel"
-                    maxLength={40}
-                    value={phone}
-                    onChange={(e) => setPhone(e.target.value)}
-                    className={inputClass}
-                  />
-                </label>
 
                 <label className="mt-4 block">
                   <span className="mb-1 block text-sm font-medium text-[#0A1628]">
