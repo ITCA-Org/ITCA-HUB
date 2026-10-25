@@ -35,24 +35,23 @@ const NotFoundPage = () => {
       path="/404"
       title="Page Not Found | ITCA Hub"
       description="The page you were looking for doesn’t exist. Explore ITCA events, community, and resources instead."
-      showFloatingCta={false}
     >
-      <section className="bg-white px-5 pb-10 pt-28 sm:px-10 lg:px-16 lg:pb-14 lg:pt-36">
+      <section className="bg-white itca-white-surface px-5 pb-10 pt-28 sm:px-10 lg:px-16 lg:pb-14 lg:pt-36">
         <div className="mx-auto max-w-[1400px]">
           <motion.div
             initial={reduce ? false : { opacity: 0, y: 28 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.75, ease: easeOut }}
           >
-            <span className="inline-flex rounded-full bg-[#FF6A00] px-3.5 py-1 text-sm font-bold tracking-wide text-[#0A1628]">
+            <span className="inline-flex rounded-full bg-[#005080] itca-blue-surface px-3.5 py-1 text-sm font-bold tracking-wide text-[#005080]">
               404
             </span>
 
-            <h1 className="mt-8 max-w-4xl text-4xl font-bold leading-[1.08] tracking-tight text-[#0A1628] sm:text-5xl md:text-6xl lg:text-7xl">
+            <h1 className="mt-8 max-w-4xl text-4xl font-bold leading-[1.08] tracking-tight text-[#005080] sm:text-5xl md:text-6xl lg:text-7xl">
               Oops! The page you were looking for doesn&apos;t exist!
             </h1>
 
-            <h2 className="mt-12 text-xl font-semibold text-[#0A1628] sm:mt-16 sm:text-2xl lg:text-3xl">
+            <h2 className="mt-12 text-xl font-semibold text-[#005080] sm:mt-16 sm:text-2xl lg:text-3xl">
               Have a look at some recent highlights
             </h2>
           </motion.div>
@@ -84,7 +83,7 @@ const NotFoundPage = () => {
         </div>
       </section>
 
-      <section className="bg-white px-5 py-16 sm:px-10 lg:px-16 lg:py-24">
+      <section className="bg-white itca-white-surface px-5 py-16 sm:px-10 lg:px-16 lg:py-24">
         <div className="mx-auto grid max-w-[1400px] gap-8 md:grid-cols-3 md:gap-6 lg:gap-8">
           {highlights.map((item, index) => (
             <motion.div
@@ -104,7 +103,7 @@ const NotFoundPage = () => {
                     sizes="(max-width: 768px) 100vw, 33vw"
                   />
                 </div>
-                <h3 className="text-xl font-bold leading-snug text-[#0A1628] transition group-hover:text-[#005080] sm:text-2xl">
+                <h3 className="text-xl font-bold leading-snug text-[#005080] transition group-hover:text-[#005080] sm:text-2xl">
                   {item.title}
                 </h3>
               </Link>

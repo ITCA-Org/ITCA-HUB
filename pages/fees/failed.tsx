@@ -45,18 +45,17 @@ const FeesFailedPage = () => {
       description="Your semester dues payment could not be completed"
       path="/fees/failed"
       showNewsletter={false}
-      showFloatingCta={false}
     >
       <Head>
         <meta name="robots" content="noindex" />
       </Head>
 
-      <section className="bg-white px-4 py-20 sm:px-10 lg:px-16 lg:py-28">
+      <section className="bg-white itca-white-surface px-4 py-20 sm:px-10 lg:px-16 lg:py-28">
         <div className="mx-auto max-w-xl">
-          <p className="landing-mono mb-5 text-base text-[#FF6A00]">Semester dues</p>
+          <p className="landing-mono mb-5 text-base text-[var(--itca-accent-ink)]">Semester dues</p>
 
           {isLoading ? (
-            <div className="flex items-center gap-3 text-[#0A1628]/70">
+            <div className="flex items-center gap-3 text-[#005080]/70">
               <Loader className="h-5 w-5 animate-spin" />
               Checking payment status…
             </div>
@@ -64,34 +63,28 @@ const FeesFailedPage = () => {
             <>
               <div className="mb-4 flex items-center gap-3 text-red-600">
                 <XCircle className="h-8 w-8 shrink-0" />
-                <h1 className="text-3xl font-bold text-[#0A1628] sm:text-4xl">
-                  Payment failed
-                </h1>
+                <h1 className="text-3xl font-bold text-[#005080] sm:text-4xl">Payment failed</h1>
               </div>
 
-              <p className="mt-4 text-lg text-[#0A1628]/70">
+              <p className="mt-4 text-lg text-[#005080]/70">
                 Your semester dues payment was cancelled or could not be completed. No charge was
                 applied for this attempt.
               </p>
 
               {orderData && (
-                <div className="mt-8 rounded-[1.75rem] bg-[#FFE0CC] p-7">
-                  <dl className="space-y-2 text-base text-[#0A1628]/80">
+                <div className="mt-8 rounded-[1.75rem] bg-[#FFFFFF] p-7">
+                  <dl className="space-y-2 text-base text-[#005080]/80">
                     <div className="flex justify-between gap-4">
                       <dt>Name</dt>
-                      <dd className="font-medium text-[#0A1628]">
-                        {orderData.order.fullName}
-                      </dd>
+                      <dd className="font-medium text-[#005080]">{orderData.order.fullName}</dd>
                     </div>
                     <div className="flex justify-between gap-4">
                       <dt>Matric</dt>
-                      <dd className="font-medium text-[#0A1628]">
-                        {orderData.order.matricNumber}
-                      </dd>
+                      <dd className="font-medium text-[#005080]">{orderData.order.matricNumber}</dd>
                     </div>
                     <div className="flex justify-between gap-4">
                       <dt>Amount</dt>
-                      <dd className="font-medium text-[#0A1628]">
+                      <dd className="font-medium text-[#005080]">
                         {formatFeeAmount(orderData.order.amount)}
                       </dd>
                     </div>
@@ -113,7 +106,7 @@ const FeesFailedPage = () => {
                 </Link>
                 <Link
                   href="/"
-                  className="inline-flex items-center justify-center rounded-full border border-[#0A1628]/15 px-5 py-3 text-sm font-semibold text-[#0A1628] transition hover:bg-[#0A1628]/5"
+                  className="inline-flex items-center justify-center rounded-full border border-[#005080]/15 px-5 py-3 text-sm font-semibold text-[#005080] transition hover:bg-[#005080]/5"
                 >
                   Back to home
                 </Link>

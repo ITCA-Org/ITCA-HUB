@@ -9,7 +9,7 @@ const ImpactSection = () => {
   const reduce = usePublicReducedMotion();
 
   return (
-    <section id="impact" className="bg-white px-4 py-16 sm:px-8 lg:px-12">
+    <section id="impact" className="bg-white itca-white-surface px-4 py-16 sm:px-8 lg:px-12">
       <motion.div
         className="mx-auto grid max-w-[1400px] grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3"
         variants={reduce ? undefined : stagger}
@@ -20,11 +20,11 @@ const ImpactSection = () => {
         <motion.div
           variants={reduce ? undefined : fadeUp}
           transition={{ duration: 0.65, ease: easeOut }}
-          className="flex min-h-[300px] items-end rounded-[2rem] bg-[#0A1628] p-8 text-white sm:p-10 lg:min-h-[360px]"
+          className="flex min-h-[300px] items-end rounded-[2rem] bg-[#005080] itca-blue-surface p-8 text-white sm:p-10 lg:min-h-[360px]"
         >
           <p className="text-3xl font-bold leading-snug sm:text-4xl lg:text-[2.75rem]">
-            Here&apos;s how <span className="text-[#FF6A00]">ITCA</span> supports School of ICT
-            students:
+            Here&apos;s how <span className="text-[var(--itca-accent-ink)]">ITCA</span> supports
+            School of ICT students:
           </p>
         </motion.div>
 
@@ -32,7 +32,7 @@ const ImpactSection = () => {
           variants={reduce ? undefined : fadeUp}
           transition={{ duration: 0.65, ease: easeOut }}
           whileHover={reduce ? undefined : { y: -6 }}
-          className="flex min-h-[300px] flex-col justify-between rounded-[2rem] bg-[#005080] p-8 text-white sm:p-10 lg:min-h-[360px]"
+          className="flex min-h-[300px] flex-col justify-between rounded-[2rem] bg-[#005080] itca-blue-surface p-8 text-white sm:p-10 lg:min-h-[360px]"
         >
           <p className="text-6xl font-extrabold leading-none sm:text-8xl">
             <CountUp to={30} suffix="+" />
@@ -60,7 +60,7 @@ const ImpactSection = () => {
           variants={reduce ? undefined : fadeUp}
           transition={{ duration: 0.65, ease: easeOut }}
           whileHover={reduce ? undefined : { y: -6 }}
-          className="flex min-h-[300px] flex-col justify-between rounded-[2rem] bg-[#FFE0CC] p-8 text-[#0A1628] sm:p-10 lg:min-h-[360px]"
+          className="flex min-h-[300px] flex-col justify-between rounded-[2rem] bg-[#FFFFFF] border border-[#005080]/20 p-8 text-[#005080] sm:p-10 lg:min-h-[360px]"
         >
           <p className="text-6xl font-extrabold leading-none sm:text-7xl">All ICT</p>
           <p className="mt-8 max-w-sm text-base font-medium leading-relaxed sm:text-lg">
@@ -86,7 +86,7 @@ const ImpactSection = () => {
           variants={reduce ? undefined : fadeUp}
           transition={{ duration: 0.65, ease: easeOut }}
           whileHover={reduce ? undefined : { y: -6 }}
-          className="flex min-h-[300px] flex-col justify-between rounded-[2rem] bg-[#D4E6F2] p-8 text-[#0A1628] sm:p-10 lg:min-h-[360px]"
+          className="flex min-h-[300px] flex-col justify-between rounded-[2rem] bg-[#FFFFFF] border border-[#005080]/20 p-8 text-[#005080] sm:p-10 lg:min-h-[360px]"
         >
           <p className="text-7xl font-extrabold leading-none sm:text-8xl">
             <CountUp to={1} />
@@ -97,7 +97,7 @@ const ImpactSection = () => {
               campus.
             </p>
             <motion.div
-              className="relative h-24 w-24 shrink-0 overflow-hidden rounded-full border-[5px] border-[#D4E6F2] sm:h-32 sm:w-32 sm:border-[6px]"
+              className="relative h-24 w-24 shrink-0 overflow-hidden rounded-full border-[5px] border-[#FFFFFF] sm:h-32 sm:w-32 sm:border-[6px]"
               initial={reduce ? false : { scale: 0.8, opacity: 0 }}
               whileInView={{ scale: 1, opacity: 1 }}
               viewport={{ once: true }}

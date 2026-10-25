@@ -1,150 +1,63 @@
-'use client';
-
-import usePublicReducedMotion from '@/hooks/use-public-reduced-motion';
 import Link from 'next/link';
-import {
-  BookOpen,
-  FileText,
-  Github,
-  GraduationCap,
-  Layers,
-  Lock,
-  ScrollText,
-  Video,
-} from 'lucide-react';
-import { motion } from 'framer-motion';
-import { easeOut, fadeUp, stagger } from './reveal';
+import { Github, GraduationCap, ScrollText } from 'lucide-react';
 
 const resourceCategories = [
   {
     name: 'Past Papers',
     icon: ScrollText,
     description: 'Exams, tests, quizzes — preview & download',
-    color: '#FFE0CC',
     href: '/past-papers',
-  },
-  {
-    name: 'E-Books & Guides',
-    icon: BookOpen,
-    count: 120,
-    color: '#D4E6F2',
-  },
-  {
-    name: 'Lecture Notes',
-    icon: FileText,
-    count: 85,
-    color: '#FF6A00',
-  },
-  {
-    name: 'Tutorial Videos',
-    icon: Video,
-    count: 64,
-    color: '#FFE0CC',
+    blue: false,
   },
   {
     name: 'GitHub Student Developer Pack',
     icon: Github,
     description: 'Free dev tools for UTG students — step-by-step',
-    color: '#D4E6F2',
     href: '/resources/github-student-pack',
+    blue: false,
   },
   {
     name: 'Course Outlines',
     icon: GraduationCap,
     description: 'Programme requirements — preview & download PDF',
-    color: '#FF6A00',
     href: '/course-outlines',
-  },
-  {
-    name: 'Practice Projects',
-    icon: Layers,
-    count: 37,
-    color: '#FFE0CC',
+    blue: true,
   },
 ];
 
-const ResourcesSection = () => {
-  const reduce = usePublicReducedMotion();
-
+export default function ResourcesSection({ showHeading = true }: { showHeading?: boolean }) {
   return (
-    <section id="resources" className="bg-white pb-24 pt-8">
-      <motion.div
-        className="grid w-full grid-cols-1 sm:grid-cols-2 lg:grid-cols-3"
-        variants={reduce ? undefined : stagger}
-        initial={reduce ? false : 'hidden'}
-        whileInView={reduce ? undefined : 'show'}
-        viewport={{ once: true, amount: 0.15 }}
-      >
-        {resourceCategories.map((category) => {
-          const Icon = category.icon;
-          const onAccent = category.color === '#FF6A00' || category.color === '#005080';
-          const content = (
-            <>
-              <div className="flex items-start justify-between">
-                <Icon className={`h-8 w-8 ${onAccent ? 'text-white' : 'text-[#0A1628]'}`} />
-                {category.href ? (
-                  <span
-                    className={`text-xs font-semibold uppercase tracking-wide ${
-                      onAccent ? 'text-white/80' : 'text-[#0A1628]/55'
-                    }`}
-                  >
-                    Open
-                  </span>
-                ) : (
-                  <Lock className={`h-4 w-4 ${onAccent ? 'text-white/70' : 'text-[#0A1628]/60'}`} />
-                )}
-              </div>
-              <div>
-                {'count' in category && category.count != null ? (
-                  <p
-                    className={`text-6xl font-extrabold leading-none sm:text-7xl ${
-                      onAccent ? 'text-white' : 'text-[#0A1628]'
-                    }`}
-                  >
-                    {category.count}+
-                  </p>
-                ) : null}
-                <h3
-                  className={`text-xl font-bold sm:text-2xl ${
-                    'count' in category && category.count != null ? 'mt-3' : ''
-                  } ${onAccent ? 'text-white' : 'text-[#0A1628]'}`}
-                >
-                  {category.name}
-                </h3>
-                {'description' in category && category.description ? (
-                  <p className={`mt-2 text-sm ${onAccent ? 'text-white/80' : 'text-[#0A1628]/70'}`}>
-                    {category.description}
-                  </p>
-                ) : null}
-              </div>
-            </>
-          );
-
-          return (
-            <motion.div
-              key={category.name}
-              variants={reduce ? undefined : fadeUp}
-              transition={{ duration: 0.55, ease: easeOut }}
-              whileHover={reduce ? undefined : { y: -2 }}
-              className="flex min-h-[240px] flex-col justify-between p-8 sm:min-h-[280px] sm:p-10 lg:min-h-[320px] lg:p-12"
-              style={{ backgroundColor: category.color }}
-            >
-              {category.href ? (
-                <Link
-                  href={category.href}
-                  className="flex h-full min-h-[inherit] flex-col justify-between"
-                >
-                  {content}
-                </Link>
-              ) : (
-                content
-              )}
-            </motion.div>
-          );
-        })}
-      </motion.div>
+    <section
+      aria-labelledby={showHeading ? 'resource-heading' : undefined}
+      aria-label={showHeading ? undefined : 'Study resources'}
+      id="resources"
+      className="bg-white itca-white-surface pb-12 pt-6"
+    >
+      {showHeading && (
+        <div className="mx-auto max-w-[1400px] px-5 pb-6 sm:px-10 lg:px-16">
+          <h2 id="resource-heading" className="text-2xl font-semibold text-[#005080] sm:text-3xl">
+            Study resources
+          </h2>
+        </div>
+      )}
+      <div className="mx-auto grid w-full max-w-[1400px] grid-cols-1 gap-4 px-5 sm:grid-cols-2 sm:px-10 lg:grid-cols-3 lg:gap-6 lg:px-16">
+        {resourceCategories.map(({ name, icon: Icon, description, href, blue }) => (
+          <Link
+            key={href}
+            href={href}
+            className={`flex min-h-[200px] flex-col justify-between gap-8 rounded-2xl border border-[#005080]/20 p-6 transition-colors hover:underline sm:min-h-[220px] sm:p-8 lg:min-h-[240px] ${blue ? 'bg-[#005080] itca-blue-surface text-white' : 'bg-white itca-white-surface text-[#005080]'}`}
+          >
+            <div className="flex items-start justify-between">
+              <Icon aria-hidden="true" className="h-8 w-8" />
+              <span className="text-xs font-semibold uppercase tracking-wide">Open</span>
+            </div>
+            <div>
+              <h3 className="text-xl font-bold sm:text-2xl">{name}</h3>
+              <p className="mt-2 text-base leading-7">{description}</p>
+            </div>
+          </Link>
+        ))}
+      </div>
     </section>
   );
-};
-
-export default ResourcesSection;
+}

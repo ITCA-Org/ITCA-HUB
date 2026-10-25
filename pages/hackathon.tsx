@@ -1,4 +1,3 @@
-import Link from 'next/link';
 import axios from 'axios';
 import useSWR from 'swr';
 import { BASE_URL } from '@/utils/url';
@@ -14,42 +13,32 @@ export default function HackathonPage() {
   return (
     <LandingLayout
       path="/hackathon"
-      title="Hackathon & Seminar 2026 | ITCA Hub"
-      description="Form a team, build a working software product, and connect with students at the ITCA Hackathon & Seminar 2026."
-      showFloatingCta={false}
+      title="ITCA Hackathon & Seminar 2026 | Event archive"
+      description="Event information and highlights from the ITCA Hackathon & Seminar held on 21 October 2026."
       showNewsletter={false}
     >
-      <section className="bg-[#0A1628] px-5 pb-20 pt-32 text-white md:pt-44">
+      <section className="bg-[#005080] itca-blue-surface px-5 pb-10 pt-28 text-white">
         <div className="mx-auto max-w-6xl">
-          <p className="text-sm font-semibold uppercase tracking-widest text-orange-400">ITCA</p>
-          <h1 className="mt-6 max-w-4xl text-5xl font-bold leading-tight md:text-7xl">
-            Your team. Your ideas.
-            <br />
-            <span className="text-orange-400">Build something that matters.</span>
+          <p className="text-sm font-semibold uppercase tracking-widest text-[var(--itca-accent-ink)]">
+            ITCA
+          </p>
+          <h1 className="mt-4 max-w-4xl text-3xl font-semibold leading-tight sm:text-5xl">
+            ITCA Hackathon &amp; Seminar
           </h1>
-          <p className="mt-6 max-w-2xl text-lg text-slate-300">
-            Hackathon & Seminar 2026 brings students together to turn real-world problems into
-            working web, mobile, or desktop software.
+          <p className="mt-4 max-w-2xl text-base text-slate-300">
+            Thank you to everyone who took part in the ITCA Hackathon &amp; Seminar. This event was
+            held on 21 October 2026.
           </p>
           <div className="mt-8 flex flex-wrap gap-3 text-sm">
             <span className="rounded-full border border-white/30 px-5 py-3">21 October 2026</span>
-            <span className="rounded-full border border-white/30 px-5 py-3">
-              ITC Theatre · proposed venue
-            </span>
+            <span className="rounded-full border border-white/30 px-5 py-3">ITC Theatre</span>
             <span className="rounded-full border border-white/30 px-5 py-3">
               Open to interested students
             </span>
           </div>
-          {settings?.applicationsOpen === false ? (
-            <p className="mt-9 text-orange-300">Team applications are currently closed.</p>
-          ) : (
-            <Link
-              href="/hackathon/apply"
-              className="mt-9 inline-block rounded-full bg-[#FF6A00] px-8 py-4 font-semibold"
-            >
-              Apply with your team →
-            </Link>
-          )}
+          <p className="mt-8 inline-flex rounded-full border border-white/35 px-5 py-3 text-sm font-semibold text-white">
+            Event completed
+          </p>
         </div>
       </section>
       <section className="bg-[#F5F3EE] px-5 py-16">
@@ -69,12 +58,12 @@ export default function HackathonPage() {
             ],
           ].map(([title, text], i) => (
             <div key={title}>
-              <p className="text-orange-600 font-bold">0{i + 1}</p>
+              <p className="text-[var(--itca-accent-ink)] font-bold">0{i + 1}</p>
               <h2 className="mt-3 text-2xl font-bold">{title}</h2>
               <p className="mt-3 text-slate-600">{text}</p>
             </div>
           ))}
-          <div className="md:col-span-3 rounded-2xl bg-white p-6">
+          <div className="md:col-span-3 rounded-2xl bg-white itca-white-surface p-6">
             <h2 className="text-xl font-bold">
               Connecting Innovation: Technology and Connectivity Shaping The Gambia&apos;s Future
             </h2>
@@ -88,7 +77,7 @@ export default function HackathonPage() {
       <section id="problems" className="px-5 py-16">
         <div className="mx-auto max-w-6xl">
           <h2 className="text-3xl font-bold">Problem statements</h2>
-          <p className="mt-3 text-slate-600">Your next build starts here.</p>
+          <p className="mt-3 text-slate-600">Challenges featured during the completed event.</p>
           {error && (
             <p role="alert" className="mt-4 text-sm text-slate-500">
               Unable to refresh event information. Please reload to try again.
@@ -99,9 +88,9 @@ export default function HackathonPage() {
               {settings.problems.map((problem, index) => (
                 <article
                   key={index}
-                  className="rounded-2xl border border-slate-200 bg-white p-6 sm:p-8"
+                  className="rounded-2xl border border-slate-200 bg-white itca-white-surface p-6 sm:p-8"
                 >
-                  <p className="mb-3 text-xs font-semibold uppercase tracking-widest text-orange-600">
+                  <p className="mb-3 text-xs font-semibold uppercase tracking-widest text-[var(--itca-accent-ink)]">
                     Challenge {String(index + 1).padStart(2, '0')}
                   </p>
                   <h3 className="text-2xl font-bold">{problem.title}</h3>
@@ -130,8 +119,8 @@ export default function HackathonPage() {
                 <h3 className="text-xl font-semibold">Problem statements coming soon</h3>
                 <p className="mt-2 text-slate-600">
                   {settings?.applicationsOpen === false
-                    ? 'Official challenges will be revealed here later.'
-                    : 'Apply with your team now. Official challenges will be revealed here later.'}
+                    ? 'Challenge details are not available here.'
+                    : 'Challenge details from the event are not available here.'}
                 </p>
               </div>
             </div>

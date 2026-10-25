@@ -81,10 +81,7 @@ const ShopSuccessPage = () => {
         return;
       }
 
-      if (
-        data?.order.status === 'failed' ||
-        data?.order.status === 'cancelled'
-      ) {
+      if (data?.order.status === 'failed' || data?.order.status === 'cancelled') {
         return;
       }
 
@@ -125,9 +122,7 @@ const ShopSuccessPage = () => {
     };
   }, [orderData]);
 
-  const paid =
-    orderData?.order.status === 'paid' ||
-    orderData?.order.status === 'delivered';
+  const paid = orderData?.order.status === 'paid' || orderData?.order.status === 'delivered';
 
   return (
     <LandingLayout
@@ -135,18 +130,17 @@ const ShopSuccessPage = () => {
       description="Your ITCA shop order confirmation"
       path="/shop/success"
       showNewsletter={false}
-      showFloatingCta={false}
     >
       <Head>
         <meta name="robots" content="noindex" />
       </Head>
 
-      <section className="bg-white px-4 py-20 sm:px-10 lg:px-16 lg:py-28">
+      <section className="bg-white itca-white-surface px-4 py-20 sm:px-10 lg:px-16 lg:py-28">
         <div className="mx-auto max-w-xl">
-          <p className="landing-mono mb-5 text-base text-[#FF6A00]">ITCA Shop</p>
+          <p className="landing-mono mb-5 text-base text-[var(--itca-accent-ink)]">ITCA Shop</p>
 
           {isLoading && (
-            <div className="flex items-center gap-3 text-[#0A1628]/70">
+            <div className="flex items-center gap-3 text-[#005080]/70">
               <Loader className="h-5 w-5 animate-spin" />
               Confirming your payment…
             </div>
@@ -154,8 +148,8 @@ const ShopSuccessPage = () => {
 
           {!isLoading && !orderData && (
             <>
-              <h1 className="text-4xl font-bold text-[#0A1628]">Order not found</h1>
-              <p className="mt-4 text-lg text-[#0A1628]/70">
+              <h1 className="text-4xl font-bold text-[#005080]">Order not found</h1>
+              <p className="mt-4 text-lg text-[#005080]/70">
                 This link is invalid or expired. Start again from the shop.
               </p>
               <Link href="/shop" className={`${darkCtaClass} mt-8 inline-flex`}>
@@ -166,11 +160,11 @@ const ShopSuccessPage = () => {
 
           {!isLoading && orderData && !paid && (
             <>
-              <div className="mb-4 flex items-center gap-3 text-[#0A1628]">
+              <div className="mb-4 flex items-center gap-3 text-[#005080]">
                 <Loader className="h-6 w-6 animate-spin text-[#005080]" />
                 <h1 className="text-3xl font-bold">Confirming payment…</h1>
               </div>
-              <p className="text-lg text-[#0A1628]/70">
+              <p className="text-lg text-[#005080]/70">
                 If you just paid, hang tight — we&apos;re confirming with Modem Pay.
               </p>
               <button
@@ -189,39 +183,37 @@ const ShopSuccessPage = () => {
             <>
               <div className="mb-4 flex items-center gap-3 text-green-700">
                 <CheckCircle className="h-8 w-8" />
-                <h1 className="text-3xl font-bold text-[#0A1628]">Payment successful</h1>
+                <h1 className="text-3xl font-bold text-[#005080]">Payment successful</h1>
               </div>
 
-              <div className="mt-8 rounded-[1.75rem] bg-[#D4E6F2] p-8">
-                <p className="text-sm text-[#0A1628]/60">Receipt</p>
-                <p className="mt-1 text-lg font-semibold text-[#0A1628]">
+              <div className="mt-8 rounded-[1.75rem] bg-[#FFFFFF] p-8">
+                <p className="text-sm text-[#005080]/60">Receipt</p>
+                <p className="mt-1 text-lg font-semibold text-[#005080]">
                   {orderData.order.receiptNumber}
                 </p>
-                <dl className="mt-6 space-y-2 text-base text-[#0A1628]/80">
+                <dl className="mt-6 space-y-2 text-base text-[#005080]/80">
                   <div className="flex justify-between gap-4">
                     <dt>Name</dt>
-                    <dd className="font-medium text-[#0A1628]">
-                      {orderData.order.fullName}
-                    </dd>
+                    <dd className="font-medium text-[#005080]">{orderData.order.fullName}</dd>
                   </div>
                   <div className="flex justify-between gap-4">
                     <dt>Total</dt>
-                    <dd className="font-medium text-[#0A1628]">
+                    <dd className="font-medium text-[#005080]">
                       {formatDalasi(orderData.order.amount)}
                     </dd>
                   </div>
                   <div className="flex justify-between gap-4">
                     <dt>Pickup</dt>
-                    <dd className="font-medium text-[#0A1628]">Faraba Banta</dd>
+                    <dd className="font-medium text-[#005080]">Faraba Banta</dd>
                   </div>
                 </dl>
 
-                <div className="mt-6 space-y-2 border-t border-[#0A1628]/10 pt-4">
-                  <p className="text-sm font-semibold text-[#0A1628]">Items</p>
+                <div className="mt-6 space-y-2 border-t border-[#005080]/10 pt-4">
+                  <p className="text-sm font-semibold text-[#005080]">Items</p>
                   {orderData.order.lines.map((line, i) => (
                     <p
                       key={`${line.productId}-${line.color}-${line.size}-${i}`}
-                      className="text-sm text-[#0A1628]/75"
+                      className="text-sm text-[#005080]/75"
                     >
                       {line.quantity}× {line.productName} · {line.color} / {line.size} —{' '}
                       {formatDalasi(line.lineTotal)}
@@ -231,7 +223,7 @@ const ShopSuccessPage = () => {
 
                 {qrDataUrl && (
                   <div className="mt-8 flex flex-col items-center">
-                    <p className="mb-3 text-center text-sm font-medium text-[#0A1628]">
+                    <p className="mb-3 text-center text-sm font-medium text-[#005080]">
                       Show this QR at pickup
                     </p>
                     <Image
@@ -240,9 +232,9 @@ const ShopSuccessPage = () => {
                       width={220}
                       height={220}
                       unoptimized
-                      className="rounded-xl bg-white p-2"
+                      className="rounded-xl bg-white itca-white-surface p-2"
                     />
-                    <p className="mt-3 text-center text-xs text-[#0A1628]/55">
+                    <p className="mt-3 text-center text-xs text-[#005080]/55">
                       The same QR was emailed to {orderData.order.email}
                     </p>
                   </div>

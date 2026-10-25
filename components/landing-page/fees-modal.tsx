@@ -1,6 +1,6 @@
 'use client';
 
-import { FormEvent, useEffect, useState } from 'react';
+import { FormEvent, useEffect, useRef, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { toast } from 'sonner';
 import { FEE_TOTAL_REQUIRED, type FeeAmount, formatFeeAmount } from '@/utils/fees';
@@ -13,9 +13,10 @@ type FeesModalProps = {
 };
 
 const fieldClass =
-  'mt-1.5 w-full rounded-md border-0 bg-white px-3 py-2.5 text-sm text-[#0A1628] placeholder:text-[#0A1628]/40 outline-none focus:ring-2 focus:ring-[#0A1628]/20';
+  'mt-1.5 w-full rounded-md border-0 bg-white itca-white-surface px-3 py-2.5 text-sm text-[#005080] placeholder:text-[#005080]/40 outline-none focus:ring-2 focus:ring-[#005080]/20';
 
 const FeesModal = ({ open, onClose }: FeesModalProps) => {
+  const dialog = useRef<HTMLDivElement>(null);
   const [amount, setAmount] = useState<FeeAmount>(50);
   const [fullName, setFullName] = useState('');
   const [matricNumber, setMatricNumber] = useState('');
@@ -26,15 +27,40 @@ const FeesModal = ({ open, onClose }: FeesModalProps) => {
   useEffect(() => {
     if (!open) return;
 
+    const previousFocus = document.activeElement as HTMLElement | null;
+    const previousOverflow = document.body.style.overflow;
+    dialog.current?.focus();
     const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') onClose();
+      if (event.key === 'Escape') {
+        event.preventDefault();
+        onClose();
+      }
+      if (event.key !== 'Tab') return;
+      const controls = Array.from(
+        dialog.current?.querySelectorAll<HTMLElement>(
+          'button:not([disabled]), a[href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex="0"]'
+        ) ?? []
+      );
+      const first = controls[0];
+      const last = controls[controls.length - 1];
+      if (
+        event.shiftKey &&
+        (document.activeElement === first || document.activeElement === dialog.current)
+      ) {
+        event.preventDefault();
+        last?.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first?.focus();
+      }
     };
 
     document.body.style.overflow = 'hidden';
     window.addEventListener('keydown', onKeyDown);
 
     return () => {
-      document.body.style.overflow = '';
+      document.body.style.overflow = previousOverflow;
+      if (previousFocus?.isConnected) previousFocus.focus();
       window.removeEventListener('keydown', onKeyDown);
     };
   }, [open, onClose]);
@@ -91,10 +117,12 @@ const FeesModal = ({ open, onClose }: FeesModalProps) => {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="fixed inset-0 z-[60] flex items-end justify-center bg-[#0A1628]/55 px-0 pt-16 sm:pt-20"
+          className="fixed inset-0 z-[60] flex items-end justify-center bg-[#005080]/55 px-0 pt-16 sm:pt-20"
           onClick={onClose}
         >
           <motion.div
+            ref={dialog}
+            tabIndex={-1}
             role="dialog"
             aria-modal="true"
             aria-labelledby="fees-title"
@@ -103,13 +131,13 @@ const FeesModal = ({ open, onClose }: FeesModalProps) => {
             exit={{ y: '100%' }}
             transition={{ type: 'spring', stiffness: 280, damping: 32 }}
             onClick={(event) => event.stopPropagation()}
-            className="relative flex max-h-[calc(100dvh-4rem)] w-full flex-col overflow-hidden rounded-t-[2.5rem] bg-[#FFE0CC] sm:max-h-[calc(100dvh-5rem)] sm:rounded-t-[3.5rem]"
+            className="relative flex max-h-[calc(100dvh-4rem)] w-full flex-col overflow-hidden rounded-t-[2.5rem] bg-[#FFFFFF] sm:max-h-[calc(100dvh-5rem)] sm:rounded-t-[3.5rem]"
           >
             <div className="flex justify-end shrink-0 px-5 pt-4 sm:px-8 sm:pt-5 lg:px-12">
               <button
                 type="button"
                 onClick={onClose}
-                className="rounded-full bg-[#0A1628] min-h-11 px-5 py-2 text-sm font-semibold text-[#FF6A00] transition hover:brightness-110"
+                className="rounded-full bg-[#005080] itca-blue-surface min-h-11 px-5 py-2 text-sm font-semibold text-[var(--itca-accent-ink)] transition hover:brightness-110"
               >
                 Close
               </button>
@@ -119,12 +147,12 @@ const FeesModal = ({ open, onClose }: FeesModalProps) => {
               <div className="flex flex-col justify-between gap-6">
                 <h2
                   id="fees-title"
-                  className="max-w-md text-3xl font-bold leading-[1.15] text-[#0A1628] sm:text-4xl lg:text-[2.75rem]"
+                  className="max-w-md text-3xl font-bold leading-[1.15] text-[#005080] sm:text-4xl lg:text-[2.75rem]"
                 >
                   Pay D50 a semester, or settle {formatFeeAmount(FEE_TOTAL_REQUIRED)} in full before
                   you graduate.
                 </h2>
-                <p className="text-sm leading-relaxed text-[#0A1628]/75">
+                <p className="text-sm leading-relaxed text-[#005080]/75">
                   After payment you&apos;ll get a receipt email with a QR code. Present it to the
                   faculty officer to verify your dues.
                 </p>
@@ -132,7 +160,7 @@ const FeesModal = ({ open, onClose }: FeesModalProps) => {
 
               <form onSubmit={handleSubmit} className="w-full space-y-4">
                 <div>
-                  <p className="mb-2 text-sm font-medium text-[#0A1628]">Choose amount</p>
+                  <p className="mb-2 text-sm font-medium text-[#005080]">Choose amount</p>
                   <div className="grid grid-cols-2 gap-2" role="group" aria-label="Fee amount">
                     {(
                       [
@@ -149,8 +177,8 @@ const FeesModal = ({ open, onClose }: FeesModalProps) => {
                           aria-pressed={active}
                           className={`rounded-full px-4 py-3 text-left transition ${
                             active
-                              ? 'bg-[#0A1628] text-[#FF6A00]'
-                              : 'bg-white text-[#0A1628] hover:bg-white/80'
+                              ? 'bg-[#005080] itca-blue-surface text-[var(--itca-accent-ink)]'
+                              : 'bg-white itca-white-surface text-[#005080] hover:bg-white/80'
                           }`}
                         >
                           <span className="block text-base font-bold sm:text-lg">
@@ -158,7 +186,7 @@ const FeesModal = ({ open, onClose }: FeesModalProps) => {
                           </span>
                           <span
                             className={`mt-0.5 block text-xs ${
-                              active ? 'text-[#FF6A00]/80' : 'text-[#0A1628]/55'
+                              active ? 'text-[var(--itca-accent-ink)]/80' : 'text-[#005080]/55'
                             }`}
                           >
                             {option.hint}
@@ -170,7 +198,7 @@ const FeesModal = ({ open, onClose }: FeesModalProps) => {
                 </div>
 
                 <div>
-                  <label htmlFor="fee-full-name" className="text-sm font-medium text-[#0A1628]">
+                  <label htmlFor="fee-full-name" className="text-sm font-medium text-[#005080]">
                     Full name<span className="text-red-600">*</span>
                   </label>
                   <input
@@ -185,7 +213,7 @@ const FeesModal = ({ open, onClose }: FeesModalProps) => {
                 </div>
 
                 <div>
-                  <label htmlFor="fee-matric" className="text-sm font-medium text-[#0A1628]">
+                  <label htmlFor="fee-matric" className="text-sm font-medium text-[#005080]">
                     Matric number<span className="text-red-600">*</span>
                   </label>
                   <input
@@ -199,7 +227,7 @@ const FeesModal = ({ open, onClose }: FeesModalProps) => {
                 </div>
 
                 <div>
-                  <label htmlFor="fee-email" className="text-sm font-medium text-[#0A1628]">
+                  <label htmlFor="fee-email" className="text-sm font-medium text-[#005080]">
                     Email<span className="text-red-600">*</span>
                   </label>
                   <input
@@ -216,7 +244,7 @@ const FeesModal = ({ open, onClose }: FeesModalProps) => {
                 </div>
 
                 <div>
-                  <label htmlFor="fee-phone" className="text-sm font-medium text-[#0A1628]">
+                  <label htmlFor="fee-phone" className="text-sm font-medium text-[#005080]">
                     Telephone number<span className="text-red-600">*</span>
                   </label>
                   <input
@@ -236,7 +264,7 @@ const FeesModal = ({ open, onClose }: FeesModalProps) => {
                   <button
                     type="submit"
                     disabled={isSubmitting}
-                    className="rounded-md bg-white px-6 py-2.5 text-sm font-semibold text-[#0A1628] transition hover:bg-[#0A1628] hover:text-[#FF6A00] disabled:opacity-60"
+                    className="min-h-11 rounded-md bg-white itca-white-surface px-6 py-2.5 text-base font-semibold text-[#005080] transition hover:bg-[#005080] hover:text-white disabled:opacity-60"
                   >
                     {isSubmitting ? 'Starting payment…' : `Pay ${formatFeeAmount(amount)}`}
                   </button>

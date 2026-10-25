@@ -23,10 +23,10 @@ export const EditorialHero = ({ children, stats }: EditorialHeroProps) => {
   const reduce = usePublicReducedMotion();
 
   return (
-    <section className="bg-white px-5 pb-16 pt-28 sm:px-10 lg:px-16 lg:pb-24 lg:pt-36">
+    <section className="bg-white itca-white-surface px-5 pb-16 pt-28 sm:px-10 lg:px-16 lg:pb-24 lg:pt-36">
       <div className="mx-auto max-w-[1400px]">
         <motion.h1
-          className="max-w-5xl text-4xl font-bold leading-[1.08] tracking-tight text-[#0A1628] sm:text-5xl md:text-6xl lg:text-7xl"
+          className="max-w-5xl text-4xl font-bold leading-[1.08] tracking-tight text-[#005080] sm:text-5xl md:text-6xl lg:text-7xl"
           initial={reduce ? false : { opacity: 0, y: 36 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.85, ease: easeOut }}
@@ -48,10 +48,10 @@ export const EditorialHero = ({ children, stats }: EditorialHeroProps) => {
                 variants={reduce ? undefined : fadeUp}
                 transition={{ duration: 0.65, ease: easeOut }}
               >
-                <p className="text-5xl font-extrabold tracking-tight text-[#0A1628] sm:text-6xl lg:text-7xl">
+                <p className="text-5xl font-extrabold tracking-tight text-[#005080] sm:text-6xl lg:text-7xl">
                   {stat.value}
                 </p>
-                <p className="mt-2 text-base text-[#0A1628]/70 sm:text-lg">{stat.label}</p>
+                <p className="mt-2 text-base text-[#005080]/70 sm:text-lg">{stat.label}</p>
               </motion.div>
             ))}
           </motion.div>
@@ -90,8 +90,8 @@ export const SplitHero = ({
   lightText = false,
 }: SplitHeroProps) => {
   const reduce = usePublicReducedMotion();
-  const text = lightText ? 'text-white' : 'text-[#0A1628]';
-  const muted = lightText ? 'text-white/75' : 'text-[#0A1628]/75';
+  const text = lightText ? 'text-white' : 'text-[#005080]';
+  const muted = lightText ? 'text-white/75' : 'text-[#005080]/75';
 
   return (
     <section id="hero-banner" className="relative w-full overflow-x-clip">
@@ -188,7 +188,7 @@ export const FeaturedHeading = ({ children }: { children: ReactNode }) => {
         viewBox="0 0 120 140"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
-        className="h-24 w-20 shrink-0 text-[#0A1628] sm:h-28 sm:w-24"
+        className="h-24 w-20 shrink-0 text-[#005080] sm:h-28 sm:w-24"
         aria-hidden
       >
         <motion.path
@@ -223,7 +223,7 @@ export const FeaturedHeading = ({ children }: { children: ReactNode }) => {
           transition={{ duration: 0.4, delay: 0.9, ease: easeOut }}
         />
       </svg>
-      <h2 className="text-3xl font-bold tracking-tight text-[#0A1628] sm:text-4xl md:text-5xl">
+      <h2 className="text-3xl font-bold tracking-tight text-[#005080] sm:text-4xl md:text-5xl">
         {children}
       </h2>
     </Reveal>
@@ -246,7 +246,7 @@ export const SpotlightCard = ({
   imageAlt,
   title,
   kicker,
-  tone = '#D4E6F2',
+  tone = '#FFFFFF',
   ctaHref = '/community',
   ctaLabel = 'Explore the community',
 }: SpotlightProps) => {
@@ -278,18 +278,18 @@ export const SpotlightCard = ({
         style={{ backgroundColor: tone }}
       >
         {kicker && (
-          <p className="landing-mono text-sm text-[#0A1628]/70">
-            <span className="mr-2 inline-block h-1.5 w-1.5 rounded-full bg-[#0A1628]" />
+          <p className="landing-mono text-sm text-[#005080]/70">
+            <span className="mr-2 inline-block h-1.5 w-1.5 rounded-full bg-[#005080] itca-blue-surface" />
             {kicker}
           </p>
         )}
-        <h3 className="mt-8 max-w-md text-3xl font-bold leading-tight text-[#0A1628] sm:text-4xl lg:text-5xl">
+        <h3 className="mt-8 max-w-md text-3xl font-bold leading-tight text-[#005080] sm:text-4xl lg:text-5xl">
           {title}
         </h3>
         <motion.div whileHover={reduce ? undefined : { x: 4 }} transition={{ duration: 0.25 }}>
           <Link
             href={ctaHref}
-            className="mt-10 inline-flex w-fit rounded-full bg-[#0A1628] px-5 py-2.5 text-sm font-semibold text-[#FF6A00] transition hover:brightness-110"
+            className="mt-10 inline-flex w-fit rounded-full bg-[#005080] itca-blue-surface px-5 py-2.5 text-sm font-semibold text-[var(--itca-accent-ink)] transition hover:brightness-110"
           >
             {ctaLabel}
           </Link>
@@ -353,9 +353,11 @@ export const EditorialMosaic = ({
           );
         }
 
-        const text = tile.lightText ? 'text-white' : 'text-[#0A1628]';
-        const muted = tile.lightText ? 'text-white/75' : 'text-[#0A1628]/75';
-        const dot = tile.lightText ? 'bg-white' : 'bg-[#0A1628]';
+        const text = tile.lightText ? 'text-white' : 'text-[#005080]';
+        const muted = tile.lightText ? 'text-white/75' : 'text-[#005080]/75';
+        const dot = tile.lightText
+          ? 'bg-white itca-white-surface'
+          : 'bg-[#005080] itca-blue-surface';
 
         return (
           <motion.div

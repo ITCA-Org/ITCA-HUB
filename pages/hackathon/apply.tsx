@@ -8,7 +8,7 @@ import { BASE_URL } from '@/utils/url';
 
 import type { HackathonSettings } from '@/types/interfaces/hackathon';
 const inputClass =
-  'mt-2 w-full rounded-xl border border-[#0A1628]/15 bg-white px-4 py-3.5 text-base text-[#0A1628] transition placeholder:text-[#0A1628]/35 focus:border-[#005080] focus:outline-none focus:ring-2 focus:ring-[#005080]/15 disabled:opacity-60';
+  'mt-2 w-full rounded-xl border border-[#005080]/15 bg-white itca-white-surface px-4 py-3.5 text-base text-[#005080] transition placeholder:text-[#005080]/35 focus:border-[#005080] focus:outline-none focus:ring-2 focus:ring-[#005080]/15 disabled:opacity-60';
 
 export default function HackathonApplyPage() {
   const [settings, setSettings] = useState<HackathonSettings | null>(null);
@@ -71,68 +71,63 @@ export default function HackathonApplyPage() {
       path="/hackathon/apply"
       title="Apply for Hackathon 2026 | ITCA Hub"
       description="Submit your team application for the ITCA Hackathon 2026."
-      showFloatingCta={false}
       showNewsletter={false}
     >
-      <section className="min-h-screen bg-white px-5 pb-20 pt-28 text-[#0A1628] sm:px-10 md:pt-36 lg:px-16">
+      <section className="min-h-screen bg-white itca-white-surface px-5 pb-20 pt-28 text-[#005080] sm:px-10 md:pt-28 lg:px-16">
         <div className="mx-auto max-w-[1400px]">
           <Link
             href="/hackathon"
-            className="mb-8 inline-flex items-center gap-2 text-sm font-semibold text-[#005080] transition hover:text-[#FF6A00]"
+            className="mb-4 inline-flex items-center gap-2 text-sm font-semibold text-[#005080] transition hover:text-[var(--itca-accent-ink)]"
           >
             <ArrowLeft className="h-4 w-4" /> Back to hackathon
           </Link>
           <div className="grid gap-10 lg:grid-cols-[0.85fr_1.15fr] lg:items-start lg:gap-16">
             <aside className="lg:sticky lg:top-32">
-              <p className="landing-mono text-xs uppercase tracking-widest text-[#FF6A00]">
+              <p className="landing-mono text-xs uppercase tracking-widest text-[var(--itca-accent-ink)]">
                 Hackathon 2026 · Team application
               </p>
-              <h1 className="mt-4 text-4xl font-bold leading-[1.05] tracking-tight sm:text-6xl lg:text-7xl">
-                Bring your team.
-                <br />
-                <span className="text-[#005080]">Start something.</span>
+              <h1 className="mt-3 text-3xl font-semibold leading-tight sm:text-4xl">
+                Team application
               </h1>
-              <p className="mt-6 max-w-md text-base leading-relaxed text-[#0A1628]/65">
+              <p className="mt-3 max-w-md text-base leading-relaxed text-[#005080]/65">
                 Tell us who you are, what you bring, and what you hope to build. Submit once per
                 team using your team leader&apos;s email.
               </p>
-              <div className="mt-7 inline-flex items-center gap-3 rounded-full bg-[#FFE0CC] px-5 py-3 text-sm font-semibold">
-                <span className="h-2 w-2 rounded-full bg-[#FF6A00]" />
-                21 October 2026
-              </div>
               {!reference && (
                 <ol
                   aria-label="Application progress"
-                  className="mt-10 hidden max-w-md border-t border-[#0A1628]/15 lg:block"
+                  className="mt-10 hidden max-w-md border-t border-[#005080]/15 lg:block"
                 >
                   {steps.map((label, index) => (
                     <li
                       key={label}
                       aria-current={step === index ? 'step' : undefined}
-                      className="flex items-center gap-4 border-b border-[#0A1628]/15 py-4"
+                      className="flex items-center gap-4 border-b border-[#005080]/15 py-4"
                     >
                       <span
-                        className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-sm font-semibold ${index <= step ? 'bg-[#0A1628] text-[#FF6A00]' : 'bg-[#D4E6F2] text-[#005080]'}`}
+                        className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-sm font-semibold ${index <= step ? 'bg-[#005080] itca-blue-surface text-[var(--itca-accent-ink)]' : 'bg-[#FFFFFF] text-[#005080]'}`}
                       >
                         {index < step ? <Check className="h-4 w-4" /> : `0${index + 1}`}
                       </span>
                       <span
-                        className={`text-base ${index === step ? 'font-bold' : 'text-[#0A1628]/55'}`}
+                        className={`text-base ${index === step ? 'font-bold' : 'text-[#005080]/55'}`}
                       >
                         {label}
                       </span>
-                      {index === step && <ArrowRight className="ml-auto h-4 w-4 text-[#FF6A00]" />}
+                      {index === step && (
+                        <ArrowRight className="ml-auto h-4 w-4 text-[var(--itca-accent-ink)]" />
+                      )}
                     </li>
                   ))}
                 </ol>
               )}
-              <p className="mt-6 hidden text-sm text-[#0A1628]/55 lg:block">
+              <p className="mt-6 hidden text-sm text-[#005080]/55 lg:block">
                 Applications are reviewed by the organisers.
               </p>
             </aside>
             <div className="min-w-0">
               {reference ? (
-                <div role="status" className="rounded-[2rem] bg-[#D4E6F2] p-8 sm:p-10">
+                <div role="status" className="rounded-[2rem] bg-[#FFFFFF] p-8 sm:p-10">
                   <CheckCircle2 className="mb-6 h-12 w-12 text-[#005080]" />
                   <h2 className="text-3xl font-bold">Application received.</h2>
                   <p className="mt-3">
@@ -140,7 +135,8 @@ export default function HackathonApplyPage() {
                     Submission does not yet confirm participation.
                   </p>
                 </div>
-              ) : settings?.applicationsOpen ? (
+              ) : settings?.applicationsOpen &&
+                new Date() < new Date('2026-10-22T00:00:00+00:00') ? (
                 <form
                   id="application-form"
                   onSubmit={submit}
@@ -149,14 +145,14 @@ export default function HackathonApplyPage() {
                     if (target.name && target.type !== 'checkbox')
                       setAnswers((previous) => ({ ...previous, [target.name]: target.value }));
                   }}
-                  className="scroll-mt-28 space-y-7 rounded-[2rem] bg-[#D4E6F2] p-5 sm:p-8 lg:p-10"
+                  className="scroll-mt-28 space-y-7 rounded-[2rem] bg-[#FFFFFF] p-5 sm:p-8 lg:p-10"
                 >
                   <div className="border-b border-[#005080]/20 pb-6">
                     <div className="flex items-center justify-between gap-4">
                       <p className="landing-mono text-xs uppercase tracking-widest text-[#005080]">
                         Step 0{step + 1} / 04
                       </p>
-                      <span className="text-xs text-[#0A1628]/55">
+                      <span className="text-xs text-[#005080]/55">
                         {Math.round(((step + 1) / 4) * 100)}% through the form
                       </span>
                     </div>
@@ -164,7 +160,7 @@ export default function HackathonApplyPage() {
                       {steps.map((label, index) => (
                         <span
                           key={label}
-                          className={`h-1.5 flex-1 rounded-full ${index <= step ? 'bg-[#FF6A00]' : 'bg-[#005080]/15'}`}
+                          className={`h-1.5 flex-1 rounded-full ${index <= step ? 'bg-[#005080] itca-blue-surface' : 'bg-[#005080]/15'}`}
                         />
                       ))}
                     </div>
@@ -174,7 +170,7 @@ export default function HackathonApplyPage() {
                     >
                       {steps[step]}
                     </h2>
-                    <p className="mt-3 text-sm leading-relaxed text-[#0A1628]/65">
+                    <p className="mt-3 text-sm leading-relaxed text-[#005080]/65">
                       {
                         [
                           'Start with your team name, contact details, and institution.',
@@ -459,7 +455,7 @@ export default function HackathonApplyPage() {
                         type="button"
                         disabled={busy}
                         onClick={() => advance(step - 1)}
-                        className="inline-flex items-center gap-2 rounded-full border border-[#0A1628]/20 px-4 py-3.5 text-sm font-semibold transition hover:bg-white/50 disabled:opacity-50"
+                        className="inline-flex items-center gap-2 rounded-full border border-[#005080]/20 px-4 py-3.5 text-sm font-semibold transition hover:bg-white/50 disabled:opacity-50"
                       >
                         <ArrowLeft className="h-4 w-4" /> Back
                       </button>
@@ -476,12 +472,14 @@ export default function HackathonApplyPage() {
                   </div>
                 </form>
               ) : (
-                <p className="rounded-[2rem] bg-[#D4E6F2] p-8">
+                <p className="rounded-[2rem] bg-[#FFFFFF] p-8">
                   {loadError
                     ? 'Applications are unavailable until event information can be loaded.'
-                    : settings
-                      ? 'Team applications are currently closed.'
-                      : 'Loading applications…'}
+                    : settings && new Date() >= new Date('2026-10-22T00:00:00+00:00')
+                      ? 'The event has ended. Applications are closed.'
+                      : settings
+                        ? 'Team applications are currently closed.'
+                        : 'Loading applications…'}
                 </p>
               )}
             </div>

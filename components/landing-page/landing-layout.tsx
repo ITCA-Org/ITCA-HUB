@@ -51,7 +51,9 @@ const LandingLayout = ({
 
       <div className="landing-itca">
         <Header homeHero={homeHero} />
-        <main>{children}</main>
+        <main id="main-content" tabIndex={-1}>
+          {children}
+        </main>
         {showNewsletter && <NewsletterSection />}
         <Footer />
         {showFloatingCta && <FloatingCta />}

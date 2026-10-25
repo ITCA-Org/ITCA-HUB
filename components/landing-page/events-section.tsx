@@ -97,13 +97,13 @@ const formatTimeRange = (event: Event) => {
 const getStatusConfig = (status: string) => {
   switch (status) {
     case 'upcoming':
-      return { color: 'bg-[#FFE0CC] text-[#0A1628]', text: 'Upcoming' };
+      return { color: 'bg-[#FFFFFF] text-[#005080]', text: 'Upcoming' };
     case 'ongoing':
-      return { color: 'bg-[#005080] text-white', text: 'Ongoing' };
+      return { color: 'bg-[#005080] itca-blue-surface text-white', text: 'Ongoing' };
     case 'completed':
-      return { color: 'bg-[#D4E6F2] text-[#0A1628]', text: 'Completed' };
+      return { color: 'bg-[#FFFFFF] text-[#005080]', text: 'Completed' };
     default:
-      return { color: 'bg-white text-[#0A1628]', text: 'Unknown' };
+      return { color: 'bg-white itca-white-surface text-[#005080]', text: 'Unknown' };
   }
 };
 
@@ -121,7 +121,7 @@ const EventCard = ({ event, index }: { event: Event; index: number }) => {
       viewport={{ once: true, amount: 0.2 }}
       transition={{ duration: 0.55, delay: index * 0.08, ease: [0.22, 1, 0.36, 1] }}
       whileHover={{ y: -6 }}
-      className="group overflow-hidden rounded-[2rem] bg-white"
+      className="group overflow-hidden rounded-[2rem] bg-white itca-white-surface"
     >
       <div className="relative aspect-[4/3] w-full overflow-hidden">
         {event.imageUrl && !imageError ? (
@@ -134,7 +134,7 @@ const EventCard = ({ event, index }: { event: Event; index: number }) => {
             className="object-cover transition-transform duration-500 group-hover:scale-105"
           />
         ) : (
-          <div className="flex h-full w-full items-center justify-center bg-[#005080]">
+          <div className="flex h-full w-full items-center justify-center bg-[#005080] itca-blue-surface">
             <Calendar className="h-14 w-14 text-white" />
           </div>
         )}
@@ -142,7 +142,7 @@ const EventCard = ({ event, index }: { event: Event; index: number }) => {
 
       <div className="px-6 pb-6 pt-5">
         <div className="mb-4 flex items-start justify-between gap-3">
-          <h3 className="text-xl font-bold leading-snug text-[#0A1628]">{event.title}</h3>
+          <h3 className="text-xl font-bold leading-snug text-[#005080]">{event.title}</h3>
           <span
             className={`shrink-0 rounded-full px-3 py-1 text-xs font-semibold ${statusConfig.color}`}
           >
@@ -150,9 +150,9 @@ const EventCard = ({ event, index }: { event: Event; index: number }) => {
           </span>
         </div>
 
-        <p className="mb-5 line-clamp-2 text-sm text-[#0A1628]/70">{event.description}</p>
+        <p className="mb-5 line-clamp-2 text-sm text-[#005080]/70">{event.description}</p>
 
-        <div className="space-y-2 text-sm text-[#0A1628]/70">
+        <div className="space-y-2 text-sm text-[#005080]/70">
           <div className="flex items-center gap-2">
             <Calendar className="h-4 w-4" />
             <span>{formatDateRange(event)}</span>
@@ -195,7 +195,13 @@ const EventCard = ({ event, index }: { event: Event; index: number }) => {
 
 const PAGE_SIZE = 3;
 
-const EventsSection = ({ initialEvents }: { initialEvents?: Event[] }) => {
+const EventsSection = ({
+  initialEvents,
+  compact = false,
+}: {
+  initialEvents?: Event[];
+  compact?: boolean;
+}) => {
   const hasInitialData = initialEvents !== undefined;
   const [events, setEvents] = useState<Event[]>(initialEvents ?? []);
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
@@ -238,30 +244,29 @@ const EventsSection = ({ initialEvents }: { initialEvents?: Event[] }) => {
   };
 
   return (
-    <section id="events" className="bg-[#0A1628] px-4 py-20 sm:px-8 lg:px-12">
+    <section
+      id="events"
+      className={`bg-[#005080] itca-blue-surface px-4 sm:px-8 lg:px-12 ${compact ? 'py-4 sm:py-8' : 'pt-2 pb-20 sm:py-20'}`}
+    >
       <div className="mx-auto max-w-[1400px]">
-        <motion.div
-          className="mb-8 flex flex-col gap-6 md:flex-row md:items-end md:justify-between"
-          initial={{ opacity: 0, y: 24 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, amount: 0.4 }}
-          transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1] }}
-        >
-          <h2 className="max-w-xl text-4xl font-bold text-white sm:text-5xl">
-            What&apos;s happening <span className="text-[#FF6A00]">next</span>
+        <div className="mb-8 flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
+          <h2
+            className={`max-w-xl font-bold text-white ${compact ? 'text-2xl' : 'text-4xl sm:text-5xl'}`}
+          >
+            What&apos;s happening <span className="text-[var(--itca-accent-ink)]">next</span>
           </h2>
           <p className="landing-mono max-w-md text-sm text-white/70">
             Bootcamps, workshops, sporting events, and other initiatives organised by ITCA for
             School of ICT students.
           </p>
-        </motion.div>
+        </div>
 
         {isLoading ? (
           <div className="flex items-center justify-center py-20">
-            <div className="h-12 w-12 animate-spin rounded-full border-2 border-[#FF6A00] border-t-transparent" />
+            <div className="h-12 w-12 animate-spin rounded-full border-2 border-[#005080] border-t-transparent" />
           </div>
         ) : error ? (
-          <div className="rounded-[2rem] bg-[#005080] p-10 text-white">
+          <div className="rounded-[2rem] bg-[#005080] itca-blue-surface p-10 text-white">
             <h3 className="text-3xl font-bold">Unable to load events</h3>
             <p className="mt-3 max-w-xl">
               We&apos;re having trouble connecting to our events service. Refresh the page or check
@@ -270,17 +275,16 @@ const EventsSection = ({ initialEvents }: { initialEvents?: Event[] }) => {
             <button
               type="button"
               onClick={() => window.location.reload()}
-              className="mt-6 rounded-full bg-[#0A1628] px-5 py-3 text-sm font-semibold text-[#FF6A00]"
+              className="mt-6 rounded-full bg-[#005080] itca-blue-surface px-5 py-3 text-sm font-semibold text-[var(--itca-accent-ink)]"
             >
               Try again
             </button>
           </div>
         ) : events.length === 0 ? (
-          <div className="rounded-[2rem] bg-[#FFE0CC] p-10 text-[#0A1628]">
+          <div className="rounded-[2rem] bg-[#FFFFFF] p-10 text-[#005080]">
             <h3 className="text-3xl font-bold">No upcoming events yet</h3>
             <p className="mt-3 max-w-xl">
-              The next workshop, sports day, or campus initiative is being planned. Check back
-              soon.
+              The next workshop, sports day, or campus initiative is being planned. Check back soon.
             </p>
           </div>
         ) : (
@@ -296,7 +300,7 @@ const EventsSection = ({ initialEvents }: { initialEvents?: Event[] }) => {
                 <button
                   type="button"
                   onClick={loadMore}
-                  className="inline-flex h-12 items-center justify-center rounded-full bg-[#FF6A00] px-8 text-base font-semibold text-white transition hover:brightness-110"
+                  className="inline-flex h-12 items-center justify-center rounded-full bg-[#005080] itca-blue-surface px-8 text-base font-semibold text-white transition hover:brightness-110"
                 >
                   Load more
                 </button>

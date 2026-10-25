@@ -20,7 +20,7 @@ const MarqueeBanner = () => {
 
   return (
     <motion.div
-      className="landing-marquee relative overflow-hidden bg-[#005080] py-4 text-white"
+      className="landing-marquee relative overflow-hidden bg-[#005080] itca-blue-surface py-4 text-white"
       initial={reduce ? false : { opacity: 0, y: 12 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
@@ -36,7 +36,7 @@ const MarqueeBanner = () => {
         {loop.map((phrase, index) => (
           <span key={`${phrase}-${index}`} className="flex items-center gap-6">
             {phrase}
-            <span aria-hidden className="text-2xl font-light text-[#FF6A00]">
+            <span aria-hidden className="text-2xl font-light text-[var(--itca-accent-ink)]">
               →
             </span>
           </span>

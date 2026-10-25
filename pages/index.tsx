@@ -1,6 +1,5 @@
 import Head from 'next/head';
 import axios from 'axios';
-import { useState } from 'react';
 import { UserAuth } from '@/types';
 import { NextApiRequest } from 'next';
 import { isLoggedIn } from '@/utils/auth';
@@ -16,9 +15,9 @@ import AboutSection from '../components/landing-page/about-section';
 import ImpactSection from '../components/landing-page/impact-section';
 import ApproachSection from '../components/landing-page/approach-section';
 import MarqueeBanner from '../components/landing-page/marquee-banner';
-import FloatingCta from '../components/landing-page/floating-cta';
-import IntroSplash from '../components/landing-page/intro-splash';
+import StudentServices from '../components/landing-page/student-services';
 import NewsletterSection from '../components/landing-page/newsletter-section';
+import FloatingCta from '../components/landing-page/floating-cta';
 
 const PAGE_TITLE = 'ITCA Hub | School of ICT Student Community';
 const PAGE_DESCRIPTION =
@@ -44,9 +43,6 @@ interface HomePageProps {
 }
 
 const HomePage = ({ initialEvents }: HomePageProps) => {
-  const [showIntro, setShowIntro] = useState(true);
-  const [pageReady, setPageReady] = useState(false);
-
   return (
     <>
       <Head>
@@ -79,35 +75,23 @@ const HomePage = ({ initialEvents }: HomePageProps) => {
         />
       </Head>
       <div className="landing-itca">
-        {showIntro && (
-          <IntroSplash
-            onReveal={() => setPageReady(true)}
-            onComplete={() => setShowIntro(false)}
-          />
-        )}
-
-        <div
-          className={`transition-opacity duration-500 ${
-            pageReady ? 'opacity-100' : 'opacity-0 pointer-events-none'
-          }`}
-        >
-          <Header homeHero />
-          <main>
-            <HeroSection />
-            <div className="relative z-20">
-              <AboutSection />
-              <MarqueeBanner />
-              <ImpactSection />
-              <EventsSection initialEvents={initialEvents} />
-              <ApproachSection />
-              <DegreesSection />
-              <ResourcesSection />
-              <NewsletterSection />
-              <Footer />
-            </div>
-          </main>
-          {pageReady && <FloatingCta />}
-        </div>
+        <Header />
+        <main id="main-content" tabIndex={-1}>
+          <HeroSection />
+          <div className="relative z-20">
+            <StudentServices />
+            <EventsSection initialEvents={initialEvents} />
+            <ResourcesSection />
+            <AboutSection />
+            <MarqueeBanner />
+            <ImpactSection />
+            <ApproachSection />
+            <DegreesSection />
+            <NewsletterSection />
+          </div>
+        </main>
+        <Footer />
+        <FloatingCta />
       </div>
     </>
   );
@@ -134,7 +118,9 @@ export const getServerSideProps = async ({ req }: { req: NextApiRequest }) => {
   let initialEvents: Event[] = [];
 
   try {
-    const response = await axios.get(`${BASE_URL}/events/upcoming?page=1&limit=24`);
+    const response = await axios.get(`${BASE_URL}/events/upcoming?page=1&limit=24`, {
+      timeout: 8000,
+    });
 
     if (response.data.status === 'success') {
       initialEvents = response.data.data;

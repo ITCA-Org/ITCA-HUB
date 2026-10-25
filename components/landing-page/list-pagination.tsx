@@ -37,14 +37,13 @@ const ListPagination = ({
   }
 
   return (
-    <div className="mt-10 border-t border-[#0A1628]/10 pt-6">
+    <div className="mt-10 border-t border-[#005080]/10 pt-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <p className="text-sm text-[#0A1628]/60">
-          Showing{' '}
-          <span className="font-semibold text-[#0A1628]">{startIndex + 1}</span>
+        <p className="text-sm text-[#005080]/60">
+          Showing <span className="font-semibold text-[#005080]">{startIndex + 1}</span>
           {' – '}
-          <span className="font-semibold text-[#0A1628]">{endIndex}</span> of{' '}
-          <span className="font-semibold text-[#0A1628]">{total}</span> {itemLabel}
+          <span className="font-semibold text-[#005080]">{endIndex}</span> of{' '}
+          <span className="font-semibold text-[#005080]">{total}</span> {itemLabel}
         </p>
 
         <div className="flex items-center justify-between gap-3 sm:justify-end">
@@ -65,16 +64,13 @@ const ListPagination = ({
             Next
           </button>
 
-          <nav
-            aria-label="Pagination"
-            className="hidden items-center gap-1 sm:flex"
-          >
+          <nav aria-label="Pagination" className="hidden items-center gap-1 sm:flex">
             <button
               type="button"
               disabled={page <= 0}
               onClick={() => onPageChange(Math.max(0, page - 1))}
               aria-label="Previous page"
-              className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-[#0A1628]/10 text-[#0A1628]/70 transition hover:border-[#005080]/30 hover:text-[#005080] disabled:cursor-not-allowed disabled:opacity-40"
+              className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-[#005080]/10 text-[#005080]/70 transition hover:border-[#005080]/30 hover:text-[#005080] disabled:cursor-not-allowed disabled:opacity-40"
             >
               <ChevronLeft className="h-5 w-5" />
             </button>
@@ -87,8 +83,8 @@ const ListPagination = ({
                 onClick={() => onPageChange(pageNum)}
                 className={`inline-flex h-10 min-w-10 items-center justify-center rounded-full px-3 text-sm font-semibold transition ${
                   pageNum === page
-                    ? 'bg-[#005080] text-white'
-                    : 'text-[#0A1628]/75 hover:bg-[#0A1628]/5'
+                    ? 'bg-[#005080] itca-blue-surface text-white'
+                    : 'text-[#005080]/75 hover:bg-[#005080]/5'
                 }`}
               >
                 {pageNum + 1}
@@ -100,7 +96,7 @@ const ListPagination = ({
               disabled={page + 1 >= totalPages}
               onClick={() => onPageChange(Math.min(totalPages - 1, page + 1))}
               aria-label="Next page"
-              className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-[#0A1628]/10 text-[#0A1628]/70 transition hover:border-[#005080]/30 hover:text-[#005080] disabled:cursor-not-allowed disabled:opacity-40"
+              className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-[#005080]/10 text-[#005080]/70 transition hover:border-[#005080]/30 hover:text-[#005080] disabled:cursor-not-allowed disabled:opacity-40"
             >
               <ChevronRight className="h-5 w-5" />
             </button>

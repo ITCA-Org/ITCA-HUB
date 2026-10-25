@@ -12,7 +12,7 @@ type FeedbackModalProps = {
 };
 
 const fieldClass =
-  'mt-1.5 w-full rounded-md border-0 bg-white px-3 py-2.5 text-sm text-[#0A1628] placeholder:text-[#0A1628]/40 outline-none focus:ring-2 focus:ring-[#0A1628]/20';
+  'mt-1.5 w-full rounded-md border-0 bg-white itca-white-surface px-3 py-2.5 text-sm text-[#005080] placeholder:text-[#005080]/40 outline-none focus:ring-2 focus:ring-[#005080]/20';
 
 const FeedbackModal = ({ open, onClose }: FeedbackModalProps) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -76,7 +76,7 @@ const FeedbackModal = ({ open, onClose }: FeedbackModalProps) => {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="fixed inset-0 z-[60] flex items-end justify-center bg-[#0A1628]/55 px-0 pt-16 sm:pt-20"
+          className="fixed inset-0 z-[60] flex items-end justify-center bg-[#005080]/55 px-0 pt-16 sm:pt-20"
           onClick={onClose}
         >
           <motion.div
@@ -88,13 +88,13 @@ const FeedbackModal = ({ open, onClose }: FeedbackModalProps) => {
             exit={{ y: '100%' }}
             transition={{ type: 'spring', stiffness: 280, damping: 32 }}
             onClick={(event) => event.stopPropagation()}
-            className="relative flex max-h-[calc(100dvh-4rem)] w-full flex-col overflow-hidden rounded-t-[2.5rem] bg-[#FFE0CC] sm:max-h-[calc(100dvh-5rem)] sm:rounded-t-[3.5rem]"
+            className="relative flex max-h-[calc(100dvh-4rem)] w-full flex-col overflow-hidden rounded-t-[2.5rem] bg-[#FFFFFF] sm:max-h-[calc(100dvh-5rem)] sm:rounded-t-[3.5rem]"
           >
             <div className="flex justify-end shrink-0 px-5 pt-4 sm:px-8 sm:pt-5 lg:px-12">
               <button
                 type="button"
                 onClick={onClose}
-                className="rounded-full bg-[#0A1628] min-h-11 px-5 py-2 text-sm font-semibold text-[#FF6A00] transition hover:brightness-110"
+                className="rounded-full bg-[#005080] itca-blue-surface min-h-11 px-5 py-2 text-sm font-semibold text-[var(--itca-accent-ink)] transition hover:brightness-110"
               >
                 Close
               </button>
@@ -104,12 +104,15 @@ const FeedbackModal = ({ open, onClose }: FeedbackModalProps) => {
               <div className="flex flex-col justify-between gap-6">
                 <h2
                   id="feedback-title"
-                  className="max-w-md text-3xl font-bold leading-[1.15] text-[#0A1628] sm:text-4xl lg:text-[2.75rem]"
+                  className="max-w-md text-3xl font-bold leading-[1.15] text-[#005080] sm:text-4xl lg:text-[2.75rem]"
                 >
-                  Whether you have thoughts on a recent event, something that could work better, or
-                  just want to say hi—you&apos;re in the right place.
+                  Share your feedback
                 </h2>
-                <p className="text-sm text-[#0A1628]">
+                <p className="hidden max-w-md text-lg leading-8 text-[#005080]/75 lg:block">
+                  Share a suggestion, tell us what could work better, or let us know what you&apos;d
+                  like to see from ITCA.
+                </p>
+                <p className="text-sm text-[#005080]">
                   If you&apos;d prefer to reach out directly...{' '}
                   <a href={CONTACT_MAIL} className="underline underline-offset-4">
                     itca@utg.edu.gm
@@ -119,7 +122,7 @@ const FeedbackModal = ({ open, onClose }: FeedbackModalProps) => {
 
               <form onSubmit={handleSubmit} className="w-full space-y-4">
                 <div>
-                  <label htmlFor="fullName" className="text-sm font-medium text-[#0A1628]">
+                  <label htmlFor="fullName" className="text-sm font-medium text-[#005080]">
                     Full name
                   </label>
                   <input
@@ -133,7 +136,7 @@ const FeedbackModal = ({ open, onClose }: FeedbackModalProps) => {
                 </div>
 
                 <div>
-                  <label htmlFor="email" className="text-sm font-medium text-[#0A1628]">
+                  <label htmlFor="email" className="text-sm font-medium text-[#005080]">
                     Email
                   </label>
                   <input
@@ -144,13 +147,13 @@ const FeedbackModal = ({ open, onClose }: FeedbackModalProps) => {
                     placeholder="Your email address..."
                     className={fieldClass}
                   />
-                  <p className="mt-1.5 text-xs text-[#0A1628]/55">
+                  <p className="mt-1.5 text-xs text-[#005080]/55">
                     Optional — add it to receive a confirmation email.
                   </p>
                 </div>
 
                 <div>
-                  <label htmlFor="organization" className="text-sm font-medium text-[#0A1628]">
+                  <label htmlFor="organization" className="text-sm font-medium text-[#005080]">
                     School / Department<span className="text-red-600">*</span>
                   </label>
                   <select
@@ -171,7 +174,7 @@ const FeedbackModal = ({ open, onClose }: FeedbackModalProps) => {
                 </div>
 
                 <div>
-                  <label htmlFor="message" className="text-sm font-medium text-[#0A1628]">
+                  <label htmlFor="message" className="text-sm font-medium text-[#005080]">
                     Feedback<span className="text-red-600">*</span>
                   </label>
                   <textarea
@@ -188,7 +191,7 @@ const FeedbackModal = ({ open, onClose }: FeedbackModalProps) => {
                   <button
                     type="submit"
                     disabled={isSubmitting}
-                    className="rounded-md bg-white px-6 py-2.5 text-sm font-semibold text-[#0A1628] transition hover:bg-[#0A1628] hover:text-[#FF6A00] disabled:opacity-60"
+                    className="min-h-11 rounded-md bg-white itca-white-surface px-6 py-2.5 text-base font-semibold text-[#005080] transition hover:bg-[#005080] hover:text-white disabled:opacity-60"
                   >
                     {isSubmitting ? 'Sending...' : 'Submit'}
                   </button>

@@ -1,5 +1,26 @@
 @import 'tailwindcss';
 
+@keyframes mobile-nav-item-enter {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.mobile-nav-item {
+  animation: mobile-nav-item-enter 220ms ease-out both;
+}
+
+@media (min-width: 1024px) {
+  .mobile-nav-item {
+    animation: none;
+  }
+}
+
 @plugin "tailwindcss-animate";
 
 @custom-variant dark (&:is(.dark *));
@@ -74,7 +95,7 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
+  --font-sans: var(--font-manrope), system-ui, sans-serif;
   --font-mono: var(--font-geist-mono);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
@@ -115,10 +136,7 @@ body {
   scroll-behavior: smooth;
   color: var(--foreground);
   background: var(--background);
-  font-family:
-    system-ui,
-    -apple-system,
-    sans-serif;
+  font-family: var(--font-manrope), system-ui, sans-serif;
 }
 
 .dark {
@@ -160,15 +178,15 @@ body {
 }
 
 .landing-itca {
-  color: #0a1628;
+  color: #005080;
   background: #ffffff;
-  font-family: 'Space Grotesk', system-ui, sans-serif;
+  font-family: var(--font-manrope), system-ui, sans-serif;
   overflow-x: clip;
-  --itca-ink: #0a1628;
+  --itca-ink: #005080;
   --itca-blue: #005080;
-  --itca-blue-soft: #d4e6f2;
-  --itca-orange: #ff6a00;
-  --itca-orange-soft: #ffe0cc;
+  --itca-blue-soft: #ffffff;
+  --itca-orange: #005080;
+  --itca-orange-soft: #ffffff;
 }
 
 .landing-itca button,
@@ -181,7 +199,7 @@ body {
 .landing-itca h1,
 .landing-itca h2,
 .landing-itca h3 {
-  font-family: 'Space Grotesk', system-ui, sans-serif;
+  font-family: var(--font-manrope), system-ui, sans-serif;
   letter-spacing: -0.03em;
 }
 
@@ -238,8 +256,30 @@ body {
   animation: none;
 }
 
+@keyframes landing-partners-marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.landing-partners-track {
+  animation: landing-partners-marquee 42s linear infinite;
+}
+
+.landing-partners-track:hover {
+  animation-play-state: paused;
+}
+
+.landing-partners-track--static {
+  animation: none;
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .landing-marquee-track {
+  .landing-marquee-track,
+  .landing-partners-track {
     animation: none;
   }
 
@@ -469,7 +509,7 @@ input[type='password']::-webkit-credentials-auto-fill-button {
 
 /* Shared public-app typography and palette for the admin workspace. */
 .admin-itca {
-  font-family: 'Space Grotesk', system-ui, sans-serif;
+  font-family: var(--font-manrope), system-ui, sans-serif;
   --primary: #0a1628;
   --primary-foreground: #ffffff;
   --ring: #005080;
@@ -558,4 +598,95 @@ input[type='password']::-webkit-credentials-auto-fill-button {
 
 .past-paper-content code {
   overflow-wrap: anywhere;
+}
+
+/* Keep keyboard position visible across public student flows. */
+.landing-itca :is(a, button, input, select, textarea):focus-visible {
+  outline: 3px solid #005080;
+  outline-offset: 4px;
+}
+#main-content {
+  scroll-margin-top: 8rem;
+}
+.landing-itca footer :is(a, button):focus-visible {
+  outline-color: #ffffff;
+}
+
+#library,
+#upcoming,
+#catalogue,
+#resources {
+  scroll-margin-top: 8rem;
+}
+
+/* Blue and white surfaces keep accent labels readable in either context. */
+.landing-itca,
+.itca-white-surface {
+  --itca-accent-ink: #005080;
+}
+.itca-blue-surface {
+  --itca-accent-ink: #ffffff;
+}
+
+.itca-blue-surface :is(a, button, input):focus-visible,
+.itca-blue-surface:focus-visible {
+  outline-color: #ffffff;
+}
+
+.landing-itca nav a[aria-current='page'] {
+  text-decoration: underline;
+  text-underline-offset: 6px;
+}
+
+/* Keep focused content clear of the fixed header. */
+.landing-itca :is(a, button, input, select, textarea, summary, [tabindex]) {
+  scroll-margin-top: 7rem;
+}
+.landing-itca :is(a, button, input, select, textarea, summary):focus-visible {
+  outline: 3px solid #005080;
+  outline-offset: 4px;
+}
+.landing-itca :is(.itca-blue-surface, .bg-\[\#005080\]) :focus-visible {
+  outline-color: white;
+}
+@media (prefers-reduced-motion: reduce) {
+  .landing-itca *,
+  .landing-itca *::before,
+  .landing-itca *::after {
+    scroll-behavior: auto !important;
+    animation: none !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Fields must remain visible on white cards and modal surfaces. */
+body
+  :is(input, select, textarea):not([type='checkbox']):not([type='radio']):not([type='hidden']):not(
+    [type='range']
+  ):not([type='color']):not([type='submit']):not([type='button']):not([type='reset']) {
+  border: 1px solid rgb(0 80 128 / 70%);
+  background-color: #ffffff;
+  color: #005080;
+  min-height: 44px;
+  font-size: 16px;
+  border-radius: 0.75rem;
+}
+body :is(input, textarea)::placeholder {
+  color: rgb(0 80 128 / 75%);
+  opacity: 1;
+}
+body :is(input, select, textarea):focus-visible {
+  border-color: #005080;
+  outline: 3px solid #005080;
+  outline-offset: 2px;
+}
+body textarea {
+  min-height: 112px;
+}
+body :is(input[type='checkbox'], input[type='radio']) {
+  accent-color: #005080;
+}
+body :is(input, select, textarea):disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
 }

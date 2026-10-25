@@ -34,7 +34,7 @@ const degrees: Degree[] = [
       'Strong foundation in computational theory and practice',
       'Advanced algorithms and data structures',
     ],
-    color: '#FFE0CC',
+    color: '#FFFFFF',
   },
   {
     id: 2,
@@ -51,7 +51,7 @@ const degrees: Degree[] = [
       'Enterprise systems integration',
       'IT service management',
     ],
-    color: '#D4E6F2',
+    color: '#FFFFFF',
   },
   {
     id: 3,
@@ -72,31 +72,36 @@ const degrees: Degree[] = [
   },
 ];
 
-const DegreesSection = () => {
-  const [openId, setOpenId] = useState<number>(1);
+const DegreesSection = ({ compact = false }: { compact?: boolean }) => {
+  const [openId, setOpenId] = useState<number>(0);
   const reduce = usePublicReducedMotion();
 
   return (
-    <section id="degrees" className="bg-white py-20">
-      <div className="mx-auto mb-12 max-w-[1400px] px-4 sm:px-8 lg:px-12">
-        <Reveal className="flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
-          <h2 className="max-w-3xl text-4xl font-bold text-[#0A1628] sm:text-5xl lg:text-6xl">
-            The programmes that make up our community
-          </h2>
-          <p className="landing-mono max-w-md text-base text-[#0A1628]/70 sm:text-lg">
-            Students from every School of ICT undergraduate programme are ITCA members.
-          </p>
-        </Reveal>
-      </div>
+    <section
+      id="degrees"
+      className={`bg-white itca-white-surface ${compact ? 'pb-10 pt-4' : 'pb-8 pt-20 sm:pb-10 lg:pb-12'}`}
+    >
+      {!compact && (
+        <div className="mx-auto mb-12 max-w-[1400px] px-4 sm:px-8 lg:px-12">
+          <Reveal className="flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
+            <h2 className="max-w-3xl text-4xl font-bold text-[#005080] sm:text-5xl lg:text-6xl">
+              The programmes that make up our community
+            </h2>
+            <p className="landing-mono max-w-md text-base text-[#005080]/70 sm:text-lg">
+              Students from every School of ICT undergraduate programme are ITCA members.
+            </p>
+          </Reveal>
+        </div>
+      )}
 
       <div className="w-full space-y-5">
         {degrees.map((degree, index) => {
           const isOpen = openId === degree.id;
           const imageLeft = index % 2 === 1;
           const onBlue = degree.color === '#005080';
-          const text = onBlue ? 'text-white' : 'text-[#0A1628]';
-          const muted = onBlue ? 'text-white/80' : 'text-[#0A1628]/80';
-          const dot = onBlue ? 'bg-white' : 'bg-[#0A1628]';
+          const text = onBlue ? 'text-white' : 'text-[#005080]';
+          const muted = onBlue ? 'text-white/80' : 'text-[#005080]/80';
+          const dot = onBlue ? 'bg-white itca-white-surface' : 'bg-[#005080] itca-blue-surface';
 
           return (
             <motion.article
@@ -140,10 +145,8 @@ const DegreesSection = () => {
                 </div>
 
                 <div className="mt-8 flex items-end justify-between gap-3 sm:mt-10 sm:gap-4">
-                  <p
-                    className={`min-w-0 max-w-lg flex-1 text-sm leading-relaxed sm:text-lg ${muted}`}
-                  >
-                    {isOpen ? degree.description : degree.highlights[0]}
+                  <p className={`min-w-0 max-w-lg flex-1 text-base leading-7 sm:text-lg ${muted}`}>
+                    {degree.description}
                   </p>
                   <motion.button
                     type="button"
@@ -153,7 +156,9 @@ const DegreesSection = () => {
                     whileHover={reduce ? undefined : { scale: 1.08 }}
                     whileTap={reduce ? undefined : { scale: 0.95 }}
                     className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-full transition hover:brightness-125 sm:h-14 sm:w-14 ${
-                      onBlue ? 'bg-white text-[#005080]' : 'bg-[#0A1628] text-white'
+                      onBlue
+                        ? 'bg-white itca-white-surface text-[#005080]'
+                        : 'bg-[#005080] itca-blue-surface text-white'
                     }`}
                   >
                     <ArrowRight className={`h-6 w-6 transition ${isOpen ? 'rotate-90' : ''}`} />
@@ -172,7 +177,7 @@ const DegreesSection = () => {
                     >
                       {degree.highlights.map((highlight) => (
                         <li key={highlight} className={`text-base sm:text-lg ${text}`}>
-                          → {highlight}
+                          {highlight}
                         </li>
                       ))}
                     </motion.ul>

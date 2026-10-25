@@ -3,21 +3,14 @@
 import { FormEvent, useState } from 'react';
 import { Loader, Search } from 'lucide-react';
 import { toast } from 'sonner';
-import {
-  checkDuesStatus,
-  DuesStatusResult,
-} from '@/hooks/dues/use-dues';
+import { checkDuesStatus, DuesStatusResult } from '@/hooks/dues/use-dues';
 import { getErrorMessage } from '@/utils/error';
-import {
-  FEE_TOTAL_REQUIRED,
-  formatFeeAmount,
-  getFeeBalanceRemaining,
-} from '@/utils/fees';
+import { FEE_TOTAL_REQUIRED, formatFeeAmount, getFeeBalanceRemaining } from '@/utils/fees';
 
 const inputClass =
-  'w-full rounded-full border border-[#0A1628]/10 bg-white px-4 py-3 text-sm text-[#0A1628] placeholder:text-[#0A1628]/40 focus:border-[#005080] focus:outline-none focus:ring-2 focus:ring-[#005080]/20';
+  'w-full rounded-full border border-[#005080]/10 bg-white itca-white-surface px-4 py-3 text-sm text-[#005080] placeholder:text-[#005080]/40 focus:border-[#005080] focus:outline-none focus:ring-2 focus:ring-[#005080]/20';
 
-const FeesStatusCheck = () => {
+const FeesStatusCheck = ({ compact = false }: { compact?: boolean }) => {
   const [matricNumber, setMatricNumber] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [result, setResult] = useState<DuesStatusResult | null>(null);
@@ -52,19 +45,32 @@ const FeesStatusCheck = () => {
         getFeeBalanceRemaining(result.totalPaid, result.feeTotalRequired));
 
   return (
-    <section className="bg-[#F7F7F7] px-4 py-14 sm:px-10 lg:px-16">
-      <div className="mx-auto max-w-[720px] rounded-[1.75rem] bg-white p-6 sm:p-8">
-        <p className="landing-mono text-xs text-[#FF6A00]">Fee status</p>
-        <h2 className="mt-2 text-2xl font-bold text-[#0A1628] sm:text-3xl">
+    <section
+      id="fee-status"
+      style={{ scrollMarginTop: '8rem' }}
+      className={`bg-[#FFFFFF] px-4 sm:px-10 lg:px-16 ${compact ? 'py-6' : 'py-14'}`}
+    >
+      <div className="mx-auto max-w-[720px] rounded-[1.75rem] border border-[#005080]/30 bg-white itca-white-surface p-6 sm:p-8">
+        <p className="landing-mono text-xs text-[var(--itca-accent-ink)]">Fee status</p>
+        <h2 className="mt-2 text-2xl font-bold text-[#005080] sm:text-3xl">
           Check your fee status
         </h2>
-        <p className="mt-2 text-sm text-[#0A1628]/70">
-          Enter your matric number to see how much you have paid and any balance
-          remaining toward {formatFeeAmount(FEE_TOTAL_REQUIRED)}.
+        <p className="mt-2 text-sm text-[#005080]/70">
+          Enter your matric number to see how much you have paid and any balance remaining toward{' '}
+          {formatFeeAmount(FEE_TOTAL_REQUIRED)}.
         </p>
 
         <form onSubmit={handleSubmit} className="mt-6 space-y-3">
+          <label
+            htmlFor="dues-matric-number"
+            className="block text-sm font-semibold text-[#005080]"
+          >
+            Matric number
+          </label>
           <input
+            id="dues-matric-number"
+            name="matricNumber"
+            required
             value={matricNumber}
             onChange={(e) => setMatricNumber(e.target.value)}
             placeholder="Matric number"
@@ -74,7 +80,7 @@ const FeesStatusCheck = () => {
           <button
             type="submit"
             disabled={isLoading}
-            className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-full bg-[#0A1628] px-6 text-sm font-semibold text-[#FF6A00] transition hover:brightness-110 disabled:opacity-60"
+            className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-full bg-[#005080] itca-blue-surface px-6 text-sm font-semibold text-[var(--itca-accent-ink)] transition hover:brightness-110 disabled:opacity-60"
           >
             {isLoading ? (
               <Loader className="h-4 w-4 animate-spin" />
@@ -86,31 +92,32 @@ const FeesStatusCheck = () => {
         </form>
 
         {result && (
-          <div className="mt-6 rounded-[1.25rem] bg-[#D4E6F2] p-5 text-[#0A1628]">
+          <div
+            role="status"
+            aria-live="polite"
+            className="mt-6 rounded-[1.25rem] bg-[#FFFFFF] p-5 text-[#005080]"
+          >
             <dl className="space-y-2 text-sm">
               <div className="flex justify-between gap-4">
-                <dt className="text-[#0A1628]/70">Matric</dt>
+                <dt className="text-[#005080]/70">Matric</dt>
                 <dd className="font-semibold">{result.matricNumber}</dd>
               </div>
               <div className="flex justify-between gap-4">
-                <dt className="text-[#0A1628]/70">Total paid</dt>
+                <dt className="text-[#005080]/70">Total paid</dt>
                 <dd className="font-semibold">
-                  {formatFeeAmount(result.totalPaid)} /{' '}
-                  {formatFeeAmount(result.feeTotalRequired)}
+                  {formatFeeAmount(result.totalPaid)} / {formatFeeAmount(result.feeTotalRequired)}
                 </dd>
               </div>
               <div className="flex justify-between gap-4">
-                <dt className="text-[#0A1628]/70">Balance</dt>
+                <dt className="text-[#005080]/70">Balance</dt>
                 <dd
-                  className={`font-semibold ${
-                    balance <= 0 ? 'text-green-800' : 'text-amber-800'
-                  }`}
+                  className={`font-semibold ${balance <= 0 ? 'text-green-800' : 'text-amber-800'}`}
                 >
                   {balance <= 0 ? 'Full fee met' : formatFeeAmount(balance)}
                 </dd>
               </div>
               <div className="flex justify-between gap-4">
-                <dt className="text-[#0A1628]/70">Eligibility</dt>
+                <dt className="text-[#005080]/70">Eligibility</dt>
                 <dd
                   className={`font-semibold ${
                     result.auditEligible ? 'text-green-800' : 'text-amber-800'
@@ -122,8 +129,8 @@ const FeesStatusCheck = () => {
             </dl>
 
             {result.payments.length > 0 && (
-              <div className="mt-4 border-t border-[#0A1628]/15 pt-4">
-                <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-[#0A1628]/55">
+              <div className="mt-4 border-t border-[#005080]/15 pt-4">
+                <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-[#005080]/55">
                   Paid receipts
                 </p>
                 <ul className="space-y-1 text-sm">
@@ -132,15 +139,13 @@ const FeesStatusCheck = () => {
                       key={`${payment.receiptNumber || index}-${payment.paidAt}`}
                       className="flex justify-between gap-3"
                     >
-                      <span className="truncate text-[#0A1628]/70">
+                      <span className="truncate text-[#005080]/70">
                         {payment.receiptNumber || 'Receipt'}
                         {payment.paidAt
                           ? ` · ${new Date(payment.paidAt).toLocaleDateString()}`
                           : ''}
                       </span>
-                      <span className="font-medium">
-                        {formatFeeAmount(payment.amount)}
-                      </span>
+                      <span className="font-medium">{formatFeeAmount(payment.amount)}</span>
                     </li>
                   ))}
                 </ul>

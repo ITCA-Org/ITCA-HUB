@@ -53,14 +53,16 @@ const NewsletterSection = () => {
   };
 
   return (
-    <section className="bg-white px-4 py-20 sm:px-10 sm:py-24 lg:px-16 lg:py-32">
+    <section className="bg-white itca-white-surface px-4 pb-20 pt-12 sm:px-10 sm:pb-24 sm:pt-14 lg:px-16 lg:pb-32 lg:pt-16">
       <div className="mx-auto grid max-w-[1400px] gap-12 lg:grid-cols-2 lg:items-end lg:gap-20">
         <Reveal>
-          <p className="landing-mono mb-5 text-base text-[#FF6A00] sm:text-lg">Newsletter</p>
-          <h2 className="max-w-2xl text-4xl font-bold leading-tight text-[#0A1628] sm:text-5xl lg:text-6xl">
+          <p className="landing-mono mb-5 text-base text-[var(--itca-accent-ink)] sm:text-lg">
+            Newsletter
+          </p>
+          <h2 className="max-w-2xl text-4xl font-bold leading-tight text-[#005080] sm:text-5xl lg:text-6xl">
             Subscribe to our newsletter
           </h2>
-          <p className="mt-6 max-w-lg text-lg text-[#0A1628]/70 sm:text-xl">
+          <p className="mt-6 max-w-lg text-lg text-[#005080]/70 sm:text-xl">
             Event dates, bootcamp callouts, and campus updates—straight to your inbox. No spam.
           </p>
 
@@ -68,9 +70,9 @@ const NewsletterSection = () => {
             {TOPICS.map((topic) => (
               <li
                 key={topic}
-                className="flex items-start gap-3 text-base text-[#0A1628]/75 sm:text-lg"
+                className="flex items-start gap-3 text-base text-[#005080]/75 sm:text-lg"
               >
-                <span className="mt-2.5 inline-block h-2 w-2 shrink-0 rounded-full bg-[#FF6A00]" />
+                <span className="mt-2.5 inline-block h-2 w-2 shrink-0 rounded-full bg-[#005080] itca-blue-surface" />
                 {topic}
               </li>
             ))}
@@ -80,11 +82,11 @@ const NewsletterSection = () => {
         <Reveal delay={0.1}>
           <form
             onSubmit={handleSubmit}
-            className="rounded-[1.75rem] bg-[#D4E6F2] p-5 sm:rounded-[2.25rem] sm:p-10 lg:p-12"
+            className="rounded-[1.75rem] border border-[#005080]/20 bg-[#FFFFFF] p-5 sm:rounded-[2.25rem] sm:p-10 lg:p-12"
           >
             <label
               htmlFor="newsletter-email"
-              className="block text-base font-semibold text-[#0A1628] sm:text-lg"
+              className="block text-base font-semibold text-[#005080] sm:text-lg"
             >
               Email address
             </label>
@@ -98,7 +100,7 @@ const NewsletterSection = () => {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="your.email@utg.edu.gm"
-              className="mt-3 w-full rounded-full border border-[#0A1628]/10 bg-white px-6 py-4 text-lg text-[#0A1628] placeholder:text-[#0A1628]/35 focus:border-[#005080] focus:outline-none focus:ring-2 focus:ring-[#005080]/20"
+              className="mt-3 w-full rounded-full border border-[#005080]/10 bg-white itca-white-surface px-6 py-4 text-lg text-[#005080] placeholder:text-[#005080]/35 focus:border-[#005080] focus:outline-none focus:ring-2 focus:ring-[#005080]/20"
             />
             <button
               type="submit"
@@ -107,7 +109,7 @@ const NewsletterSection = () => {
             >
               {isSubmitting ? 'Subscribing…' : 'Subscribe'}
             </button>
-            <p className="mt-4 text-sm leading-relaxed text-[#0A1628]/55 sm:text-base">
+            <p className="mt-4 text-sm leading-relaxed text-[#005080]/55 sm:text-base">
               By subscribing you agree to hear from ITCA about association news. Unsubscribe anytime
               via the link in our emails.
             </p>

@@ -2,6 +2,7 @@
 
 import usePublicReducedMotion from '@/hooks/use-public-reduced-motion';
 import Image from 'next/image';
+import { useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { Reveal, easeOut, fadeUp, stagger } from './reveal';
 
@@ -9,7 +10,7 @@ const steps = [
   {
     number: '1',
     title: 'Learn',
-    color: '#D4E6F2',
+    color: '#FFFFFF',
     kicker: 'Skills practice that sticks',
     body: 'We organise bootcamps, workshops, and hands-on sessions so ICT students can practice what they learn in class—coding, networking, design, and more—with peers who get it.',
     points: ['Bootcamps', 'Workshops', 'Peer learning', 'Project practice'],
@@ -19,7 +20,7 @@ const steps = [
   {
     number: '2',
     title: 'Play',
-    color: '#FFE0CC',
+    color: '#FFFFFF',
     kicker: 'Sporting events and campus life',
     body: 'ITCA is not only labs and lectures. We run sporting events and campus activities that bring School of ICT students together, build friendships, and balance the semester.',
     points: ['Sports days', 'Campus games', 'Team spirit', 'Fun with classmates'],
@@ -29,7 +30,7 @@ const steps = [
   {
     number: '3',
     title: 'Belong',
-    color: '#FF6A00',
+    color: '#FFFFFF',
     kicker: 'Retreats, friendships, and real connection',
     body: 'From Computer Science to Information Systems and Telecommunications, ITCA is the shared home for School of ICT students—retreats, hangouts, and a network you can lean on outside the classroom.',
     points: ['Student retreats', 'Campus hangouts', 'Shared meals', 'Lifelong friendships'],
@@ -40,18 +41,35 @@ const steps = [
 
 const ApproachSection = () => {
   const reduce = usePublicReducedMotion();
+  const cards = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (reduce || !cards.current) return;
+    // Tall cards scroll completely before sticking at the bottom of the viewport.
+    // Measuring each card also accommodates image loading, zoom and text wrapping.
+    const observer = new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        (entry.target as HTMLElement).style.setProperty(
+          '--approach-card-height',
+          `${entry.target.getBoundingClientRect().height}px`
+        );
+      }
+    });
+    cards.current.querySelectorAll('article').forEach((card) => observer.observe(card));
+    return () => observer.disconnect();
+  }, [reduce]);
 
   return (
-    <section id="community" className="bg-white">
+    <section id="community" className="bg-white itca-white-surface">
       <div className="mx-auto max-w-[1400px] px-5 py-20 sm:px-10 lg:px-16">
         <div className="mb-16 grid gap-10 lg:grid-cols-[1.1fr_0.9fr] lg:items-end">
           <Reveal>
-            <h2 className="text-4xl font-bold leading-[1.1] text-[#0A1628] sm:text-5xl md:text-6xl">
+            <h2 className="text-4xl font-bold leading-[1.1] text-[#005080] sm:text-5xl md:text-6xl">
               A student community that learns, plays, and shows up together.
             </h2>
           </Reveal>
           <Reveal delay={0.12}>
-            <p className="landing-mono text-sm leading-relaxed text-[#0A1628]/75">
+            <p className="landing-mono text-sm leading-relaxed text-[#005080]/75">
               ITCA organises initiatives across the School of ICT—bootcamps, workshops, sporting
               events, and retreats—so studying tech at UTG feels like being part of something
               bigger.
@@ -60,13 +78,13 @@ const ApproachSection = () => {
         </div>
       </div>
 
-      <div className="relative">
+      <div ref={cards} className="relative">
         {steps.map((step, index) => (
           <article
             key={step.number}
-            className={`relative lg:sticky lg:top-[6rem] rounded-t-[2.5rem] px-5 pt-14 sm:rounded-t-[4rem] sm:px-10 sm:pt-16 lg:px-16 lg:pt-20 ${
+            className={`${reduce ? 'relative' : 'sticky top-[min(6rem,calc(100svh-var(--approach-card-height,0px)-1rem))]'} border-t border-[#005080]/15 rounded-t-[2.5rem] px-5 pt-14 sm:rounded-t-[4rem] sm:px-10 sm:pt-16 lg:px-16 lg:pt-20 ${
               index < 2 ? 'pb-20 sm:pb-24 lg:pb-28' : 'pb-12 sm:pb-14 lg:pb-16'
-            } ${index > 0 ? 'lg:-mt-[4rem]' : ''}`}
+            } ${!reduce && index > 0 ? '-mt-6 lg:-mt-[4rem]' : ''}`}
             style={{
               backgroundColor: step.color,
               zIndex: index + 1,
@@ -78,7 +96,7 @@ const ApproachSection = () => {
                   <div>
                     <p className="landing-mono mb-4 text-base sm:text-lg">{step.kicker}</p>
                     <motion.h3
-                      className="text-5xl font-bold tracking-tight text-[#0A1628] sm:text-7xl lg:text-8xl"
+                      className="text-5xl font-bold tracking-tight text-[#005080] sm:text-7xl lg:text-8xl"
                       initial={reduce ? false : { opacity: 0, x: -24 }}
                       whileInView={{ opacity: 1, x: 0 }}
                       viewport={{ once: true, amount: 0.4 }}
@@ -88,7 +106,7 @@ const ApproachSection = () => {
                     </motion.h3>
                   </div>
                   <motion.span
-                    className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-[#0A1628] text-base font-bold text-white sm:h-14 sm:w-14 sm:text-lg"
+                    className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-[#005080] itca-blue-surface text-base font-bold text-white sm:h-14 sm:w-14 sm:text-lg"
                     initial={reduce ? false : { scale: 0.6, opacity: 0 }}
                     whileInView={{ scale: 1, opacity: 1 }}
                     viewport={{ once: true }}
@@ -108,13 +126,14 @@ const ApproachSection = () => {
                   >
                     <Image
                       fill
+                      sizes="(min-width: 1024px) 32vw, (min-width: 768px) 45vw, 100vw"
                       alt={step.imageAlt}
                       src={step.image}
                       className="object-cover object-center transition duration-700 hover:scale-105"
                     />
                   </motion.div>
                   <motion.p
-                    className="max-w-2xl text-lg leading-relaxed text-[#0A1628] sm:text-xl lg:text-2xl lg:leading-snug"
+                    className="max-w-2xl text-lg leading-relaxed text-[#005080] sm:text-xl lg:text-2xl lg:leading-snug"
                     initial={reduce ? false : { opacity: 0, y: 16 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true, amount: 0.3 }}
@@ -138,7 +157,7 @@ const ApproachSection = () => {
                     variants={reduce ? undefined : fadeUp}
                     transition={{ duration: 0.5, ease: easeOut }}
                     whileHover={reduce ? undefined : { x: 6, scale: 1.02 }}
-                    className="rounded-full bg-[#0A1628] px-6 py-3.5 text-base font-semibold text-white sm:px-7 sm:py-4 sm:text-lg"
+                    className="rounded-full bg-[#005080] itca-blue-surface px-6 py-3.5 text-base font-semibold text-white sm:px-7 sm:py-4 sm:text-lg"
                   >
                     {point}
                   </motion.li>

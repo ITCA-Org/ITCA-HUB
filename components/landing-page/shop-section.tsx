@@ -41,7 +41,7 @@ const ShopProductCard = ({
 
   return (
     <motion.article
-      className="group flex flex-col bg-white"
+      className="group flex flex-col bg-white itca-white-surface"
       initial={reduce ? false : { opacity: 0, y: 28 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, amount: 0.12 }}
@@ -54,7 +54,7 @@ const ShopProductCard = ({
       <button
         type="button"
         onClick={() => setOpenOptions((open) => !open)}
-        className="relative aspect-[4/3] w-full overflow-hidden bg-[#F3F3F3] text-left"
+        className="relative aspect-[4/3] w-full overflow-hidden bg-[#FFFFFF] text-left"
         aria-expanded={openOptions}
         aria-label={`${product.name} — ${openOptions ? 'hide' : 'show'} options`}
       >
@@ -68,14 +68,17 @@ const ShopProductCard = ({
       </button>
 
       <div className="px-4 pb-8 pt-5 sm:px-5 sm:pb-10 sm:pt-6 lg:px-6">
-        <h3 className="text-xl font-bold leading-snug tracking-tight text-[#0A1628] sm:text-2xl lg:text-[1.65rem]">
+        <h3 className="text-xl font-bold leading-snug tracking-tight text-[#005080] sm:text-2xl lg:text-[1.65rem]">
           {product.name}
         </h3>
-        <p className="mt-2 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-[#0A1628]/75 sm:text-base">
-          <span className="inline-block h-2 w-2 shrink-0 rounded-full bg-[#0A1628]" aria-hidden />
+        <p className="mt-2 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-[#005080]/75 sm:text-base">
+          <span
+            className="inline-block h-2 w-2 shrink-0 rounded-full bg-[#005080] itca-blue-surface"
+            aria-hidden
+          />
           <span>{product.category}</span>
-          <span className="text-[#0A1628]/35">·</span>
-          <span className="font-semibold text-[#0A1628]">{formatDalasi(product.price)}</span>
+          <span className="text-[#005080]/35">·</span>
+          <span className="font-semibold text-[#005080]">{formatDalasi(product.price)}</span>
         </p>
 
         <AnimatePresence initial={false}>
@@ -87,11 +90,11 @@ const ShopProductCard = ({
               transition={{ duration: 0.3, ease: easeOut }}
               className="overflow-hidden"
             >
-              <div className="mt-5 space-y-4 border-t border-[#0A1628]/10 pt-5">
-                <p className="text-sm leading-relaxed text-[#0A1628]/70">{product.blurb}</p>
+              <div className="mt-5 space-y-4 border-t border-[#005080]/10 pt-5">
+                <p className="text-sm leading-relaxed text-[#005080]/70">{product.blurb}</p>
 
                 <div>
-                  <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-[#0A1628]/55">
+                  <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-[#005080]/55">
                     Color · {selectedColor?.name}
                   </p>
                   <div
@@ -103,8 +106,8 @@ const ShopProductCard = ({
                       const active = color === option.name;
                       const isLight =
                         option.hex.toUpperCase() === '#FFFFFF' ||
-                        option.hex === '#D4E6F2' ||
-                        option.hex === '#FFE0CC';
+                        option.hex === '#FFFFFF' ||
+                        option.hex === '#FFFFFF';
                       return (
                         <button
                           key={option.name}
@@ -114,8 +117,8 @@ const ShopProductCard = ({
                           aria-pressed={active}
                           onClick={() => setColor(option.name)}
                           className={`h-11 w-11 rounded-full border-2 transition ${
-                            active ? 'scale-110 border-[#0A1628]' : 'border-transparent'
-                          } ${isLight ? 'ring-1 ring-[#0A1628]/20' : ''}`}
+                            active ? 'scale-110 border-[#005080]' : 'border-transparent'
+                          } ${isLight ? 'ring-1 ring-[#005080]/20' : ''}`}
                           style={{ backgroundColor: option.hex }}
                         />
                       );
@@ -124,7 +127,7 @@ const ShopProductCard = ({
                 </div>
 
                 <div>
-                  <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-[#0A1628]/55">
+                  <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-[#005080]/55">
                     Size
                   </p>
                   <div
@@ -142,8 +145,8 @@ const ShopProductCard = ({
                           onClick={() => setSize(option)}
                           className={`min-h-9 min-w-10 rounded-full px-3 text-xs font-semibold transition sm:text-sm ${
                             active
-                              ? 'bg-[#0A1628] text-[#FF6A00]'
-                              : 'bg-[#F3F3F3] text-[#0A1628] hover:bg-[#0A1628]/10'
+                              ? 'bg-[#005080] itca-blue-surface text-[var(--itca-accent-ink)]'
+                              : 'bg-[#FFFFFF] text-[#005080] hover:bg-[#005080]/10'
                           }`}
                         >
                           {option}
@@ -169,13 +172,13 @@ const ShopProductCard = ({
   );
 };
 
-const ShopSection = () => {
+const ShopSection = ({ compact = false }: { compact?: boolean }) => {
   const reduce = usePublicReducedMotion();
   const { openCart, itemCount, products, productsLoading } = useShopCart();
   const [query, setQuery] = useState('');
   const [category, setCategory] = useState<'All' | ShopCategory>('All');
   const [sort, setSort] = useState<SortOption>('featured');
-  const [filtersOpen, setFiltersOpen] = useState(false);
+  const [filtersOpen, setFiltersOpen] = useState(compact);
 
   const activeFilterCount =
     (category !== 'All' ? 1 : 0) + (query.trim() ? 1 : 0) + (sort !== 'featured' ? 1 : 0);
@@ -207,27 +210,33 @@ const ShopSection = () => {
   }, [products, query, category, sort]);
 
   return (
-    <section className="bg-white pb-14 pt-6 sm:pb-20 sm:pt-10 md:pt-12 lg:pb-28">
+    <section className="bg-white itca-white-surface pb-14 pt-6 sm:pb-20 sm:pt-10 md:pt-12 lg:pb-28">
       <div className="mx-auto max-w-[1400px] px-4 sm:px-10 lg:px-16">
-        <Reveal className="mb-8 hidden items-end justify-between gap-6 md:mb-10 md:flex">
-          <div className="max-w-2xl">
-            <p className="landing-mono mb-3 text-xs text-[#FF6A00] sm:mb-4 sm:text-sm">
-              Merch & gear
-            </p>
-            <h2 className="text-2xl font-bold leading-tight text-[#0A1628] sm:text-4xl lg:text-5xl">
-              Browse the catalogue and add items to your cart.
-            </h2>
-          </div>
-          <button type="button" onClick={openCart} className={`${darkCtaClass} relative shrink-0`}>
-            <ShoppingBag className="h-4 w-4" />
-            View cart
-            {itemCount > 0 && (
-              <span className="absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-[#FF6A00] px-1 text-xs font-bold text-[#0A1628]">
-                {itemCount}
-              </span>
-            )}
-          </button>
-        </Reveal>
+        {!compact && (
+          <Reveal className="mb-8 hidden items-end justify-between gap-6 md:mb-10 md:flex">
+            <div className="max-w-2xl">
+              <p className="landing-mono mb-3 text-xs text-[var(--itca-accent-ink)] sm:mb-4 sm:text-sm">
+                Merch & gear
+              </p>
+              <h2 className="text-2xl font-bold leading-tight text-[#005080] sm:text-4xl lg:text-5xl">
+                Browse the catalogue and add items to your cart.
+              </h2>
+            </div>
+            <button
+              type="button"
+              onClick={openCart}
+              className={`${darkCtaClass} relative shrink-0`}
+            >
+              <ShoppingBag className="h-4 w-4" />
+              View cart
+              {itemCount > 0 && (
+                <span className="absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-[#005080] itca-blue-surface px-1 text-xs font-bold text-white">
+                  {itemCount}
+                </span>
+              )}
+            </button>
+          </Reveal>
+        )}
 
         <div className="mb-8 sm:mb-10">
           <button
@@ -236,15 +245,18 @@ const ShopSection = () => {
             aria-expanded={filtersOpen}
             className="flex w-full items-center gap-4 rounded-full bg-[#E8E8E8] px-6 py-4 text-left transition hover:bg-[#E0E0E0] sm:px-8 sm:py-[1.15rem]"
           >
-            <span className="min-w-0 flex-1 text-[15px] font-medium tracking-tight text-[#0A1628] sm:text-base">
+            <span className="min-w-0 flex-1 text-[15px] font-medium tracking-tight text-[#005080] sm:text-base">
               Filters ({activeFilterCount})
             </span>
 
-            <span className="flex shrink-0 items-center gap-2.5 text-[15px] font-medium tracking-tight text-[#0A1628] sm:gap-3 sm:text-base">
-              <span className="inline-block h-2.5 w-2.5 rounded-full bg-[#0A1628]" aria-hidden />
+            <span className="flex shrink-0 items-center gap-2.5 text-[15px] font-medium tracking-tight text-[#005080] sm:gap-3 sm:text-base">
+              <span
+                className="inline-block h-2.5 w-2.5 rounded-full bg-[#005080] itca-blue-surface"
+                aria-hidden
+              />
               {filtered.length} {filtered.length === 1 ? 'product' : 'products'}
               <ChevronDown
-                className={`ml-0.5 h-[18px] w-[18px] text-[#0A1628] transition ${
+                className={`ml-0.5 h-[18px] w-[18px] text-[#005080] transition ${
                   filtersOpen ? 'rotate-180' : ''
                 }`}
                 strokeWidth={2}
@@ -261,14 +273,21 @@ const ShopSection = () => {
                 transition={{ duration: 0.3, ease: easeOut }}
                 className="overflow-hidden"
               >
-                <div className="mt-3 space-y-4 rounded-[1.75rem] bg-[#F7F7F7] p-4 sm:rounded-[2rem] sm:p-6">
+                <div className="mt-3 space-y-4 rounded-[1.75rem] bg-[#FFFFFF] p-4 sm:rounded-[2rem] sm:p-6">
+                  <label
+                    htmlFor="shop-search"
+                    className="block text-sm font-semibold text-[#005080]"
+                  >
+                    Search shop items
+                  </label>
                   <input
+                    id="shop-search"
                     type="search"
                     value={query}
                     onChange={(e) => setQuery(e.target.value)}
                     placeholder="Search tees, hoodies, colors…"
                     aria-label="Search shop items"
-                    className="w-full rounded-full border border-[#0A1628]/10 bg-white px-5 py-3.5 text-base text-[#0A1628] placeholder:text-[#0A1628]/40 focus:border-[#005080] focus:outline-none focus:ring-2 focus:ring-[#005080]/20"
+                    className="w-full rounded-full border border-[#005080]/10 bg-white itca-white-surface px-5 py-3.5 text-base text-[#005080] placeholder:text-[#005080]/40 focus:border-[#005080] focus:outline-none focus:ring-2 focus:ring-[#005080]/20"
                   />
 
                   <div className="flex gap-2 overflow-x-auto pb-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:flex-wrap sm:overflow-visible">
@@ -281,8 +300,8 @@ const ShopSection = () => {
                           onClick={() => setCategory(cat)}
                           className={`shrink-0 rounded-full px-4 py-2.5 text-sm font-semibold transition ${
                             active
-                              ? 'bg-[#0A1628] text-[#FF6A00]'
-                              : 'bg-white text-[#0A1628] hover:bg-[#0A1628]/5'
+                              ? 'bg-[#005080] itca-blue-surface text-[var(--itca-accent-ink)]'
+                              : 'bg-white itca-white-surface text-[#005080] hover:bg-[#005080]/5'
                           }`}
                         >
                           {cat}
@@ -291,12 +310,12 @@ const ShopSection = () => {
                     })}
                   </div>
 
-                  <label className="inline-flex w-full items-center gap-2 text-sm text-[#0A1628]/70 sm:w-auto">
+                  <label className="inline-flex w-full items-center gap-2 text-sm text-[#005080]/70 sm:w-auto">
                     <span className="shrink-0">Sort</span>
                     <select
                       value={sort}
                       onChange={(e) => setSort(e.target.value as SortOption)}
-                      className="min-h-11 flex-1 rounded-full border border-[#0A1628]/10 bg-white px-3 py-2 text-sm font-semibold text-[#0A1628] focus:border-[#005080] focus:outline-none sm:flex-none"
+                      className="min-h-11 flex-1 rounded-full border border-[#005080]/10 bg-white itca-white-surface px-3 py-2 text-sm font-semibold text-[#005080] focus:border-[#005080] focus:outline-none sm:flex-none"
                     >
                       <option value="featured">Featured</option>
                       <option value="price-asc">Price: low to high</option>
@@ -308,7 +327,7 @@ const ShopSection = () => {
                   {activeFilterCount > 0 && (
                     <button
                       type="button"
-                      className="text-sm font-semibold text-[#FF6A00] underline underline-offset-4"
+                      className="text-sm font-semibold text-[var(--itca-accent-ink)] underline underline-offset-4"
                       onClick={() => {
                         setQuery('');
                         setCategory('All');
@@ -327,15 +346,15 @@ const ShopSection = () => {
 
       {productsLoading ? (
         <div className="mx-auto max-w-[1400px] px-4 sm:px-10 lg:px-16">
-          <p className="py-16 text-center text-[#0A1628]/60">Loading catalogue…</p>
+          <p className="py-16 text-center text-[#005080]/60">Loading catalogue…</p>
         </div>
       ) : filtered.length === 0 ? (
         <div className="mx-auto max-w-[1400px] px-4 sm:px-10 lg:px-16">
-          <div className="rounded-[1.25rem] border border-dashed border-[#0A1628]/20 px-5 py-12 text-center sm:rounded-[1.5rem] sm:px-6 sm:py-16">
-            <p className="text-lg font-semibold text-[#0A1628]">
+          <div className="rounded-[1.25rem] border border-dashed border-[#005080]/20 px-5 py-12 text-center sm:rounded-[1.5rem] sm:px-6 sm:py-16">
+            <p className="text-lg font-semibold text-[#005080]">
               {products.length === 0 ? 'Shop coming soon' : 'No items match'}
             </p>
-            <p className="mt-2 text-sm text-[#0A1628]/65">
+            <p className="mt-2 text-sm text-[#005080]/65">
               {products.length === 0
                 ? 'Products will appear here once an admin adds them.'
                 : 'Try another search or clear the category filter.'}
@@ -365,7 +384,7 @@ const ShopSection = () => {
 
       <div className="mx-auto mt-12 max-w-[1400px] px-4 sm:mt-20 sm:px-10 lg:px-16">
         <Reveal className="flex flex-col items-stretch gap-4 sm:flex-row sm:items-center sm:gap-6">
-          <p className="max-w-md text-sm text-[#0A1628]/70 sm:text-base">
+          <p className="max-w-md text-sm text-[#005080]/70 sm:text-base">
             Looking for something custom for a cohort or event? We can help.
           </p>
           <Link href="/events" className={`${darkCtaClass} w-full justify-center sm:w-auto`}>

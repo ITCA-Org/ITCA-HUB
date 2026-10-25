@@ -30,10 +30,9 @@ const NewsletterUnsubscribePage = () => {
 
     const unsubscribe = async () => {
       try {
-        const { data } = await axios.post(
-          `${BASE_URL}/newsletter-subscribers/unsubscribe`,
-          { token }
-        );
+        const { data } = await axios.post(`${BASE_URL}/newsletter-subscribers/unsubscribe`, {
+          token,
+        });
 
         if (cancelled) return;
 
@@ -81,23 +80,20 @@ const NewsletterUnsubscribePage = () => {
       description={description}
       path="/newsletter/unsubscribe"
       showNewsletter={false}
-      showFloatingCta={false}
     >
       <Head>
         <meta name="robots" content="noindex" />
       </Head>
 
-      <section className="bg-white px-4 py-24 sm:px-10 lg:px-16 lg:py-32">
+      <section className="bg-white itca-white-surface px-4 py-24 sm:px-10 lg:px-16 lg:py-32">
         <div className="mx-auto max-w-xl">
-          <p className="landing-mono mb-5 text-base text-[#FF6A00]">Newsletter</p>
-          <h1 className="text-4xl font-bold leading-tight text-[#0A1628] sm:text-5xl">
-            {title}
-          </h1>
-          <p className="mt-6 text-lg text-[#0A1628]/70">{description}</p>
+          <p className="landing-mono mb-5 text-base text-[var(--itca-accent-ink)]">Newsletter</p>
+          <h1 className="text-4xl font-bold leading-tight text-[#005080] sm:text-5xl">{title}</h1>
+          <p className="mt-6 text-lg text-[#005080]/70">{description}</p>
 
           {(state === 'success' || state === 'already') && (
-            <div className="mt-10 rounded-[1.75rem] bg-[#D4E6F2] p-8">
-              <p className="text-base text-[#0A1628]/75">
+            <div className="mt-10 rounded-[1.75rem] bg-[#FFFFFF] p-8">
+              <p className="text-base text-[#005080]/75">
                 Changed your mind? You can subscribe again anytime from the homepage.
               </p>
               <Link href="/" className={`${darkCtaClass} mt-6 inline-flex`}>

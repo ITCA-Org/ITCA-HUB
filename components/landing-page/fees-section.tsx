@@ -1,18 +1,19 @@
 'use client';
 
-import usePublicReducedMotion from '@/hooks/use-public-reduced-motion';
 import Image from 'next/image';
 import { useState } from 'react';
 import { motion } from 'framer-motion';
+import usePublicReducedMotion from '@/hooks/use-public-reduced-motion';
 import FeesModal from './fees-modal';
+import FeesStatusCheck from './fees-status-check';
 import { Reveal, easeOut, fadeUp, stagger } from './reveal';
 import { FEE_TOTAL_REQUIRED, formatFeeAmount } from '@/utils/fees';
 
 const steps = [
   {
     number: '1',
-    title: 'Install',
-    color: '#D4E6F2',
+    title: 'Pay each semester',
+    color: '#FFFFFF',
     kicker: 'D50 each semester',
     body: 'ITCA semester dues keep bootcamps, sports days, retreats, and student initiatives running. Paying D50 each term spreads the load so the community stays funded without a last-minute scramble.',
     points: [
@@ -27,7 +28,7 @@ const steps = [
   {
     number: '2',
     title: 'Settle',
-    color: '#FFE0CC',
+    color: '#FFFFFF',
     kicker: `${formatFeeAmount(FEE_TOTAL_REQUIRED)} before you graduate`,
     body: `Before graduation you must have paid a total of ${formatFeeAmount(FEE_TOTAL_REQUIRED)}. You can clear it semester by semester, or settle the full amount in one go if you prefer to finish early.`,
     points: [
@@ -42,7 +43,7 @@ const steps = [
   {
     number: '3',
     title: 'Graduate',
-    color: '#FF6A00',
+    color: '#FFFFFF',
     kicker: 'Audit form requires cleared dues',
     body: 'Students who have not cleared their ITCA dues cannot collect their audit form from the admin office. Stay current so graduation paperwork is not held up when you need it most.',
     points: [
@@ -57,40 +58,37 @@ const steps = [
 ];
 
 const FeesSection = () => {
-  const [open, setOpen] = useState(false);
   const reduce = usePublicReducedMotion();
+  const [open, setOpen] = useState(false);
 
   return (
     <>
-      <section id="why-fees" className="bg-white">
+      <section id="why-fees" className="bg-white itca-white-surface">
         <div className="mx-auto max-w-[1400px] px-5 pb-12 pt-6 sm:px-10 sm:pb-16 sm:pt-8 lg:px-16">
           <div className="mb-4 grid gap-8 lg:grid-cols-[1.1fr_0.9fr] lg:items-end lg:gap-10">
             <Reveal>
-              <h2 className="text-4xl font-bold leading-[1.1] text-[#0A1628] sm:text-5xl md:text-6xl">
-                Why fees matter—and how to stay clear before graduation.
-              </h2>
+              <h2 className="text-2xl font-semibold text-[#005080]">Make a payment</h2>
             </Reveal>
             <Reveal delay={0.12}>
-              <p className="landing-mono text-sm leading-relaxed text-[#0A1628]/75">
-                Your dues fund the community you rely on. Install D50 a semester, settle{' '}
-                {formatFeeAmount(FEE_TOTAL_REQUIRED)} in full, and keep your audit form within
-                reach.
+              <p className="landing-mono text-sm leading-relaxed text-[#005080]/75">
+                Pay D50 for a semester or {formatFeeAmount(FEE_TOTAL_REQUIRED)} in full. Check your
+                balance below if you have paid before.
               </p>
             </Reveal>
           </div>
 
-          <Reveal delay={0.18}>
+          <div>
             <button
               type="button"
               onClick={() => setOpen(true)}
-              className="mt-2 rounded-full bg-[#0A1628] px-7 py-3.5 text-sm font-semibold text-[#FF6A00] transition hover:brightness-110 sm:text-base"
+              className="mt-2 rounded-full bg-[#005080] itca-blue-surface px-7 py-3.5 text-sm font-semibold text-[var(--itca-accent-ink)] transition hover:brightness-110 sm:text-base"
             >
-              Ready to pay?{' '}
-              <span className="underline decoration-[#FF6A00] underline-offset-4">Open form</span>
+              Pay ITCA dues →
             </button>
-          </Reveal>
+          </div>
         </div>
 
+        <FeesStatusCheck compact />
         <div className="relative">
           {steps.map((step, index) => (
             <article
@@ -109,7 +107,7 @@ const FeesSection = () => {
                     <div>
                       <p className="landing-mono mb-4 text-base sm:text-lg">{step.kicker}</p>
                       <motion.h3
-                        className="text-5xl font-bold tracking-tight text-[#0A1628] sm:text-7xl lg:text-8xl"
+                        className="text-5xl font-bold tracking-tight text-[#005080] sm:text-7xl lg:text-8xl"
                         initial={reduce ? false : { opacity: 0, x: -24 }}
                         whileInView={{ opacity: 1, x: 0 }}
                         viewport={{ once: true, amount: 0.4 }}
@@ -119,7 +117,7 @@ const FeesSection = () => {
                       </motion.h3>
                     </div>
                     <motion.span
-                      className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-[#0A1628] text-base font-bold text-white sm:h-14 sm:w-14 sm:text-lg"
+                      className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-[#005080] itca-blue-surface text-base font-bold text-white sm:h-14 sm:w-14 sm:text-lg"
                       initial={reduce ? false : { scale: 0.6, opacity: 0 }}
                       whileInView={{ scale: 1, opacity: 1 }}
                       viewport={{ once: true }}
@@ -145,7 +143,7 @@ const FeesSection = () => {
                       />
                     </motion.div>
                     <motion.p
-                      className="max-w-2xl text-lg leading-relaxed text-[#0A1628] sm:text-xl lg:text-2xl lg:leading-snug"
+                      className="max-w-2xl text-lg leading-relaxed text-[#005080] sm:text-xl lg:text-2xl lg:leading-snug"
                       initial={reduce ? false : { opacity: 0, y: 16 }}
                       whileInView={{ opacity: 1, y: 0 }}
                       viewport={{ once: true, amount: 0.3 }}
@@ -169,7 +167,7 @@ const FeesSection = () => {
                       variants={reduce ? undefined : fadeUp}
                       transition={{ duration: 0.5, ease: easeOut }}
                       whileHover={reduce ? undefined : { x: 6, scale: 1.02 }}
-                      className="rounded-full bg-[#0A1628] px-6 py-3.5 text-base font-semibold text-white sm:px-7 sm:py-4 sm:text-lg"
+                      className="rounded-full bg-[#005080] itca-blue-surface px-6 py-3.5 text-base font-semibold text-white sm:px-7 sm:py-4 sm:text-lg"
                     >
                       {point}
                     </motion.li>
@@ -180,29 +178,6 @@ const FeesSection = () => {
           ))}
         </div>
       </section>
-
-      <motion.button
-        type="button"
-        onClick={() => setOpen(true)}
-        initial={reduce ? false : { opacity: 0, y: 24 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6, delay: 0.5, ease: easeOut }}
-        whileHover={reduce ? undefined : { scale: 1.04, y: -2 }}
-        whileTap={reduce ? undefined : { scale: 0.98 }}
-        className="fixed bottom-[max(1.25rem,env(safe-area-inset-bottom))] right-4 z-40 max-w-[min(100%,calc(100vw-2rem))] rounded-full bg-[#0A1628] px-5 py-2.5 text-left text-sm font-semibold text-[#FF6A00] shadow-[0_10px_30px_rgba(0,0,0,0.25)] sm:bottom-6 sm:right-6 sm:min-w-[260px] sm:px-9 sm:py-3 sm:text-lg"
-      >
-        {!reduce && (
-          <motion.span
-            className="pointer-events-none absolute inset-0 rounded-full ring-2 ring-[#FF6A00]/40"
-            animate={{ opacity: [0.55, 0, 0.55], scale: [1, 1.08, 1] }}
-            transition={{ duration: 2.8, repeat: Infinity, ease: 'easeInOut' }}
-          />
-        )}
-        <span className="relative">
-          Pay your fees?{' '}
-          <span className="underline decoration-[#FF6A00] underline-offset-4">Open form</span>
-        </span>
-      </motion.button>
 
       <FeesModal open={open} onClose={() => setOpen(false)} />
     </>

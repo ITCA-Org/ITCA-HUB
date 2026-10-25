@@ -81,10 +81,7 @@ const FeesSuccessPage = () => {
         return;
       }
 
-      if (
-        data?.order.status === 'failed' ||
-        data?.order.status === 'cancelled'
-      ) {
+      if (data?.order.status === 'failed' || data?.order.status === 'cancelled') {
         return;
       }
 
@@ -133,18 +130,17 @@ const FeesSuccessPage = () => {
       description="Your semester dues payment confirmation"
       path="/fees/success"
       showNewsletter={false}
-      showFloatingCta={false}
     >
       <Head>
         <meta name="robots" content="noindex" />
       </Head>
 
-      <section className="bg-white px-4 py-20 sm:px-10 lg:px-16 lg:py-28">
+      <section className="bg-white itca-white-surface px-4 py-20 sm:px-10 lg:px-16 lg:py-28">
         <div className="mx-auto max-w-xl">
-          <p className="landing-mono mb-5 text-base text-[#FF6A00]">Semester dues</p>
+          <p className="landing-mono mb-5 text-base text-[var(--itca-accent-ink)]">Semester dues</p>
 
           {isLoading && (
-            <div className="flex items-center gap-3 text-[#0A1628]/70">
+            <div className="flex items-center gap-3 text-[#005080]/70">
               <Loader className="h-5 w-5 animate-spin" />
               Confirming your payment…
             </div>
@@ -152,8 +148,8 @@ const FeesSuccessPage = () => {
 
           {!isLoading && !orderData && (
             <>
-              <h1 className="text-4xl font-bold text-[#0A1628]">Payment not found</h1>
-              <p className="mt-4 text-lg text-[#0A1628]/70">
+              <h1 className="text-4xl font-bold text-[#005080]">Payment not found</h1>
+              <p className="mt-4 text-lg text-[#005080]/70">
                 This link is invalid or expired. Start again from the fees page.
               </p>
               <Link href="/fees" className={`${darkCtaClass} mt-8 inline-flex`}>
@@ -164,11 +160,11 @@ const FeesSuccessPage = () => {
 
           {!isLoading && orderData && !paid && (
             <>
-              <div className="mb-4 flex items-center gap-3 text-[#0A1628]">
+              <div className="mb-4 flex items-center gap-3 text-[#005080]">
                 <Loader className="h-6 w-6 animate-spin text-[#005080]" />
                 <h1 className="text-3xl font-bold">Confirming payment…</h1>
               </div>
-              <p className="text-lg text-[#0A1628]/70">
+              <p className="text-lg text-[#005080]/70">
                 If you just paid, hang tight — we&apos;re confirming with Modem Pay.
               </p>
               <button
@@ -187,38 +183,34 @@ const FeesSuccessPage = () => {
             <>
               <div className="mb-4 flex items-center gap-3 text-green-700">
                 <CheckCircle className="h-8 w-8" />
-                <h1 className="text-3xl font-bold text-[#0A1628]">Payment successful</h1>
+                <h1 className="text-3xl font-bold text-[#005080]">Payment successful</h1>
               </div>
 
-              <div className="mt-8 rounded-[1.75rem] bg-[#D4E6F2] p-8">
-                <p className="text-sm text-[#0A1628]/60">Receipt</p>
-                <p className="mt-1 text-lg font-semibold text-[#0A1628]">
+              <div className="mt-8 rounded-[1.75rem] bg-[#FFFFFF] p-8">
+                <p className="text-sm text-[#005080]/60">Receipt</p>
+                <p className="mt-1 text-lg font-semibold text-[#005080]">
                   {orderData.order.receiptNumber}
                 </p>
-                <dl className="mt-6 space-y-2 text-base text-[#0A1628]/80">
+                <dl className="mt-6 space-y-2 text-base text-[#005080]/80">
                   <div className="flex justify-between gap-4">
                     <dt>Name</dt>
-                    <dd className="font-medium text-[#0A1628]">{orderData.order.fullName}</dd>
+                    <dd className="font-medium text-[#005080]">{orderData.order.fullName}</dd>
                   </div>
                   <div className="flex justify-between gap-4">
                     <dt>Matric</dt>
-                    <dd className="font-medium text-[#0A1628]">
-                      {orderData.order.matricNumber}
-                    </dd>
+                    <dd className="font-medium text-[#005080]">{orderData.order.matricNumber}</dd>
                   </div>
                   <div className="flex justify-between gap-4">
                     <dt>Paid</dt>
-                    <dd className="font-medium text-[#0A1628]">
+                    <dd className="font-medium text-[#005080]">
                       {formatFeeAmount(orderData.order.amount)}
                     </dd>
                   </div>
                   <div className="flex justify-between gap-4">
                     <dt>Total for matric</dt>
-                    <dd className="font-medium text-[#0A1628]">
+                    <dd className="font-medium text-[#005080]">
                       {formatFeeAmount(orderData.totalPaid)} /{' '}
-                      {formatFeeAmount(
-                        orderData.feeTotalRequired || FEE_TOTAL_REQUIRED
-                      )}
+                      {formatFeeAmount(orderData.feeTotalRequired || FEE_TOTAL_REQUIRED)}
                     </dd>
                   </div>
                   <div className="flex justify-between gap-4">
@@ -263,7 +255,7 @@ const FeesSuccessPage = () => {
 
                 {qrDataUrl && (
                   <div className="mt-8 flex flex-col items-center">
-                    <p className="mb-3 text-center text-sm font-medium text-[#0A1628]">
+                    <p className="mb-3 text-center text-sm font-medium text-[#005080]">
                       Show this QR to the faculty officer
                     </p>
                     <Image
@@ -272,9 +264,9 @@ const FeesSuccessPage = () => {
                       width={220}
                       height={220}
                       unoptimized
-                      className="rounded-xl bg-white p-2"
+                      className="rounded-xl bg-white itca-white-surface p-2"
                     />
-                    <p className="mt-3 text-center text-xs text-[#0A1628]/55">
+                    <p className="mt-3 text-center text-xs text-[#005080]/55">
                       A PDF receipt was emailed to {orderData.order.email}
                     </p>
                   </div>

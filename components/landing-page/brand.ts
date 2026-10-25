@@ -7,15 +7,15 @@ export const SOCIAL_LINKS = {
     'https://gm.linkedin.com/company/utg-itca-information-technology-communication-association-university-of-the-gambia',
 } as const;
 
-/** ITCA brand colors (from UTG-ITCA logo) */
+/** Public site palette: blue and white. */
 export const ITCA = {
-  ink: '#0A1628',
+  ink: '#005080',
   blue: '#005080',
-  blueSoft: '#D4E6F2',
-  orange: '#FF6A00',
-  orangeSoft: '#FFE0CC',
+  blueSoft: '#FFFFFF',
+  orange: '#005080',
+  orangeSoft: '#FFFFFF',
   white: '#FFFFFF',
 } as const;
 
 export const darkCtaClass =
-  'inline-flex cursor-pointer items-center justify-center gap-2 rounded-full bg-[#0A1628] px-5 py-3 text-sm font-semibold text-[#FF6A00] transition hover:brightness-110 active:scale-[0.98]';
+  'inline-flex cursor-pointer items-center justify-center gap-2 rounded-full bg-[#005080] itca-blue-surface px-5 py-3 text-sm font-semibold text-[var(--itca-accent-ink)] transition hover:brightness-110 active:scale-[0.98]';
