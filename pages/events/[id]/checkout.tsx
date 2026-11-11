@@ -3,7 +3,15 @@ import { useRouter } from 'next/router';
 import Image from 'next/image';
 import Link from 'next/link';
 import axios from 'axios';
-import { ArrowLeft, CalendarDays, Clock3, LoaderCircle, MapPin, Ticket } from 'lucide-react';
+import {
+  ArrowLeft,
+  CalendarDays,
+  ChevronDown,
+  Clock3,
+  LoaderCircle,
+  MapPin,
+  Ticket,
+} from 'lucide-react';
 import { toast } from 'sonner';
 import { BASE_URL } from '@/utils/url';
 import { checkoutTicket } from '@/hooks/tickets/use-tickets';
@@ -18,6 +26,7 @@ import LandingLayout from '@/components/landing-page/landing-layout';
 const CheckoutPage = () => {
   const router = useRouter();
   const { id, tier } = router.query;
+  const [eventDetailsExpanded, setEventDetailsExpanded] = useState(false);
   const [event, setEvent] = useState<EventProps | null>(null);
   const [buyerName, setBuyerName] = useState('');
   const [buyerEmail, setBuyerEmail] = useState('');
@@ -28,6 +37,7 @@ const CheckoutPage = () => {
 
   useEffect(() => {
     if (!id) return;
+    setEventDetailsExpanded(false);
 
     const fetchEvent = async () => {
       try {
@@ -151,7 +161,23 @@ const CheckoutPage = () => {
                   <h2 className="mt-2 max-w-xl text-2xl font-semibold leading-tight tracking-[-0.025em] text-[#12364B] sm:text-3xl">
                     {event.title}
                   </h2>
-                  <div className="mt-6 grid gap-4 border-t border-[#005080]/12 pt-5 sm:grid-cols-2">
+                  <button
+                    type="button"
+                    aria-expanded={eventDetailsExpanded}
+                    aria-controls="checkout-event-details"
+                    onClick={() => setEventDetailsExpanded((expanded) => !expanded)}
+                    className="mt-4 inline-flex min-h-11 w-full items-center justify-between rounded-lg border border-[#005080]/20 px-4 text-left text-sm font-semibold text-[#005080] transition hover:bg-[#F2F7FA] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#005080] md:hidden"
+                  >
+                    {eventDetailsExpanded ? 'Hide event details' : 'Show event details'}
+                    <ChevronDown
+                      aria-hidden="true"
+                      className={`h-4 w-4 transition-transform ${eventDetailsExpanded ? 'rotate-180' : ''}`}
+                    />
+                  </button>
+                  <div
+                    id="checkout-event-details"
+                    className={`mt-4 gap-4 border-t border-[#005080]/12 pt-5 sm:grid-cols-2 ${eventDetailsExpanded ? 'grid' : 'hidden md:grid'}`}
+                  >
                     <EventDetail
                       icon={<CalendarDays aria-hidden="true" className="h-[18px] w-[18px]" />}
                       label="Date"
