@@ -134,12 +134,13 @@ export default function StudentServices() {
         <p className="mt-1 max-w-2xl text-lg leading-7 sm:mt-3 sm:leading-8">
           Start with the essentials for your studies and student life.
         </p>
-        <div className="mt-6 overflow-hidden md:hidden">
+        <div className="mt-6 -mr-5 overflow-visible md:hidden sm:mr-0">
           <div
             ref={carouselRef}
-            className="flex gap-3"
+            className="flex snap-x snap-mandatory gap-3 overflow-x-auto overscroll-x-contain pb-2 pr-5 [scrollbar-width:thin] [scrollbar-color:#005080_#D4E6F2] [-webkit-overflow-scrolling:touch] sm:pr-0"
             role="region"
-            aria-label="Student services cards; cards advance automatically"
+            aria-label="Student services cards; swipe horizontally to see all services"
+            tabIndex={0}
           >
             {services.map((service, index) => (
               <ServiceCard
