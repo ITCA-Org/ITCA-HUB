@@ -151,7 +151,7 @@ const GithubStudentPackGuide = () => (
                   rel="noopener noreferrer"
                   className="group inline-flex flex-col gap-0.5 sm:flex-row sm:items-baseline sm:gap-2"
                 >
-                  <span className="font-semibold text-[var(--itca-accent-ink)] group-hover:underline">
+                  <span className="font-semibold text-white group-hover:underline">
                     {link.label}
                   </span>
                   {link.description && (
@@ -167,7 +167,7 @@ const GithubStudentPackGuide = () => (
           </p>
           <Link
             href="/resources"
-            className={`${darkCtaClass} mt-6 inline-flex bg-white itca-white-surface text-[#005080] hover:bg-white/90`}
+            className={`${darkCtaClass} mt-6 inline-flex bg-white itca-white-surface !text-[#005080] hover:bg-white/90`}
           >
             Back to resources
           </Link>
